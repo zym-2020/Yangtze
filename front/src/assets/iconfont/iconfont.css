@@ -1,0 +1,151 @@
+@font-face {
+  font-family: "iconfont"; /* Project id 2910523 */
+  src: url('iconfont.woff2?t=1642663225718') format('woff2'),
+       url('iconfont.woff?t=1642663225718') format('woff'),
+       url('iconfont.ttf?t=1642663225718') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-phone:before {
+  content: "\e725";
+}
+
+.icon-location:before {
+  content: "\e790";
+}
+
+.icon-nickname:before {
+  content: "\e6a0";
+}
+
+.icon-company:before {
+  content: "\e748";
+}
+
+.icon-doctorial:before {
+  content: "\eb73";
+}
+
+.icon-email:before {
+  content: "\e66f";
+}
+
+.icon-fork:before {
+  content: "\e7e8";
+}
+
+.icon-Tool:before {
+  content: "\e638";
+}
+
+.icon-service:before {
+  content: "\e781";
+}
+
+.icon-model:before {
+  content: "\e867";
+}
+
+.icon-yijianqingli:before {
+  content: "\e6ac";
+}
+
+.icon-gouwuche:before {
+  content: "\e621";
+}
+
+.icon-read:before {
+  content: "\e742";
+}
+
+.icon-xiangqing:before {
+  content: "\e649";
+}
+
+.icon-wenjianjia:before {
+  content: "\e80c";
+}
+
+.icon-save-fill:before {
+  content: "\e78b";
+}
+
+.icon-map:before {
+  content: "\e609";
+}
+
+.icon-biaoge:before {
+  content: "\e63e";
+}
+
+.icon-picture:before {
+  content: "\e657";
+}
+
+.icon-video:before {
+  content: "\e820";
+}
+
+.icon-text:before {
+  content: "\e680";
+}
+
+.icon-flow-chart:before {
+  content: "\e7ca";
+}
+
+.icon-comparison-analysis:before {
+  content: "\e637";
+}
+
+.icon-changjingguanli:before {
+  content: "\eb61";
+}
+
+.icon-result:before {
+  content: "\e625";
+}
+
+.icon-resource-manage:before {
+  content: "\e626";
+}
+
+.icon-good-fill-copy:before {
+  content: "\e7aa";
+}
+
+.icon-code:before {
+  content: "\e6f2";
+}
+
+.icon-good-fill:before {
+  content: "\e780";
+}
+
+.icon-comments-fill:before {
+  content: "\e7a9";
+}
+
+.icon-icon-test:before {
+  content: "\e644";
+}
+
+.icon-icon-test1:before {
+  content: "\e645";
+}
+
+.icon-undo:before {
+  content: "\e787";
+}
+
+.icon-redo:before {
+  content: "\e788";
+}
+

@@ -1,0 +1,39 @@
+minio:
+  endpoint: http://localhost:9090 #MinIO服务所在地址
+  bucketName: test #存储桶名称
+  accessKey: minioadmin #访问的key
+  secretKey: minioadmin #访问的秘钥
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/testdb
+    username: postgres
+    password: 123
+    driver-class-name: org.postgresql.Driver
+    #配置druid连接池
+    druid:
+      initial-size: 5 #连接池初始化大小
+      min-idle: 5 #最小空闲连接数
+      max-active: 20  #最大连接数
+  #      web-stat-filter:
+  #        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*" #不统计这些请求数据
+  #      stat-view-servlet: #访问监控网页的登录用户名和密码
+  #        login-username: druid
+  #        login-password: druid
+  redis:
+    host: localhost
+    port: 6379
+    password:
+    timeout: 3000ms
+    #配置letture
+    lettuce:
+      pool:
+        min-idle: 1 #最小空闲连接
+        max-idle: 6 #最大空闲连接
+        max-active: 10  #最大连接数
+        max-wait: 1000ms  #最大阻塞时间
+        shutdown-timeout: 200ms
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+#  type-handlers-package: com.shopcider.plutus.infr.config
