@@ -1,49 +1,73 @@
 <template>
   <div>
-    <el-menu
-      class="el-menu-vertical-demo"
-      :collapse="isCollapse"
-    >
-      <el-sub-menu
-        v-for="(item, index) in routers"
-        :key="index"
-        :index="index + ''"
-      >
-        <template #title>
-          <el-icon><location /></el-icon>
-          <span>{{ item.meta.title }}</span>
-        </template>
-        <el-menu-item-group v-if="item.children">
-          <el-menu-item :index="child.meta.title" v-for="(child, child_index) in item.children" :key="child_index" @click="click(item.path, child.path)">{{child.meta.title}}</el-menu-item>
-        </el-menu-item-group>
-      </el-sub-menu>
-    </el-menu>
+    <el-scrollbar height="100vh">
+      <el-menu class="el-menu-vertical-demo" :collapse="isCollapse" :default-active="active">
+        <el-sub-menu
+          v-for="(item, index) in routers"
+          :key="index"
+          :index="index + ''"
+        >
+          <template #title>
+            <el-icon><location /></el-icon>
+            <span>{{ item.meta.title }}</span>
+          </template>
+          <el-menu-item-group v-if="item.children">
+            <el-menu-item
+              :index="child.meta.title"
+              v-for="(child, child_index) in item.children"
+              :key="child_index"
+              @click="click(item.path, child.path)"
+              >{{ child.meta.title }}</el-menu-item
+            >
+          </el-menu-item-group>
+        </el-sub-menu>
+      </el-menu>
+    </el-scrollbar>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted } from "vue";
+import { defineComponent, computed, watch, ref } from "vue";
 import { useStore } from "@/store";
-import router from "@/router"
-import path from 'path'
+import router from "@/router";
+import path from "path";
 export default defineComponent({
+  props: {
+    isCollapse: {
+      type: Boolean,
+      default: false,
+    },
+  },
   setup() {
-    const isCollapse = ref(false);
     const store = useStore();
-
+    const active = ref('')
     const routers = computed(() => {
       return store.state.permission.addRouters;
     });
 
     const click = (item: string, child: string) => {
-      router.push(path.resolve(item, child))
-    }
+      router.push(path.resolve(item, child));
+    };
+
+    watch(router.currentRoute, (newRouter) => {
+      active.value = newRouter.meta.title as string
+    })
 
     return {
-      isCollapse,
       routers,
-      click
+      click,
+      active
     };
   },
 });
 </script>
+
+<style lang="scss" scoped>
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+  width: 300px;
+  
+}
+.el-menu-vertical-demo {
+  min-height: 100vh;
+}
+</style>

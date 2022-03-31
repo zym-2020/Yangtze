@@ -25,7 +25,6 @@ export default defineComponent({
       await store.dispatch("login", form)
 
       router.push({path: '/'})
-      console.log(1)
     };
     return {
       form,

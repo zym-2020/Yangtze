@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 2910523 */
-  src: url('iconfont.woff2?t=1642663225718') format('woff2'),
-       url('iconfont.woff?t=1642663225718') format('woff'),
-       url('iconfont.ttf?t=1642663225718') format('truetype');
+  src: url('iconfont.woff2?t=1648643461088') format('woff2'),
+       url('iconfont.woff?t=1648643461088') format('woff'),
+       url('iconfont.ttf?t=1648643461088') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,14 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-a-Icon-line-hamburger-right1x:before {
+  content: "\e84c";
+}
+
+.icon-a-Icon-line-hamburger-left1x:before {
+  content: "\e84d";
 }
 
 .icon-phone:before {

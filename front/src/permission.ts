@@ -14,7 +14,7 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
             next({ path: '/' })
             NProgress.done()
         } else {
-            if(store.state.user.roles.length === 0) {
+            if (store.state.user.roles.length === 0) {
                 try {
                     await store.dispatch("getUserInfo", undefined)
                     const roles = store.state.user.roles
@@ -22,20 +22,34 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
                     store.state.permission.addRouters.forEach(item => {
                         router.addRoute(item)
                     })
+                    if (to.meta.tag) {
+                        let view = {
+                            path: to.path,
+                            title: to.meta.title as string
+                        }
+                        store.dispatch("addView", view)
+                    }
                     next({ ...to, replace: true })
                     NProgress.done()
-                } catch(err) {
+                } catch (err) {
                     store.dispatch("logout", undefined)
                     next('/login')
                     NProgress.done()
                 }
 
             } else {
+                if (to.meta.tag) {
+                    let view = {
+                        path: to.path,
+                        title: to.meta.title as string
+                    }
+                    store.dispatch("addView", view)
+                }
                 next()
             }
         }
     } else {
-        if(to.path === '/login') {
+        if (to.path === '/login') {
             next()
             NProgress.done
         } else {
@@ -44,5 +58,5 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
         }
     }
 
-    
+
 })

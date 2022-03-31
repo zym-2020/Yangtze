@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "25658470",
+      "name": "Icon-line-hamburger-right@1x",
+      "font_class": "a-Icon-line-hamburger-right1x",
+      "unicode": "e84c",
+      "unicode_decimal": 59468
+    },
+    {
+      "icon_id": "25658474",
+      "name": "Icon-line-hamburger-left@1x",
+      "font_class": "a-Icon-line-hamburger-left1x",
+      "unicode": "e84d",
+      "unicode_decimal": 59469
+    },
+    {
       "icon_id": "437518",
       "name": "phone",
       "font_class": "phone",

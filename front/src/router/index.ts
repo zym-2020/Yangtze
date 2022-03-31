@@ -57,7 +57,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/dataManage/handel/Index.vue'),
               meta: {
                   title: '数据处理',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '数据管理/数据处理',
+                  tag: true
               }
           },
           {
@@ -65,7 +67,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/dataManage/upload/Index.vue'),
               meta: {
                   title: '数据上传',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '数据管理/数据上传',
+                  tag: true
               }
           },
           {
@@ -73,7 +77,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/dataManage/download/Index.vue'),
               meta: {
                   title: '数据下载',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '数据管理/数据下载',
+                  tag: true
               }
           },
           {
@@ -81,7 +87,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/dataManage/manage/Index.vue'),
               meta: {
                   title: '数据管理',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '数据管理/数据管理',
+                  tag: true
               }
           }
       ]
@@ -101,7 +109,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               meta: {
                   title: '创建项目',
                   roles: ['Admin'],
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '项目管理/创建项目',
+                  tag: true
               }
           },
           {
@@ -110,7 +120,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               meta: {
                   title: '项目管理',
                   roles: ['Admin'],
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '项目管理/项目管理',
+                  tag: true
               }
           }
       ]
@@ -128,7 +140,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/mathematics/generation/Index.vue'),
               meta: {
                   title: '生成数据',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '数学模型/生成数据',
+                  tag: true
               }
           },
           {
@@ -136,7 +150,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/mathematics/visualization/Index.vue'),
               meta: {
                   title: '流场可视化',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '数学模型/流场可视化',
+                  tag: true
               }
           },
           {
@@ -144,7 +160,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/mathematics/3d/Index.vue'),
               meta: {
                   title: '显示三维流场',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '数学模型/显示三维流场',
+                  tag: true
               }
           },
           {
@@ -152,7 +170,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/mathematics/contrast/Index.vue'),
               meta: {
                   title: '工程前后对比',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '数学模型/工程前后对比',
+                  tag: true
               }
           }
       ]
@@ -170,7 +190,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/physical/map/Index.vue'),
               meta: {
                   title: '底图',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '物理模型/底图',
+                  tag: true
               }
           },
           {
@@ -178,7 +200,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/physical/photo/Index.vue'),
               meta: {
                   title: '图片',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '物理模型/图片',
+                  tag: true
               }
           },
           {
@@ -186,7 +210,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/physical/video/Index.vue'),
               meta: {
                   title: '视频',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '物理模型/视频',
+                  tag: true
               }
           }
       ]
@@ -204,7 +230,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/forecast/parameter/Index.vue'),
               meta: {
                   title: '更新参数',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '潮汐预报/更新参数',
+                  tag: true
               }
           },
           {
@@ -212,7 +240,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/forecast/station/Index.vue'),
               meta: {
                   title: '选择潮位站',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '潮汐预报/选择潮位站',
+                  tag: true
               }
           },
           {
@@ -220,7 +250,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/forecast/flux/Index.vue'),
               meta: {
                   title: '流量预报',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '潮汐预报/流量预报',
+                  tag: true
               }
           }
       ]
@@ -238,7 +270,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/riverbed/section/Index.vue'),
               meta: {
                   title: '断面形态',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '河床演变/断面形态',
+                  tag: true
               }
           },
           {
@@ -246,7 +280,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/riverbed/sectionContrast/Index.vue'),
               meta: {
                   title: '断面比较',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '河床演变/断面比较',
+                  tag: true
               }
           },
           {
@@ -254,7 +290,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/riverbed/branch/Index.vue'),
               meta: {
                   title: '汊道断面比较',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '河床演变/汊道断面比较',
+                  tag: true
               }
           },
           {
@@ -262,7 +300,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/riverbed/area/Index.vue'),
               meta: {
                   title: '断面面积冲淤',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '河床演变/断面面积冲淤',
+                  tag: true
               }
           },
           {
@@ -270,7 +310,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/riverbed/elev/Index.vue'),
               meta: {
                   title: '特定高程冲淤',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '河床演变/特定高程冲淤',
+                  tag: true
               }
           },
           {
@@ -278,7 +320,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/riverbed/volume/Index.vue'),
               meta: {
                   title: '河道容积计算',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '河床演变/河道容积计算',
+                  tag: true
               }
           },
           {
@@ -286,7 +330,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/riverbed/slope/Index.vue'),
               meta: {
                   title: '河床坡度提取',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '河床演变/河床坡度提取',
+                  tag: true
               }
           },
           {
@@ -294,7 +340,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/riverbed/line/Index.vue'),
               meta: {
                   title: '深泓线比较',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '河床演变/深泓线比较',
+                  tag: true
               }
           },
           {
@@ -302,7 +350,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/riverbed/deepContrast/Index.vue'),
               meta: {
                   title: '等深线对比',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '河床演变/等深线对比',
+                  tag: true
               }
           },
           {
@@ -310,7 +360,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/riverbed/boundary/Index.vue'),
               meta: {
                   title: '边界分析',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '河床演变/边界分析',
+                  tag: true
               }
           }
       ]
@@ -328,7 +380,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/hydrology/process/Index.vue'),
               meta: {
                   title: '潮位过程',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '水文分析/潮位过程',
+                  tag: true
               }
           },
           {
@@ -336,7 +390,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/hydrology/stream/Index.vue'),
               meta: {
                   title: '流速流向',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '水文分析/流速流向',
+                  tag: true
               }
           },
           {
@@ -344,7 +400,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/hydrology/sand/Index.vue'),
               meta: {
                   title: '含沙量过程',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '水文分析/含沙量过程',
+                  tag: true
               }
           },
           {  
@@ -352,7 +410,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/hydrology/sandRate/Index.vue'),
               meta: {
                   title: '流量及输沙率',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '水文分析/流量及输沙率',
+                  tag: true
               }
           },
           {
@@ -360,7 +420,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/hydrology/particle/Index.vue'),
               meta: {
                   title: '悬移质颗分',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '水文分析/悬移质颗分',
+                  tag: true
               }
           },
           {
@@ -368,7 +430,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
               component: () => import('@/components/hydrology/achievement/Index.vue'),
               meta: {
                   title: '断面成果',
-                  alwaysShow: true
+                  alwaysShow: true,
+                  bread: '水文分析/断面成果',
+                  tag: true
               }
           }
       ]
