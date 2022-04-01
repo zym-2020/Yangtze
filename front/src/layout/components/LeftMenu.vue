@@ -42,7 +42,13 @@ export default defineComponent({
     const store = useStore();
     const active = ref('')
     const routers = computed(() => {
-      return store.state.permission.addRouters;
+      let temp: any[] = []
+      store.state.permission.addRouters.forEach(item => {
+        if(item.path != '/:catchAll(.*)') {
+          temp.push(item)
+        }
+      })
+      return temp;
     });
 
     const click = (item: string, child: string) => {
@@ -63,6 +69,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+
+
+
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 300px;
   

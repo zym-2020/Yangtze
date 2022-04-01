@@ -65,15 +65,17 @@ export default defineComponent({
       getBreadcrumb: () => {
         let path = router.currentRoute.value.path;
         let meta = router.currentRoute.value.meta.bread as string;
-        if (path != "/") {
-          bread.breadcrumbs = meta.split("/");
-        } else {
-          bread.breadcrumbs = [];
+        if (router.currentRoute.value.meta.tag) {
+          if (path != "/") {
+            bread.breadcrumbs = meta.split("/");
+          } else {
+            bread.breadcrumbs = [];
+          }
         }
       },
       logout: () => {
         store.dispatch("logout", undefined);
-        store.dispatch("delAllViews", undefined)
+        store.dispatch("delAllViews", undefined);
       },
       handleCommand: (command: string) => {
         if (command === "logout") {

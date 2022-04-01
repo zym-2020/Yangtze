@@ -2,6 +2,7 @@ package njnu.edu.back.service.impl;
 
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
+import njnu.edu.back.common.utils.Encrypt;
 import njnu.edu.back.common.utils.JwtTokenUtil;
 import njnu.edu.back.dao.UserMapper;
 import njnu.edu.back.proj.User;
@@ -36,7 +37,7 @@ public class UserServiceImpl implements UserService {
             user = userMapper.getUserByEmail(email);
         }
 
-
+        password = Encrypt.md5(password);
         if(user != null) {
             if(user.getPassword().equals(password)) {
                 redisService.set(email, user, 60*24*7l);
@@ -54,6 +55,7 @@ public class UserServiceImpl implements UserService {
     public int register(@Valid AddUserDTO addUserDTO) {
         User user = userMapper.getUserByEmail(addUserDTO.getEmail());
         if(user == null) {
+            addUserDTO.setPassword(Encrypt.md5(addUserDTO.getPassword()));
             return userMapper.addUser(addUserDTO);
         } else {
             throw new MyException(ResultEnum.EXIST_OBJECT);

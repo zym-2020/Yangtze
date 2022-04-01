@@ -8,6 +8,7 @@ import 'element-plus/dist/index.css'
 import '@/permission'
 import '@/assets/iconfont/iconfont.css'
 
+
 const app = createApp(App)
 Object.keys(Icons).forEach(key => {
     app.component(key, Icons[key as keyof typeof Icons])

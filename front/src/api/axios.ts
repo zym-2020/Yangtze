@@ -1,16 +1,17 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 
-import { ElNotification } from 'element-plus'
 import { setToken, getToken } from '@/utils/auth';
 import { useStore } from '@/store';
-
+import { notice } from '@/utils/notice';
 
 const store = useStore()
+const requestList = new Set()
 
 const axiosInstance: AxiosInstance = axios.create({
     baseURL: 'http://localhost:8080/Yangtze/',
     timeout: 200000
 })
+
 
 axiosInstance.interceptors.response.use(
     (response: AxiosResponse) => {
@@ -21,15 +22,22 @@ axiosInstance.interceptors.response.use(
         if (response.data.refreshToken != null && response.data.refreshToken != '') {
             setToken(response.data.refreshToken)
         }
+        setTimeout(() => {
+            requestList.delete(response.config.url)
+        }, 600) //请求间隔600ms
         return response.data
     },
-    (err: any) => {
-        ElNotification({
-            title: '错误',
-            type: 'error',
-            message: '请求错误'
-        })
-        console.log(err)
+    (err: AxiosResponse) => {
+        if (axios.isCancel(err)) {
+            notice('warning', '警告', '操作过于频繁')
+            return null
+        } else {
+            notice('error', '错误', '请求错误')
+            console.log(err)
+            requestList.delete(err.config.url)
+            return err
+        }
+        
     }
 )
 
@@ -39,6 +47,13 @@ axiosInstance.interceptors.request.use(
         config.headers = {
             Authorization: `Bearer ${token}`
         }
+        config.cancelToken = new axios.CancelToken(e => {
+            const cancelRequest = () => {
+                let url: string = config.baseURL as string + config.url
+                e(url)
+            }
+            requestList.has(config.url) ? cancelRequest() : requestList.add(config.url)
+        })
         return config
     }
 )
@@ -48,7 +63,7 @@ export const get = (url: string, params?: any) => {
     return axiosInstance({
         url: url,
         params: params,
-        method: 'get'
+        method: 'get',
     })
 }
 

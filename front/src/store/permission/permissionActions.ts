@@ -11,12 +11,16 @@ type AugmentedActionContext = {
 
 export type Actions = {
     generateRoutes({ commit }: AugmentedActionContext, roles: string[]): void
+    clearRouters({ commit }: AugmentedActionContext): void
 }
 
 export const permissionActions: ActionTree<PermissionState, RootState> & Actions = {
     generateRoutes({ commit }: AugmentedActionContext, roles: string[]) {
         const result = filterAsyncRoutes(asyncRouters, roles)
         commit('SET_ROUTERS', result)
+    },
+    clearRouters({ commit }: AugmentedActionContext) {
+        commit('SET_ROUTERS', [])
     }
 }
 

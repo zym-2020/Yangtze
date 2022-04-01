@@ -2,7 +2,7 @@ import router from '@/router/index'
 import NProgress from 'nprogress'
 import { RouteLocationNormalized } from 'vue-router'
 import { useStore } from '@/store'
-import { getToken } from '@/utils/auth'
+import { getToken, hasPermission } from '@/utils/auth'
 
 const store = useStore()
 
@@ -10,7 +10,7 @@ NProgress.configure({ showSpinner: false })
 router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormalized, next: any) => {
     NProgress.start()
     if (getToken() != null) {
-        if (to.path === '/login') {
+        if (to.path === '/login' || to.path === '/register') {
             next({ path: '/' })
             NProgress.done()
         } else {
@@ -19,6 +19,7 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
                     await store.dispatch("getUserInfo", undefined)
                     const roles = store.state.user.roles
                     store.dispatch("generateRoutes", roles)
+                    console.log(store.state.permission.addRouters)
                     store.state.permission.addRouters.forEach(item => {
                         router.addRoute(item)
                     })
@@ -31,12 +32,12 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
                     }
                     next({ ...to, replace: true })
                     NProgress.done()
+
                 } catch (err) {
                     store.dispatch("logout", undefined)
                     next('/login')
                     NProgress.done()
                 }
-
             } else {
                 if (to.meta.tag) {
                     let view = {
@@ -49,7 +50,7 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
             }
         }
     } else {
-        if (to.path === '/login') {
+        if (to.path === '/login' || to.path === '/register') {
             next()
             NProgress.done
         } else {

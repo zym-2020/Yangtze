@@ -2,8 +2,8 @@ import { Mutations } from './userMutations'
 import { ActionTree, ActionContext } from 'vuex'
 import { UserState } from './userState'
 import { RootState } from '@/store'
-import { ElNotification } from 'element-plus'
-import { setToken, clear } from '@/utils/auth'
+import { notice } from '@/utils/notice';
+import { setToken, clear, clearRouter } from '@/utils/auth'
 import { login, getUserInfoByToken } from '@/api/request'
 import router from '@/router'
 
@@ -19,27 +19,33 @@ export interface Actions {
 
 export const userActions: ActionTree<UserState, RootState> & Actions = {
     async login({ commit }, userInfo) {
-        try {
-            let data = await login(userInfo)
-            setToken(data.data)
-            ElNotification({
-                type: 'success',
-                title: '成功',
-                message: '登录成功'
-            })
-        } catch {
-            ElNotification({
-                type: 'error',
-                title: '失败',
-                message: '登录失败'
-            })
+        let data = await login(userInfo) as any
+        console.log(data)
+        if (data != null) {
+            if (data.code === -6) {
+                notice('error', '登录失败', data.msg)
+            } else if (data.code === -2) {
+                notice('error', '登录失败', '邮箱不存在！')
+            } else if (data.code === 0) {
+                setToken(data.data)
+                notice('success', '成功', '登录成功')
+            } else {
+                notice('error', '失败', '登录失败！')
+            }
         }
     },
     async getUserInfo({ commit }) {
-        let data = await getUserInfoByToken()
-        commit("SET_EMAIL", data.data.email)
-        commit("SET_NAME", data.data.name)
-        commit("SET_ROLES", data.data.roles)
+        let data = await getUserInfoByToken() as any
+        if (data != null) {
+            if (data.code === 0) {
+                commit("SET_EMAIL", data.data.email)
+                commit("SET_NAME", data.data.name)
+                commit("SET_ROLES", data.data.roles)
+            } else {
+                notice('error', '错误', '获取用户信息错误!')
+            }
+        }
+
     },
 
     logout({ commit }) {
@@ -47,6 +53,8 @@ export const userActions: ActionTree<UserState, RootState> & Actions = {
         commit("SET_EMAIL", "")
         commit("SET_NAME", "")
         commit("SET_ROLES", [])
+        clearRouter()
+        
         router.push({ path: '/login' })
     }
 }
