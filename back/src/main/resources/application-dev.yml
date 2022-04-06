@@ -36,4 +36,3 @@ spring:
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
-#  type-handlers-package: com.shopcider.plutus.infr.config

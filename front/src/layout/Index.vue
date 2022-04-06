@@ -2,12 +2,14 @@
   <div>
     <el-container>
       <el-aside width="auto">
-        <left-menu :isCollapse="isCollapse"></left-menu>
+        <left-menu></left-menu>
       </el-aside>
       <el-main>
-        <nav-bar @hamburger-click="hamburgerClick"></nav-bar>
+        <nav-bar></nav-bar>
         <tag-bar/>
-        <router-view />
+        <div class="main-app">
+          <router-view />
+        </div>
       </el-main>
     </el-container>
   </div>
@@ -25,15 +27,6 @@ export default defineComponent({
     TagBar
   },
   setup() {
-    const isCollapse = ref(false)
-    const hamburgerClick = (flag: boolean) => {
-      isCollapse.value = flag
-    }
-
-    return {
-      hamburgerClick,
-      isCollapse
-    }
   },
 });
 </script>
@@ -42,5 +35,9 @@ export default defineComponent({
 <style lang="scss" scoped>
 .el-main {
   padding: 0;
+  .main-app {
+    // background: #F2F7FF;
+    min-height: calc(100% - 80px);
+  }
 }
 </style>

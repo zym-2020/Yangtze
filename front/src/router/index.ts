@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory, createWebHashHistory, RouteRecordRaw } from 'vue-router'
-import Home from '../views/Home.vue'
 import Layout from '@/layout/Index.vue'
+import Home from '@/views/home/Index.vue'
 import { shallowRef } from 'vue'
 
 export const constantRoutes: Array<RouteRecordRaw> = [
@@ -11,7 +11,7 @@ export const constantRoutes: Array<RouteRecordRaw> = [
         children: [
             {
                 path: '',
-                component: Home
+                component: Home,
             },
         ]
     },
@@ -444,6 +444,6 @@ export function resetRouter() {
         routes: constantRoutes
     });
     (router as any).matcher = (newRouter as any).matcher // reset router
-  }
+}
 
 export default router

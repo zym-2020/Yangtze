@@ -1,12 +1,8 @@
 <template>
   <div class="nav">
     <el-row>
-      <el-col :span="1">
-        <el-icon @click="hamburgerClick" :class="[{ 'is-active': flag }]">
-          <fold />
-        </el-icon>
-      </el-col>
-      <el-col :span="20">
+
+      <el-col :span="21">
         <el-breadcrumb>
           <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
           <el-breadcrumb-item
@@ -36,7 +32,6 @@
 <script lang="ts">
 import {
   defineComponent,
-  ref,
   reactive,
   onBeforeMount,
   toRefs,
@@ -46,18 +41,9 @@ import router from "@/router";
 import { useStore } from "@/store";
 import { getToken } from "@/utils/auth";
 export default defineComponent({
-  emits: {
-    "hamburger-click": null,
-  },
-  setup(_, context) {
-    const store = useStore();
 
-    //hamburger相关变量函数
-    const flag = ref(false);
-    const hamburgerClick = () => {
-      flag.value = !flag.value;
-      context.emit("hamburger-click", flag.value);
-    };
+  setup() {
+    const store = useStore();
 
     //breadcrumbs相关函数变量
     const bread = reactive({
@@ -65,7 +51,8 @@ export default defineComponent({
       getBreadcrumb: () => {
         let path = router.currentRoute.value.path;
         let meta = router.currentRoute.value.meta.bread as string;
-        if (router.currentRoute.value.meta.tag) {
+
+        if (router.currentRoute.value.meta.tag || path === '/') {
           if (path != "/") {
             bread.breadcrumbs = meta.split("/");
           } else {
@@ -93,8 +80,6 @@ export default defineComponent({
     });
 
     return {
-      flag,
-      hamburgerClick,
       ...toRefs(bread),
     };
   },
@@ -107,19 +92,9 @@ export default defineComponent({
   height: 50px;
   line-height: 50px;
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
-  .is-active {
-    transform: rotate(180deg);
-  }
 
-  .el-icon {
-    font-size: 20px;
-    margin-top: 15px;
-    margin-left: 20px;
-    &:hover {
-      cursor: pointer;
-    }
-  }
   .el-breadcrumb {
+    margin-left: 20px;
     margin-top: 16px;
     font-size: 18px;
   }

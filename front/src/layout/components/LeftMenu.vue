@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-scrollbar height="100vh">
-      <el-menu class="el-menu-vertical-demo" :collapse="isCollapse" :default-active="active">
+      <el-menu class="el-menu-vertical-demo" :default-active="active">
         <el-sub-menu
           v-for="(item, index) in routers"
           :key="index"
@@ -32,12 +32,7 @@ import { useStore } from "@/store";
 import router from "@/router";
 import path from "path";
 export default defineComponent({
-  props: {
-    isCollapse: {
-      type: Boolean,
-      default: false,
-    },
-  },
+
   setup() {
     const store = useStore();
     const active = ref('')

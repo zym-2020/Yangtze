@@ -20,3 +20,7 @@ export async function getUserInfoByToken() {
 export async function register(jsonData: RegisterJsonData){
     return await post(`/user/register`, jsonData)
 }
+
+
+
+//========================VectorTile相关接口=================================

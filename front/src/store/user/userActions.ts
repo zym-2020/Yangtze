@@ -20,7 +20,6 @@ export interface Actions {
 export const userActions: ActionTree<UserState, RootState> & Actions = {
     async login({ commit }, userInfo) {
         let data = await login(userInfo) as any
-        console.log(data)
         if (data != null) {
             if (data.code === -6) {
                 notice('error', '登录失败', data.msg)
