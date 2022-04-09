@@ -19,7 +19,7 @@ import java.util.Date;
 public class Project {
     Integer id;
     String projectName;
-    Integer creator;
+    String creator;
     String description;
     Date createTime;
     String result;

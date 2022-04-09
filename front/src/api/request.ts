@@ -24,3 +24,11 @@ export async function register(jsonData: RegisterJsonData){
 export async function addProject(jsonData: ProjectJsonData) {
     return await post(`/project/addProject`, jsonData)
 }
+
+export async function getProjectId() {
+    return await get(`/project/getProjectId`)
+}
+
+export async function getResult(projectId: string) {
+    return await get(`/project/getResult/${projectId}`)
+}

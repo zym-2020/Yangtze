@@ -5,9 +5,7 @@
         <el-input v-model="projectForm.name" />
       </el-form-item>
       <el-form-item>
-          <template #label>
-              描&emsp;述
-          </template>
+        <template #label> 描&emsp;述 </template>
         <el-input v-model="projectForm.des" />
       </el-form-item>
     </el-form>
@@ -17,8 +15,8 @@
 
 <script lang="ts">
 import { defineComponent, reactive } from "vue";
-import { addProject } from '@/api/request'
-import { notice } from '@/utils/notice';
+import { addProject } from "@/api/request";
+import { notice } from "@/utils/notice";
 export default defineComponent({
   setup() {
     const projectForm = reactive({
@@ -27,20 +25,23 @@ export default defineComponent({
     });
 
     const commit = async () => {
-        const data = {
-            projectName: projectForm.name,
-            description: projectForm.des,
-            result: ''
-        }
-        let result = await addProject(data) as any
-        if(result.code === 0) {
-          notice("success", "成功", "创建成功")
-        }
-    }
+      const data = {
+        projectName: projectForm.name,
+        description: projectForm.des,
+        result: JSON.stringify({
+          layerDataList: [],
+          analysisResultList: [],
+        }),
+      };
+      let result = (await addProject(data)) as any;
+      if (result != null && result.code === 0) {
+        notice("success", "成功", "创建成功");
+      }
+    };
 
     return {
       projectForm,
-      commit
+      commit,
     };
   },
 });

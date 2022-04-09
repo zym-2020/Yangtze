@@ -22,19 +22,128 @@
         <use xlink:href="#icon-liebiao-2"></use>
       </svg>
     </div>
-    <div class="detail"></div>
+    <div class="detail">
+      <div v-if="flag == false">
+        <el-empty description="请添加项目！" />
+      </div>
+      <div v-else>
+        <el-tree
+          :data="result"
+          :props="defaultProps"
+          :highlight-current="true"
+        />
+      </div>
+    </div>
+
+    <el-dialog v-model="openFlag" width="600px">
+      <template #title>
+        <svg style="width: 20px; height: 20px">
+          <use xlink:href="#icon-service"></use>
+        </svg>
+        请选择要添加的工程
+      </template>
+      <open-project v-if="openFlag" @selectProjectId="selectProjectId" />
+    </el-dialog>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, onMounted, reactive, ref } from "vue";
+import { getCurrentProjectId, getCurrentProjectName } from "@/utils/project";
+import { getResult } from "@/api/request";
+import OpenProject from "@/components/projectDialog/OpenProject.vue";
+import { ProjectResult } from "./type";
 export default defineComponent({
+  components: {
+    OpenProject,
+  },
+
   setup() {
+    interface Children {
+      label: string;
+      children: Children[];
+      address?: string;
+      type?: string;
+    }
+    const flag = ref(false);
+    const openFlag = ref(false);
+    const selectId = ref("");
+    const result = ref<Children[]>([]);
     const open = () => {
-      console.log("haha");
+      openFlag.value = true;
     };
+    const defaultProps = {
+      children: "children",
+      label: "label",
+    };
+    const selectProjectId = async () => {
+      if (selectId.value != getCurrentProjectId()) {
+        selectId.value = getCurrentProjectId() as string;
+        let data = await getResult(selectId.value);
+        if (data != null) {
+          let temp: ProjectResult = JSON.parse(data.data);
+          result.value = []
+          classify(temp);
+          
+          flag.value = true;
+        }
+      }
+      openFlag.value = false;
+    };
+
+    const classify = (projectResult: ProjectResult) => {
+      result.value.push({
+        label: getCurrentProjectName() as string,
+        children: [
+          {
+            label: "基础数据",
+            children: [],
+          },
+          {
+            label: "分析结果",
+            children: [],
+          },
+        ],
+      });
+
+      projectResult.layerDataList.forEach((item) => {
+        result.value[0].children[0].children.push({
+          label: item.name,
+          children: [],
+          address: item.data,
+          type: item.type,
+        });
+      });
+      projectResult.analysisResultList.forEach((item) => {
+        result.value[0].children[1].children.push({
+          label: item.name,
+          children: [],
+          address: item.address,
+          type: item.classify,
+        });
+      });
+    };
+
+    onMounted(async () => {
+      if (getCurrentProjectId() != null) {
+        flag.value = true;
+        selectId.value = getCurrentProjectId() as string;
+        let data = await getResult(selectId.value);
+        if (data != null) {
+          let temp: ProjectResult = JSON.parse(data.data);
+          classify(temp);
+        }
+      } else {
+        flag.value = false;
+      }
+    });
     return {
       open,
+      flag,
+      openFlag,
+      result,
+      selectProjectId,
+      defaultProps,
     };
   },
 });

@@ -7,10 +7,7 @@ import njnu.edu.back.common.result.ResultUtils;
 import njnu.edu.back.proj.dto.AddProject;
 import njnu.edu.back.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,5 +27,17 @@ public class ProjectController {
     public JsonResult addProject(@RequestBody AddProject addProject, @JwtTokenParser("email") String email) {
         projectService.addProject(addProject, email);
         return ResultUtils.success();
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/getResult/{id}", method = RequestMethod.GET)
+    public JsonResult getResult(@PathVariable int id) {
+        return ResultUtils.success(projectService.getResultById(id));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/getProjectId", method = RequestMethod.GET)
+    public JsonResult getProjectId(@JwtTokenParser("email") String email) {
+        return ResultUtils.success(projectService.getProjectId(email));
     }
 }

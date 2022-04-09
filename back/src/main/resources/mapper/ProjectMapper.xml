@@ -4,4 +4,12 @@
     <insert id="addProject" parameterType="njnu.edu.back.proj.dto.AddProject">
         insert into projects values(default, #{projectName}, #{creator}, #{description}, #{createTime}, #{result});
     </insert>
+
+    <select id="getResult" resultType="java.lang.String">
+        select result from projects where id = #{id}
+    </select>
+    
+    <select id="getProjectId" resultType="java.util.HashMap">
+        select id, project_name as projectName, description as des from projects where creator = #{email} order by id
+    </select>
 </mapper>

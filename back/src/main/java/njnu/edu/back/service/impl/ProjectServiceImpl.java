@@ -7,6 +7,9 @@ import njnu.edu.back.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created with IntelliJ IDEA.
  *
@@ -24,5 +27,15 @@ public class ProjectServiceImpl implements ProjectService {
     public void addProject(AddProject addProject, String email) {
         addProject.setCreator(email);
         projectMapper.addProject(addProject);
+    }
+
+    @Override
+    public String getResultById(Integer id) {
+        return projectMapper.getResult(id);
+    }
+
+    @Override
+    public List<Map<String, Object>> getProjectId(String email) {
+        return projectMapper.getProjectId(email);
     }
 }
