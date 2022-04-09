@@ -35,7 +35,7 @@ axiosInstance.interceptors.response.use(
             notice('error', '错误', '请求错误')
             console.log(err)
             requestList.delete(err.config.url)
-            return err
+            return err.data
         }
         
     }

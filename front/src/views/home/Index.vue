@@ -22,21 +22,28 @@ export default defineComponent({
     const tdtCva: AnySourceData = {
       type: "vector",
       tiles: [
-        "http://localhost:8080/Yangtze/vector/data/{x}/{y}/{z}"
+        "http://localhost:8080/Yangtze/vector/cwz1/{x}/{y}/{z}",
         // "http://t0.tianditu.gov.cn/DataServer?T=cia_w&x={x}&y={y}&l={z}&tk=35a94ab5985969d0b93229c30db6abd6",
         // "http://t0.tianditu.com/cva_w/wmts?tk=35a94ab5985969d0b93229c30db6abd6&SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=cva&STYLE=default&TILEMATRIXSET=w&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=tiles",
-      ]
+      ],
     };
+    const test: AnySourceData = {
+      type: 'raster-dem',
+      url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
+      tileSize: 512
+    }
 
     const initMap = () => {
       const map = new mapBoxGl.Map({
         container: container.value as HTMLElement,
+        // style: 'mapbox://styles/mapbox-map-design/ckhqrf2tz0dt119ny6azh975y',
         style: {
           version: 8,
-          
+
           sources: {
             tdtVec: tdtVec,
             tdtCva: tdtCva,
+            // test: test
           },
           layers: [
             {
@@ -46,19 +53,27 @@ export default defineComponent({
             },
             {
               id: "tdtCva",
-              type: "line",
+              type: "circle",
               source: "tdtCva",
-              "source-layer": 'test_shape',
-              
-            },
-
+              "source-layer": "cwz1",
+            }
+            
           ],
         },
-        
-        center: [114.280541,30.591006],
-        zoom: 10,
 
+        center: [121.193496,31.791046],
+        // center: [-114.34411, 32.6141],
+        zoom: 8,
+        // accessToken: "pk.eyJ1Ijoid3lqcSIsImEiOiJjbDBnZDdwajUxMXRzM2htdWxubDh1MzJrIn0.2e2_rdU2nOUvtwltBIZtZg"
       });
+
+      // map.on('load', () => {
+      //   map.addSource('test', {
+      //     type: 'raster-dem',
+      //     url: 'mapbox://mapbox.mapbox-terrain-dem-v1'
+      //   })
+      //   map.setTerrain({source: 'test', exaggeration: 1.5})
+      // })
     };
 
     onMounted(() => {
@@ -78,8 +93,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .map {
-  height: 500px;
-
-  
+  height: 800px;
 }
 </style>

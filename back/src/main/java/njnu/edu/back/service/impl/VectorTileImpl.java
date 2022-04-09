@@ -22,8 +22,7 @@ public class VectorTileImpl implements VectorTileService {
 
     @Override
     public Object getVectorTile(String tableName, int x, int y, int z) {
-        TileBox tileBox = TileUtil.tile2boundingBox(x, y, z);
-        tileBox.setName(tableName);
+        TileBox tileBox = TileUtil.tile2boundingBox(x, y, z, tableName);
         Object result = vectorTile.selectTile(tileBox);
         return result;
     }

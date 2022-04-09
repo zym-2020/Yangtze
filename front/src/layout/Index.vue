@@ -8,7 +8,8 @@
         <nav-bar></nav-bar>
         <tag-bar/>
         <div class="main-app">
-          <router-view />
+          <router-view class="view"/>
+          <project/>
         </div>
       </el-main>
     </el-container>
@@ -19,12 +20,14 @@
 import LeftMenu from "./components/LeftMenu.vue";
 import NavBar from './components/NavBar.vue'
 import TagBar from './components/TagBar.vue'
-import { defineComponent, ref } from "vue";
+import Project from './components/Project.vue'
+import { defineComponent } from "vue";
 export default defineComponent({
   components: {
     LeftMenu,
     NavBar,
-    TagBar
+    TagBar,
+    Project
   },
   setup() {
   },
@@ -36,8 +39,12 @@ export default defineComponent({
 .el-main {
   padding: 0;
   .main-app {
-    // background: #F2F7FF;
     min-height: calc(100% - 80px);
+    display: flex;
+    .view {
+      width: 100%
+    }
+    
   }
 }
 </style>

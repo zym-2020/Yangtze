@@ -6,6 +6,83 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "17581355",
+      "name": "场景",
+      "font_class": "changjing",
+      "unicode": "ec39",
+      "unicode_decimal": 60473
+    },
+    {
+      "icon_id": "17581360",
+      "name": "海图",
+      "font_class": "haitu",
+      "unicode": "ec3a",
+      "unicode_decimal": 60474
+    },
+    {
+      "icon_id": "17581447",
+      "name": "提取属性",
+      "font_class": "tiqushuxing",
+      "unicode": "ec44",
+      "unicode_decimal": 60484
+    },
+    {
+      "icon_id": "17581492",
+      "name": "管理",
+      "font_class": "guanli",
+      "unicode": "ec4d",
+      "unicode_decimal": 60493
+    },
+    {
+      "icon_id": "17581912",
+      "name": "淹没分析",
+      "font_class": "yanmeifenxi",
+      "unicode": "ec80",
+      "unicode_decimal": 60544
+    },
+    {
+      "icon_id": "25916450",
+      "name": "模板管理",
+      "font_class": "mobanguanli",
+      "unicode": "ee3b",
+      "unicode_decimal": 60987
+    },
+    {
+      "icon_id": "26505832",
+      "name": "数据研究",
+      "font_class": "shujuyanjiu",
+      "unicode": "ee43",
+      "unicode_decimal": 60995
+    },
+    {
+      "icon_id": "1973798",
+      "name": "删除文件夹",
+      "font_class": "wenjianjiashanchu",
+      "unicode": "e617",
+      "unicode_decimal": 58903
+    },
+    {
+      "icon_id": "16928732",
+      "name": "创建任务",
+      "font_class": "chuangjianrenwu",
+      "unicode": "e632",
+      "unicode_decimal": 58930
+    },
+    {
+      "icon_id": "28101940",
+      "name": "列表-2",
+      "font_class": "liebiao-2",
+      "unicode": "e690",
+      "unicode_decimal": 59024
+    },
+    {
+      "icon_id": "26413612",
+      "name": "文件夹文件",
+      "font_class": "wenjianjiawenjian",
+      "unicode": "e68e",
+      "unicode_decimal": 59022
+    },
+    {
       "icon_id": "25658470",
       "name": "Icon-line-hamburger-right@1x",
       "font_class": "a-Icon-line-hamburger-right1x",

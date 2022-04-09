@@ -34,5 +34,10 @@ spring:
         max-wait: 1000ms  #最大阻塞时间
         shutdown-timeout: 200ms
 
+  #mongodb地址
+#  data:
+#    mongodb:
+#      uri: mongodb://127.0.0.1:27017/yangtze
+
 mybatis:
   mapper-locations: classpath:mapper/*.xml

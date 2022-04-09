@@ -84,9 +84,10 @@ export default defineComponent({
 <style lang="scss" scoped>
 .tag {
   height: 30px;
+  border-bottom: solid 0.5px #DCDFE6;
   .scroll {
     .el-tag {
-      margin-top: 3px;
+      margin-top: 4px;
       margin-left: 5px;
       &:hover {
         cursor: pointer;

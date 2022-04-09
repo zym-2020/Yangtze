@@ -1,12 +1,6 @@
 import { get, post, del, patch } from './axios'
-import { RegisterJsonData, LoginJsonData } from './type/userType'
+import { RegisterJsonData, LoginJsonData, ProjectJsonData } from './type/userType'
 
-interface Result {
-    code: number
-    data: any
-    msg: string,
-    refreshToken: string | null
-}
 
 //========================User相关接口=================================
 export async function login(jsonData: LoginJsonData) {
@@ -24,3 +18,9 @@ export async function register(jsonData: RegisterJsonData){
 
 
 //========================VectorTile相关接口=================================
+
+
+//========================Project相关接口=================================
+export async function addProject(jsonData: ProjectJsonData) {
+    return await post(`/project/addProject`, jsonData)
+}

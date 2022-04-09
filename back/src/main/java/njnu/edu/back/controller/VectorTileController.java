@@ -23,9 +23,8 @@ public class VectorTileController {
     @Autowired
     VectorTileService vectorTileService;
 
-
     @RequestMapping(value = "/{tableName}/{x}/{y}/{z}", method = RequestMethod.GET)
-    public JsonResult getVectorTile(@PathVariable String tableName, @PathVariable int x, @PathVariable int y, @PathVariable int z) {
-        return ResultUtils.success(vectorTileService.getVectorTile(tableName, x, y, z));
+    public Object getVectorTile(@PathVariable String tableName, @PathVariable int x, @PathVariable int y, @PathVariable int z) {
+        return vectorTileService.getVectorTile(tableName, x, y, z);
     }
 }

@@ -10,3 +10,9 @@ export interface RegisterJsonData {
     password: string,
     roles: string[]
 }
+
+export interface ProjectJsonData {
+    projectName: string,
+    description: string,
+    result: string
+}

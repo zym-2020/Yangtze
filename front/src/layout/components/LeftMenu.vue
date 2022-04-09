@@ -8,7 +8,9 @@
           :index="index + ''"
         >
           <template #title>
-            <el-icon><location /></el-icon>
+            <svg style="width: 20px; height: 20px; margin-right: 10px">
+              <use :xlink:href="item.meta.icon"></use>
+            </svg>
             <span>{{ item.meta.title }}</span>
           </template>
           <el-menu-item-group v-if="item.children">
@@ -32,17 +34,16 @@ import { useStore } from "@/store";
 import router from "@/router";
 import path from "path";
 export default defineComponent({
-
   setup() {
     const store = useStore();
-    const active = ref('')
+    const active = ref("");
     const routers = computed(() => {
-      let temp: any[] = []
-      store.state.permission.addRouters.forEach(item => {
-        if(item.path != '/:catchAll(.*)') {
-          temp.push(item)
+      let temp: any[] = [];
+      store.state.permission.addRouters.forEach((item) => {
+        if (item.path != "/:catchAll(.*)") {
+          temp.push(item);
         }
-      })
+      });
       return temp;
     });
 
@@ -51,25 +52,21 @@ export default defineComponent({
     };
 
     watch(router.currentRoute, (newRouter) => {
-      active.value = newRouter.meta.title as string
-    })
+      active.value = newRouter.meta.title as string;
+    });
 
     return {
       routers,
       click,
-      active
+      active,
     };
   },
 });
 </script>
 
 <style lang="scss" scoped>
-
-
-
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 300px;
-  
 }
 .el-menu-vertical-demo {
   min-height: 100vh;

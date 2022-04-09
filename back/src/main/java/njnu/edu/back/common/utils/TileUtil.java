@@ -45,16 +45,29 @@ public class TileUtil {
     }
 
     /**
-    * @Description:瓦片编号获取范围
+    * @Description:瓦片编号获取范围(经纬度)
     * @Author: Yiming
     * @Date: 2022/4/5
     */
-    public static TileBox tile2boundingBox(int x, int y, int zoom) {
+    public static TileBox tile2boundingBox(int x, int y, int zoom, String tableName) {
         TileBox tileBox = new TileBox();
         tileBox.setXMin(tile2lon(x, zoom));
         tileBox.setXMax(tile2lon(x + 1, zoom));
         tileBox.setYMin(tile2lat(y + 1, zoom));
         tileBox.setYMax(tile2lat(y, zoom));
+        tileBox.setName(tableName);
+        tileBox.setSrid(4326);
+        return tileBox;
+    }
+
+    public static TileBox tile2Mercator(int x, int y, int zoom, String tableName) {
+        TileBox tileBox = new TileBox();
+        tileBox.setXMin(tile2lon(x, zoom) * 20037508.34 / 180);
+        tileBox.setXMax(tile2lon(x + 1, zoom) * 20037508.34 / 180);
+        tileBox.setYMin(Math.log(Math.tan((90 + tile2lat(y + 1, zoom)) * Math.PI / 360)) / (Math.PI / 180));
+        tileBox.setYMax(Math.log(Math.tan((90 + tile2lat(y, zoom)) * Math.PI / 360)) / (Math.PI / 180));
+        tileBox.setName(tableName);
+        tileBox.setSrid(3857);
         return tileBox;
     }
 

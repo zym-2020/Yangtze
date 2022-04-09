@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 2910523 */
-  src: url('iconfont.woff2?t=1648643461088') format('woff2'),
-       url('iconfont.woff?t=1648643461088') format('woff'),
-       url('iconfont.ttf?t=1648643461088') format('truetype');
+  src: url('iconfont.woff2?t=1649473983758') format('woff2'),
+       url('iconfont.woff?t=1649473983758') format('woff'),
+       url('iconfont.ttf?t=1649473983758') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,50 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-changjing:before {
+  content: "\ec39";
+}
+
+.icon-haitu:before {
+  content: "\ec3a";
+}
+
+.icon-tiqushuxing:before {
+  content: "\ec44";
+}
+
+.icon-guanli:before {
+  content: "\ec4d";
+}
+
+.icon-yanmeifenxi:before {
+  content: "\ec80";
+}
+
+.icon-mobanguanli:before {
+  content: "\ee3b";
+}
+
+.icon-shujuyanjiu:before {
+  content: "\ee43";
+}
+
+.icon-wenjianjiashanchu:before {
+  content: "\e617";
+}
+
+.icon-chuangjianrenwu:before {
+  content: "\e632";
+}
+
+.icon-liebiao-2:before {
+  content: "\e690";
+}
+
+.icon-wenjianjiawenjian:before {
+  content: "\e68e";
 }
 
 .icon-a-Icon-line-hamburger-right1x:before {
