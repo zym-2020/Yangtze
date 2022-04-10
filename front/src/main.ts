@@ -8,12 +8,16 @@ import 'element-plus/dist/index.css'
 import '@/permission'
 import '@/assets/iconfont/iconfont.css'
 import '@/assets/iconfont/iconfont.js'
+import { drag, analyseDrag } from '@/directives/drag'
 
 
 const app = createApp(App)
 Object.keys(Icons).forEach(key => {
     app.component(key, Icons[key as keyof typeof Icons])
 })
+app.directive("analyseDrag", analyseDrag)
+app.directive("drag", drag)
+
 
 app.use(ElementPlus)
 app.use(store).use(router).mount('#app')

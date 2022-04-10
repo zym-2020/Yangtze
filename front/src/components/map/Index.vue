@@ -1,19 +1,39 @@
 <template>
   <div class="map">
     <div ref="container" class="container"></div>
-    <div>
-      <router-view />
+    <div class="controller">
+      <div class="head">
+        <div
+          :class="active === 1 ? 'output active' : 'output'"
+          @click="changeActive(1)"
+        >
+          控制台输出
+        </div>
+        <div
+          :class="active === 2 ? 'log active' : 'log'"
+          @click="changeActive(2)"
+        >
+          日志
+        </div>
+      </div>
+      <div class="body">|</div>
     </div>
-    
+    <tools class="drag" v-drag></tools>
+    <router-view class="router-view" v-analyseDrag/>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import mapBoxGl, { AnySourceData } from "mapbox-gl";
+import Tools from "@/components/tools/Index.vue";
 export default defineComponent({
+  components: {
+    Tools,
+  },
   setup() {
     const container = ref<HTMLElement>();
+    const active = ref(1);
     const tdtVec: AnySourceData = {
       type: "raster",
       tiles: [
@@ -33,6 +53,8 @@ export default defineComponent({
       type: "raster",
       tiles: ["http://localhost:8080/Yangtze/raster/getRaster/{x}/{y}/{z}"],
       bounds: [119.482547, 31.758138, 121.878795, 32.384769],
+      maxzoom: 15,
+      minzoom: 5,
     };
     const dem: AnySourceData = {
       type: "raster-dem",
@@ -88,14 +110,19 @@ export default defineComponent({
       });
     };
 
+    const changeActive = (num: number) => {
+      active.value = num;
+    };
+
     onMounted(() => {
       initMap();
     });
 
     return {
       container,
-
+      active,
       initMap,
+      changeActive,
     };
   },
 });
@@ -104,10 +131,46 @@ export default defineComponent({
 <style lang="scss" scoped>
 .map {
   width: 100%;
+  position: relative;
   .container {
     height: 800px;
-    /deep/ .mapboxgl-ctrl-attrib-button{display: none !important}
+    /deep/ .mapboxgl-ctrl-attrib-button {
+      display: none !important;
+    }
   }
-  
+  .controller {
+    height: calc(100% - 800px);
+    .head {
+      height: 40px;
+      display: flex;
+      line-height: 40px;
+      .output {
+        margin: 0 20px;
+        cursor: pointer;
+      }
+      .log {
+        cursor: pointer;
+      }
+      .active {
+        border-bottom: solid 0.5px rgba($color: #21a2f1, $alpha: 0.8);
+        color: rgba($color: #21a2f1, $alpha: 0.8);
+      }
+    }
+    .body {
+      margin: 5px 20px 0px;
+    }
+  }
+  .drag {
+    position: absolute;
+    z-index: 99;
+    left: calc(100% - 129px);
+    top: 3px;
+  }
+  .router-view {
+    position: absolute;
+    z-index: 99;
+    top: 3px;
+    left: 5px;
+  }
 }
 </style>

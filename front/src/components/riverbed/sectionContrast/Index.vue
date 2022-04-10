@@ -1,5 +1,6 @@
 <template>
-    <div>断面比较</div>
+    <div></div>
+    <!-- <div>断面比较</div> -->
 </template>
 
 <script lang="ts">

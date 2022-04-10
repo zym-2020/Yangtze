@@ -1,5 +1,6 @@
 <template>
-    <div>边界分析</div>
+    <div></div>
+    <!-- <div>边界分析</div> -->
 </template>
 
 <script lang="ts">

@@ -94,5 +94,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 .map {
   height: 800px;
+  /deep/ .mapboxgl-ctrl-attrib-button{display: none !important}
 }
 </style>

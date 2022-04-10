@@ -6,6 +6,34 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "17581528",
+      "name": "选择",
+      "font_class": "xuanze",
+      "unicode": "ec57",
+      "unicode_decimal": 60503
+    },
+    {
+      "icon_id": "17581719",
+      "name": "全球",
+      "font_class": "quanqiu",
+      "unicode": "ec64",
+      "unicode_decimal": 60516
+    },
+    {
+      "icon_id": "17583295",
+      "name": "添加附图",
+      "font_class": "tianjiafutu",
+      "unicode": "ec99",
+      "unicode_decimal": 60569
+    },
+    {
+      "icon_id": "26505783",
+      "name": "擦除边界外瓦片",
+      "font_class": "cachubianjiewaiwapian",
+      "unicode": "ee3d",
+      "unicode_decimal": 60989
+    },
+    {
       "icon_id": "17581355",
       "name": "场景",
       "font_class": "changjing",
