@@ -16,3 +16,22 @@ export interface ProjectJsonData {
     description: string,
     result: string
 }
+
+export interface layerData {
+    id: number,
+    name: string
+    type: string
+    data: string
+    show: boolean
+}
+export interface AnalysisResult {
+    name: string
+    classify: string
+    address: string
+    type: string
+    show: boolean
+}
+export interface ProjectJsonBean {
+    layerDataList: layerData[]
+    analysisResultList: AnalysisResult[]
+}

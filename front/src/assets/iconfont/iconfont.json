@@ -6,6 +6,34 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "3537268",
+      "name": "vector",
+      "font_class": "vector",
+      "unicode": "eafe",
+      "unicode_decimal": 60158
+    },
+    {
+      "icon_id": "18592502",
+      "name": "raster",
+      "font_class": "raster",
+      "unicode": "e691",
+      "unicode_decimal": 59025
+    },
+    {
+      "icon_id": "17583600",
+      "name": "栅格影像",
+      "font_class": "zhageyingxiang",
+      "unicode": "eca5",
+      "unicode_decimal": 60581
+    },
+    {
+      "icon_id": "26506750",
+      "name": "矢量数据集",
+      "font_class": "shiliangshujuji",
+      "unicode": "ee49",
+      "unicode_decimal": 61001
+    },
+    {
       "icon_id": "17581528",
       "name": "选择",
       "font_class": "xuanze",

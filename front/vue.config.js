@@ -1,3 +1,9 @@
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+const webpack = require('webpack')
+const path = require('path')
+
+let cesiumSource = './node_modules/cesium/Source'
+
 const { resolve } = require('path')
 module.exports = {
     publicPath: './',
@@ -9,18 +15,33 @@ module.exports = {
                 target: 'http://localhost:8002/',
                 changeOrigin: true,
                 pathRewrite: {
-                  "^/Yangtze": ""
+                    "^/Yangtze": ""
                 }
             },
         }
     },
-    configureWebpack() {
-        return {
-            resolve: {
-                alias: {
-                    '@': resolve('src'),
-                }
-
+    configureWebpack: {
+        plugins: [
+            new CopyWebpackPlugin({
+                patterns: [
+                    { from: path.join(cesiumSource, 'Workers'), to: 'Workers' },
+                    { from: path.join(cesiumSource, 'Assets'), to: 'Assets' },
+                    { from: path.join(cesiumSource, 'Widgets'), to: 'Widgets' },
+                    { from: path.join(cesiumSource, 'ThirdParty/Workers'), to: 'ThirdParty/Workers' },
+                ],
+            }),
+            // new CopyWebpackPlugin([ { from: path.join(cesiumSource, 'Workers'), to: 'Workers'}]),
+            // new CopyWebpackPlugin([ { from: path.join(cesiumSource, 'Assets'), to: 'Assets'}]),
+            // new CopyWebpackPlugin([ { from: path.join(cesiumSource, 'Widgets'), to: 'Widgets'}]),
+            // new CopyWebpackPlugin([ { from: path.join(cesiumSource, 'ThirdParty/Workers'), to: 'ThirdParty/Workers'}]),
+            new webpack.DefinePlugin({
+                CESIUM_BASE_URL: JSON.stringify('./')
+            })
+        ],
+        resolve: {
+            alias: {
+                '@': resolve('src'),
+                'cesium': resolve(cesiumSource)
             }
         }
     }

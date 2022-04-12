@@ -12,4 +12,8 @@
     <select id="getProjectId" resultType="java.util.HashMap">
         select id, project_name as projectName, description as des from projects where creator = #{email} order by id
     </select>
+
+    <update id="setResult">
+        update projects set result = #{result} where id = #{id};
+    </update>
 </mapper>

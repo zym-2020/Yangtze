@@ -51,11 +51,17 @@ export default defineComponent({
     };
     const tif: AnySourceData = {
       type: "raster",
-      tiles: ["http://localhost:8080/Yangtze/raster/getRaster/{x}/{y}/{z}"],
+      tiles: ["http://localhost:8080/Yangtze/raster/getRaster/1/{x}/{y}/{z}"],
       bounds: [119.482547, 31.758138, 121.878795, 32.384769],
       maxzoom: 15,
       minzoom: 5,
     };
+    const rasterDEM: AnySourceData = {
+      type: 'raster',
+      tiles: ["http://localhost:8080/Yangtze/raster/getRaster/2/{x}/{y}/{z}"],
+      bounds: [120.127027,31.161315, 121.994353,32.023517],
+      maxzoom: 12
+    }
     const dem: AnySourceData = {
       type: "raster-dem",
       tiles: ["http://localhost:8080/Yangtze/raster/getRaster/{x}/{y}/{z}"],
@@ -72,6 +78,7 @@ export default defineComponent({
             txt: txt,
             // dem: dem,
             tif: tif,
+            rasterDEM: rasterDEM
           },
           layers: [
             {
@@ -92,6 +99,11 @@ export default defineComponent({
                 "raster-opacity": 0.7,
               },
             },
+            {
+              id: 'rasterDEM',
+              type: "raster",
+              source: 'rasterDEM'
+            }
             // {
             //   id: "dem",
             //   type: "hillshade",

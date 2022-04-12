@@ -1,6 +1,7 @@
 package njnu.edu.back.service;
 
 import njnu.edu.back.proj.dto.AddProject;
+import njnu.edu.back.proj.support.projectJson.ProjectJsonBean;
 
 import java.util.List;
 import java.util.Map;
@@ -18,4 +19,6 @@ public interface ProjectService {
     String getResultById(Integer id);
 
     List<Map<String, Object>> getProjectId(String email);
+
+    int setResult(ProjectJsonBean result, int id);
 }

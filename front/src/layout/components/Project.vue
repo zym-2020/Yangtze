@@ -28,9 +28,10 @@
       </div>
       <div v-else>
         <el-tree
-          :data="result"
+          :data="resource"
           :props="defaultProps"
           :highlight-current="true"
+          :default-expand-all="true"
         />
       </div>
     </div>
@@ -48,27 +49,38 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive, ref } from "vue";
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  reactive,
+  ref,
+  watch,
+} from "vue";
 import { getCurrentProjectId, getCurrentProjectName } from "@/utils/project";
 import { getResult } from "@/api/request";
 import OpenProject from "@/components/projectDialog/OpenProject.vue";
 import { ProjectResult } from "./type";
+import { useStore } from "@/store";
+
+interface Children {
+  label: string;
+  children: Children[];
+  address?: string;
+  type?: string;
+  classify?: string;
+  show?: boolean;
+}
 export default defineComponent({
   components: {
     OpenProject,
   },
 
   setup() {
-    interface Children {
-      label: string;
-      children: Children[];
-      address?: string;
-      type?: string;
-    }
+    const store = useStore();
     const flag = ref(false);
     const openFlag = ref(false);
     const selectId = ref("");
-    const result = ref<Children[]>([]);
     const open = () => {
       openFlag.value = true;
     };
@@ -76,15 +88,55 @@ export default defineComponent({
       children: "children",
       label: "label",
     };
+
+    const resource = computed(() => {
+      const result: Children[] = [
+        {
+          label: getCurrentProjectName() as string,
+          children: [
+            {
+              label: "基础数据",
+              children: [],
+            },
+            {
+              label: "分析结果",
+              children: [],
+            },
+          ],
+        }
+      ];
+      store.state.resource.underlying.forEach((item) => {
+        result[0].children[0].children.push({
+          label: item.name,
+          type: item.type,
+          address: item.address,
+          show: item.hasTiles,
+          children: []
+        })
+      });
+      store.state.resource.analyse.forEach((item) => {
+        result[0].children[1].children.push({
+          label: item.name,
+          type: item.type,
+          address: item.address,
+          show: item.hasTiles,
+          classify: item.classify,
+          children: []
+        })
+      });
+      return result;
+    });
+
     const selectProjectId = async () => {
-      if (selectId.value != getCurrentProjectId()) {
+      if (
+        getCurrentProjectId() != null &&
+        selectId.value != getCurrentProjectId()
+      ) {
         selectId.value = getCurrentProjectId() as string;
         let data = await getResult(selectId.value);
         if (data != null) {
           let temp: ProjectResult = JSON.parse(data.data);
-          result.value = []
           classify(temp);
-          
           flag.value = true;
         }
       }
@@ -92,34 +144,24 @@ export default defineComponent({
     };
 
     const classify = (projectResult: ProjectResult) => {
-      result.value.push({
-        label: getCurrentProjectName() as string,
-        children: [
-          {
-            label: "基础数据",
-            children: [],
-          },
-          {
-            label: "分析结果",
-            children: [],
-          },
-        ],
-      });
-
+      store.commit("SET_BASE_DATA", []);
+      store.commit("SET_ANALYSE", []);
       projectResult.layerDataList.forEach((item) => {
-        result.value[0].children[0].children.push({
-          label: item.name,
-          children: [],
+        store.commit("ADD_BASE_DATA", {
+          name: item.name,
           address: item.data,
+          id: item.id,
           type: item.type,
+          hasTiles: item.show,
         });
       });
       projectResult.analysisResultList.forEach((item) => {
-        result.value[0].children[1].children.push({
-          label: item.name,
-          children: [],
+        store.commit("ADD_ANALYSE", {
+          name: item.name,
           address: item.address,
-          type: item.classify,
+          type: item.type,
+          classify: item.classify,
+          hasTiles: item.show,
         });
       });
     };
@@ -141,9 +183,9 @@ export default defineComponent({
       open,
       flag,
       openFlag,
-      result,
       selectProjectId,
       defaultProps,
+      resource,
     };
   },
 });

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="njnu.edu.back.dao.RasterRelationshipMapper">
+    <select id="getAddress" resultType="java.lang.String">
+        select address from raster_relationship where id = #{id};
+    </select>
+
+    <select id="pageQuery" resultType="java.util.HashMap">
+        select id, file_name as name, description, meta, upload_time as time, address, has_tiles as hasTiles from raster_relationship order by id limit #{size} offset #{start};
+    </select>
+
+    <select id="countAll" resultType="java.lang.Integer">
+        select count(*) from raster_relationship;
+    </select>
+</mapper>

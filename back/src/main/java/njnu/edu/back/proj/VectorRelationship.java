@@ -20,4 +20,8 @@ public class VectorRelationship {
     String description;
     String category;
     String address;         //矢量文件存储地址
+    String fileName;
+    String meta;
+    String uploader;
+    String source;
 }

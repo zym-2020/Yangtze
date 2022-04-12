@@ -5,6 +5,7 @@ import njnu.edu.back.common.resolver.JwtTokenParser;
 import njnu.edu.back.common.result.JsonResult;
 import njnu.edu.back.common.result.ResultUtils;
 import njnu.edu.back.proj.dto.AddProject;
+import njnu.edu.back.proj.support.projectJson.ProjectJsonBean;
 import njnu.edu.back.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -39,5 +40,11 @@ public class ProjectController {
     @RequestMapping(value = "/getProjectId", method = RequestMethod.GET)
     public JsonResult getProjectId(@JwtTokenParser("email") String email) {
         return ResultUtils.success(projectService.getProjectId(email));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/setResult/{id}", method = RequestMethod.PATCH)
+    public JsonResult setResult(@RequestBody ProjectJsonBean result, @PathVariable int id) {
+        return ResultUtils.success(projectService.setResult(result, id));
     }
 }

@@ -63,9 +63,7 @@ export const drag: Directive = {
         }
 
         if (element != null) {
-            console.log(element)
             element.onmousedown = function (e: any) {
-                console.log(element)
                 let disX = e.clientX - oDiv.offsetLeft;
                 let disY = e.clientY - oDiv.offsetTop;
 

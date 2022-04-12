@@ -1,5 +1,5 @@
 import { get, post, del, patch } from './axios'
-import { RegisterJsonData, LoginJsonData, ProjectJsonData } from './type/userType'
+import { RegisterJsonData, LoginJsonData, ProjectJsonData, ProjectJsonBean } from './type/userType'
 
 
 //========================User相关接口=================================
@@ -31,4 +31,18 @@ export async function getProjectId() {
 
 export async function getResult(projectId: string) {
     return await get(`/project/getResult/${projectId}`)
+}
+
+export async function setResult(jsonData: ProjectJsonBean, id: number) {
+    return await patch(`/project/setResult/${id}`, jsonData)
+}
+
+//========================vectorRelationship相关接口=================================
+export async function vectorPageQuery(size: number, start: number) {
+    return await get(`/vectorRelationship/pageQuery/${size}/${start}`)
+}
+
+//========================rasterRelationship相关接口=================================
+export async function rasterPageQuery(size: number, start: number) {
+    return await get(`/rasterRelationship/pageQuery/${size}/${start}`)
 }

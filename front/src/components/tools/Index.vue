@@ -2,7 +2,7 @@
   <div class="tool">
     <div class="dragHead">工具栏</div>
     <div>
-      <svg style="width: 20px; height: 20px">
+      <svg style="width: 20px; height: 20px" @click="openAddData">
         <title>添加数据</title>
         <use xlink:href="#icon-tianjiafutu"></use>
       </svg>
@@ -19,13 +19,34 @@
         <use xlink:href="#icon-cachubianjiewaiwapian"></use>
       </svg>
     </div>
+
+    <el-dialog v-model="addDataFlag" :width="600">
+      <add-data @returnData="returnData"></add-data>
+    </el-dialog>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
+import AddData from "./toolDialog/AddData.vue";
 export default defineComponent({
-  setup() {},
+  components: {
+    AddData,
+  },
+  setup() {
+    const addDataFlag = ref(false);
+    const openAddData = () => {
+      addDataFlag.value = true;
+    };
+    const returnData = () => {
+      addDataFlag.value = false;
+    };
+    return {
+      addDataFlag,
+      openAddData,
+      returnData
+    };
+  },
 });
 </script>
 
@@ -36,7 +57,8 @@ export default defineComponent({
   padding: 1px;
   .dragHead {
     background: #a0a0a0;
-    height: 20px;
+    height: 25px;
+    line-height: 25px;
     &:hover {
       cursor: move;
     }
@@ -45,6 +67,18 @@ export default defineComponent({
   svg {
     margin-right: 10px;
     margin-top: 3px;
+  }
+  /deep/.el-dialog {
+    .el-dialog__header {
+      padding: 0;
+    }
+    .el-dialog__body {
+      padding: 0;
+    }
+    .el-dialog__headerbtn {
+      height: 40px;
+      width: 40px;
+    }
   }
 }
 </style>
