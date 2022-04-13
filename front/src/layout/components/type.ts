@@ -2,16 +2,19 @@ export interface LayerData {
     id: number
     name: string
     type: string
-    data: string
     show: boolean
+    tableName: string
+    vectorType: string
 }
 
 export interface AnalysisResult {
+    id: number
     name: string
     classify: string
-    address: string
     type: string
     show: boolean
+    tableName: string
+    vectorType: string
 }
 
 export interface ProjectResult {

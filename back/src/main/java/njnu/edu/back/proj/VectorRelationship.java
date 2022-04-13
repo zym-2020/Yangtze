@@ -17,7 +17,6 @@ import lombok.NoArgsConstructor;
 public class VectorRelationship {
     Integer id;
     String tableName;       //矢量文件对应数据库表名
-    String description;
     String category;
     String address;         //矢量文件存储地址
     String fileName;

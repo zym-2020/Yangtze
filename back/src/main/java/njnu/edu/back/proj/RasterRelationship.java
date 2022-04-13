@@ -17,7 +17,6 @@ import lombok.NoArgsConstructor;
 public class RasterRelationship {
     Integer id;
     String fileName;
-    String description;
     String category;
     String address;
     String meta;

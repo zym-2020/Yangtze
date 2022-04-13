@@ -21,7 +21,7 @@
     </div>
 
     <el-dialog v-model="addDataFlag" :width="600">
-      <add-data @returnData="returnData"></add-data>
+      <add-data @returnData="returnData" v-if="addDataFlag"></add-data>
     </el-dialog>
   </div>
 </template>

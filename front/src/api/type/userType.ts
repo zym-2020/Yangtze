@@ -17,21 +17,24 @@ export interface ProjectJsonData {
     result: string
 }
 
-export interface layerData {
+export interface LayerData {
     id: number,
     name: string
     type: string
-    data: string
     show: boolean
+    tableName?: string
+    vectorType?: string
 }
 export interface AnalysisResult {
+    id: number
     name: string
     classify: string
-    address: string
     type: string
     show: boolean
+    tableName?: string
+    vectorType?: string
 }
 export interface ProjectJsonBean {
-    layerDataList: layerData[]
+    layerDataList: LayerData[]
     analysisResultList: AnalysisResult[]
 }

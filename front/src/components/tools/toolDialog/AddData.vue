@@ -114,14 +114,14 @@
 
 <script lang="ts">
 interface PageResult {
-  id?: number
+  id: number
   name: string;
-  description?: string;
+  type: string;
   meta?: string;
   time?: string;
-  address: string
-  type?: string;
-  hasTile?: boolean
+  show?: boolean
+  tableName?: string
+  vectorType?: string
 }
 import { defineComponent, onBeforeMount, reactive, ref } from "vue";
 import { vectorPageQuery, rasterPageQuery } from "@/api/request";
@@ -140,8 +140,8 @@ export default defineComponent({
       let hasResult = false;
       result.list.forEach((e) => {
         if (
-          e.name === item.name &&
-          e.address === item.address
+          e.type === item.type &&
+          e.id === item.id
         )
           hasResult = true;
       });
@@ -195,10 +195,9 @@ export default defineComponent({
       store.state.resource.underlying.forEach(item => {
         result.list.push({
           name: item.name,
-          address: item.address,
           id: item.id,
           type: item.type,
-          hasTile: item.hasTiles
+          show: item.show,
         })
       })
       let temp1 = await vectorPageQuery(
@@ -206,8 +205,8 @@ export default defineComponent({
         vector.currentPage - 1
       );
       if (temp1 != null) {
-        vector.list = (temp1.data as any).list;
         vector.total = (temp1.data as any).total;
+        vector.list = (temp1.data as any).list
       }
       let temp2 = await rasterPageQuery(
         raster.pageSize,

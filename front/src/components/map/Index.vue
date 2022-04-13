@@ -19,14 +19,18 @@
       <div class="body">|</div>
     </div>
     <tools class="drag" v-drag></tools>
-    <router-view class="router-view" v-analyseDrag/>
+    <router-view class="router-view" v-analyseDrag />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, onMounted, ref, watch } from "vue";
 import mapBoxGl, { AnySourceData } from "mapbox-gl";
 import Tools from "@/components/tools/Index.vue";
+import { useStore } from "@/store";
+import { Resource } from "@/store/resourse/resourceState";
+import { uuid } from "@/utils/common";
+// import { getResult } from '@/api/request'
 export default defineComponent({
   components: {
     Tools,
@@ -34,6 +38,13 @@ export default defineComponent({
   setup() {
     const container = ref<HTMLElement>();
     const active = ref(1);
+    const store = useStore();
+    const underlying = computed(() => {
+      return store.state.resource.underlying;
+    });
+    const analyse = computed(() => {
+      return store.state.resource.analyse;
+    });
     const tdtVec: AnySourceData = {
       type: "raster",
       tiles: [
@@ -57,28 +68,23 @@ export default defineComponent({
       minzoom: 5,
     };
     const rasterDEM: AnySourceData = {
-      type: 'raster',
+      type: "raster",
       tiles: ["http://localhost:8080/Yangtze/raster/getRaster/2/{x}/{y}/{z}"],
-      bounds: [120.127027,31.161315, 121.994353,32.023517],
-      maxzoom: 12
-    }
-    const dem: AnySourceData = {
-      type: "raster-dem",
-      tiles: ["http://localhost:8080/Yangtze/raster/getRaster/{x}/{y}/{z}"],
-      encoding: "terrarium",
+      bounds: [120.127027, 31.161315, 121.994353, 32.023517],
+      maxzoom: 12,
     };
 
+    let map: mapBoxGl.Map;
     const initMap = () => {
-      const map = new mapBoxGl.Map({
+      map = new mapBoxGl.Map({
         container: container.value as HTMLElement,
         style: {
           version: 8,
           sources: {
             tdtVec: tdtVec,
             txt: txt,
-            // dem: dem,
             tif: tif,
-            rasterDEM: rasterDEM
+            rasterDEM: rasterDEM,
           },
           layers: [
             {
@@ -100,20 +106,10 @@ export default defineComponent({
               },
             },
             {
-              id: 'rasterDEM',
+              id: "rasterDEM",
               type: "raster",
-              source: 'rasterDEM'
-            }
-            // {
-            //   id: "dem",
-            //   type: "hillshade",
-            //   source: "dem",
-            //   paint: {
-            //     "hillshade-exaggeration": 0.5,
-            //     // "hillshade-accent-color": "red",
-            //     "hillshade-highlight-color": "blue"
-            //   },
-            // },
+              source: "rasterDEM",
+            },
           ],
         },
 
@@ -121,13 +117,118 @@ export default defineComponent({
         zoom: 8,
       });
     };
-
     const changeActive = (num: number) => {
       active.value = num;
     };
 
-    onMounted(() => {
+    const addLayer = (
+      type: string,
+      tableName?: string,
+      id?: number,
+      vectorType?: "fill" | "circle" | "line"
+    ) => {
+      const uid = uuid();
+      if (type === "raster" && id != undefined && id != null) {
+        map.addSource(uid, {
+          type: type,
+          tiles: [
+            `http://localhost:8080/Yangtze/raster/getRaster/${id}/{x}/{y}/{z}`,
+          ],
+        });
+        map.addLayer({
+          id: uuid(),
+          source: uid,
+          type: type,
+        });
+      } else if (
+        type === "vector" &&
+        tableName != undefined &&
+        tableName != null &&
+        vectorType != undefined
+      ) {
+        map.addSource(uid, {
+          type: type,
+          tiles: [
+            `http://localhost:8080/Yangtze/vector/${tableName}/{x}/{y}/{z}`,
+          ],
+        });
+        map.addLayer({
+          id: type + id?.toString(),
+          source: uid,
+          type: vectorType,
+          "source-layer": tableName,
+        });
+      }
+    };
+    const delLayer = (type: string, id: number, show: boolean) => {
+      if(show) {
+        map.removeLayer(type + id.toString())
+      }
+    };
+
+    watch(underlying, (newVal: Resource[], oldVal: Resource[]) => {
+      const add: Resource[] = newVal.filter((item) => {
+        let flag = true;
+        for (let i = 0; i < oldVal.length; i++) {
+          if (item.id === oldVal[i].id && item.type === oldVal[i].type) {
+            flag = false;
+            break;
+          }
+        }
+        if (flag) return item;
+      });
+      const del: Resource[] = oldVal.filter((item) => {
+        let flag = true;
+        for (let i = 0; i < newVal.length; i++) {
+          if (item.id === newVal[i].id && item.type === newVal[i].type) {
+            flag = false;
+            break;
+          }
+        }
+        if (flag) return item;
+      });
+      add.forEach((item) => {
+        if (
+          item.show &&
+          map.getLayer(item.type + item.id.toString()) === undefined
+        )
+          addLayer(
+            item.type,
+            item.tableName,
+            item.id,
+            item.vectorType as "fill" | "circle" | "line"
+          );
+      });
+      
+      del.forEach(item => {
+        delLayer(item.type, item.id, item.show as boolean)
+      })
+    });
+
+    watch(analyse, (newVal: Resource[], oldVal: Resource[]) => {
+      console.log(newVal);
+      console.log(oldVal);
+    });
+
+    onMounted(async () => {
       initMap();
+      const arr = store.state.resource.underlying.concat(store.state.resource.analyse)
+      if (arr.length > 0) {
+        store.state.resource.underlying.forEach((item) => {
+          if (
+            item.show &&
+            map.getLayer(item.type + item.id.toString()) === undefined
+          )
+            map.on("load", () => {
+              addLayer(
+                item.type,
+                item.tableName,
+                item.id,
+                item.vectorType as "fill" | "circle" | "line"
+              );
+            });
+        });
+      }
     });
 
     return {

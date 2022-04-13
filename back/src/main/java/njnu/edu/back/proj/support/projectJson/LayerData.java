@@ -18,6 +18,7 @@ public class LayerData {
     Integer id;
     String name;
     String type;        //shape || raster
-    String data;        //address || table_name
     boolean show;       //是否在前端展示
+    String tableName;   //针对shape
+    String vectorType;   //针对shape
 }

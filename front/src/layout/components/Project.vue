@@ -53,9 +53,7 @@ import {
   computed,
   defineComponent,
   onMounted,
-  reactive,
   ref,
-  watch,
 } from "vue";
 import { getCurrentProjectId, getCurrentProjectName } from "@/utils/project";
 import { getResult } from "@/api/request";
@@ -66,7 +64,6 @@ import { useStore } from "@/store";
 interface Children {
   label: string;
   children: Children[];
-  address?: string;
   type?: string;
   classify?: string;
   show?: boolean;
@@ -109,8 +106,7 @@ export default defineComponent({
         result[0].children[0].children.push({
           label: item.name,
           type: item.type,
-          address: item.address,
-          show: item.hasTiles,
+          show: item.show,
           children: []
         })
       });
@@ -118,8 +114,7 @@ export default defineComponent({
         result[0].children[1].children.push({
           label: item.name,
           type: item.type,
-          address: item.address,
-          show: item.hasTiles,
+          show: item.show,
           classify: item.classify,
           children: []
         })
@@ -149,19 +144,22 @@ export default defineComponent({
       projectResult.layerDataList.forEach((item) => {
         store.commit("ADD_BASE_DATA", {
           name: item.name,
-          address: item.data,
           id: item.id,
           type: item.type,
-          hasTiles: item.show,
+          show: item.show,
+          tableName: item.tableName,
+          vectorType: item.vectorType
         });
       });
       projectResult.analysisResultList.forEach((item) => {
         store.commit("ADD_ANALYSE", {
+          id: item.id,
           name: item.name,
-          address: item.address,
           type: item.type,
           classify: item.classify,
-          hasTiles: item.show,
+          show: item.show,
+          tableName: item.tableName,
+          vectorType: item.vectorType
         });
       });
     };
@@ -195,7 +193,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .pro {
   width: 300px;
-  border-left: solid 0.5px #dcdfe6;
+  border-left: solid 0.5px #7080a5;
   background: #f0f0f0;
   .head {
     background: rgba($color: #c8d5e3, $alpha: 0.4);

@@ -3,7 +3,7 @@
     <el-scrollbar max-height="250px">
       <el-radio-group v-model="radio" size="large" class="radioDiv">
         <div v-for="(item, index) in projectList" :key="index">
-          <el-radio :label="item.id">{{ item.projectname }}</el-radio>
+          <el-radio :label="item.id">{{ item.projectName }}</el-radio>
         </div>
       </el-radio-group>
     </el-scrollbar>
@@ -30,7 +30,7 @@ import { notice } from "@/utils/notice";
 
 interface Project {
   id: number;
-  projectname: string;
+  projectName: string;
   des: string;
 }
 
@@ -66,7 +66,7 @@ export default defineComponent({
         setCurrentProjectId(radio.value.toString());
         projectList.value.forEach((item) => {
           if (item.id === radio.value) {
-            setCurrentProjectName(item.projectname);
+            setCurrentProjectName(item.projectName);
           }
         });
         context.emit("selectProjectId");

@@ -6,7 +6,7 @@
     </select>
 
     <select id="pageQuery" resultType="java.util.HashMap">
-        select id, file_name as name, description, meta, upload_time as time, address, has_tiles as hasTiles from raster_relationship order by id limit #{size} offset #{start};
+        select id, file_name as name, meta, upload_time as time, has_tiles as show from raster_relationship order by id limit #{size} offset #{start};
     </select>
 
     <select id="countAll" resultType="java.lang.Integer">

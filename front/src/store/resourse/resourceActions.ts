@@ -17,6 +17,7 @@ export interface Actions {
 
 export const resourceActions: ActionTree<ResourceState, RootState> & Actions = {
     async setResource({ commit }: AugmentedActionContext, jsonParam: {layerDataList: Resource[], analysisResultList: Resource[], id: number}) {
+        
         const jsonData: ProjectJsonBean = {
             layerDataList: [],
             analysisResultList: []
@@ -26,23 +27,26 @@ export const resourceActions: ActionTree<ResourceState, RootState> & Actions = {
                 id: item.id as number,
                 name: item.name,
                 type: item.type as string,
-                data: item.address as string,
-                show: item.hasTiles as boolean
+                show: item.show as boolean === undefined ? true : item.show as boolean,
+                tableName: item.tableName,
+                vectorType: item.vectorType
             })
         })
 
         jsonParam.analysisResultList.forEach(item => {
             jsonData.analysisResultList.push({
+                id: item.id,
                 name: item.name,
                 classify: item.classify as string,
-                address: item.address,
                 type: item.type as string,
-                show: item.hasTiles as boolean
+                show: item.show as boolean,
+                tableName: item.tableName,
+                vectorType: item.vectorType
             })
         })
         await setResult(jsonData, jsonParam.id)
         notice("success", "成功", "数据加载成功")
-        commit("SET_BASE_DATA", jsonParam.layerDataList)
-        commit("SET_ANALYSE", jsonParam.analysisResultList)
+        commit("SET_BASE_DATA", jsonData.layerDataList)
+        commit("SET_ANALYSE", jsonData.analysisResultList)
     }
 }

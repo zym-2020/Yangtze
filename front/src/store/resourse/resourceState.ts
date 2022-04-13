@@ -1,10 +1,11 @@
 export interface Resource {
     name: string
-    address: string
-    id?: number
-    type?: string
+    id: number
+    type: string
     classify?: string
-    hasTiles?: boolean
+    show?: boolean
+    tableName?: string
+    vectorType?: string
 }
 
 export interface ResourceState {
