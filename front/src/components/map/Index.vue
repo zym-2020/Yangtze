@@ -51,7 +51,7 @@ export default defineComponent({
       return store.state.resource.layerDataList;
     });
     const analyse = computed(() => {
-      return store.state.resource.analyse;
+      return JSON.parse(JSON.stringify(store.state.resource.analyse));
     });
     const tdtVec: AnySourceData = {
       type: "raster",
@@ -280,6 +280,9 @@ export default defineComponent({
         delLayer
       );
     });
+    // watch(analyse.value.section.analysisResultList, (newVal: Resource[], oldVal: Resource[]) => {
+    //   console.log(newVal, oldVal)
+    // })
 
     const riverBed = (val: number) => {
       if (val === 1) {

@@ -136,10 +136,8 @@ export default defineComponent({
       if (getCurrentProjectId() != null) {
         selectId.value = getCurrentProjectId() as string;
         let data = await getResult(selectId.value);
-        console.log(data)
         if (data != null) {
           let temp: ResourceState = JSON.parse(data.data);
-          console.log(temp)
           classify(temp);
         }
         flag.value = true;

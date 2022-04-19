@@ -16,7 +16,6 @@ export interface Actions {
 
 export const resourceActions: ActionTree<ResourceState, RootState> & Actions = {
     async setResource({ commit }: AugmentedActionContext, jsonParam: {projectJsonBean: ResourceState, id: number}) {
-        console.log(jsonParam.projectJsonBean)
         await setResult(jsonParam.projectJsonBean, jsonParam.id)
         notice("success", "成功", "数据加载成功")
         commit("SET_BASE_DATA", jsonParam.projectJsonBean.layerDataList)

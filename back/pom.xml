@@ -103,13 +103,7 @@
             <artifactId>gt-shapefile</artifactId>
             <version>${geotools.version}</version>
         </dependency>
-
-<!--        <dependency>-->
-<!--            <groupId>org.gdal</groupId>-->
-<!--            <artifactId>gdal</artifactId>-->
-<!--            <scope>system</scope>-->
-<!--            <systemPath>${project.basedir}/lib/gdal.jar</systemPath>-->
-<!--        </dependency>-->
+        
 
     </dependencies>
 
