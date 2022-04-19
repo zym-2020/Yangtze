@@ -17,6 +17,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProjectJsonBean {
-    List<LayerData> layerDataList;
-    List<AnalysisResult> analysisResultList;
+    List<Resource> layerDataList;
+    Analyse analyse;
 }

@@ -1,5 +1,6 @@
 package njnu.edu.back.dao;
 
+import njnu.edu.back.proj.dto.AddVector;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -18,4 +19,8 @@ public interface VectorRelationshipMapper {
     List<Map<String, Object>> pageQuery(@Param("size") int size, @Param("start") int start);
 
     int countAll();
+
+    int addVector(AddVector addVector);
+
+    Map<String, Object> queryAnalyseVector(@Param("id") int id);
 }

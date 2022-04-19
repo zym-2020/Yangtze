@@ -58,8 +58,9 @@ import {
 import { getCurrentProjectId, getCurrentProjectName } from "@/utils/project";
 import { getResult } from "@/api/request";
 import OpenProject from "@/components/projectDialog/OpenProject.vue";
-import { ProjectResult } from "./type";
+import { ResourceState } from '@/store/resourse/resourceState'
 import { useStore } from "@/store";
+import { computedResource } from '@/utils/common'
 
 interface Children {
   label: string;
@@ -67,6 +68,7 @@ interface Children {
   type?: string;
   classify?: string;
   show?: boolean;
+  classifyCount?: number
 }
 export default defineComponent({
   components: {
@@ -102,23 +104,7 @@ export default defineComponent({
           ],
         }
       ];
-      store.state.resource.underlying.forEach((item) => {
-        result[0].children[0].children.push({
-          label: item.name,
-          type: item.type,
-          show: item.show,
-          children: []
-        })
-      });
-      store.state.resource.analyse.forEach((item) => {
-        result[0].children[1].children.push({
-          label: item.name,
-          type: item.type,
-          show: item.show,
-          classify: item.classify,
-          children: []
-        })
-      });
+      computedResource(result)
       return result;
     });
 
@@ -130,7 +116,7 @@ export default defineComponent({
         selectId.value = getCurrentProjectId() as string;
         let data = await getResult(selectId.value);
         if (data != null) {
-          let temp: ProjectResult = JSON.parse(data.data);
+          let temp: ResourceState = JSON.parse(data.data);
           classify(temp);
           flag.value = true;
         }
@@ -138,41 +124,25 @@ export default defineComponent({
       openFlag.value = false;
     };
 
-    const classify = (projectResult: ProjectResult) => {
-      store.commit("SET_BASE_DATA", []);
-      store.commit("SET_ANALYSE", []);
+    const classify = (projectResult: ResourceState) => {
+      store.commit("INIT", undefined)
       projectResult.layerDataList.forEach((item) => {
-        store.commit("ADD_BASE_DATA", {
-          name: item.name,
-          id: item.id,
-          type: item.type,
-          show: item.show,
-          tableName: item.tableName,
-          vectorType: item.vectorType
-        });
+        store.commit("ADD_BASE_DATA", item);
       });
-      projectResult.analysisResultList.forEach((item) => {
-        store.commit("ADD_ANALYSE", {
-          id: item.id,
-          name: item.name,
-          type: item.type,
-          classify: item.classify,
-          show: item.show,
-          tableName: item.tableName,
-          vectorType: item.vectorType
-        });
-      });
+      store.commit("SET_ANALYSE", projectResult.analyse)
     };
 
     onMounted(async () => {
       if (getCurrentProjectId() != null) {
-        flag.value = true;
         selectId.value = getCurrentProjectId() as string;
         let data = await getResult(selectId.value);
+        console.log(data)
         if (data != null) {
-          let temp: ProjectResult = JSON.parse(data.data);
+          let temp: ResourceState = JSON.parse(data.data);
+          console.log(temp)
           classify(temp);
         }
+        flag.value = true;
       } else {
         flag.value = false;
       }

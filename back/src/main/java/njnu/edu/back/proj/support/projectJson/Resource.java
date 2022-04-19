@@ -1,5 +1,6 @@
 package njnu.edu.back.proj.support.projectJson;
 
+import cn.hutool.json.JSONObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,12 +15,14 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AnalysisResult {
+public class Resource {
     Integer id;
     String name;
-    String classify;        //断面形态 || 边界对比 || 汊道断面对比 || 冲淤等深线 || 等高线对比 || 断面比较.....
-    String type;
+
+    String type;         //raster || vector || geoJson
     boolean show;
     String tableName;   //针对shape
     String vectorType;   //针对shape
+    JSONObject geoJson;
+
 }

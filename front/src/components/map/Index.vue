@@ -18,8 +18,14 @@
       </div>
       <div class="body">|</div>
     </div>
-    <tools class="drag" v-drag></tools>
-    <router-view class="router-view" v-analyseDrag />
+    <tools class="drag tools" v-drag></tools>
+    <data-select class="drag data-select" v-if="dataSelectFlag"></data-select>
+    <router-view
+      class="drag router-view"
+      v-analyseDrag
+      @riverBed="riverBed"
+      :map="map"
+    />
   </div>
 </template>
 
@@ -27,20 +33,22 @@
 import { computed, defineComponent, onMounted, ref, watch } from "vue";
 import mapBoxGl, { AnySourceData } from "mapbox-gl";
 import Tools from "@/components/tools/Index.vue";
+import DataSelect from "../riverbed/components/DataSelect.vue";
 import { useStore } from "@/store";
-import { Resource } from "@/store/resourse/resourceState";
-import { uuid } from "@/utils/common";
-// import { getResult } from '@/api/request'
+import { Resource, Analyse } from "@/store/resourse/resourceState";
+import { mergeResource, watchAnalyse } from "@/utils/common";
 export default defineComponent({
   components: {
     Tools,
+    DataSelect,
   },
   setup() {
     const container = ref<HTMLElement>();
     const active = ref(1);
     const store = useStore();
-    const underlying = computed(() => {
-      return store.state.resource.underlying;
+    const dataSelectFlag = ref(false);
+    const layerDataList = computed(() => {
+      return store.state.resource.layerDataList;
     });
     const analyse = computed(() => {
       return store.state.resource.analyse;
@@ -74,9 +82,9 @@ export default defineComponent({
       maxzoom: 12,
     };
 
-    let map: mapBoxGl.Map;
+    const map = ref<mapBoxGl.Map>();
     const initMap = () => {
-      map = new mapBoxGl.Map({
+      map.value = new mapBoxGl.Map({
         container: container.value as HTMLElement,
         style: {
           version: 8,
@@ -112,61 +120,115 @@ export default defineComponent({
             },
           ],
         },
-
+        attributionControl: false,
         center: [121.193496, 31.791046],
         zoom: 8,
+      });
+      map.value.on("load", () => {
+        (map.value as mapBoxGl.Map).addControl(
+          new mapBoxGl.FullscreenControl(),
+          "top-right"
+        );
       });
     };
     const changeActive = (num: number) => {
       active.value = num;
     };
 
-    const addLayer = (
-      type: string,
-      tableName?: string,
-      id?: number,
-      vectorType?: "fill" | "circle" | "line"
-    ) => {
-      const uid = uuid();
-      if (type === "raster" && id != undefined && id != null) {
-        map.addSource(uid, {
-          type: type,
-          tiles: [
-            `http://localhost:8080/Yangtze/raster/getRaster/${id}/{x}/{y}/{z}`,
-          ],
-        });
-        map.addLayer({
-          id: uuid(),
-          source: uid,
-          type: type,
+    const addLayer = (resource: Resource): void => {
+      if (
+        resource.type === "raster" &&
+        resource.id != undefined &&
+        resource.id != null
+      ) {
+        (map.value as mapBoxGl.Map).addLayer({
+          id: resource.type + resource.id?.toString(),
+          type: resource.type,
+          source: {
+            type: resource.type,
+            tiles: [
+              `http://localhost:8080/Yangtze/raster/getRaster/${resource.id}/{x}/{y}/{z}`,
+            ],
+          },
         });
       } else if (
-        type === "vector" &&
-        tableName != undefined &&
-        tableName != null &&
-        vectorType != undefined
+        resource.type === "vector" &&
+        resource.tableName != undefined &&
+        resource.tableName != null &&
+        resource.vectorType != undefined
       ) {
-        map.addSource(uid, {
-          type: type,
-          tiles: [
-            `http://localhost:8080/Yangtze/vector/${tableName}/{x}/{y}/{z}`,
-          ],
+        (map.value as mapBoxGl.Map).addLayer({
+          id: resource.type + resource.id?.toString(),
+          type: resource.vectorType as "fill" | "circle" | "line",
+          "source-layer": resource.tableName,
+          source: {
+            type: resource.type,
+            tiles: [
+              `http://localhost:8080/Yangtze/vector/${resource.tableName}/{x}/{y}/{z}`,
+            ],
+          },
         });
-        map.addLayer({
-          id: type + id?.toString(),
-          source: uid,
-          type: vectorType,
-          "source-layer": tableName,
+      } else if (
+        resource.type === "geoJson" &&
+        resource.geoJson != undefined &&
+        resource.geoJson != null
+      ) {
+        let type: string = "";
+        let paint: {} = {};
+        switch (resource.geoJson.type) {
+          case "Point" || "MultiPoint":
+            type = "circle";
+            paint = {
+              "circle-color": "#AAC6EE",
+              "circle-radius": 2,
+            };
+            break;
+          case "LineString" || "MultiLineString":
+            type = "line";
+            paint = {
+              "line-color": "#AAC6EE",
+              "line-width": 3,
+            };
+            break;
+          case "Polygon" || "MultiPolygon":
+            type = "fill";
+            paint = {
+              "fill-color": "#AAC6EE",
+              "fill-outline-color": "#E8C826",
+            };
+            break;
+        }
+        (map.value as mapBoxGl.Map).addLayer({
+          id: resource.type + resource.id?.toString(),
+          type: type as "fill" | "circle" | "line",
+          source: {
+            type: "geojson",
+            data: {
+              type: "Feature",
+              geometry: {
+                type: resource.geoJson.type as
+                  | "Point"
+                  | "MultiPoint"
+                  | "LineString"
+                  | "MultiLineString"
+                  | "Polygon"
+                  | "MultiPolygon",
+                coordinates: resource.geoJson.coordinates,
+              },
+              properties: {},
+            },
+          },
+          paint: paint
         });
       }
     };
     const delLayer = (type: string, id: number, show: boolean) => {
-      if(show) {
-        map.removeLayer(type + id.toString())
+      if (show) {
+        (map.value as mapBoxGl.Map).removeLayer(type + id.toString());
       }
     };
 
-    watch(underlying, (newVal: Resource[], oldVal: Resource[]) => {
+    watch(layerDataList, (newVal: Resource[], oldVal: Resource[]) => {
       const add: Resource[] = newVal.filter((item) => {
         let flag = true;
         for (let i = 0; i < oldVal.length; i++) {
@@ -190,42 +252,54 @@ export default defineComponent({
       add.forEach((item) => {
         if (
           item.show &&
-          map.getLayer(item.type + item.id.toString()) === undefined
-        )
-          addLayer(
-            item.type,
-            item.tableName,
-            item.id,
-            item.vectorType as "fill" | "circle" | "line"
-          );
+          (map.value as mapBoxGl.Map).getLayer(
+            item.type + item.id?.toString()
+          ) === undefined
+        ) {
+          if ((map.value as mapBoxGl.Map).loaded()) {
+            addLayer(item);
+          } else {
+            (map.value as mapBoxGl.Map).on("load", () => {
+              addLayer(item);
+            });
+          }
+        }
       });
-      
-      del.forEach(item => {
-        delLayer(item.type, item.id, item.show as boolean)
-      })
+
+      del.forEach((item) => {
+        delLayer(item.type, item.id as number, item.show as boolean);
+      });
     });
 
-    watch(analyse, (newVal: Resource[], oldVal: Resource[]) => {
-      console.log(newVal);
-      console.log(oldVal);
+    watch(analyse, (newVal: Analyse, oldVal: Analyse) => {
+      watchAnalyse(
+        map.value as mapBoxGl.Map,
+        newVal,
+        oldVal,
+        addLayer,
+        delLayer
+      );
     });
+
+    const riverBed = (val: number) => {
+      if (val === 1) {
+        dataSelectFlag.value = true;
+      }
+    };
 
     onMounted(async () => {
       initMap();
-      const arr = store.state.resource.underlying.concat(store.state.resource.analyse)
+      const arr = mergeResource();
       if (arr.length > 0) {
-        store.state.resource.underlying.forEach((item) => {
+        arr.forEach((item) => {
           if (
             item.show &&
-            map.getLayer(item.type + item.id.toString()) === undefined
+            (map.value as mapBoxGl.Map).getLayer(
+              item.type + item.id?.toString()
+            ) === undefined
           )
-            map.on("load", () => {
-              addLayer(
-                item.type,
-                item.tableName,
-                item.id,
-                item.vectorType as "fill" | "circle" | "line"
-              );
+            (map.value as mapBoxGl.Map).on("load", () => {
+              addLayer(item);
             });
         });
       }
@@ -236,6 +310,9 @@ export default defineComponent({
       active,
       initMap,
       changeActive,
+      riverBed,
+      dataSelectFlag,
+      map,
     };
   },
 });
@@ -247,9 +324,12 @@ export default defineComponent({
   position: relative;
   .container {
     height: 800px;
-    /deep/ .mapboxgl-ctrl-attrib-button {
+    /deep/ .mapboxgl-ctrl-logo {
       display: none !important;
     }
+    // /deep/ .mapboxgl-ctrl-attrib-button {
+    //   display: none !important;
+    // }
   }
   .controller {
     height: calc(100% - 800px);
@@ -276,12 +356,16 @@ export default defineComponent({
   .drag {
     position: absolute;
     z-index: 99;
-    left: calc(100% - 129px);
+  }
+  .tools {
+    left: calc(100% - 180px);
     top: 3px;
   }
+  .data-select {
+    left: 5px;
+    top: calc(800px - 60px);
+  }
   .router-view {
-    position: absolute;
-    z-index: 99;
     top: 3px;
     left: 5px;
   }

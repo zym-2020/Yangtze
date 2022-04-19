@@ -17,24 +17,15 @@ export interface ProjectJsonData {
     result: string
 }
 
-export interface LayerData {
-    id: number,
-    name: string
+
+
+
+export interface NewShapeJsonData {
+    geoJson: [],
+    fileName: string,
     type: string
-    show: boolean
-    tableName?: string
-    vectorType?: string
-}
-export interface AnalysisResult {
-    id: number
-    name: string
-    classify: string
-    type: string
-    show: boolean
-    tableName?: string
-    vectorType?: string
-}
-export interface ProjectJsonBean {
-    layerDataList: LayerData[]
-    analysisResultList: AnalysisResult[]
+    source: string
+    projectName: string
+    category: string
+    meta: string
 }

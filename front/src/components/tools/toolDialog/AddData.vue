@@ -114,7 +114,7 @@
 
 <script lang="ts">
 interface PageResult {
-  id: number
+  id?: number
   name: string;
   type: string;
   meta?: string;
@@ -138,6 +138,7 @@ export default defineComponent({
     };
     const dblclick = (item: PageResult, type: string) => {
       let hasResult = false;
+      console.log(item.name, item.id)
       result.list.forEach((e) => {
         if (
           e.type === item.type &&
@@ -146,6 +147,9 @@ export default defineComponent({
           hasResult = true;
       });
       if (!hasResult) {
+        if(item.type === 'vector') {
+          item.show = true
+        }
         result.list.push(item);
         result.list[result.list.length - 1].type = type;
       }
@@ -164,6 +168,7 @@ export default defineComponent({
         if(data != null) {
           vector.total = (data.data as any).total
           vector.list = (data.data as any).list
+          
         }
       },
     });
@@ -187,12 +192,12 @@ export default defineComponent({
     });
 
     const commit = async () => {
-      await store.dispatch("setResource", {layerDataList: result.list, analysisResultList: store.state.resource.analyse, id: parseInt(getCurrentProjectId() as string)})
+      await store.dispatch("setResource", {projectJsonBean: {layerDataList: result.list, analyse: store.state.resource.analyse},  id: parseInt(getCurrentProjectId() as string)})
       context.emit('returnData')
     }
 
     onBeforeMount(async () => {
-      store.state.resource.underlying.forEach(item => {
+      store.state.resource.layerDataList.forEach(item => {
         result.list.push({
           name: item.name,
           id: item.id,
@@ -207,6 +212,9 @@ export default defineComponent({
       if (temp1 != null) {
         vector.total = (temp1.data as any).total;
         vector.list = (temp1.data as any).list
+        vector.list.forEach(item => {
+          item.type = 'vector'
+        })
       }
       let temp2 = await rasterPageQuery(
         raster.pageSize,
@@ -215,6 +223,9 @@ export default defineComponent({
       if (temp2 != null) {
         raster.list = (temp2.data as any).list;
         raster.total = (temp2.data as any).total;
+        raster.list.forEach(item => {
+          item.type = 'raster'
+        })
       }
     });
 

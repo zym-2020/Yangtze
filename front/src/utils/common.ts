@@ -1,47 +1,487 @@
+import { useStore } from '@/store'
+import { Resource, Analyse } from '@/store/resourse/resourceState'
+import mapBoxGl, { AnySourceData } from "mapbox-gl";
+
+const store = useStore()
+
 interface O {
-    'M+': number
-    'd+': number
-    'h+': number
-    'm+': number
-    's+': number
-    'q+': number
-    S: number
+  'M+': number
+  'd+': number
+  'h+': number
+  'm+': number
+  's+': number
+  'q+': number
+  S: number
 }
 export const dateFormat = (date: string, format?: string) => {
-    let dateObj = new Date(Date.parse(date));
-    let fmt = format || 'yyyy-MM-dd hh:mm:ss';
-    //author: meizz
-    var o: O = {
-      'M+': dateObj.getMonth() + 1, //月份
-      'd+': dateObj.getDate(), //日
-      'h+': dateObj.getHours(), //小时
-      'm+': dateObj.getMinutes(), //分
-      's+': dateObj.getSeconds(), //秒
-      'q+': Math.floor((dateObj.getMonth() + 3) / 3), //季度
-      S: dateObj.getMilliseconds() //毫秒
-    };
-    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (dateObj.getFullYear() + '').substr(4 - RegExp.$1.length));
-    for (var k in o) if (new RegExp('(' + k + ')').test(fmt)) fmt = fmt.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k as keyof O].toString() : ('00' + o[k as keyof O].toString()).substr(('' + o[k as keyof O].toString()).length));
-    return fmt;
+  let dateObj = new Date(Date.parse(date));
+  let fmt = format || 'yyyy-MM-dd hh:mm:ss';
+  //author: meizz
+  var o: O = {
+    'M+': dateObj.getMonth() + 1, //月份
+    'd+': dateObj.getDate(), //日
+    'h+': dateObj.getHours(), //小时
+    'm+': dateObj.getMinutes(), //分
+    's+': dateObj.getSeconds(), //秒
+    'q+': Math.floor((dateObj.getMonth() + 3) / 3), //季度
+    S: dateObj.getMilliseconds() //毫秒
   };
+  if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (dateObj.getFullYear() + '').substr(4 - RegExp.$1.length));
+  for (var k in o) if (new RegExp('(' + k + ')').test(fmt)) fmt = fmt.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k as keyof O].toString() : ('00' + o[k as keyof O].toString()).substr(('' + o[k as keyof O].toString()).length));
+  return fmt;
+};
 
 export const uuid = (len?: number, radix?: number) => {
   const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
   const uuid = []
-  let i 
+  let i
   radix = radix || chars.length
-  if(len) {
-    for (i = 0; i < len; i++) uuid[i] = chars[0 | Math.random()*radix];
+  if (len) {
+    for (i = 0; i < len; i++) uuid[i] = chars[0 | Math.random() * radix];
   } else {
-    let r 
+    let r
     uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
     uuid[14] = '4';
     for (i = 0; i < 36; i++) {
       if (!uuid[i]) {
-        r = 0 | Math.random()*16;
+        r = 0 | Math.random() * 16;
         uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
       }
     }
   }
   return uuid.join('');
+}
+
+interface Children {
+  label: string;
+  children: Children[];
+  type?: string;
+  show?: boolean;
+}
+export const computedResource = (result: Children[]) => {
+  store.state.resource.layerDataList.forEach((item) => {
+    result[0].children[0].children.push({
+      label: item.name,
+      type: item.type,
+      show: item.show,
+      children: []
+    })
+  });
+  result[0].children[1].children.push({
+    label: store.state.resource.analyse.anyArea.classify,
+    children: []
+  })
+  result[0].children[1].children.push({
+    label: store.state.resource.analyse.area.classify,
+    children: []
+  })
+  result[0].children[1].children.push({
+    label: store.state.resource.analyse.boundary.classify,
+    children: []
+  })
+  result[0].children[1].children.push({
+    label: store.state.resource.analyse.branch.classify,
+    children: []
+  })
+  result[0].children[1].children.push({
+    label: store.state.resource.analyse.deep.classify,
+    children: []
+  })
+  result[0].children[1].children.push({
+    label: store.state.resource.analyse.deepContrast.classify,
+    children: []
+  })
+  result[0].children[1].children.push({
+    label: store.state.resource.analyse.elev.classify,
+    children: []
+  })
+  result[0].children[1].children.push({
+    label: store.state.resource.analyse.line.classify,
+    children: []
+  })
+  result[0].children[1].children.push({
+    label: store.state.resource.analyse.section.classify,
+    children: []
+  })
+  result[0].children[1].children.push({
+    label: store.state.resource.analyse.sectionContrast.classify,
+    children: []
+  })
+  result[0].children[1].children.push({
+    label: store.state.resource.analyse.slope.classify,
+    children: []
+  })
+  result[0].children[1].children.push({
+    label: store.state.resource.analyse.volume.classify,
+    children: []
+  })
+  store.state.resource.analyse.anyArea.analysisResultList.forEach(item => {
+    result[0].children[1].children[0].children.push({
+      label: item.name,
+      children: [],
+      type: item.type,
+      show: item.show
+    })
+  })
+  store.state.resource.analyse.area.analysisResultList.forEach(item => {
+    result[0].children[1].children[1].children.push({
+      label: item.name,
+      children: [],
+      type: item.type,
+      show: item.show
+    })
+  })
+  store.state.resource.analyse.boundary.analysisResultList.forEach(item => {
+    result[0].children[1].children[2].children.push({
+      label: item.name,
+      children: [],
+      type: item.type,
+      show: item.show
+    })
+  })
+  store.state.resource.analyse.branch.analysisResultList.forEach(item => {
+    result[0].children[1].children[3].children.push({
+      label: item.name,
+      children: [],
+      type: item.type,
+      show: item.show
+    })
+  })
+  store.state.resource.analyse.deep.analysisResultList.forEach(item => {
+    result[0].children[1].children[4].children.push({
+      label: item.name,
+      children: [],
+      type: item.type,
+      show: item.show
+    })
+  })
+  store.state.resource.analyse.deepContrast.analysisResultList.forEach(item => {
+    result[0].children[1].children[5].children.push({
+      label: item.name,
+      children: [],
+      type: item.type,
+      show: item.show
+    })
+  })
+  store.state.resource.analyse.elev.analysisResultList.forEach(item => {
+    result[0].children[1].children[6].children.push({
+      label: item.name,
+      children: [],
+      type: item.type,
+      show: item.show
+    })
+  })
+  store.state.resource.analyse.line.analysisResultList.forEach(item => {
+    result[0].children[1].children[7].children.push({
+      label: item.name,
+      children: [],
+      type: item.type,
+      show: item.show
+    })
+  })
+  store.state.resource.analyse.section.analysisResultList.forEach(item => {
+    result[0].children[1].children[8].children.push({
+      label: item.name,
+      children: [],
+      type: item.type,
+      show: item.show
+    })
+  })
+  store.state.resource.analyse.sectionContrast.analysisResultList.forEach(item => {
+    result[0].children[1].children[9].children.push({
+      label: item.name,
+      children: [],
+      type: item.type,
+      show: item.show
+    })
+  })
+  store.state.resource.analyse.slope.analysisResultList.forEach(item => {
+    result[0].children[1].children[10].children.push({
+      label: item.name,
+      children: [],
+      type: item.type,
+      show: item.show
+    })
+  })
+  store.state.resource.analyse.volume.analysisResultList.forEach(item => {
+    result[0].children[1].children[11].children.push({
+      label: item.name,
+      children: [],
+      type: item.type,
+      show: item.show
+    })
+  })
+}
+
+export const mergeResource = () => {
+  const arr: Resource[] = JSON.parse(JSON.stringify(store.state.resource.layerDataList))
+  store.state.resource.analyse.anyArea.analysisResultList.forEach(item => {
+    arr.push(item)
+  })
+  store.state.resource.analyse.area.analysisResultList.forEach(item => {
+    arr.push(item)
+  })
+  store.state.resource.analyse.boundary.analysisResultList.forEach(item => {
+    arr.push(item)
+  })
+  store.state.resource.analyse.branch.analysisResultList.forEach(item => {
+    arr.push(item)
+  })
+  store.state.resource.analyse.deep.analysisResultList.forEach(item => {
+    arr.push(item)
+  })
+  store.state.resource.analyse.deepContrast.analysisResultList.forEach(item => {
+    arr.push(item)
+  })
+  store.state.resource.analyse.elev.analysisResultList.forEach(item => {
+    arr.push(item)
+  })
+  store.state.resource.analyse.line.analysisResultList.forEach(item => {
+    arr.push(item)
+  })
+  store.state.resource.analyse.section.analysisResultList.forEach(item => {
+    arr.push(item)
+  })
+  store.state.resource.analyse.sectionContrast.analysisResultList.forEach(item => {
+    arr.push(item)
+  })
+  store.state.resource.analyse.slope.analysisResultList.forEach(item => {
+    arr.push(item)
+  })
+  store.state.resource.analyse.volume.analysisResultList.forEach(item => {
+    arr.push(item)
+  })
+  return arr
+}
+
+export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse, addLayer: (resource: Resource) => void, delLayer: (type: string, id: number, show: boolean) => void) => {
+  const sectionAdd = getAddArr(newVal.section.analysisResultList, oldVal.section.analysisResultList)
+  const sectionDel = getDelArr(newVal.section.analysisResultList, oldVal.section.analysisResultList)
+  sectionAdd.forEach(item => {
+    if(item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
+      if(map.loaded()) {
+        addLayer(item)
+      } else {
+        map.on('load', () => {
+          addLayer(item)
+        })
+      }
+    }
+  })
+  sectionDel.forEach(item => {
+    delLayer(item.type, item.id as number, item.show as boolean)
+  })
+
+  const sectionContrastAdd = getAddArr(newVal.sectionContrast.analysisResultList, oldVal.sectionContrast.analysisResultList)
+  const sectionContrastDel = getDelArr(newVal.sectionContrast.analysisResultList, oldVal.sectionContrast.analysisResultList)
+  sectionContrastAdd.forEach(item => {
+    if(item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
+      if(map.loaded()) {
+        addLayer(item)
+      } else {
+        map.on('load', () => {
+          addLayer(item)
+        })
+      }
+    }
+  })
+  sectionContrastDel.forEach(item => {
+    delLayer(item.type, item.id as number, item.show as boolean)
+  })
+
+  const anyAreaAdd = getAddArr(newVal.anyArea.analysisResultList, oldVal.anyArea.analysisResultList)
+  const anyAreaDel = getDelArr(newVal.anyArea.analysisResultList, oldVal.anyArea.analysisResultList)
+  anyAreaAdd.forEach(item => {
+    if(item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
+      if(map.loaded()) {
+        addLayer(item)
+      } else {
+        map.on('load', () => {
+          addLayer(item)
+        })
+      }
+    }
+  })
+  anyAreaDel.forEach(item => {
+    delLayer(item.type, item.id as number, item.show as boolean)
+  })
+
+  const areaAdd = getAddArr(newVal.area.analysisResultList, oldVal.area.analysisResultList)
+  const areaDel = getDelArr(newVal.area.analysisResultList, oldVal.area.analysisResultList)
+  areaAdd.forEach(item => {
+    if(item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
+      if(map.loaded()) {
+        addLayer(item)
+      } else {
+        map.on('load', () => {
+          addLayer(item)
+        })
+      }
+    }
+  })
+  areaDel.forEach(item => {
+    delLayer(item.type, item.id as number, item.show as boolean)
+  })
+
+  const boundaryAdd = getAddArr(newVal.boundary.analysisResultList, oldVal.boundary.analysisResultList)
+  const boundaryDel = getDelArr(newVal.boundary.analysisResultList, oldVal.boundary.analysisResultList)
+  boundaryAdd.forEach(item => {
+    if(item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
+      if(map.loaded()) {
+        addLayer(item)
+      } else {
+        map.on('load', () => {
+          addLayer(item)
+        })
+      }
+    }
+  })
+  boundaryDel.forEach(item => {
+    delLayer(item.type, item.id as number, item.show as boolean)
+  })
+
+  const branchAdd = getAddArr(newVal.branch.analysisResultList, oldVal.branch.analysisResultList)
+  const branchDel = getDelArr(newVal.branch.analysisResultList, oldVal.branch.analysisResultList)
+  branchAdd.forEach(item => {
+    if(item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
+      if(map.loaded()) {
+        addLayer(item)
+      } else {
+        map.on('load', () => {
+          addLayer(item)
+        })
+      }
+    }
+  })
+  branchDel.forEach(item => {
+    delLayer(item.type, item.id as number, item.show as boolean)
+  })
+
+  const deepAdd = getAddArr(newVal.deep.analysisResultList, oldVal.deep.analysisResultList)
+  const deepDel = getDelArr(newVal.deep.analysisResultList, oldVal.deep.analysisResultList)
+  deepAdd.forEach(item => {
+    if(item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
+      if(map.loaded()) {
+        addLayer(item)
+      } else {
+        map.on('load', () => {
+          addLayer(item)
+        })
+      }
+    }
+  })
+  deepDel.forEach(item => {
+    delLayer(item.type, item.id as number, item.show as boolean)
+  })
+
+  const deepContrastAdd = getAddArr(newVal.deepContrast.analysisResultList, oldVal.deepContrast.analysisResultList)
+  const deepContrastDel = getDelArr(newVal.deepContrast.analysisResultList, oldVal.deepContrast.analysisResultList)
+  deepContrastAdd.forEach(item => {
+    if(item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
+      if(map.loaded()) {
+        addLayer(item)
+      } else {
+        map.on('load', () => {
+          addLayer(item)
+        })
+      }
+    }
+  })
+  deepContrastDel.forEach(item => {
+    delLayer(item.type, item.id as number, item.show as boolean)
+  })
+
+  const elevAdd = getAddArr(newVal.elev.analysisResultList, oldVal.elev.analysisResultList)
+  const elevDel = getDelArr(newVal.elev.analysisResultList, oldVal.elev.analysisResultList)
+  elevAdd.forEach(item => {
+    if(item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
+      if(map.loaded()) {
+        addLayer(item)
+      } else {
+        map.on('load', () => {
+          addLayer(item)
+        })
+      }
+    }
+  })
+  elevDel.forEach(item => {
+    delLayer(item.type, item.id as number, item.show as boolean)
+  })
+
+  const lineAdd = getAddArr(newVal.line.analysisResultList, oldVal.line.analysisResultList)
+  const lineDel = getDelArr(newVal.line.analysisResultList, oldVal.line.analysisResultList)
+  lineAdd.forEach(item => {
+    if(item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
+      if(map.loaded()) {
+        addLayer(item)
+      } else {
+        map.on('load', () => {
+          addLayer(item)
+        })
+      }
+    }
+  })
+  lineDel.forEach(item => {
+    delLayer(item.type, item.id as number, item.show as boolean)
+  })
+
+  const slopeAdd = getAddArr(newVal.slope.analysisResultList, oldVal.slope.analysisResultList)
+  const slopeDel = getDelArr(newVal.slope.analysisResultList, oldVal.slope.analysisResultList)
+  slopeAdd.forEach(item => {
+    if(item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
+      if(map.loaded()) {
+        addLayer(item)
+      } else {
+        map.on('load', () => {
+          addLayer(item)
+        })
+      }
+    }
+  })
+  slopeDel.forEach(item => {
+    delLayer(item.type, item.id as number, item.show as boolean)
+  })
+
+  const volumeAdd = getAddArr(newVal.volume.analysisResultList, oldVal.volume.analysisResultList)
+  const volumeDel = getDelArr(newVal.volume.analysisResultList, oldVal.volume.analysisResultList)
+  volumeAdd.forEach(item => {
+    if(item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
+      if(map.loaded()) {
+        addLayer(item)
+      } else {
+        map.on('load', () => {
+          addLayer(item)
+        })
+      }
+    }
+  })
+  volumeDel.forEach(item => {
+    delLayer(item.type, item.id as number, item.show as boolean)
+  })
+}
+const getAddArr = (newArr: Resource[], oldRrr: Resource[]) => {
+  const add: Resource[] = newArr.filter((item) => {
+    let flag = true;
+    for (let i = 0; i < oldRrr.length; i++) {
+      if (item.id === oldRrr[i].id && item.type === oldRrr[i].type) {
+        flag = false;
+        break;
+      }
+    }
+    if (flag) return item;
+  });
+  return add
+}
+const getDelArr = (newArr: Resource[], oldRrr: Resource[]) => {
+  const del: Resource[] = oldRrr.filter((item) => {
+    let flag = true;
+    for (let i = 0; i < newArr.length; i++) {
+      if (item.id === newArr[i].id && item.type === newArr[i].type) {
+        flag = false;
+        break;
+      }
+    }
+    if (flag) return item;
+  });
+  return del
 }

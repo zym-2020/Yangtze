@@ -28,10 +28,10 @@ export default defineComponent({
       ],
     };
     const test: AnySourceData = {
-      type: 'raster-dem',
-      url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
-      tileSize: 512
-    }
+      type: "raster-dem",
+      url: "mapbox://mapbox.mapbox-terrain-dem-v1",
+      tileSize: 512,
+    };
 
     const initMap = () => {
       const map = new mapBoxGl.Map({
@@ -56,23 +56,25 @@ export default defineComponent({
               type: "circle",
               source: "tdtCva",
               "source-layer": "cwz1",
-            }
-            
+            },
           ],
         },
 
-        center: [121.193496,31.791046],
+        center: [121.193496, 31.791046],
         // center: [-114.34411, 32.6141],
         zoom: 8,
         // accessToken: "pk.eyJ1Ijoid3lqcSIsImEiOiJjbDBnZDdwajUxMXRzM2htdWxubDh1MzJrIn0.2e2_rdU2nOUvtwltBIZtZg"
       });
-
+      map.on("load", () => {
+        map.addControl(new mapBoxGl.FullscreenControl(), "top-right");
+      });
       // map.on('load', () => {
-      //   map.addSource('test', {
-      //     type: 'raster-dem',
-      //     url: 'mapbox://mapbox.mapbox-terrain-dem-v1'
+      //   map.addLayer({
+      //     id: 'tdtVec',
+      //     type: "raster",
+      //     source: tdtVec
       //   })
-      //   map.setTerrain({source: 'test', exaggeration: 1.5})
+      //   map.addControl(new mapBoxGl.FullscreenControl({container: document.querySelector('body')}));
       // })
     };
 
@@ -94,6 +96,9 @@ export default defineComponent({
 <style lang="scss" scoped>
 .map {
   height: 800px;
-  /deep/ .mapboxgl-ctrl-attrib-button{display: none !important}
+  /deep/ .mapboxgl-ctrl-logo {
+    display: none !important;
+  }
+  // /deep/ .mapboxgl-ctrl-attrib-button{display: none !important}
 }
 </style>

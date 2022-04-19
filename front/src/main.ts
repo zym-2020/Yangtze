@@ -8,8 +8,9 @@ import 'element-plus/dist/index.css'
 import '@/permission'
 import '@/assets/iconfont/iconfont.css'
 import '@/assets/iconfont/iconfont.js'
+import 'mapbox-gl/dist/mapbox-gl.css'
+import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import { drag, analyseDrag } from '@/directives/drag'
-
 
 const app = createApp(App)
 Object.keys(Icons).forEach(key => {

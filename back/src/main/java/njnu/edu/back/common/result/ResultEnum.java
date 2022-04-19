@@ -22,7 +22,7 @@ public enum ResultEnum {
     USER_PASSWORD_NOT_MATCH(-6, "账户名和密码不匹配"),//账户名和密码不匹配
     QUERY_TYPE_ERROR(-7, "查询类型不支持"),//查询类型不支持
     REMOTE_SERVICE_ERROR(-8, "远程服务调用出错"),//远程服务调用出错
-    DUPLICATE_NAME_ERROR(-9, "上传文件与当前文件夹下文件或当前文件夹下正在上传文件重名"),
+    DUPLICATE_NAME_ERROR(-9, "文件重名！"),
 
 
     ;
