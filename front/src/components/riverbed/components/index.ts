@@ -2,6 +2,7 @@ import mapBoxGl from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { useStore } from "@/store";
 import { getCurrentProjectId } from '@/utils/project'
+import { uuid } from '@/utils/common'
 // import my_mode from './modes.js'
 
 const store = useStore()
@@ -22,7 +23,7 @@ export class MapUtils {
             const analyse = store.state.resource.analyse
             
             analyse.section.analysisResultList.push({
-                id: parseInt(analyse.section.classifyCount.toString() + '00'),
+                id: uuid(),
                 type: 'geoJson',
                 show: true,
                 name: '断面形态_' + analyse.section.classifyCount.toString(),

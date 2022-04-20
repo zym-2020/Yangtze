@@ -114,7 +114,7 @@
 
 <script lang="ts">
 interface PageResult {
-  id?: number
+  id?: string
   name: string;
   type: string;
   meta?: string;

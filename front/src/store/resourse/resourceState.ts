@@ -1,6 +1,6 @@
 export interface Resource {
     name: string
-    id?: number
+    id?: string
     type: string
     show?: boolean
     tableName?: string

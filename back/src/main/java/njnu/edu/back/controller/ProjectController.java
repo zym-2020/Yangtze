@@ -47,4 +47,6 @@ public class ProjectController {
     public JsonResult setResult(@RequestBody ProjectJsonBean result, @PathVariable int id) {
         return ResultUtils.success(projectService.setResult(result, id));
     }
+
+
 }

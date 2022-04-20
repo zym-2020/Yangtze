@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Resource {
-    Integer id;
+    String id;
     String name;
 
     String type;         //raster || vector || geoJson

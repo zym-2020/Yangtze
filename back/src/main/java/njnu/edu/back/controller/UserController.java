@@ -6,13 +6,11 @@ import njnu.edu.back.common.resolver.JwtTokenParser;
 import njnu.edu.back.common.result.JsonResult;
 import njnu.edu.back.common.result.ResultUtils;
 import njnu.edu.back.common.utils.JwtTokenUtil;
+import njnu.edu.back.dao.UserMapper;
 import njnu.edu.back.proj.dto.AddUserDTO;
 import njnu.edu.back.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     @Autowired
     UserService userService;
+
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public JsonResult login(@RequestBody JSONObject jsonObject) {
@@ -47,4 +46,5 @@ public class UserController {
         jsonObject.putOnce("roles", roles);
         return ResultUtils.success(jsonObject);
     }
+
 }

@@ -103,7 +103,7 @@
             <artifactId>gt-shapefile</artifactId>
             <version>${geotools.version}</version>
         </dependency>
-        
+
 
     </dependencies>
 

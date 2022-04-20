@@ -254,29 +254,32 @@ export const mergeResource = () => {
   return arr
 }
 
-export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse, addLayer: (resource: Resource) => void, delLayer: (type: string, id: number, show: boolean) => void) => {
+export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse, addLayer: (resource: Resource) => void, delLayer: (type: string, id: string, show: boolean) => void, isLoaded: boolean) => {
   const sectionAdd = getAddArr(newVal.section.analysisResultList, oldVal.section.analysisResultList)
   const sectionDel = getDelArr(newVal.section.analysisResultList, oldVal.section.analysisResultList)
+  
+  sectionDel.forEach(item => {
+    delLayer(item.type, item.id as string, item.show as boolean)
+  })
   sectionAdd.forEach(item => {
-    if(item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
-      if(map.loaded()) {
+    if (item.show && map.getLayer(item.type + item.id) === undefined) {
+      if (isLoaded) {
         addLayer(item)
       } else {
         map.on('load', () => {
+          console.log(2)
           addLayer(item)
         })
       }
     }
   })
-  sectionDel.forEach(item => {
-    delLayer(item.type, item.id as number, item.show as boolean)
-  })
+
 
   const sectionContrastAdd = getAddArr(newVal.sectionContrast.analysisResultList, oldVal.sectionContrast.analysisResultList)
   const sectionContrastDel = getDelArr(newVal.sectionContrast.analysisResultList, oldVal.sectionContrast.analysisResultList)
   sectionContrastAdd.forEach(item => {
-    if(item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
-      if(map.loaded()) {
+    if (item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
+      if (isLoaded) {
         addLayer(item)
       } else {
         map.on('load', () => {
@@ -286,14 +289,14 @@ export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse
     }
   })
   sectionContrastDel.forEach(item => {
-    delLayer(item.type, item.id as number, item.show as boolean)
+    delLayer(item.type, item.id as string, item.show as boolean)
   })
 
   const anyAreaAdd = getAddArr(newVal.anyArea.analysisResultList, oldVal.anyArea.analysisResultList)
   const anyAreaDel = getDelArr(newVal.anyArea.analysisResultList, oldVal.anyArea.analysisResultList)
   anyAreaAdd.forEach(item => {
-    if(item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
-      if(map.loaded()) {
+    if (item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
+      if (isLoaded) {
         addLayer(item)
       } else {
         map.on('load', () => {
@@ -303,14 +306,14 @@ export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse
     }
   })
   anyAreaDel.forEach(item => {
-    delLayer(item.type, item.id as number, item.show as boolean)
+    delLayer(item.type, item.id as string, item.show as boolean)
   })
 
   const areaAdd = getAddArr(newVal.area.analysisResultList, oldVal.area.analysisResultList)
   const areaDel = getDelArr(newVal.area.analysisResultList, oldVal.area.analysisResultList)
   areaAdd.forEach(item => {
-    if(item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
-      if(map.loaded()) {
+    if (item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
+      if (isLoaded) {
         addLayer(item)
       } else {
         map.on('load', () => {
@@ -320,14 +323,14 @@ export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse
     }
   })
   areaDel.forEach(item => {
-    delLayer(item.type, item.id as number, item.show as boolean)
+    delLayer(item.type, item.id as string, item.show as boolean)
   })
 
   const boundaryAdd = getAddArr(newVal.boundary.analysisResultList, oldVal.boundary.analysisResultList)
   const boundaryDel = getDelArr(newVal.boundary.analysisResultList, oldVal.boundary.analysisResultList)
   boundaryAdd.forEach(item => {
-    if(item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
-      if(map.loaded()) {
+    if (item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
+      if (isLoaded) {
         addLayer(item)
       } else {
         map.on('load', () => {
@@ -337,14 +340,14 @@ export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse
     }
   })
   boundaryDel.forEach(item => {
-    delLayer(item.type, item.id as number, item.show as boolean)
+    delLayer(item.type, item.id as string, item.show as boolean)
   })
 
   const branchAdd = getAddArr(newVal.branch.analysisResultList, oldVal.branch.analysisResultList)
   const branchDel = getDelArr(newVal.branch.analysisResultList, oldVal.branch.analysisResultList)
   branchAdd.forEach(item => {
-    if(item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
-      if(map.loaded()) {
+    if (item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
+      if (isLoaded) {
         addLayer(item)
       } else {
         map.on('load', () => {
@@ -354,14 +357,14 @@ export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse
     }
   })
   branchDel.forEach(item => {
-    delLayer(item.type, item.id as number, item.show as boolean)
+    delLayer(item.type, item.id as string, item.show as boolean)
   })
 
   const deepAdd = getAddArr(newVal.deep.analysisResultList, oldVal.deep.analysisResultList)
   const deepDel = getDelArr(newVal.deep.analysisResultList, oldVal.deep.analysisResultList)
   deepAdd.forEach(item => {
-    if(item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
-      if(map.loaded()) {
+    if (item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
+      if (isLoaded) {
         addLayer(item)
       } else {
         map.on('load', () => {
@@ -371,14 +374,14 @@ export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse
     }
   })
   deepDel.forEach(item => {
-    delLayer(item.type, item.id as number, item.show as boolean)
+    delLayer(item.type, item.id as string, item.show as boolean)
   })
 
   const deepContrastAdd = getAddArr(newVal.deepContrast.analysisResultList, oldVal.deepContrast.analysisResultList)
   const deepContrastDel = getDelArr(newVal.deepContrast.analysisResultList, oldVal.deepContrast.analysisResultList)
   deepContrastAdd.forEach(item => {
-    if(item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
-      if(map.loaded()) {
+    if (item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
+      if (isLoaded) {
         addLayer(item)
       } else {
         map.on('load', () => {
@@ -388,14 +391,14 @@ export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse
     }
   })
   deepContrastDel.forEach(item => {
-    delLayer(item.type, item.id as number, item.show as boolean)
+    delLayer(item.type, item.id as string, item.show as boolean)
   })
 
   const elevAdd = getAddArr(newVal.elev.analysisResultList, oldVal.elev.analysisResultList)
   const elevDel = getDelArr(newVal.elev.analysisResultList, oldVal.elev.analysisResultList)
   elevAdd.forEach(item => {
-    if(item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
-      if(map.loaded()) {
+    if (item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
+      if (isLoaded) {
         addLayer(item)
       } else {
         map.on('load', () => {
@@ -405,14 +408,14 @@ export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse
     }
   })
   elevDel.forEach(item => {
-    delLayer(item.type, item.id as number, item.show as boolean)
+    delLayer(item.type, item.id as string, item.show as boolean)
   })
 
   const lineAdd = getAddArr(newVal.line.analysisResultList, oldVal.line.analysisResultList)
   const lineDel = getDelArr(newVal.line.analysisResultList, oldVal.line.analysisResultList)
   lineAdd.forEach(item => {
-    if(item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
-      if(map.loaded()) {
+    if (item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
+      if (isLoaded) {
         addLayer(item)
       } else {
         map.on('load', () => {
@@ -422,14 +425,14 @@ export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse
     }
   })
   lineDel.forEach(item => {
-    delLayer(item.type, item.id as number, item.show as boolean)
+    delLayer(item.type, item.id as string, item.show as boolean)
   })
 
   const slopeAdd = getAddArr(newVal.slope.analysisResultList, oldVal.slope.analysisResultList)
   const slopeDel = getDelArr(newVal.slope.analysisResultList, oldVal.slope.analysisResultList)
   slopeAdd.forEach(item => {
-    if(item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
-      if(map.loaded()) {
+    if (item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
+      if (isLoaded) {
         addLayer(item)
       } else {
         map.on('load', () => {
@@ -439,14 +442,14 @@ export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse
     }
   })
   slopeDel.forEach(item => {
-    delLayer(item.type, item.id as number, item.show as boolean)
+    delLayer(item.type, item.id as string, item.show as boolean)
   })
 
   const volumeAdd = getAddArr(newVal.volume.analysisResultList, oldVal.volume.analysisResultList)
   const volumeDel = getDelArr(newVal.volume.analysisResultList, oldVal.volume.analysisResultList)
   volumeAdd.forEach(item => {
-    if(item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
-      if(map.loaded()) {
+    if (item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
+      if (isLoaded) {
         addLayer(item)
       } else {
         map.on('load', () => {
@@ -456,7 +459,7 @@ export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse
     }
   })
   volumeDel.forEach(item => {
-    delLayer(item.type, item.id as number, item.show as boolean)
+    delLayer(item.type, item.id as string, item.show as boolean)
   })
 }
 const getAddArr = (newArr: Resource[], oldRrr: Resource[]) => {

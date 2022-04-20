@@ -282,6 +282,7 @@ export default defineComponent({
         active.value = 12;
       } else if (num === "0") {
         active.value = 0;
+        props.map?.removeControl(Draw)
       }
       context.emit("riverBed", active.value);
     };

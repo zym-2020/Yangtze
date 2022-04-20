@@ -37,6 +37,7 @@ import DataSelect from "../riverbed/components/DataSelect.vue";
 import { useStore } from "@/store";
 import { Resource, Analyse } from "@/store/resourse/resourceState";
 import { mergeResource, watchAnalyse } from "@/utils/common";
+import { id } from "element-plus/lib/locale";
 export default defineComponent({
   components: {
     Tools,
@@ -141,33 +142,56 @@ export default defineComponent({
         resource.id != undefined &&
         resource.id != null
       ) {
-        (map.value as mapBoxGl.Map).addLayer({
-          id: resource.type + resource.id?.toString(),
+        map.value?.addSource(resource.type + resource.id, {
           type: resource.type,
-          source: {
-            type: resource.type,
-            tiles: [
-              `http://localhost:8080/Yangtze/raster/getRaster/${resource.id}/{x}/{y}/{z}`,
-            ],
-          },
+          tiles: [
+            `http://localhost:8080/Yangtze/raster/getRaster/${resource.id}/{x}/{y}/{z}`,
+          ],
         });
+        map.value?.addLayer({
+          id: resource.type + resource.id,
+          type: resource.type,
+          source: resource.type,
+        });
+        // (map.value as mapBoxGl.Map).addLayer({
+        //   id: resource.type + resource.id,
+        //   type: resource.type,
+        //   source: {
+        //     type: resource.type,
+        //     tiles: [
+        //       `http://localhost:8080/Yangtze/raster/getRaster/${resource.id}/{x}/{y}/{z}`,
+        //     ],
+        //   },
+        // });
       } else if (
         resource.type === "vector" &&
         resource.tableName != undefined &&
         resource.tableName != null &&
         resource.vectorType != undefined
       ) {
-        (map.value as mapBoxGl.Map).addLayer({
-          id: resource.type + resource.id?.toString(),
+        map.value?.addSource(resource.type + resource.id, {
+          type: resource.type,
+          tiles: [
+            `http://localhost:8080/Yangtze/vector/${resource.tableName}/{x}/{y}/{z}`,
+          ],
+        });
+        map.value?.addLayer({
+          id: resource.type + resource.id,
           type: resource.vectorType as "fill" | "circle" | "line",
           "source-layer": resource.tableName,
-          source: {
-            type: resource.type,
-            tiles: [
-              `http://localhost:8080/Yangtze/vector/${resource.tableName}/{x}/{y}/{z}`,
-            ],
-          },
+          source: resource.type + resource.id,
         });
+        // (map.value as mapBoxGl.Map).addLayer({
+        //   id: resource.type + resource.id?.toString(),
+        //   type: resource.vectorType as "fill" | "circle" | "line",
+        //   "source-layer": resource.tableName,
+        //   source: {
+        //     type: resource.type,
+        //     tiles: [
+        //       `http://localhost:8080/Yangtze/vector/${resource.tableName}/{x}/{y}/{z}`,
+        //     ],
+        //   },
+        // });
       } else if (
         resource.type === "geoJson" &&
         resource.geoJson != undefined &&
@@ -198,33 +222,57 @@ export default defineComponent({
             };
             break;
         }
-        (map.value as mapBoxGl.Map).addLayer({
-          id: resource.type + resource.id?.toString(),
-          type: type as "fill" | "circle" | "line",
-          source: {
-            type: "geojson",
-            data: {
-              type: "Feature",
-              geometry: {
-                type: resource.geoJson.type as
-                  | "Point"
-                  | "MultiPoint"
-                  | "LineString"
-                  | "MultiLineString"
-                  | "Polygon"
-                  | "MultiPolygon",
-                coordinates: resource.geoJson.coordinates,
-              },
-              properties: {},
+        map.value?.addSource(resource.type + resource.id, {
+          type: "geojson",
+          data: {
+            type: "Feature",
+            geometry: {
+              type: resource.geoJson.type as
+                | "Point"
+                | "MultiPoint"
+                | "LineString"
+                | "MultiLineString"
+                | "Polygon"
+                | "MultiPolygon",
+              coordinates: resource.geoJson.coordinates,
             },
+            properties: {},
           },
+        });
+        map.value?.addLayer({
+          id: resource.type + resource.id,
+          type: type as "fill" | "circle" | "line",
+          source: resource.type + resource.id,
           paint: paint
         });
+        // (map.value as mapBoxGl.Map).addLayer({
+        //   id: resource.type + resource.id,
+        //   type: type as "fill" | "circle" | "line",
+        //   source: {
+        //     type: "geojson",
+        //     data: {
+        //       type: "Feature",
+        //       geometry: {
+        //         type: resource.geoJson.type as
+        //           | "Point"
+        //           | "MultiPoint"
+        //           | "LineString"
+        //           | "MultiLineString"
+        //           | "Polygon"
+        //           | "MultiPolygon",
+        //         coordinates: resource.geoJson.coordinates,
+        //       },
+        //       properties: {},
+        //     },
+        //   },
+        //   paint: paint,
+        // });
       }
     };
-    const delLayer = (type: string, id: number, show: boolean) => {
+    const delLayer = (type: string, id: string, show: boolean) => {
       if (show) {
-        (map.value as mapBoxGl.Map).removeLayer(type + id.toString());
+        (map.value as mapBoxGl.Map).removeLayer(type + id);
+        map.value?.removeSource(type + id)
       }
     };
 
@@ -232,7 +280,7 @@ export default defineComponent({
       const add: Resource[] = newVal.filter((item) => {
         let flag = true;
         for (let i = 0; i < oldVal.length; i++) {
-          if (item.id === oldVal[i].id && item.type === oldVal[i].type) {
+          if (item.id?.toString() === oldVal[i].id?.toString() && item.type === oldVal[i].type) {
             flag = false;
             break;
           }
@@ -242,7 +290,7 @@ export default defineComponent({
       const del: Resource[] = oldVal.filter((item) => {
         let flag = true;
         for (let i = 0; i < newVal.length; i++) {
-          if (item.id === newVal[i].id && item.type === newVal[i].type) {
+          if (item.id?.toString() === newVal[i].id?.toString() && item.type === newVal[i].type) {
             flag = false;
             break;
           }
@@ -252,9 +300,8 @@ export default defineComponent({
       add.forEach((item) => {
         if (
           item.show &&
-          (map.value as mapBoxGl.Map).getLayer(
-            item.type + item.id?.toString()
-          ) === undefined
+          (map.value as mapBoxGl.Map).getLayer(item.type + item.id) ===
+            undefined
         ) {
           if ((map.value as mapBoxGl.Map).loaded()) {
             addLayer(item);
@@ -267,7 +314,7 @@ export default defineComponent({
       });
 
       del.forEach((item) => {
-        delLayer(item.type, item.id as number, item.show as boolean);
+        delLayer(item.type, item.id as string, item.show as boolean);
       });
     });
 
@@ -277,12 +324,11 @@ export default defineComponent({
         newVal,
         oldVal,
         addLayer,
-        delLayer
+        delLayer,
+        map.value?.loaded() as boolean
       );
     });
-    // watch(analyse.value.section.analysisResultList, (newVal: Resource[], oldVal: Resource[]) => {
-    //   console.log(newVal, oldVal)
-    // })
+
 
     const riverBed = (val: number) => {
       if (val === 1) {
