@@ -1,5 +1,6 @@
 package njnu.edu.back.dao;
 
+import njnu.edu.back.proj.RasterRelationship;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -20,4 +21,6 @@ public interface RasterRelationshipMapper {
     List<Map<String, Object>> pageQuery(@Param("size") int size, @Param("start") int start);
 
     int countAll();
+
+    RasterRelationship getById(@Param("id") Integer rasterId);
 }

@@ -41,3 +41,8 @@ spring:
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
+
+basedir:
+  E:\Minio\data\test\
+pythondir:
+  D:\zhuomian\水科院\python\

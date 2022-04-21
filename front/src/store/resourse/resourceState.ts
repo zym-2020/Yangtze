@@ -6,6 +6,8 @@ export interface Resource {
     tableName?: string
     vectorType?: string
     geoJson?: { type: string, coordinates: [] },
+    selectDemId?: string
+    selectDemName?: string
 }
 
 export interface AnalyseResource {
@@ -50,5 +52,5 @@ export const state: ResourceState = {
         slope: { classifyCount: 0, classify: '河床坡度提取', analysisResultList: [] },
         volume: { classifyCount: 0, classify: '河道容积计算', analysisResultList: [] },
         anyArea: { classifyCount: 0, classify: '任意区域冲淤', analysisResultList: [] }
-    }
+    },
 }

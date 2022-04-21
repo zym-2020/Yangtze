@@ -1,5 +1,6 @@
 package njnu.edu.back.controller;
 
+import cn.hutool.json.JSONObject;
 import njnu.edu.back.common.auth.AuthCheck;
 import njnu.edu.back.common.resolver.JwtTokenParser;
 import njnu.edu.back.common.result.JsonResult;
@@ -48,5 +49,23 @@ public class ProjectController {
         return ResultUtils.success(projectService.setResult(result, id));
     }
 
+    @AuthCheck
+    @RequestMapping(value = "/section", method = RequestMethod.POST)
+    public JsonResult sectionValue(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
+        projectService.saveSectionValue(jsonObject.getInt("DEMId"), jsonObject.getDouble("lat1"), jsonObject.getDouble("lon1"), jsonObject.getDouble("lat2"), jsonObject.getDouble("lon2"), jsonObject.getStr("sectionName"), email, jsonObject.getStr("projectName"));
+        return ResultUtils.success();
+    }
 
+    @AuthCheck
+    @RequestMapping(value = "/getSectionValue/{projectName}/{sectionName}/{DEMName}/{DEMId}", method = RequestMethod.GET)
+    public JsonResult getSectionValue(@JwtTokenParser("email") String email, @PathVariable String projectName, @PathVariable String sectionName, @PathVariable String DEMName, @PathVariable int DEMId) {
+        return ResultUtils.success(projectService.getSectionValue(email, projectName, sectionName, DEMName, DEMId));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/delSection/{projectName}/{sectionName}/{DEMName}", method = RequestMethod.DELETE)
+    public JsonResult delSection(@JwtTokenParser("email") String emial, @PathVariable String projectName, @PathVariable String sectionName, @PathVariable String DEMName) {
+        projectService.delSection(emial, projectName, sectionName, DEMName);
+        return ResultUtils.success();
+    }
 }

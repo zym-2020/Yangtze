@@ -19,7 +19,6 @@ export interface ProjectJsonData {
 
 
 
-
 export interface NewShapeJsonData {
     geoJson: [],
     fileName: string,
@@ -28,4 +27,14 @@ export interface NewShapeJsonData {
     projectName: string
     category: string
     meta: string
+}
+
+export interface SectionJsonData {
+    DEMId: number,
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number,
+    sectionName: string,
+    projectName: string
 }

@@ -10,6 +10,7 @@ import njnu.edu.back.proj.dto.AddVector;
 import njnu.edu.back.service.RedisService;
 import njnu.edu.back.service.VectorRelationshipService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -32,6 +33,9 @@ public class VectorRelationshipServiceImpl implements VectorRelationshipService 
     @Autowired
     RedisService redisService;
 
+    @Value("${basedir}")
+    String baseDir;
+
     @Override
     public JSONObject pageQuery(int size, int page) {
         int start = page * size;
@@ -45,13 +49,13 @@ public class VectorRelationshipServiceImpl implements VectorRelationshipService 
     public String newShape(JSONArray jsonArray, String fileName, String type, String email, String source, String projectName, String category, String meta) {
         String path = "";
         if(source.equals("analyse")) {
-            path = "E:\\Minio\\data\\test\\" + email + "\\" + "projects\\" + projectName + "\\" + fileName;
+            path = baseDir + email + "\\" + "projects\\" + projectName + "\\" + fileName;
         } else if(source.equals("upload")) {
-            path = "E:\\Minio\\data\\test\\" + email + "\\upload\\shape\\" + fileName;
+            path = baseDir + email + "\\upload\\shape\\" + fileName;
         }
         GeoToolsUtil.json2shape(jsonArray, fileName, path, type);
         UUID uuid = UUID.randomUUID();
-        redisService.set(uuid.toString(), -1, 24*60l);
+        redisService.set(uuid.toString(), -1, 24*60l);          //计算中
         String finalPath = path;
         String finalName = fileName;
         new Thread() {
@@ -85,9 +89,9 @@ public class VectorRelationshipServiceImpl implements VectorRelationshipService 
                     AddVector addVector = new AddVector(finalName, category, finalPath, meta, fileName + ".shp", email, source, GeoToolsUtil.conversion(type));
                     int id = vectorRelationshipMapper.addVector(addVector);
                     System.out.println(id);
-                    redisService.set(uuid.toString(), id, 24*60l);
+                    redisService.set(uuid.toString(), id, 24*60l);          //成功
                 } else
-                    redisService.set(uuid.toString(), -2, 24*60l);
+                    redisService.set(uuid.toString(), -2, 24*60l);      //失败
             }
 
         }.start();

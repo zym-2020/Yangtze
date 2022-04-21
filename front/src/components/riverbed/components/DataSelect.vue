@@ -2,7 +2,12 @@
   <div class="main">
     <div class="selectHead">当前分析数据</div>
     <div>
-      <el-select v-model="value" placeholder="选择分析数据" style="width: 150px">
+      <el-select
+        v-model="value"
+        placeholder="选择分析数据"
+        style="width: 150px"
+        @change="selectChange"
+      >
         <el-option
           v-for="(item, index) in options"
           :key="index"
@@ -19,22 +24,35 @@ interface DataDem {
   id: number;
   name: string;
 }
-import { computed, defineComponent, ref } from "vue";
+import { computed, defineComponent, onMounted, reactive, ref } from "vue";
 import { useStore } from "@/store";
 export default defineComponent({
   setup() {
     const store = useStore();
-    const value = ref("199801_dem");
+    const value = ref(3);
     const options = ref<Array<DataDem>>([
       { id: 3, name: "199801_dem" },
       { id: 4, name: "200408_dem" },
       { id: 5, name: "200602_dem" },
-    ]); 
+    ]);
+    const selectChange = (val: number) => {
+      const select = options.value.filter((item) => {
+        item.id === val;
+      });
+      store.commit("SET_DATA_SELECT", {
+        id: val.toString(),
+        name: select[0].name,
+      });
+    };
 
+    onMounted(() => {
+      store.commit("SET_DATA_SELECT", { id: "3", name: "199801_dem" });
+    });
 
     return {
       value,
       options,
+      selectChange,
     };
   },
 });

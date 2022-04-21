@@ -24,5 +24,7 @@ public class Resource {
     String tableName;   //针对shape
     String vectorType;   //针对shape
     JSONObject geoJson;
+    String selectDemId;          //dem id针对断面
+    String selectDemName;       //dem name针对断面
 
 }

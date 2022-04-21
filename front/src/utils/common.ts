@@ -57,6 +57,9 @@ interface Children {
   children: Children[];
   type?: string;
   show?: boolean;
+  id?: string
+  selectDemId?: string
+  selectDemName?: string
 }
 export const computedResource = (result: Children[]) => {
   store.state.resource.layerDataList.forEach((item) => {
@@ -64,7 +67,8 @@ export const computedResource = (result: Children[]) => {
       label: item.name,
       type: item.type,
       show: item.show,
-      children: []
+      children: [],
+      id: item.id
     })
   });
   result[0].children[1].children.push({
@@ -115,6 +119,7 @@ export const computedResource = (result: Children[]) => {
     label: store.state.resource.analyse.volume.classify,
     children: []
   })
+
   store.state.resource.analyse.anyArea.analysisResultList.forEach(item => {
     result[0].children[1].children[0].children.push({
       label: item.name,
@@ -181,10 +186,13 @@ export const computedResource = (result: Children[]) => {
   })
   store.state.resource.analyse.section.analysisResultList.forEach(item => {
     result[0].children[1].children[8].children.push({
+      id: item.id,
       label: item.name,
       children: [],
       type: item.type,
-      show: item.show
+      show: item.show,
+      selectDemId: item.selectDemId,
+      selectDemName: item.selectDemName
     })
   })
   store.state.resource.analyse.sectionContrast.analysisResultList.forEach(item => {
@@ -257,7 +265,7 @@ export const mergeResource = () => {
 export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse, addLayer: (resource: Resource) => void, delLayer: (type: string, id: string, show: boolean) => void, isLoaded: boolean) => {
   const sectionAdd = getAddArr(newVal.section.analysisResultList, oldVal.section.analysisResultList)
   const sectionDel = getDelArr(newVal.section.analysisResultList, oldVal.section.analysisResultList)
-  
+
   sectionDel.forEach(item => {
     delLayer(item.type, item.id as string, item.show as boolean)
   })

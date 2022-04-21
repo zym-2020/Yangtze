@@ -37,7 +37,6 @@ import DataSelect from "../riverbed/components/DataSelect.vue";
 import { useStore } from "@/store";
 import { Resource, Analyse } from "@/store/resourse/resourceState";
 import { mergeResource, watchAnalyse } from "@/utils/common";
-import { id } from "element-plus/lib/locale";
 export default defineComponent({
   components: {
     Tools,
@@ -153,16 +152,6 @@ export default defineComponent({
           type: resource.type,
           source: resource.type,
         });
-        // (map.value as mapBoxGl.Map).addLayer({
-        //   id: resource.type + resource.id,
-        //   type: resource.type,
-        //   source: {
-        //     type: resource.type,
-        //     tiles: [
-        //       `http://localhost:8080/Yangtze/raster/getRaster/${resource.id}/{x}/{y}/{z}`,
-        //     ],
-        //   },
-        // });
       } else if (
         resource.type === "vector" &&
         resource.tableName != undefined &&
@@ -181,17 +170,6 @@ export default defineComponent({
           "source-layer": resource.tableName,
           source: resource.type + resource.id,
         });
-        // (map.value as mapBoxGl.Map).addLayer({
-        //   id: resource.type + resource.id?.toString(),
-        //   type: resource.vectorType as "fill" | "circle" | "line",
-        //   "source-layer": resource.tableName,
-        //   source: {
-        //     type: resource.type,
-        //     tiles: [
-        //       `http://localhost:8080/Yangtze/vector/${resource.tableName}/{x}/{y}/{z}`,
-        //     ],
-        //   },
-        // });
       } else if (
         resource.type === "geoJson" &&
         resource.geoJson != undefined &&
@@ -245,28 +223,7 @@ export default defineComponent({
           source: resource.type + resource.id,
           paint: paint
         });
-        // (map.value as mapBoxGl.Map).addLayer({
-        //   id: resource.type + resource.id,
-        //   type: type as "fill" | "circle" | "line",
-        //   source: {
-        //     type: "geojson",
-        //     data: {
-        //       type: "Feature",
-        //       geometry: {
-        //         type: resource.geoJson.type as
-        //           | "Point"
-        //           | "MultiPoint"
-        //           | "LineString"
-        //           | "MultiLineString"
-        //           | "Polygon"
-        //           | "MultiPolygon",
-        //         coordinates: resource.geoJson.coordinates,
-        //       },
-        //       properties: {},
-        //     },
-        //   },
-        //   paint: paint,
-        // });
+
       }
     };
     const delLayer = (type: string, id: string, show: boolean) => {

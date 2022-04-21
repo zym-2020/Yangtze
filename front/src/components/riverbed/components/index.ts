@@ -3,7 +3,8 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { useStore } from "@/store";
 import { getCurrentProjectId } from '@/utils/project'
 import { uuid } from '@/utils/common'
-// import my_mode from './modes.js'
+import { section } from '@/api/request'
+import { getCurrentProjectName } from "@/utils/project";
 
 const store = useStore()
 
@@ -16,7 +17,7 @@ export class MapUtils {
                 map.addControl(draw, "top-right");
             });
         }
-        map?.on('draw.create', () => {
+        map?.on('draw.create', async () => {
             const coordinates = (draw.getAll().features[0].geometry as any).coordinates
             console.log(coordinates)
             const layerDataList = store.state.resource.layerDataList
@@ -30,12 +31,22 @@ export class MapUtils {
                 geoJson: {
                     type: 'LineString',
                     coordinates: coordinates
-                }
+                },
+                selectDemId: store.state.other.dataSelect.id,
+                selectDemName: store.state.other.dataSelect.name
             })
             analyse.section.classifyCount++
-            store.dispatch("setResource", {projectJsonBean: {layerDataList: layerDataList, analyse: analyse}, id: parseInt(getCurrentProjectId() as string)})
+            await store.dispatch("setResource", {projectJsonBean: {layerDataList: layerDataList, analyse: analyse}, id: parseInt(getCurrentProjectId() as string)})
             draw.deleteAll()
-            
+            await section({
+                DEMId: parseInt(store.state.other.dataSelect.id),
+                lat1: coordinates[0][1] as number,
+                lon1: coordinates[0][0] as number,
+                lat2: coordinates[1][1] as number,
+                lon2: coordinates[1][0] as number,
+                sectionName: '断面形态_' + (analyse.section.classifyCount - 1).toString(),
+                projectName: getCurrentProjectName() as string
+            })
         })
     }
 }

@@ -7,23 +7,27 @@ import { ViewState } from './views/viewState'
 import { ViewStore, store as views } from './views'
 import { ResourceStore, store as resource } from './resourse'
 import { ResourceState } from './resourse/resourceState'
+import { OtherStore, store as other } from './other'
+import { OtherState } from './other/otherState'
 
 
 export interface RootState {
   user: UserState,
   permission: PermissionState,
   views: ViewState
-  resource: ResourceState
+  resource: ResourceState,
+  other: OtherState
 }
 
-export type Store = UserStore<Pick<RootState, 'user'>> & PermissionStore<Pick<RootState, 'permission'>> & ViewStore<Pick<RootState, 'views'>> & ResourceStore<Pick<RootState, 'resource'>>
+export type Store = UserStore<Pick<RootState, 'user'>> & PermissionStore<Pick<RootState, 'permission'>> & ViewStore<Pick<RootState, 'views'>> & ResourceStore<Pick<RootState, 'resource'>> & OtherStore<Pick<RootState, 'other'>>
 
 export const store = createStore({
   modules: {
     user,
     permission,
     views,
-    resource
+    resource,
+    other
   }
 })
 

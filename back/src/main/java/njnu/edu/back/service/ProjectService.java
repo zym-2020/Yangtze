@@ -21,4 +21,10 @@ public interface ProjectService {
     List<Map<String, Object>> getProjectId(String email);
 
     int setResult(ProjectJsonBean result, int id);
+
+    void saveSectionValue(Integer DEMId, Double lat1, Double lon1, Double lat2, Double lon2, String sectionName, String email, String projectName);
+
+    List<Double> getSectionValue(String email, String projectName, String sectionName, String DEMName, Integer DEMId);
+
+    void delSection(String email, String projectName, String sectionName, String DEMName);
 }

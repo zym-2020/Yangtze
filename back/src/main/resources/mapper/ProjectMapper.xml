@@ -16,4 +16,8 @@
     <update id="setResult">
         update projects set result = #{result} where id = #{id};
     </update>
+
+    <select id="getResultByEmailAndProjectName" resultType="java.lang.String">
+        select result from projects where creator = #{email} and project_Name = #{projectName};
+    </select>
 </mapper>
