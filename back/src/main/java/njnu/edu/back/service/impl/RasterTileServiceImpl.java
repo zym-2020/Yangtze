@@ -46,7 +46,7 @@ public class RasterTileServiceImpl implements RasterTileService {
                 while(in.read(b) != -1) {
                     sos.write(b);
                 }
-                sos.flush();
+
             } else {
                 in = new FileInputStream(new File(baseDir + "123@qq.com\\upload\\raster\\color.dem\\tiles\\9\\428\\304.png"));
                 sos = response.getOutputStream();

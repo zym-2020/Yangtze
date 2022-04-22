@@ -55,13 +55,7 @@
       ></section-show>
     </el-dialog>
 
-    <el-dialog v-model="openFlag" width="600px">
-      <template #title>
-        <svg style="width: 20px; height: 20px">
-          <use xlink:href="#icon-service"></use>
-        </svg>
-        请选择要添加的工程
-      </template>
+    <el-dialog v-model="openFlag" width="600px" :show-close="false">
       <open-project v-if="openFlag" @selectProjectId="selectProjectId" />
     </el-dialog>
   </div>

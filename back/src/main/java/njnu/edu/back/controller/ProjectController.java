@@ -11,6 +11,12 @@ import njnu.edu.back.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+
 /**
  * Created with IntelliJ IDEA.
  *
@@ -67,5 +73,25 @@ public class ProjectController {
     public JsonResult delSection(@JwtTokenParser("email") String emial, @PathVariable String projectName, @PathVariable String sectionName, @PathVariable String DEMName) {
         projectService.delSection(emial, projectName, sectionName, DEMName);
         return ResultUtils.success();
+    }
+
+    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    public void test(HttpServletResponse response) {
+        try {
+            response.setContentType("image/png");
+
+//            FileInputStream in = new FileInputStream(new File("E:\\Minio\\data\\test\\123@qq.com\\upload\\raster\\color.dem\\tiles\\8\\214\\152.png"));
+//            ServletOutputStream sos = response.getOutputStream();
+//            byte[] b = new byte[1024];
+//            while(in.read(b) != -1) {
+//                sos.write(b);
+//            }
+//            sos.flush();
+//            in.close();
+//            sos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }

@@ -71,14 +71,14 @@ export default defineComponent({
     const tif: AnySourceData = {
       type: "raster",
       tiles: ["http://localhost:8080/Yangtze/raster/getRaster/1/{x}/{y}/{z}"],
-      bounds: [119.482547, 31.758138, 121.878795, 32.384769],
+      // bounds: [119.482547, 31.758138, 121.878795, 32.384769],
       maxzoom: 15,
       minzoom: 5,
     };
     const rasterDEM: AnySourceData = {
       type: "raster",
       tiles: ["http://localhost:8080/Yangtze/raster/getRaster/2/{x}/{y}/{z}"],
-      bounds: [120.127027, 31.161315, 121.994353, 32.023517],
+      // bounds: [120.127027, 31.161315, 121.994353, 32.023517],
       maxzoom: 12,
     };
 

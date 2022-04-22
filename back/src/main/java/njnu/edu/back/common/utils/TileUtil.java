@@ -1,6 +1,11 @@
 package njnu.edu.back.common.utils;
 
+import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.proj.support.TileBox;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -10,6 +15,18 @@ import njnu.edu.back.proj.support.TileBox;
  * @Description:
  */
 public class TileUtil {
+
+//    public static FileInputStream in;
+//
+//    static {
+//        try {
+//            in = new FileInputStream(new File("E:\\Minio\\data\\test\\123@qq.com\\upload\\raster\\color.dem\\tiles\\8\\214\\152.png"));
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//            throw new MyException(-1, "TileUtil类生成静态FileInputStream时出错");
+//        }
+//    }
+
     /**
     * @Description:瓦片转经度
     * @Author: Yiming
