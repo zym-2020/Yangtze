@@ -250,6 +250,9 @@ export default defineComponent({
         }
       } else if (num === "2-1" || num === "2-2") {
         active.value = 2;
+        if (num === '2-1') {
+          mapUtils.section_2(props.map, Draw)
+        }
       } else if (num === "3-1" || num === "3-2") {
         active.value = 3;
       } else if (num === "4-1" || num === "4-2") {

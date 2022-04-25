@@ -8,6 +8,8 @@ export interface Resource {
     geoJson?: { type: string, coordinates: [] },
     selectDemId?: string
     selectDemName?: string
+    selectDemIds?: string[]
+    selectDemNames?: string[]
 }
 
 export interface AnalyseResource {

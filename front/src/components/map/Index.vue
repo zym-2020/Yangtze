@@ -129,6 +129,7 @@ export default defineComponent({
           new mapBoxGl.FullscreenControl(),
           "top-right"
         );
+        console.log("load");
       });
     };
     const changeActive = (num: number) => {
@@ -221,59 +222,17 @@ export default defineComponent({
           id: resource.type + resource.id,
           type: type as "fill" | "circle" | "line",
           source: resource.type + resource.id,
-          paint: paint
+          paint: paint,
         });
-
       }
     };
+
     const delLayer = (type: string, id: string, show: boolean) => {
       if (show) {
         (map.value as mapBoxGl.Map).removeLayer(type + id);
-        map.value?.removeSource(type + id)
+        map.value?.removeSource(type + id);
       }
     };
-
-    watch(layerDataList, (newVal: Resource[], oldVal: Resource[]) => {
-      const add: Resource[] = newVal.filter((item) => {
-        let flag = true;
-        for (let i = 0; i < oldVal.length; i++) {
-          if (item.id?.toString() === oldVal[i].id?.toString() && item.type === oldVal[i].type) {
-            flag = false;
-            break;
-          }
-        }
-        if (flag) return item;
-      });
-      const del: Resource[] = oldVal.filter((item) => {
-        let flag = true;
-        for (let i = 0; i < newVal.length; i++) {
-          if (item.id?.toString() === newVal[i].id?.toString() && item.type === newVal[i].type) {
-            flag = false;
-            break;
-          }
-        }
-        if (flag) return item;
-      });
-      add.forEach((item) => {
-        if (
-          item.show &&
-          (map.value as mapBoxGl.Map).getLayer(item.type + item.id) ===
-            undefined
-        ) {
-          if ((map.value as mapBoxGl.Map).loaded()) {
-            addLayer(item);
-          } else {
-            (map.value as mapBoxGl.Map).on("load", () => {
-              addLayer(item);
-            });
-          }
-        }
-      });
-
-      del.forEach((item) => {
-        delLayer(item.type, item.id as string, item.show as boolean);
-      });
-    });
 
     watch(analyse, (newVal: Analyse, oldVal: Analyse) => {
       watchAnalyse(
@@ -286,16 +245,75 @@ export default defineComponent({
       );
     });
 
+    watch(layerDataList, (newVal: Resource[], oldVal: Resource[]) => {
+      const add: Resource[] = newVal.filter((item) => {
+        let flag = true;
+        for (let i = 0; i < oldVal.length; i++) {
+          if (
+            item.id?.toString() === oldVal[i].id?.toString() &&
+            item.type === oldVal[i].type
+          ) {
+            flag = false;
+            break;
+          }
+        }
+        if (flag) return item;
+      });
+      const del: Resource[] = oldVal.filter((item) => {
+        let flag = true;
+        for (let i = 0; i < newVal.length; i++) {
+          if (
+            item.id?.toString() === newVal[i].id?.toString() &&
+            item.type === newVal[i].type
+          ) {
+            flag = false;
+            break;
+          }
+        }
+        if (flag) return item;
+      });
+
+      add.forEach((item) => {
+        if (
+          item.show &&
+          (map.value as mapBoxGl.Map).getLayer(item.type + item.id) ===
+            undefined
+        ) {
+          addLayer(item);
+          // if ((map.value as mapBoxGl.Map).loaded()) {
+          //   addLayer(item);
+          // } else {
+          //   (map.value as mapBoxGl.Map).once("load", () => {
+          //     addLayer(item);
+          //   });
+          // }
+        }
+      });
+
+      del.forEach((item) => {
+        delLayer(item.type, item.id as string, item.show as boolean);
+      });
+    });
 
     const riverBed = (val: number) => {
-      if (val === 1) {
+      if (val === 0) {
+        dataSelectFlag.value = false;
+      } else if (val === 1) {
         dataSelectFlag.value = true;
+      } else if (val === 2) {
+        dataSelectFlag.value = false;
+        store.commit("SET_DATA_SELECTS", [
+          { id: "3", name: "199801_dem" },
+          { id: '4', name: "200408_dem" },
+          { id: '5', name: "200602_dem" },
+        ]);
       }
     };
 
     onMounted(async () => {
       initMap();
       const arr = mergeResource();
+      console.log(map);
       if (arr.length > 0) {
         arr.forEach((item) => {
           if (
@@ -304,9 +322,13 @@ export default defineComponent({
               item.type + item.id?.toString()
             ) === undefined
           )
-            (map.value as mapBoxGl.Map).on("load", () => {
+            if ((map.value as mapBoxGl.Map).loaded()) {
               addLayer(item);
-            });
+            } else {
+              (map.value as mapBoxGl.Map).once("load", () => {
+                addLayer(item);
+              });
+            }
         });
       }
     });

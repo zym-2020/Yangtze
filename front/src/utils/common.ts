@@ -60,6 +60,9 @@ interface Children {
   id?: string
   selectDemId?: string
   selectDemName?: string
+  selectDemIds?: string[]
+  selectDemNames?: string[]
+  nodeType?: string
 }
 export const computedResource = (result: Children[]) => {
   store.state.resource.layerDataList.forEach((item) => {
@@ -125,7 +128,8 @@ export const computedResource = (result: Children[]) => {
       label: item.name,
       children: [],
       type: item.type,
-      show: item.show
+      show: item.show,
+      nodeType: 'anyArea'
     })
   })
   store.state.resource.analyse.area.analysisResultList.forEach(item => {
@@ -133,7 +137,8 @@ export const computedResource = (result: Children[]) => {
       label: item.name,
       children: [],
       type: item.type,
-      show: item.show
+      show: item.show,
+      nodeType: 'area'
     })
   })
   store.state.resource.analyse.boundary.analysisResultList.forEach(item => {
@@ -141,7 +146,8 @@ export const computedResource = (result: Children[]) => {
       label: item.name,
       children: [],
       type: item.type,
-      show: item.show
+      show: item.show,
+      nodeType: 'boundary'
     })
   })
   store.state.resource.analyse.branch.analysisResultList.forEach(item => {
@@ -149,7 +155,8 @@ export const computedResource = (result: Children[]) => {
       label: item.name,
       children: [],
       type: item.type,
-      show: item.show
+      show: item.show,
+      nodeType: 'branch'
     })
   })
   store.state.resource.analyse.deep.analysisResultList.forEach(item => {
@@ -157,7 +164,8 @@ export const computedResource = (result: Children[]) => {
       label: item.name,
       children: [],
       type: item.type,
-      show: item.show
+      show: item.show,
+      nodeType: 'deep'
     })
   })
   store.state.resource.analyse.deepContrast.analysisResultList.forEach(item => {
@@ -165,7 +173,8 @@ export const computedResource = (result: Children[]) => {
       label: item.name,
       children: [],
       type: item.type,
-      show: item.show
+      show: item.show,
+      nodeType: 'deepContrast'
     })
   })
   store.state.resource.analyse.elev.analysisResultList.forEach(item => {
@@ -173,7 +182,8 @@ export const computedResource = (result: Children[]) => {
       label: item.name,
       children: [],
       type: item.type,
-      show: item.show
+      show: item.show,
+      nodeType: 'elev'
     })
   })
   store.state.resource.analyse.line.analysisResultList.forEach(item => {
@@ -181,7 +191,8 @@ export const computedResource = (result: Children[]) => {
       label: item.name,
       children: [],
       type: item.type,
-      show: item.show
+      show: item.show,
+      nodeType: 'line'
     })
   })
   store.state.resource.analyse.section.analysisResultList.forEach(item => {
@@ -191,16 +202,21 @@ export const computedResource = (result: Children[]) => {
       children: [],
       type: item.type,
       show: item.show,
+      nodeType: 'section',
       selectDemId: item.selectDemId,
       selectDemName: item.selectDemName
     })
   })
   store.state.resource.analyse.sectionContrast.analysisResultList.forEach(item => {
     result[0].children[1].children[9].children.push({
+      id: item.id,
       label: item.name,
       children: [],
       type: item.type,
-      show: item.show
+      show: item.show,
+      nodeType: 'sectionContrast',
+      selectDemIds: item.selectDemIds,
+      selectDemNames: item.selectDemNames
     })
   })
   store.state.resource.analyse.slope.analysisResultList.forEach(item => {
@@ -208,7 +224,8 @@ export const computedResource = (result: Children[]) => {
       label: item.name,
       children: [],
       type: item.type,
-      show: item.show
+      show: item.show,
+      nodeType: 'slope'
     })
   })
   store.state.resource.analyse.volume.analysisResultList.forEach(item => {
@@ -216,7 +233,8 @@ export const computedResource = (result: Children[]) => {
       label: item.name,
       children: [],
       type: item.type,
-      show: item.show
+      show: item.show,
+      nodeType: 'volume'
     })
   })
 }
@@ -265,20 +283,19 @@ export const mergeResource = () => {
 export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse, addLayer: (resource: Resource) => void, delLayer: (type: string, id: string, show: boolean) => void, isLoaded: boolean) => {
   const sectionAdd = getAddArr(newVal.section.analysisResultList, oldVal.section.analysisResultList)
   const sectionDel = getDelArr(newVal.section.analysisResultList, oldVal.section.analysisResultList)
-
   sectionDel.forEach(item => {
     delLayer(item.type, item.id as string, item.show as boolean)
   })
   sectionAdd.forEach(item => {
     if (item.show && map.getLayer(item.type + item.id) === undefined) {
-      if (isLoaded) {
-        addLayer(item)
-      } else {
-        map.on('load', () => {
-          console.log(2)
-          addLayer(item)
-        })
-      }
+      addLayer(item)
+      // if (isLoaded) {
+      //   addLayer(item)
+      // } else {
+      //   map.once('render', () => {
+      //     addLayer(item)
+      //   })
+      // }
     }
   })
 
@@ -287,13 +304,14 @@ export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse
   const sectionContrastDel = getDelArr(newVal.sectionContrast.analysisResultList, oldVal.sectionContrast.analysisResultList)
   sectionContrastAdd.forEach(item => {
     if (item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
-      if (isLoaded) {
-        addLayer(item)
-      } else {
-        map.on('load', () => {
-          addLayer(item)
-        })
-      }
+      addLayer(item)
+      // if (isLoaded) {
+      //   addLayer(item)
+      // } else {
+      //   map.once('styledata', () => {
+      //     addLayer(item)
+      //   })
+      // }
     }
   })
   sectionContrastDel.forEach(item => {
@@ -304,13 +322,14 @@ export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse
   const anyAreaDel = getDelArr(newVal.anyArea.analysisResultList, oldVal.anyArea.analysisResultList)
   anyAreaAdd.forEach(item => {
     if (item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
-      if (isLoaded) {
-        addLayer(item)
-      } else {
-        map.on('load', () => {
-          addLayer(item)
-        })
-      }
+      addLayer(item)
+      // if (isLoaded) {
+      //   addLayer(item)
+      // } else {
+      //   map.once('load', () => {
+      //     addLayer(item)
+      //   })
+      // }
     }
   })
   anyAreaDel.forEach(item => {
@@ -321,13 +340,14 @@ export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse
   const areaDel = getDelArr(newVal.area.analysisResultList, oldVal.area.analysisResultList)
   areaAdd.forEach(item => {
     if (item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
-      if (isLoaded) {
-        addLayer(item)
-      } else {
-        map.on('load', () => {
-          addLayer(item)
-        })
-      }
+      addLayer(item)
+      // if (isLoaded) {
+      //   addLayer(item)
+      // } else {
+      //   map.once('load', () => {
+      //     addLayer(item)
+      //   })
+      // }
     }
   })
   areaDel.forEach(item => {
@@ -338,13 +358,14 @@ export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse
   const boundaryDel = getDelArr(newVal.boundary.analysisResultList, oldVal.boundary.analysisResultList)
   boundaryAdd.forEach(item => {
     if (item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
-      if (isLoaded) {
-        addLayer(item)
-      } else {
-        map.on('load', () => {
-          addLayer(item)
-        })
-      }
+      addLayer(item)
+      // if (isLoaded) {
+      //   addLayer(item)
+      // } else {
+      //   map.once('load', () => {
+      //     addLayer(item)
+      //   })
+      // }
     }
   })
   boundaryDel.forEach(item => {
@@ -355,13 +376,14 @@ export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse
   const branchDel = getDelArr(newVal.branch.analysisResultList, oldVal.branch.analysisResultList)
   branchAdd.forEach(item => {
     if (item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
-      if (isLoaded) {
-        addLayer(item)
-      } else {
-        map.on('load', () => {
-          addLayer(item)
-        })
-      }
+      addLayer(item)
+      // if (isLoaded) {
+      //   addLayer(item)
+      // } else {
+      //   map.once('load', () => {
+      //     addLayer(item)
+      //   })
+      // }
     }
   })
   branchDel.forEach(item => {
@@ -372,13 +394,14 @@ export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse
   const deepDel = getDelArr(newVal.deep.analysisResultList, oldVal.deep.analysisResultList)
   deepAdd.forEach(item => {
     if (item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
-      if (isLoaded) {
-        addLayer(item)
-      } else {
-        map.on('load', () => {
-          addLayer(item)
-        })
-      }
+      addLayer(item)
+      // if (isLoaded) {
+      //   addLayer(item)
+      // } else {
+      //   map.once('load', () => {
+      //     addLayer(item)
+      //   })
+      // }
     }
   })
   deepDel.forEach(item => {
@@ -389,13 +412,14 @@ export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse
   const deepContrastDel = getDelArr(newVal.deepContrast.analysisResultList, oldVal.deepContrast.analysisResultList)
   deepContrastAdd.forEach(item => {
     if (item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
-      if (isLoaded) {
-        addLayer(item)
-      } else {
-        map.on('load', () => {
-          addLayer(item)
-        })
-      }
+      addLayer(item)
+      // if (isLoaded) {
+      //   addLayer(item)
+      // } else {
+      //   map.once('load', () => {
+      //     addLayer(item)
+      //   })
+      // }
     }
   })
   deepContrastDel.forEach(item => {
@@ -406,13 +430,14 @@ export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse
   const elevDel = getDelArr(newVal.elev.analysisResultList, oldVal.elev.analysisResultList)
   elevAdd.forEach(item => {
     if (item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
-      if (isLoaded) {
-        addLayer(item)
-      } else {
-        map.on('load', () => {
-          addLayer(item)
-        })
-      }
+      addLayer(item)
+      // if (isLoaded) {
+      //   addLayer(item)
+      // } else {
+      //   map.once('load', () => {
+      //     addLayer(item)
+      //   })
+      // }
     }
   })
   elevDel.forEach(item => {
@@ -423,13 +448,14 @@ export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse
   const lineDel = getDelArr(newVal.line.analysisResultList, oldVal.line.analysisResultList)
   lineAdd.forEach(item => {
     if (item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
-      if (isLoaded) {
-        addLayer(item)
-      } else {
-        map.on('load', () => {
-          addLayer(item)
-        })
-      }
+      addLayer(item)
+      // if (isLoaded) {
+      //   addLayer(item)
+      // } else {
+      //   map.once('load', () => {
+      //     addLayer(item)
+      //   })
+      // }
     }
   })
   lineDel.forEach(item => {
@@ -440,13 +466,14 @@ export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse
   const slopeDel = getDelArr(newVal.slope.analysisResultList, oldVal.slope.analysisResultList)
   slopeAdd.forEach(item => {
     if (item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
-      if (isLoaded) {
-        addLayer(item)
-      } else {
-        map.on('load', () => {
-          addLayer(item)
-        })
-      }
+      addLayer(item)
+      // if (isLoaded) {
+      //   addLayer(item)
+      // } else {
+      //   map.once('load', () => {
+      //     addLayer(item)
+      //   })
+      // }
     }
   })
   slopeDel.forEach(item => {
@@ -457,13 +484,14 @@ export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse
   const volumeDel = getDelArr(newVal.volume.analysisResultList, oldVal.volume.analysisResultList)
   volumeAdd.forEach(item => {
     if (item.show && map.getLayer(item.type + item.id?.toString()) === undefined) {
-      if (isLoaded) {
-        addLayer(item)
-      } else {
-        map.on('load', () => {
-          addLayer(item)
-        })
-      }
+      addLayer(item)
+      // if (isLoaded) {
+      //   addLayer(item)
+      // } else {
+      //   map.once('load', () => {
+      //     addLayer(item)
+      //   })
+      // }
     }
   })
   volumeDel.forEach(item => {

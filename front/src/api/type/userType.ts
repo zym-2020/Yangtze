@@ -38,3 +38,12 @@ export interface SectionJsonData {
     sectionName: string,
     projectName: string
 }
+
+export interface SectionContrastJsonData {
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number,
+    sectionName: string,
+    projectName: string
+}

@@ -75,23 +75,16 @@ public class ProjectController {
         return ResultUtils.success();
     }
 
-    @RequestMapping(value = "/test", method = RequestMethod.GET)
-    public void test(HttpServletResponse response) {
-        try {
-            response.setContentType("image/png");
+    @AuthCheck
+    @RequestMapping(value = "/saveSectionContrastValue", method = RequestMethod.POST)
+    public JsonResult saveSectionContrastValue(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
+        projectService.saveSectionContrastValue(jsonObject.getDouble("lat1"), jsonObject.getDouble("lon1"), jsonObject.getDouble("lat2"), jsonObject.getDouble("lon2"), jsonObject.getStr("sectionName"), email, jsonObject.getStr("projectName"));
+        return ResultUtils.success();
+    }
 
-//            FileInputStream in = new FileInputStream(new File("E:\\Minio\\data\\test\\123@qq.com\\upload\\raster\\color.dem\\tiles\\8\\214\\152.png"));
-//            ServletOutputStream sos = response.getOutputStream();
-//            byte[] b = new byte[1024];
-//            while(in.read(b) != -1) {
-//                sos.write(b);
-//            }
-//            sos.flush();
-//            in.close();
-//            sos.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+    @AuthCheck
+    @RequestMapping(value = "/getSectionContrastValue/{projectName}/{sectionName}")
+    public JsonResult getSectionContrastValue(@PathVariable String projectName, @PathVariable String sectionName, @JwtTokenParser("email") String email) {
+        return ResultUtils.success(projectService.getSectionContrastValue(email, projectName, sectionName));
     }
 }

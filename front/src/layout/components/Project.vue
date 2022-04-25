@@ -43,6 +43,13 @@
       :contextData="contextData"
       @sendSectionValue="sendSectionValue"
     ></section-context-menu>
+    <section-contrast-context-menu
+      v-show="sectionContrastContextMenuFlag"
+      class="section-contrast-context-menu"
+      :sectionContrastContextData="sectionContrastContextData"
+      @sendSectionContrastValue="sendSectionContrastValue"
+    >
+    </section-contrast-context-menu>
     <el-dialog
       v-model="sectionShow"
       width="700px"
@@ -53,6 +60,13 @@
         :sectionValue="sectionValue"
         v-if="sectionShow"
       ></section-show>
+    </el-dialog>
+
+    <el-dialog v-model="sectionContrastShow" width="700px" :modal="false">
+      <section-contrast-show
+        v-if="sectionContrastShow"
+        :sectionContrastValue="sectionContrastValue"
+      ></section-contrast-show>
     </el-dialog>
 
     <el-dialog v-model="openFlag" width="600px" :show-close="false">
@@ -70,7 +84,9 @@ import { ResourceState } from "@/store/resourse/resourceState";
 import { useStore } from "@/store";
 import { computedResource } from "@/utils/common";
 import SectionContextMenu from "@/components/contextMenu/SectionContextMenu.vue";
+import SectionContrastContextMenu from "@/components/contextMenu/SectionContrastContextMenu.vue";
 import SectionShow from "@/components/projectDialog/SectionShow.vue";
+import SectionContrastShow from "@/components/projectDialog/SectionContrastShow.vue";
 import { notice } from "@/utils/notice";
 
 interface Children {
@@ -83,12 +99,17 @@ interface Children {
   classifyCount?: number;
   selectDemId?: string;
   selectDemName?: string;
+  selectDemIds?: string[];
+  selectDemNames?: string[];
+  nodeType?: string;
 }
 export default defineComponent({
   components: {
     OpenProject,
     SectionContextMenu,
     SectionShow,
+    SectionContrastContextMenu,
+    SectionContrastShow,
   },
 
   setup() {
@@ -96,9 +117,17 @@ export default defineComponent({
     const flag = ref(false);
     const openFlag = ref(false);
     const sectionContextMenuFlag = ref(false);
+    const sectionContrastContextMenuFlag = ref(false);
     const selectId = ref("");
     const contextData = ref({});
+    const sectionContrastContextData = ref({});
     const sectionShow = ref(false);
+    const sectionContrastShow = ref(false);
+    const sectionContrastValue = reactive({
+      id: "",
+      name: "",
+      value: []
+    });
     const sectionValue = reactive({
       name: "",
       id: "",
@@ -160,7 +189,8 @@ export default defineComponent({
 
     const contextmenuClick = (event: any, data: any) => {
       sectionContextMenuFlag.value = false;
-      if (data.id != undefined) {
+      sectionContrastContextMenuFlag.value = false;
+      if (data.nodeType === "section") {
         contextData.value = data;
         sectionContextMenuFlag.value = true;
         const menu: any = document.querySelector(".section-context-menu");
@@ -172,8 +202,23 @@ export default defineComponent({
           document.removeEventListener("click", closeMenu);
         }
         document.addEventListener("click", closeMenu);
+      } else if (data.nodeType === "sectionContrast") {
+        sectionContrastContextData.value = data;
+        sectionContrastContextMenuFlag.value = true;
+        const menu: any = document.querySelector(
+          ".section-contrast-context-menu"
+        );
+        const pro = document.querySelector(".pro") as HTMLElement;
+        menu.style.left = event.clientX - pro.offsetLeft + "px";
+        menu.style.top = event.clientY - pro.offsetTop + "px";
+        function closeMenu() {
+          sectionContrastContextMenuFlag.value = false;
+          document.removeEventListener("click", closeMenu);
+        }
+        document.addEventListener("click", closeMenu);
       }
     };
+
     const sendSectionValue = (val: { code: number; data: []; msg: [] }) => {
       sectionValue.name = (contextData.value as any).label;
       sectionValue.id = (contextData.value as any).id;
@@ -190,6 +235,27 @@ export default defineComponent({
         notice("error", "错误", "断面计算错误");
         sectionValue.value = [];
         sectionShow.value = false;
+      }
+    };
+
+    const sendSectionContrastValue = (val: {
+      code: number;
+      data: [];
+      msg: string;
+    }) => {
+      sectionContrastValue.id = (sectionContrastContextData.value as any).id
+      sectionContrastValue.name = (sectionContrastContextData.value as any).label
+      if(val.code === 100) {
+        notice("warning", "计算中", "断面计算中，请稍后！");
+        sectionContrastValue.value = []
+        sectionContrastShow.value = false
+      } else if(val.code === 0) {
+        sectionContrastValue.value = val.data
+        sectionContrastShow.value = true
+      } else {
+        notice("error", "错误", "断面计算错误");
+        sectionContrastValue.value = []
+        sectionContrastShow.value = false
       }
     };
 
@@ -215,8 +281,13 @@ export default defineComponent({
       selectProjectId,
       contextmenuClick,
       sendSectionValue,
+      sectionContrastValue,
+      sectionContrastShow,
       contextData,
+      sendSectionContrastValue,
+      sectionContrastContextData,
       sectionContextMenuFlag,
+      sectionContrastContextMenuFlag,
       defaultProps,
       resource,
     };
@@ -269,7 +340,8 @@ export default defineComponent({
     // }
   }
 }
-.section-context-menu {
+.section-context-menu,
+.section-contrast-context-menu {
   position: absolute;
   z-index: 99;
   top: 0;

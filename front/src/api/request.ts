@@ -1,5 +1,5 @@
 import { get, post, del, patch } from './axios'
-import { RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData } from './type/userType'
+import { RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData } from './type/userType'
 import { ResourceState } from '@/store/resourse/resourceState'
 
 
@@ -48,6 +48,14 @@ export async function getSectionValue(projectName: string, sectionName: string, 
 
 export async function delSection(projectName: string, sectionName: string, DEMName: string) {
     return await del(`/project/delSection/${projectName}/${sectionName}/${DEMName}`)
+}
+
+export async function saveSectionContrastValue(jsonData: SectionContrastJsonData) {
+    return await post(`/project/saveSectionContrastValue`, jsonData)
+}
+
+export async function getSectionContrastValue(projectName: string, sectionName: string) {
+    return await get(`/project/getSectionContrastValue/${projectName}/${sectionName}`)
 }
 
 //========================vectorRelationship相关接口=================================
