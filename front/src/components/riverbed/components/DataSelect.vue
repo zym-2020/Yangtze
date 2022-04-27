@@ -21,7 +21,7 @@
 
 <script lang="ts">
 interface DataDem {
-  id: number;
+  id: string;
   name: string;
 }
 import { computed, defineComponent, onMounted, reactive, ref } from "vue";
@@ -29,24 +29,24 @@ import { useStore } from "@/store";
 export default defineComponent({
   setup() {
     const store = useStore();
-    const value = ref(3);
+    const value = ref('c6e72c9a-b9c8-4677-9560-8262416d8079');
     const options = ref<Array<DataDem>>([
-      { id: 3, name: "199801_dem" },
-      { id: 4, name: "200408_dem" },
-      { id: 5, name: "200602_dem" },
+      { id: 'c6e72c9a-b9c8-4677-9560-8262416d8079', name: "199801_dem" },
+      { id: 'd7ad6d22-5458-4915-8918-d014fa8772cd', name: "200408_dem" },
+      { id: 'a2efbd6a-5b2f-4144-9f32-cfa74c1d88c5', name: "200602_dem" },
     ]);
-    const selectChange = (val: number) => {
+    const selectChange = (val: string) => {
       const select = options.value.filter((item) => {
         item.id === val;
       });
       store.commit("SET_DATA_SELECT", {
-        id: val.toString(),
+        id: val,
         name: select[0].name,
       });
     };
 
     onMounted(() => {
-      store.commit("SET_DATA_SELECT", { id: "3", name: "199801_dem" });
+      store.commit("SET_DATA_SELECT", { id: "c6e72c9a-b9c8-4677-9560-8262416d8079", name: "199801_dem" });
     });
 
     return {

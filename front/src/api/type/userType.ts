@@ -30,7 +30,7 @@ export interface NewShapeJsonData {
 }
 
 export interface SectionJsonData {
-    DEMId: number,
+    DEMId: string,
     lat1: number,
     lon1: number,
     lat2: number,

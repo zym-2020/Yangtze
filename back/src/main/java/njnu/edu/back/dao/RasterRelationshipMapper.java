@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,11 +17,11 @@ import java.util.Map;
  */
 @Repository
 public interface RasterRelationshipMapper {
-    String getAddress(@Param("id") Integer rasterId);
+    String getAddress(@Param("id") UUID rasterId);
 
     List<Map<String, Object>> pageQuery(@Param("size") int size, @Param("start") int start);
 
     int countAll();
 
-    RasterRelationship getById(@Param("id") Integer rasterId);
+    RasterRelationship getById(@Param("id") UUID rasterId);
 }

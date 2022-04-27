@@ -16,15 +16,15 @@ import java.util.Map;
 public interface ProjectService {
     void addProject(AddProject addProject, String email);
 
-    String getResultById(Integer id);
+    String getResultById(String id);
 
     List<Map<String, Object>> getProjectId(String email);
 
-    int setResult(ProjectJsonBean result, int id);
+    int setResult(ProjectJsonBean result, String id);
 
-    void saveSectionValue(Integer DEMId, Double lat1, Double lon1, Double lat2, Double lon2, String sectionName, String email, String projectName);
+    void saveSectionValue(String DEMId, Double lat1, Double lon1, Double lat2, Double lon2, String sectionName, String email, String projectName);
 
-    List<Double> getSectionValue(String email, String projectName, String sectionName, String DEMName, Integer DEMId);
+    List<Double> getSectionValue(String email, String projectName, String sectionName, String DEMName, String DEMId);
 
     void delSection(String email, String projectName, String sectionName, String DEMName);
 

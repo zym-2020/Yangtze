@@ -10,7 +10,9 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.UUID;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,10 +31,10 @@ public class RasterTileServiceImpl implements RasterTileService {
     String baseDir;
 
     @Override
-    public void getRaster(int rasterId, String x, String y, String z, HttpServletResponse response) {
+    public void getRaster(String rasterId, String x, String y, String z, HttpServletResponse response) {
         int temp = ((int) Math.pow(2, Integer.parseInt(z)) - Integer.parseInt(y)) - 1;
         y = Integer.toString(temp);
-        String address = rasterRelationshipMapper.getAddress(rasterId);
+        String address = rasterRelationshipMapper.getAddress(UUID.fromString(rasterId));
         String path = address + "\\tiles\\" + z + "\\" + x + "\\" + y + ".png";
         ServletOutputStream sos = null;
         InputStream in = null;
@@ -46,7 +48,6 @@ public class RasterTileServiceImpl implements RasterTileService {
                 while(in.read(b) != -1) {
                     sos.write(b);
                 }
-
             } else {
                 in = new FileInputStream(new File(baseDir + "123@qq.com\\upload\\raster\\color.dem\\tiles\\9\\428\\304.png"));
                 sos = response.getOutputStream();
@@ -57,13 +58,13 @@ public class RasterTileServiceImpl implements RasterTileService {
                 sos.flush();
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+//            e.printStackTrace();
         } finally {
             if(in != null) {
                 try {
                     in.close();
-                    sos.close();
+//                    sos.close();                  //此处不需要关闭这个io流，springboot开启的io流不需要手动关闭
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

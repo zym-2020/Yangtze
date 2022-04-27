@@ -10,5 +10,5 @@ import javax.servlet.http.HttpServletResponse;
  * @Description:
  */
 public interface RasterTileService {
-    void getRaster(int rasterId, String x, String y, String z, HttpServletResponse response);
+    void getRaster(String rasterId, String x, String y, String z, HttpServletResponse response);
 }

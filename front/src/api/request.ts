@@ -34,7 +34,7 @@ export async function getResult(projectId: string) {
     return await get(`/project/getResult/${projectId}`)
 }
 
-export async function setResult(jsonData: ResourceState, id: number) {
+export async function setResult(jsonData: ResourceState, id: string) {
     return await patch(`/project/setResult/${id}`, jsonData)
 }
 
@@ -42,7 +42,7 @@ export async function section(jsonData: SectionJsonData) {
     return await post(`/project/section`, jsonData)
 }
 
-export async function getSectionValue(projectName: string, sectionName: string, DEMName: string, DEMId: number) {
+export async function getSectionValue(projectName: string, sectionName: string, DEMName: string, DEMId: string) {
     return await get(`/project/getSectionValue/${projectName}/${sectionName}/${DEMName}/${DEMId}`)
 }
 

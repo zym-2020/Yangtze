@@ -19,7 +19,7 @@ export class MapUtils {
         }
         map?.on('draw.create', async () => {
             const coordinates = (draw.getAll().features[0].geometry as any).coordinates
-            console.log(coordinates)
+            console.log(store.state.other.dataSelect.id)
             const layerDataList = JSON.parse(JSON.stringify(store.state.resource.layerDataList))
             const analyse = JSON.parse(JSON.stringify(store.state.resource.analyse))
             
@@ -36,10 +36,10 @@ export class MapUtils {
                 selectDemName: store.state.other.dataSelect.name
             })
             analyse.section.classifyCount++
-            await store.dispatch("setResource", {projectJsonBean: {layerDataList: layerDataList, analyse: analyse}, id: parseInt(getCurrentProjectId() as string)})
+            await store.dispatch("setResource", {projectJsonBean: {layerDataList: layerDataList, analyse: analyse}, id: getCurrentProjectId() as string})
             draw.deleteAll()
             await section({
-                DEMId: parseInt(store.state.other.dataSelect.id),
+                DEMId: store.state.other.dataSelect.id,
                 lat1: coordinates[0][1] as number,
                 lon1: coordinates[0][0] as number,
                 lat2: coordinates[1][1] as number,
@@ -82,7 +82,7 @@ export class MapUtils {
                 selectDemNames: selectDemNames,
             })
             analyse.sectionContrast.classifyCount++
-            await store.dispatch("setResource", {projectJsonBean: {layerDataList: layerDataList, analyse: analyse}, id: parseInt(getCurrentProjectId() as string)})
+            await store.dispatch("setResource", {projectJsonBean: {layerDataList: layerDataList, analyse: analyse}, id: getCurrentProjectId() as string})
             draw.deleteAll()
             await saveSectionContrastValue({
                 lat1: coordinates[0][1] as number,

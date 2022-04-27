@@ -4,7 +4,7 @@
     <select id="selectTile" parameterType="njnu.edu.back.proj.support.TileBox" resultType="Object">
         select st_asmvt(result, #{name}) tile
         from(
-                select st_asmvtgeom(geom, st_makeenvelope(#{xMin,jdbcType=NUMERIC}, #{yMin,jdbcType=NUMERIC}, #{xMax,jdbcType=NUMERIC},#{yMax,jdbcType=NUMERIC}), 4096, 0, true) as geom
+                select st_asmvtgeom(ST_Transform(geom, 3857), ST_Transform(st_makeenvelope(#{xMin,jdbcType=NUMERIC}, #{yMin,jdbcType=NUMERIC}, #{xMax,jdbcType=NUMERIC},#{yMax,jdbcType=NUMERIC}, 4326), 3857), 4096, 0, true) as geom
                 from ${name}
             ) as result
     </select>

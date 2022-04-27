@@ -20,7 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
-    Integer id;
+    String id;
     String name;
     String email;
     String password;

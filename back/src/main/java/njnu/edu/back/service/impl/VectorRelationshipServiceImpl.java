@@ -86,10 +86,9 @@ public class VectorRelationshipServiceImpl implements VectorRelationshipService 
                 }
                 int exitCode = process.waitFor();
                 if(exitCode == 0) {
-                    AddVector addVector = new AddVector(finalName, category, finalPath, meta, fileName + ".shp", email, source, GeoToolsUtil.conversion(type));
-                    int id = vectorRelationshipMapper.addVector(addVector);
-                    System.out.println(id);
-                    redisService.set(uuid.toString(), id, 24*60l);          //成功
+                    AddVector addVector = new AddVector(UUID.randomUUID().toString(), finalName, category, finalPath, meta, fileName + ".shp", email, source, GeoToolsUtil.conversion(type));
+                    vectorRelationshipMapper.addVector(addVector);
+                    redisService.set(uuid.toString(), addVector.getId().toString(), 24*60l);          //成功
                 } else
                     redisService.set(uuid.toString(), -2, 24*60l);      //失败
             }
@@ -100,18 +99,18 @@ public class VectorRelationshipServiceImpl implements VectorRelationshipService 
 
     @Override
     public Map<String, Object> checkState(String uuid) {
-        Integer state = (int) redisService.get(uuid);
+        String state = (String) redisService.get(uuid);
         if(state == null) {
             throw new MyException(-1, "该数据可能已经上传完毕了");
         }
-        if(state == -1) {
+        if(Integer.parseInt(state) == -1) {
             return null;
-        } else if(state > 0) {
-            redisService.del(uuid);
-            return vectorRelationshipMapper.queryAnalyseVector(state);
-        } else if(state == -2) {
+        } else if(Integer.parseInt(state) == -2) {
             throw new MyException(-1, "矢量插入错误");
+        } else {
+            redisService.del(uuid);
+            return vectorRelationshipMapper.queryAnalyseVector(UUID.fromString(state));
         }
-        return null;
+
     }
 }

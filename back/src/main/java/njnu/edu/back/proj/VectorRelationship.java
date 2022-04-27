@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 /**
  * Created with IntelliJ IDEA.
  *
@@ -15,7 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class VectorRelationship {
-    Integer id;
+    String id;
     String tableName;       //矢量文件对应数据库表名
     String category;
     String address;         //矢量文件存储地址

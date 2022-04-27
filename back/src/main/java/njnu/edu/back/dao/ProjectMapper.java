@@ -1,5 +1,6 @@
 package njnu.edu.back.dao;
 
+import njnu.edu.back.proj.Project;
 import njnu.edu.back.proj.dto.AddProject;
 import njnu.edu.back.proj.support.projectJson.ProjectJsonBean;
 import org.apache.ibatis.annotations.Param;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,11 +21,12 @@ import java.util.Map;
 public interface ProjectMapper {
     void addProject(AddProject addProject);
 
-    String getResult(@Param("id") Integer id);
+    String getResult(@Param("id") UUID id);
 
     List<Map<String, Object>> getProjectId(@Param("email") String email);
 
-    int setResult(@Param("result") String result, @Param("id") int id);
+    int setResult(@Param("result") String result, @Param("id") UUID id);
 
     String getResultByEmailAndProjectName(@Param("email") String email, @Param("projectName") String projectName);
+
 }

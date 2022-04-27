@@ -28,7 +28,7 @@ export default defineComponent({
         getCurrentProjectName() as string,
         (props.contextData as any).label,
         (props.contextData as any).selectDemName,
-        parseInt((props.contextData as any).selectDemId)
+        (props.contextData as any).selectDemId
       );
       if (sectionValue != null) {
         context.emit("sendSectionValue", sectionValue);
@@ -42,7 +42,7 @@ export default defineComponent({
             }
         })
         const layerDataList = store.state.resource.layerDataList
-        await store.dispatch("setResource", {projectJsonBean: {layerDataList: layerDataList, analyse: analyse}, id: parseInt(getCurrentProjectId() as string)})
+        await store.dispatch("setResource", {projectJsonBean: {layerDataList: layerDataList, analyse: analyse}, id: getCurrentProjectId() as string})
         await delSection(getCurrentProjectName() as string, (props.contextData as any).label, (props.contextData as any).selectDemName)
     }
     return {

@@ -22,16 +22,16 @@ export default defineComponent({
     const tdtCva: AnySourceData = {
       type: "vector",
       tiles: [
-        "http://localhost:8080/Yangtze/vector/cwz1/{x}/{y}/{z}",
+        "http://localhost:8002/vector/cwz1/{x}/{y}/{z}",
         // "http://t0.tianditu.gov.cn/DataServer?T=cia_w&x={x}&y={y}&l={z}&tk=35a94ab5985969d0b93229c30db6abd6",
         // "http://t0.tianditu.com/cva_w/wmts?tk=35a94ab5985969d0b93229c30db6abd6&SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=cva&STYLE=default&TILEMATRIXSET=w&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=tiles",
       ],
     };
-    const test: AnySourceData = {
-      type: "raster-dem",
-      url: "mapbox://mapbox.mapbox-terrain-dem-v1",
-      tileSize: 512,
-    };
+    // const test: AnySourceData = {
+    //   type: "raster-dem",
+    //   url: "mapbox://mapbox.mapbox-terrain-dem-v1",
+    //   tileSize: 512,
+    // };
 
     const initMap = () => {
       const map = new mapBoxGl.Map({
@@ -57,6 +57,11 @@ export default defineComponent({
               source: "tdtCva",
               "source-layer": "cwz1",
             },
+            // {
+            //   id: 'test',
+            //   type: 'hillshade',
+            //   source: 'test'
+            // }
           ],
         },
 
@@ -86,7 +91,7 @@ export default defineComponent({
       container,
       tdtVec,
       tdtCva,
-      initMap,
+      initMap
     };
   },
 });

@@ -23,10 +23,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -64,8 +61,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public String getResultById(Integer id) {
-        return projectMapper.getResult(id);
+    public String getResultById(String id) {
+        return projectMapper.getResult(UUID.fromString(id));
     }
 
     @Override
@@ -74,13 +71,13 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public int setResult(ProjectJsonBean result, int id) {
-        return projectMapper.setResult(JSONObject.toJSONString(result), id);
+    public int setResult(ProjectJsonBean result, String id) {
+        return projectMapper.setResult(JSONObject.toJSONString(result), UUID.fromString(id));
     }
 
     @Override
-    public void saveSectionValue(Integer DEMId, Double lat1, Double lon1, Double lat2, Double lon2, String sectionName, String email, String projectName) {
-        RasterRelationship rasterRelationship = rasterRelationshipMapper.getById(DEMId);
+    public void saveSectionValue(String DEMId, Double lat1, Double lon1, Double lat2, Double lon2, String sectionName, String email, String projectName) {
+        RasterRelationship rasterRelationship = rasterRelationshipMapper.getById(UUID.fromString(DEMId));
         String path = rasterRelationship.getAddress() + "\\" + rasterRelationship.getFileName();
         String resultPath = baseDir + email + "\\projects\\" + projectName + "\\断面形态";
         File file = new File(resultPath);
@@ -107,7 +104,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<Double> getSectionValue(String email, String projectName, String sectionName, String DEMName, Integer DEMId) {
+    public List<Double> getSectionValue(String email, String projectName, String sectionName, String DEMName, String DEMId) {
         String filePath = baseDir + email + "\\projects\\" + projectName + "\\断面形态\\" + sectionName + "_" + DEMName + ".txt";
         File file = new File(filePath);
         if(!file.exists()) {

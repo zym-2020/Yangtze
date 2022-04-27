@@ -192,7 +192,7 @@ export default defineComponent({
     });
 
     const commit = async () => {
-      await store.dispatch("setResource", {projectJsonBean: {layerDataList: result.list, analyse: store.state.resource.analyse},  id: parseInt(getCurrentProjectId() as string)})
+      await store.dispatch("setResource", {projectJsonBean: {layerDataList: result.list, analyse: store.state.resource.analyse},  id: getCurrentProjectId() as string})
       context.emit('returnData')
     }
 

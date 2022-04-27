@@ -11,11 +11,11 @@ type AugmentedActionContext = {
 } & Omit<ActionContext<ResourceState, RootState>, 'commit'>
 
 export interface Actions {
-    setResource({ commit }: AugmentedActionContext, jsonParam: {projectJsonBean: ResourceState, id: number}): void
+    setResource({ commit }: AugmentedActionContext, jsonParam: {projectJsonBean: ResourceState, id: string}): void
 }
 
 export const resourceActions: ActionTree<ResourceState, RootState> & Actions = {
-    async setResource({ commit }: AugmentedActionContext, jsonParam: {projectJsonBean: ResourceState, id: number}) {
+    async setResource({ commit }: AugmentedActionContext, jsonParam: {projectJsonBean: ResourceState, id: string}) {
         await setResult(jsonParam.projectJsonBean, jsonParam.id)
         notice("success", "成功", "数据加载成功")
         commit("SET_BASE_DATA", jsonParam.projectJsonBean.layerDataList)

@@ -5,6 +5,8 @@ import njnu.edu.back.common.auth.AuthCheck;
 import njnu.edu.back.common.resolver.JwtTokenParser;
 import njnu.edu.back.common.result.JsonResult;
 import njnu.edu.back.common.result.ResultUtils;
+import njnu.edu.back.dao.ProjectMapper;
+import njnu.edu.back.proj.Project;
 import njnu.edu.back.proj.dto.AddProject;
 import njnu.edu.back.proj.support.projectJson.ProjectJsonBean;
 import njnu.edu.back.service.ProjectService;
@@ -39,7 +41,7 @@ public class ProjectController {
 
     @AuthCheck
     @RequestMapping(value = "/getResult/{id}", method = RequestMethod.GET)
-    public JsonResult getResult(@PathVariable int id) {
+    public JsonResult getResult(@PathVariable String id) {
         return ResultUtils.success(projectService.getResultById(id));
     }
 
@@ -51,20 +53,20 @@ public class ProjectController {
 
     @AuthCheck
     @RequestMapping(value = "/setResult/{id}", method = RequestMethod.PATCH)
-    public JsonResult setResult(@RequestBody ProjectJsonBean result, @PathVariable int id) {
+    public JsonResult setResult(@RequestBody ProjectJsonBean result, @PathVariable String id) {
         return ResultUtils.success(projectService.setResult(result, id));
     }
 
     @AuthCheck
     @RequestMapping(value = "/section", method = RequestMethod.POST)
     public JsonResult sectionValue(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
-        projectService.saveSectionValue(jsonObject.getInt("DEMId"), jsonObject.getDouble("lat1"), jsonObject.getDouble("lon1"), jsonObject.getDouble("lat2"), jsonObject.getDouble("lon2"), jsonObject.getStr("sectionName"), email, jsonObject.getStr("projectName"));
+        projectService.saveSectionValue(jsonObject.getStr("DEMId"), jsonObject.getDouble("lat1"), jsonObject.getDouble("lon1"), jsonObject.getDouble("lat2"), jsonObject.getDouble("lon2"), jsonObject.getStr("sectionName"), email, jsonObject.getStr("projectName"));
         return ResultUtils.success();
     }
 
     @AuthCheck
     @RequestMapping(value = "/getSectionValue/{projectName}/{sectionName}/{DEMName}/{DEMId}", method = RequestMethod.GET)
-    public JsonResult getSectionValue(@JwtTokenParser("email") String email, @PathVariable String projectName, @PathVariable String sectionName, @PathVariable String DEMName, @PathVariable int DEMId) {
+    public JsonResult getSectionValue(@JwtTokenParser("email") String email, @PathVariable String projectName, @PathVariable String sectionName, @PathVariable String DEMName, @PathVariable String DEMId) {
         return ResultUtils.success(projectService.getSectionValue(email, projectName, sectionName, DEMName, DEMId));
     }
 
@@ -87,4 +89,5 @@ public class ProjectController {
     public JsonResult getSectionContrastValue(@PathVariable String projectName, @PathVariable String sectionName, @JwtTokenParser("email") String email) {
         return ResultUtils.success(projectService.getSectionContrastValue(email, projectName, sectionName));
     }
+
 }

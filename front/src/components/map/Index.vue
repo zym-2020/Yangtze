@@ -70,14 +70,14 @@ export default defineComponent({
     };
     const tif: AnySourceData = {
       type: "raster",
-      tiles: ["http://localhost:8080/Yangtze/raster/getRaster/1/{x}/{y}/{z}"],
+      tiles: ["http://localhost:8002/raster/getRaster/9a2f70d7-b2a2-4f75-8322-4ab00e16a6b1/{x}/{y}/{z}"],
       // bounds: [119.482547, 31.758138, 121.878795, 32.384769],
       maxzoom: 15,
       minzoom: 5,
     };
     const rasterDEM: AnySourceData = {
       type: "raster",
-      tiles: ["http://localhost:8080/Yangtze/raster/getRaster/2/{x}/{y}/{z}"],
+      tiles: ["http://localhost:8002/raster/getRaster/ac430874-0fdd-4303-a3ad-d4c30448dbf0/{x}/{y}/{z}"],
       // bounds: [120.127027, 31.161315, 121.994353, 32.023517],
       maxzoom: 12,
     };
@@ -116,7 +116,7 @@ export default defineComponent({
             {
               id: "rasterDEM",
               type: "raster",
-              source: "rasterDEM",
+              source: "rasterDEM"
             },
           ],
         },
@@ -145,7 +145,7 @@ export default defineComponent({
         map.value?.addSource(resource.type + resource.id, {
           type: resource.type,
           tiles: [
-            `http://localhost:8080/Yangtze/raster/getRaster/${resource.id}/{x}/{y}/{z}`,
+            `http://localhost:8002/raster/getRaster/${resource.id}/{x}/{y}/{z}`,
           ],
         });
         map.value?.addLayer({
@@ -162,7 +162,7 @@ export default defineComponent({
         map.value?.addSource(resource.type + resource.id, {
           type: resource.type,
           tiles: [
-            `http://localhost:8080/Yangtze/vector/${resource.tableName}/{x}/{y}/{z}`,
+            `http://localhost:8002/vector/${resource.tableName}/{x}/{y}/{z}`,
           ],
         });
         map.value?.addLayer({

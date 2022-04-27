@@ -9,9 +9,9 @@
         select count(*) from vector_relationship;
     </select>
 
-    <select id="addVector" parameterType="njnu.edu.back.proj.dto.AddVector" resultType="java.lang.Integer">
-        insert into vector_relationship values(default, #{tableName}, #{category}, #{address}, #{meta}, #{fileName}, #{uploader}, now(), #{source}, #{type}) returning id;
-    </select>
+    <insert id="addVector" parameterType="njnu.edu.back.proj.dto.AddVector">
+        insert into vector_relationship values(#{id}::uuid, #{tableName}, #{category}, #{address}, #{meta}, #{fileName}, #{uploader}, now(), #{source}, #{type}) returning id;
+    </insert>
 
     <select id="queryAnalyseVector" resultType="java.util.HashMap">
         select id, file_name as name, meta, upload_time as time, table_name as "tableName", type as "vectorType" from vector_relationship where id = #{id};

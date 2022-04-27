@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,5 +23,5 @@ public interface VectorRelationshipMapper {
 
     int addVector(AddVector addVector);
 
-    Map<String, Object> queryAnalyseVector(@Param("id") int id);
+    Map<String, Object> queryAnalyseVector(@Param("id") UUID id);
 }
