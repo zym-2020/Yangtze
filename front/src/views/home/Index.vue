@@ -64,7 +64,7 @@ export default defineComponent({
             // }
           ],
         },
-
+        // style: "http://172.21.212.63:8991/mapServer/626a592bc27f00a2b6b029f1",
         center: [121.193496, 31.791046],
         // center: [-114.34411, 32.6141],
         zoom: 8,

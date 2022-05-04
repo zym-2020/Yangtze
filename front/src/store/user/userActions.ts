@@ -37,6 +37,7 @@ export const userActions: ActionTree<UserState, RootState> & Actions = {
         let data = await getUserInfoByToken() as any
         if (data != null) {
             if (data.code === 0) {
+                commit("SET_ID", data.data.id)
                 commit("SET_EMAIL", data.data.email)
                 commit("SET_NAME", data.data.name)
                 commit("SET_ROLES", data.data.roles)
@@ -49,6 +50,7 @@ export const userActions: ActionTree<UserState, RootState> & Actions = {
 
     logout({ commit }) {
         clear()
+        commit("SET_ID", "")
         commit("SET_EMAIL", "")
         commit("SET_NAME", "")
         commit("SET_ROLES", [])

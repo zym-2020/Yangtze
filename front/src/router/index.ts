@@ -25,6 +25,11 @@ export const constantRoutes: Array<RouteRecordRaw> = [
         path: '/register',
         name: 'Register',
         component: () => import('@/views/register/Index.vue')
+    },
+    {
+        path: '/user',
+        name: 'User',
+        component: () => import('@/views/user/Index.vue')
     }
 ]
 

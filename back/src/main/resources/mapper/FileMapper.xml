@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="njnu.edu.back.dao.FileMapper">
+    <insert id="addFile" parameterType="njnu.edu.back.proj.dto.AddFileDTO">
+        insert into files values(default, #{name}, #{address}, #{fileName}, #{level}, #{parentId}::uuid, now(), #{uploader}, #{meta}, #{folder});
+    </insert>
+
+    <select id="findByLevel" resultType="java.util.HashMap">
+        select * from files where level = #{level};
+    </select>
+
+    <select id="findByParentId" resultType="java.util.HashMap">
+        select * from files where parent_id = #{parentId};
+    </select>
+</mapper>

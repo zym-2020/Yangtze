@@ -125,6 +125,7 @@ public class JwtTokenUtil {
      */
     public static String generateTokenByUser(User user) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("id", user.getId());
         claims.put("name", user.getName());
         claims.put("email", user.getEmail());
         claims.put("roles", JSON.toJSONString(user.getRoles()));
@@ -157,6 +158,7 @@ public class JwtTokenUtil {
             throw new MyException(ResultEnum.TOKEN_WRONG);
         }
         Map<String, Object> map = new HashMap<>();
+        map.put("id", claims.get("id"));
         map.put("name", claims.get("name"));
         map.put("email", claims.get("email"));
         map.put("roles", claims.get("roles"));

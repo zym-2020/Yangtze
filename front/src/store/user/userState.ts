@@ -4,6 +4,7 @@ export interface UserState {
     email: string
     avatar: string
     roles: string[]
+    id: string
 }
 
 export const state: UserState = {
@@ -11,5 +12,6 @@ export const state: UserState = {
     name: "",
     email: "",
     avatar: "",
-    roles: []
+    roles: [],
+    id: ''
 }

@@ -39,8 +39,9 @@ public class UserController {
 
     @AuthCheck
     @RequestMapping(value = "/getUserInfoByToken", method = RequestMethod.GET)
-    public JsonResult getUserInfoByToken(@JwtTokenParser(value = "name") String name, @JwtTokenParser(value = "email") String email, @JwtTokenParser(value = "roles") String[] roles) {
+    public JsonResult getUserInfoByToken(@JwtTokenParser("id") String id, @JwtTokenParser(value = "name") String name, @JwtTokenParser(value = "email") String email, @JwtTokenParser(value = "roles") String[] roles) {
         JSONObject jsonObject = new JSONObject();
+        jsonObject.putOnce("id", id);
         jsonObject.putOnce("name", name);
         jsonObject.putOnce("email", email);
         jsonObject.putOnce("roles", roles);
