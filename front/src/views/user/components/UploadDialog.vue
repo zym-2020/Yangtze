@@ -97,12 +97,18 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import { genFileId, UploadFile } from "element-plus";
 import type { UploadInstance, UploadRawFile } from "element-plus";
 import { notice } from "@/utils/notice";
 import JSZip from "jszip";
-import { createFileChunk, getFileMd5 } from "@/utils/file";
+import {
+  createFileChunk,
+  getFileMd5,
+  handlePostFiles,
+  checkStatus,
+} from "@/utils/file";
+import { getNoUpload, mergeFile } from "@/api/request";
 
 interface Tree {
   label: string;
@@ -110,7 +116,15 @@ interface Tree {
   type: string;
 }
 export default defineComponent({
-  setup() {
+  props: {
+    level: {
+      type: Number
+    },
+    parentId: {
+      type: String
+    }
+  },
+  setup(props) {
     const options = ref([
       { label: "地形", value: "地形" },
       { label: "水文", value: "水文" },
@@ -162,7 +176,7 @@ export default defineComponent({
               zip
                 .loadAsync(uploadFile.value[0]?.raw as any)
                 .then((res) => {
-                  console.log(2)
+                  console.log(2);
                   classify(res);
                 })
                 .then(() => {
@@ -176,7 +190,7 @@ export default defineComponent({
             notice("error", "错误", "请上传zip数据");
           }
         } else {
-          notice("warning", "警告", "计算中，请勿重复点击")
+          notice("warning", "警告", "计算中，请勿重复点击");
         }
       } else {
         notice("warning", "警告", "请先加载数据");
@@ -221,10 +235,23 @@ export default defineComponent({
       } else if (uploadFile.value.length === 0) {
         notice("warning", "警告", "请加载上传数据");
       } else {
-        getFileMd5(uploadFile.value[0].raw as File, (md5: string) => {
-          console.log(md5)
-        })
-        console.log(createFileChunk(uploadFile.value[0].raw as File));
+        getFileMd5(uploadFile.value[0].raw as File, async (md5: string) => {
+          const fileChunk = createFileChunk(uploadFile.value[0].raw as File);
+          const chunkList = await getNoUpload(md5, fileChunk.length);
+          await handlePostFiles(chunkList.data, fileChunk, md5);
+          if (chunkList.data.length === 0) {
+            const key = await mergeFile({
+              MD5: md5,
+              type: typeValue.value,
+              name: uploadFile.value[0].name,
+              total: fileChunk.length,
+              level: props.level as number,
+              parentId: props.parentId as string,
+              meta: ''
+            });
+            checkStatus(key.data);
+          }
+        });
       }
     };
 

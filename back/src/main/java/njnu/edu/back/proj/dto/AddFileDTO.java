@@ -17,6 +17,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddFileDTO {
+    String id;
     String name;
     String address;
     String fileName;

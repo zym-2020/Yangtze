@@ -1,5 +1,6 @@
 package njnu.edu.back.dao;
 
+import njnu.edu.back.proj.File;
 import njnu.edu.back.proj.dto.AddFileDTO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -19,7 +20,13 @@ import java.util.UUID;
 public interface FileMapper {
     int addFile(AddFileDTO addFileDTO);
 
-    List<Map<String, Object>> findByLevel(@Param("level") int level);
+    List<Map<String, Object>> findByLevel(@Param("level") int level, @Param("email") String email);
 
-    List<Map<String, Object>> findByParentId(@Param("parentId")UUID parentId);
+    List<Map<String, Object>> findByParentId(@Param("parentId")String parentId);
+
+    void rename(@Param("id") String id, @Param("name") String name);
+
+    void delete(@Param("id") String id);
+
+    File findById(@Param("id") String id);
 }

@@ -2,14 +2,26 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="njnu.edu.back.dao.FileMapper">
     <insert id="addFile" parameterType="njnu.edu.back.proj.dto.AddFileDTO">
-        insert into files values(default, #{name}, #{address}, #{fileName}, #{level}, #{parentId}::uuid, now(), #{uploader}, #{meta}, #{folder});
+        insert into files values(#{id}::uuid, #{name}, #{address}, #{fileName}, #{level}, #{parentId}, now(), #{uploader}, #{meta}, #{folder});
     </insert>
 
     <select id="findByLevel" resultType="java.util.HashMap">
-        select * from files where level = #{level};
+        select * from files where level = #{level} and uploader = #{email};
     </select>
 
     <select id="findByParentId" resultType="java.util.HashMap">
         select * from files where parent_id = #{parentId};
+    </select>
+
+    <update id="rename">
+        update files set name = #{name} where id = #{id}::uuid;
+    </update>
+
+    <delete id="delete">
+        delete from files where id = #{id}::uuid;
+    </delete>
+
+    <select id="findById" resultType="njnu.edu.back.proj.File">
+        select * from files where id = #{id}::uuid;
     </select>
 </mapper>

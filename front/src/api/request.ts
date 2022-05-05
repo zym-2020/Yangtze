@@ -1,5 +1,5 @@
 import { get, post, del, patch } from './axios'
-import { RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData } from './type/userType'
+import { RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData, MergeFileJsonData, AddFileJsonData, RenameJsonData } from './type/userType'
 import { ResourceState } from '@/store/resourse/resourceState'
 
 
@@ -12,7 +12,7 @@ export async function getUserInfoByToken() {
     return await get(`/user/getUserInfoByToken`)
 }
 
-export async function register(jsonData: RegisterJsonData){
+export async function register(jsonData: RegisterJsonData) {
     return await post(`/user/register`, jsonData)
 }
 
@@ -74,4 +74,37 @@ export async function checkState(uuid: string) {
 //========================rasterRelationship相关接口=================================
 export async function rasterPageQuery(size: number, start: number) {
     return await get(`/rasterRelationship/pageQuery/${size}/${start}`)
+}
+
+//========================file相关接口=================================
+export async function getNoUpload(md5: string, total: number) {
+    return await get(`/file/getNoUpload/${md5}/${total}`)
+}
+
+export async function mergeFile(jsonData: MergeFileJsonData) {
+    return await post(`/file/mergeFile`, jsonData)
+}
+
+export async function checkMergeState(key: string) {
+    return await get(`/file/checkMergeState/${key}`)
+}
+
+export async function findByLevel(level: number) {
+    return await get(`/file/findByLevel/${level}`)
+}
+
+export async function findByParentId(parentId: string) {
+    return await get(`/file/findByParentId/${parentId}`)
+}
+
+export async function addFile(jsonData: AddFileJsonData) {
+    return await post(`/file/addFile`, jsonData)
+}
+
+export async function rename(jsonData: RenameJsonData) {
+    return await patch(`/file/rename`, jsonData)
+}
+
+export async function deleteFile(id: string) {
+    return await del(`/file/deleteFile/${id}`)
 }

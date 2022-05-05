@@ -1,6 +1,7 @@
 package njnu.edu.back.service;
 
 import njnu.edu.back.proj.dto.AddFileDTO;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -16,9 +17,19 @@ import java.util.Map;
 public interface FileService {
     void addFile(AddFileDTO addFileDTO, String email);
 
-    List<Map<String, Object>> findByLevel(int level);
+    List<Map<String, Object>> findByLevel(int level, String email);
 
     List<Map<String, Object>> findByParentId(String parentId);
 
     List<String> getNoUpload(String MD5, String email, int total);
+
+    void uploadFile(MultipartFile multipartFile, String MD5, String email, String name);
+
+    String mergeFile(String email, String MD5, String type, String name, int total, int level, String parentId, String meta);
+
+    int checkMergeState(String key);
+
+    void rename(String id, String name);
+
+    void deleteFile(String id);
 }

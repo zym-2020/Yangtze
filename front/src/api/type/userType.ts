@@ -47,3 +47,29 @@ export interface SectionContrastJsonData {
     sectionName: string,
     projectName: string
 }
+
+export interface MergeFileJsonData {
+    MD5: string,
+    type: string,
+    name: string,
+    total: number,
+    level: number,
+    parentId: string,
+    meta: string
+}
+
+export interface AddFileJsonData {
+    id?: string
+    name: string
+    address: string
+    fileName: string
+    level: number,
+    parentId: string,
+    meta: string
+    folder: boolean
+}
+
+export interface RenameJsonData {
+    id: string,
+    name: string
+}
