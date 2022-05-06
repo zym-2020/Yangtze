@@ -31,4 +31,6 @@ public interface ProjectService {
     void saveSectionContrastValue(Double lat1, Double lon1, Double lat2, Double lon2, String sectionName, String email, String projectName);
 
     Map<String, List<Double>> getSectionContrastValue(String email, String projectName, String sectionName);
+
+    List<Map<String, Object>> getProjects();
 }

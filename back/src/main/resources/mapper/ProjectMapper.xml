@@ -22,4 +22,8 @@
         select result from projects where creator = #{email} and project_Name = #{projectName};
     </select>
 
+    <select id="getProjects" resultType="java.util.HashMap">
+        select * from projects;
+    </select>
+
 </mapper>

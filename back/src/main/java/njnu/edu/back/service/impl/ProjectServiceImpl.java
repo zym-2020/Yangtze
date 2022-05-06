@@ -36,6 +36,7 @@ import java.util.*;
 @Service
 public class ProjectServiceImpl implements ProjectService {
 
+
     @Autowired
     ProjectMapper projectMapper;
 
@@ -260,5 +261,10 @@ public class ProjectServiceImpl implements ProjectService {
             }
             return result;
         }
+    }
+
+    @Override
+    public List<Map<String, Object>> getProjects() {
+        return projectMapper.getProjects();
     }
 }

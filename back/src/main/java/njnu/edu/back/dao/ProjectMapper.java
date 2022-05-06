@@ -29,4 +29,6 @@ public interface ProjectMapper {
 
     String getResultByEmailAndProjectName(@Param("email") String email, @Param("projectName") String projectName);
 
+    List<Map<String, Object>> getProjects();
+
 }

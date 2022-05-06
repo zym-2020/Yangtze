@@ -19,16 +19,11 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
                     await store.dispatch("getUserInfo", undefined)
                     const roles = store.state.user.roles
                     store.dispatch("generateRoutes", roles)
+                    console.log(roles, store.state.permission.addRouters)
                     store.state.permission.addRouters.forEach(item => {
                         router.addRoute(item)
                     })
-                    if (to.meta.tag) {
-                        let view = {
-                            path: to.path,
-                            title: to.meta.title as string
-                        }
-                        store.dispatch("addView", view)
-                    }
+                    
                     next({ ...to, replace: true })
                     NProgress.done()
 
@@ -38,18 +33,12 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
                     NProgress.done()
                 }
             } else {
-                if (to.meta.tag) {
-                    let view = {
-                        path: to.path,
-                        title: to.meta.title as string
-                    }
-                    store.dispatch("addView", view)
-                }
+                
                 next()
             }
         }
     } else {
-        if (to.path === '/login' || to.path === '/register') {
+        if (to.path === '/login' || to.path === '/register' || to.path === '/') {
             next()
             NProgress.done
         } else {

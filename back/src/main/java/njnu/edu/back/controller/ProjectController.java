@@ -90,4 +90,10 @@ public class ProjectController {
         return ResultUtils.success(projectService.getSectionContrastValue(email, projectName, sectionName));
     }
 
+    @AuthCheck
+    @RequestMapping(value = "/getProjects", method = RequestMethod.GET)
+    public JsonResult getProjects() {
+        return ResultUtils.success(projectService.getProjects());
+    }
+
 }

@@ -32,4 +32,5 @@ public interface FileService {
     void rename(String id, String name);
 
     void deleteFile(String id);
+
 }

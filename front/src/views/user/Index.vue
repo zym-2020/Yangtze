@@ -66,10 +66,10 @@ export default defineComponent({
   padding: 0 10%;
   .left {
     text-align: center;
-    margin-top: 50px;
+    margin-top: 20px;
   }
   .right {
-    margin-top: 50px;
+    margin-top: 20px;
   }
 }
 </style>

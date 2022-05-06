@@ -58,6 +58,10 @@ export async function getSectionContrastValue(projectName: string, sectionName: 
     return await get(`/project/getSectionContrastValue/${projectName}/${sectionName}`)
 }
 
+export async function getProjects() {
+    return await get(`/project/getProjects`)
+}
+
 //========================vectorRelationship相关接口=================================
 export async function vectorPageQuery(size: number, start: number) {
     return await get(`/vectorRelationship/pageQuery/${size}/${start}`)
