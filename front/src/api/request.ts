@@ -26,8 +26,8 @@ export async function addProject(jsonData: ProjectJsonData) {
     return await post(`/project/addProject`, jsonData)
 }
 
-export async function getProjectId() {
-    return await get(`/project/getProjectId`)
+export async function getProjectsByEmail() {
+    return await get(`/project/getProjectsByEmail`)
 }
 
 export async function getResult(projectId: string) {

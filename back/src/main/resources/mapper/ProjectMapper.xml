@@ -10,8 +10,8 @@
         select result from projects where id = #{id}
     </select>
     
-    <select id="getProjectId" resultType="java.util.HashMap">
-        select id, project_name as "projectName", description as des, create_time as "createTime" from projects where creator = #{email} order by create_time;
+    <select id="getProjectsByEmail" resultType="java.util.HashMap">
+        select id, project_name as "projectName", description as des, create_time as "createTime", result from projects where creator = #{email} order by create_time;
     </select>
 
     <update id="setResult">

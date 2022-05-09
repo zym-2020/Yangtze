@@ -32,18 +32,18 @@
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref, watch } from "vue";
 import mapBoxGl, { AnySourceData } from "mapbox-gl";
-import Tools from "@/components/tools/Index.vue";
+
 import DataSelect from "../riverbed/components/DataSelect.vue";
 import { useStore } from "@/store";
 import { Resource, Analyse } from "@/store/resourse/resourceState";
 import { mergeResource, watchAnalyse } from "@/utils/common";
 export default defineComponent({
   components: {
-    Tools,
     DataSelect,
   },
   setup() {
     const container = ref<HTMLElement>();
+    const flag = ref(false);
     const active = ref(1);
     const store = useStore();
     const dataSelectFlag = ref(false);
@@ -69,14 +69,18 @@ export default defineComponent({
     };
     const tif: AnySourceData = {
       type: "raster",
-      tiles: ["http://localhost:8002/raster/getRaster/9a2f70d7-b2a2-4f75-8322-4ab00e16a6b1/{x}/{y}/{z}"],
+      tiles: [
+        "http://localhost:8002/raster/getRaster/9a2f70d7-b2a2-4f75-8322-4ab00e16a6b1/{x}/{y}/{z}",
+      ],
       // bounds: [119.482547, 31.758138, 121.878795, 32.384769],
       maxzoom: 15,
       minzoom: 5,
     };
     const rasterDEM: AnySourceData = {
       type: "raster",
-      tiles: ["http://localhost:8002/raster/getRaster/ac430874-0fdd-4303-a3ad-d4c30448dbf0/{x}/{y}/{z}"],
+      tiles: [
+        "http://localhost:8002/raster/getRaster/ac430874-0fdd-4303-a3ad-d4c30448dbf0/{x}/{y}/{z}",
+      ],
       // bounds: [120.127027, 31.161315, 121.994353, 32.023517],
       maxzoom: 12,
     };
@@ -115,11 +119,11 @@ export default defineComponent({
             {
               id: "rasterDEM",
               type: "raster",
-              source: "rasterDEM"
+              source: "rasterDEM",
             },
           ],
         },
-        
+
         attributionControl: false,
         center: [121.193496, 31.791046],
         zoom: 8,
@@ -129,7 +133,7 @@ export default defineComponent({
           new mapBoxGl.FullscreenControl(),
           "top-right"
         );
-        console.log("load");
+        flag.value = true;
       });
     };
     const changeActive = (num: number) => {
@@ -234,66 +238,65 @@ export default defineComponent({
       }
     };
 
-    // watch(analyse, (newVal: Analyse, oldVal: Analyse) => {
-    //   watchAnalyse(
-    //     map.value as mapBoxGl.Map,
-    //     newVal,
-    //     oldVal,
-    //     addLayer,
-    //     delLayer,
-    //     map.value?.loaded() as boolean
-    //   );
-    // });
+    watch(analyse, (newVal: Analyse, oldVal: Analyse) => {
+      watchAnalyse(
+        map.value as mapBoxGl.Map,
+        newVal,
+        oldVal,
+        addLayer,
+        delLayer,
+        flag.value
+      );
+    });
 
-    // watch(layerDataList, (newVal: Resource[], oldVal: Resource[]) => {
-    //   const add: Resource[] = newVal.filter((item) => {
-    //     let flag = true;
-    //     for (let i = 0; i < oldVal.length; i++) {
-    //       if (
-    //         item.id?.toString() === oldVal[i].id?.toString() &&
-    //         item.type === oldVal[i].type
-    //       ) {
-    //         flag = false;
-    //         break;
-    //       }
-    //     }
-    //     if (flag) return item;
-    //   });
-    //   const del: Resource[] = oldVal.filter((item) => {
-    //     let flag = true;
-    //     for (let i = 0; i < newVal.length; i++) {
-    //       if (
-    //         item.id?.toString() === newVal[i].id?.toString() &&
-    //         item.type === newVal[i].type
-    //       ) {
-    //         flag = false;
-    //         break;
-    //       }
-    //     }
-    //     if (flag) return item;
-    //   });
+    watch(layerDataList, (newVal: Resource[], oldVal: Resource[]) => {
+      const add: Resource[] = newVal.filter((item) => {
+        let flag = true;
+        for (let i = 0; i < oldVal.length; i++) {
+          if (
+            item.id?.toString() === oldVal[i].id?.toString() &&
+            item.type === oldVal[i].type
+          ) {
+            flag = false;
+            break;
+          }
+        }
+        if (flag) return item;
+      });
+      const del: Resource[] = oldVal.filter((item) => {
+        let flag = true;
+        for (let i = 0; i < newVal.length; i++) {
+          if (
+            item.id?.toString() === newVal[i].id?.toString() &&
+            item.type === newVal[i].type
+          ) {
+            flag = false;
+            break;
+          }
+        }
+        if (flag) return item;
+      });
 
-    //   add.forEach((item) => {
-    //     if (
-    //       item.show &&
-    //       (map.value as mapBoxGl.Map).getLayer(item.type + item.id) ===
-    //         undefined
-    //     ) {
-    //       addLayer(item);
-    //       // if ((map.value as mapBoxGl.Map).loaded()) {
-    //       //   addLayer(item);
-    //       // } else {
-    //       //   (map.value as mapBoxGl.Map).once("load", () => {
-    //       //     addLayer(item);
-    //       //   });
-    //       // }
-    //     }
-    //   });
+      add.forEach((item) => {
+        if (
+          item.show &&
+          (map.value as mapBoxGl.Map).getLayer(item.type + item.id) ===
+            undefined
+        ) {
+          if (flag.value) {
+            addLayer(item);
+          } else {
+            (map.value as mapBoxGl.Map).on("load", () => {
+              addLayer(item);
+            });
+          }
+        }
+      });
 
-    //   del.forEach((item) => {
-    //     delLayer(item.type, item.id as string, item.show as boolean);
-    //   });
-    // });
+      del.forEach((item) => {
+        delLayer(item.type, item.id as string, item.show as boolean);
+      });
+    });
 
     const riverBed = (val: number) => {
       if (val === 0) {
@@ -304,17 +307,16 @@ export default defineComponent({
         dataSelectFlag.value = false;
         store.commit("SET_DATA_SELECTS", [
           { id: "3", name: "199801_dem" },
-          { id: '4', name: "200408_dem" },
-          { id: '5', name: "200602_dem" },
+          { id: "4", name: "200408_dem" },
+          { id: "5", name: "200602_dem" },
         ]);
       }
     };
 
     onMounted(async () => {
-      console.log(map)
       initMap();
+      
       const arr = mergeResource();
-      console.log("arr", arr);
       if (arr.length > 0) {
         arr.forEach((item) => {
           if (
@@ -341,7 +343,7 @@ export default defineComponent({
       changeActive,
       riverBed,
       dataSelectFlag,
-      map,
+      map
     };
   },
 });

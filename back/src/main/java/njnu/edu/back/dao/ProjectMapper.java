@@ -23,7 +23,7 @@ public interface ProjectMapper {
 
     String getResult(@Param("id") UUID id);
 
-    List<Map<String, Object>> getProjectId(@Param("email") String email);
+    List<Map<String, Object>> getProjectsByEmail(@Param("email") String email);
 
     int setResult(@Param("result") String result, @Param("id") UUID id);
 

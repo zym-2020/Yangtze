@@ -105,8 +105,10 @@
           </div>
         </el-col>
       </el-row>
-      <div style="text-align: center;">
-        <el-button style="margin-top: 5px" type="primary" plain @click="commit">确定</el-button>
+      <div style="text-align: center">
+        <el-button style="margin-top: 5px" type="primary" plain @click="commit"
+          >确定</el-button
+        >
       </div>
     </div>
   </div>
@@ -114,49 +116,49 @@
 
 <script lang="ts">
 interface PageResult {
-  id?: string
+  id?: string;
   name: string;
   type: string;
   meta?: string;
   time?: string;
-  show?: boolean
-  tableName?: string
-  vectorType?: string
+  show?: boolean;
+  tableName?: string;
+  vectorType?: string;
 }
-import { defineComponent, onBeforeMount, reactive, ref } from "vue";
+import { computed, defineComponent, onBeforeMount, reactive, ref } from "vue";
 import { vectorPageQuery, rasterPageQuery } from "@/api/request";
-import { useStore } from '@/store'
-import { getCurrentProjectId } from '@/utils/project'
+import { useStore } from "@/store";
+import { getCurrentProjectId } from "@/utils/project";
+import router from "@/router";
 export default defineComponent({
-  emits: ['returnData'],
+  emits: ["returnData"],
   setup(_, context) {
-    const store = useStore()
+    const store = useStore();
     const flag = ref(1);
     const input = ref("");
     const clickType = (num: number) => {
       flag.value = num;
     };
+    const projectId = computed(() => {
+      return router.currentRoute.value.params.id;
+    });
     const dblclick = (item: PageResult, type: string) => {
       let hasResult = false;
-      console.log(item.name, item.id)
+      console.log(item.name, item.id);
       result.list.forEach((e) => {
-        if (
-          e.type === item.type &&
-          e.id === item.id
-        )
-          hasResult = true;
+        if (e.type === item.type && e.id === item.id) hasResult = true;
       });
       if (!hasResult) {
-        if(item.type === 'vector') {
-          item.show = true
+        if (item.type === "vector") {
+          item.show = true;
         }
         result.list.push(item);
         result.list[result.list.length - 1].type = type;
       }
     };
     const delDbclick = (index: number) => {
-      result.list.splice(index, 1)
-    }
+      result.list.splice(index, 1);
+    };
 
     const vector = reactive({
       total: 0,
@@ -164,11 +166,10 @@ export default defineComponent({
       pageSize: 14,
       list: ref<Array<PageResult>>([]),
       currentChange: async (page: number) => {
-        const data = await vectorPageQuery(vector.pageSize, page)
-        if(data != null) {
-          vector.total = (data.data as any).total
-          vector.list = (data.data as any).list
-          
+        const data = await vectorPageQuery(vector.pageSize, page);
+        if (data != null) {
+          vector.total = (data.data as any).total;
+          vector.list = (data.data as any).list;
         }
       },
     });
@@ -179,10 +180,10 @@ export default defineComponent({
       pageSize: 14,
       list: ref<Array<PageResult>>([]),
       currentChange: async (page: number) => {
-        const data = await rasterPageQuery(raster.pageSize, page)
-        if(data != null) {
-          raster.total = (data.data as any).total
-          raster.list = (data.data as any).list
+        const data = await rasterPageQuery(raster.pageSize, page);
+        if (data != null) {
+          raster.total = (data.data as any).total;
+          raster.list = (data.data as any).list;
         }
       },
     });
@@ -192,29 +193,35 @@ export default defineComponent({
     });
 
     const commit = async () => {
-      await store.dispatch("setResource", {projectJsonBean: {layerDataList: result.list, analyse: store.state.resource.analyse},  id: getCurrentProjectId() as string})
-      context.emit('returnData')
-    }
+      await store.dispatch("setResource", {
+        projectJsonBean: {
+          layerDataList: result.list,
+          analyse: store.state.resource.analyse,
+        },
+        id: projectId.value as string,
+      });
+      context.emit("returnData");
+    };
 
     onBeforeMount(async () => {
-      store.state.resource.layerDataList.forEach(item => {
+      store.state.resource.layerDataList.forEach((item) => {
         result.list.push({
           name: item.name,
           id: item.id,
           type: item.type,
           show: item.show,
-        })
-      })
+        });
+      });
       let temp1 = await vectorPageQuery(
         vector.pageSize,
         vector.currentPage - 1
       );
       if (temp1 != null) {
         vector.total = (temp1.data as any).total;
-        vector.list = (temp1.data as any).list
-        vector.list.forEach(item => {
-          item.type = 'vector'
-        })
+        vector.list = (temp1.data as any).list;
+        vector.list.forEach((item) => {
+          item.type = "vector";
+        });
       }
       let temp2 = await rasterPageQuery(
         raster.pageSize,
@@ -223,9 +230,9 @@ export default defineComponent({
       if (temp2 != null) {
         raster.list = (temp2.data as any).list;
         raster.total = (temp2.data as any).total;
-        raster.list.forEach(item => {
-          item.type = 'raster'
-        })
+        raster.list.forEach((item) => {
+          item.type = "raster";
+        });
       }
     });
 
@@ -238,7 +245,7 @@ export default defineComponent({
       result,
       dblclick,
       delDbclick,
-      commit
+      commit,
     };
   },
 });
@@ -250,7 +257,7 @@ export default defineComponent({
   padding: 20px 10px 10px 10px;
   width: 100%;
   background: #a6bed7;
-  
+
   .title {
     height: 20px;
     line-height: 20px;
@@ -316,7 +323,7 @@ export default defineComponent({
       margin-top: 10px;
       height: 400px;
       border: solid 1px black;
-      
+
       .result {
         height: 25px;
         position: relative;
@@ -328,7 +335,7 @@ export default defineComponent({
         .del {
           height: 25px;
           width: 100%;
-          background: rgba($color: #FDD35E, $alpha: 0.8);
+          background: rgba($color: #fdd35e, $alpha: 0.8);
           position: absolute;
           z-index: 99;
           top: 0px;

@@ -3,9 +3,9 @@
     <div class="head">项目管理</div>
     <div class="icon">
       <div class="left">
-        <svg style="width: 20px; height: 20px" @click="open">
-          <title>打开工程</title>
-          <use xlink:href="#icon-wenjianjia"></use>
+        <svg style="width: 20px; height: 20px" @click="addFlag = true">
+          <title>添加数据</title>
+          <use xlink:href="#icon-tianjiafutu"></use>
         </svg>
         <el-divider direction="vertical" />
         <svg style="width: 20px; height: 20px; margin-right: 100px">
@@ -20,7 +20,7 @@
           <use xlink:href="#icon-chuangjianrenwu"></use>
         </svg>
         <el-divider direction="vertical" />
-        <svg style="width: 20px; height: 20px">
+        <svg style="width: 20px; height: 20px" @click="manageFlag = true">
           <title>项目管理</title>
           <use xlink:href="#icon-liebiao-2"></use>
         </svg>
@@ -67,9 +67,13 @@
       ></section-contrast-show>
     </el-dialog>
 
-    <!-- <el-dialog v-model="openFlag" width="600px" :show-close="false">
-      <open-project v-if="openFlag" @selectProjectId="selectProjectId" />
-    </el-dialog> -->
+    <el-dialog v-model="addFlag" width="600px" :show-close="false">
+      <add-data v-if="addFlag" @returnData="returnData" />
+    </el-dialog>
+
+    <el-dialog v-model="manageFlag" width="600px" :show-close="false">
+      <project-manage v-if="manageFlag" @selectProjectId="selectProjectId" />
+    </el-dialog>
   </div>
 </template>
 
@@ -77,7 +81,8 @@
 import { defineComponent, computed, ref, reactive } from "vue";
 import { computedResource } from "@/utils/common";
 import { notice } from "@/utils/notice";
-import OpenProject from "@/components/projectDialog/OpenProject.vue";
+import AddData from '@/components/tools/AddData.vue'
+import ProjectManage from '@/components/tools/ProjectManage.vue'
 import SectionContextMenu from "@/components/contextMenu/SectionContextMenu.vue";
 import SectionContrastContextMenu from "@/components/contextMenu/SectionContrastContextMenu.vue";
 import SectionShow from "@/components/projectDialog/SectionShow.vue";
@@ -104,27 +109,26 @@ export default defineComponent({
     },
   },
   components: {
-    OpenProject,
+    AddData,
     SectionContextMenu,
     SectionShow,
     SectionContrastContextMenu,
     SectionContrastShow,
+    ProjectManage
   },
 
   setup(props) {
     const projectName = computed(() => {
       return props.projectName
     })
-    const flag = ref(false);
-    const openFlag = ref(false);
+    const manageFlag = ref(false);
     const sectionContextMenuFlag = ref(false);
     const sectionContrastContextMenuFlag = ref(false);
-    const selectId = ref("");
     const sectionShow = ref(false);
     const sectionContrastShow = ref(false);
     const contextData = ref({});
     const sectionContrastContextData = ref({});
-
+    const addFlag = ref(false)
     const sectionContrastValue = reactive({
       id: "",
       name: "",
@@ -157,29 +161,19 @@ export default defineComponent({
       computedResource(result);
       return result;
     });
-    const open = () => {
-      openFlag.value = true;
-    };
+
     const defaultProps = {
       children: "children",
       label: "label",
     };
 
-    // const selectProjectId = async () => {
-    //   if (
-    //     getCurrentProjectId() != null &&
-    //     selectId.value != getCurrentProjectId()
-    //   ) {
-    //     selectId.value = getCurrentProjectId() as string;
-    //     let data = await getResult(selectId.value);
-    //     if (data != null) {
-    //       let temp: ResourceState = JSON.parse(data.data);
-    //       classify(temp);
-    //       flag.value = true;
-    //     }
-    //   }
-    //   openFlag.value = false;
-    // };
+    const returnData = () => {
+      addFlag.value = false
+    }
+
+    const selectProjectId = () => {
+      manageFlag.value = false
+    }
 
     const sendSectionValue = (val: { code: number; data: []; msg: [] }) => {
       sectionValue.name = (contextData.value as any).label;
@@ -257,7 +251,9 @@ export default defineComponent({
 
     return {
       projectName,
-      open,
+      manageFlag,
+      addFlag,
+      returnData,
       contextData,
       sectionContrastContextData,
       sectionShow,
@@ -270,8 +266,8 @@ export default defineComponent({
       sectionContextMenuFlag,
       sectionContrastContextMenuFlag,
       sectionValue,
-      sectionContrastValue
-      // selectProjectId
+      sectionContrastValue,
+      selectProjectId
     };
   },
 });

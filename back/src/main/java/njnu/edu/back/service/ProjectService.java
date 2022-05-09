@@ -18,7 +18,7 @@ public interface ProjectService {
 
     String getResultById(String id);
 
-    List<Map<String, Object>> getProjectId(String email);
+    List<Map<String, Object>> getProjectsByEmail(String email);
 
     int setResult(ProjectJsonBean result, String id);
 

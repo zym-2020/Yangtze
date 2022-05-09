@@ -41,23 +41,20 @@
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref } from "vue";
 import { getProjectsByEmail } from "@/api/request";
-import {
-  getCurrentProjectId,
-  setCurrentProjectId,
-  setCurrentProjectName,
-} from "@/utils/project";
+import router from "@/router";
 import { notice } from "@/utils/notice";
 
 interface Project {
-  id: number;
+  id: string;
   projectName: string;
   des: string;
+  result: string;
 }
 
 export default defineComponent({
   emits: ["selectProjectId"],
   setup(_, context) {
-    const radio = ref(0);
+    const radio = ref("");
     const projectList = ref<Project[]>([]);
 
     const getProject = async () => {
@@ -68,7 +65,7 @@ export default defineComponent({
     };
 
     const description = computed(() => {
-      if (radio.value === 0) {
+      if (radio.value === "") {
         return "";
       } else {
         for (let i = 0; i < projectList.value.length; i++) {
@@ -80,26 +77,21 @@ export default defineComponent({
     });
 
     const clickCommit = () => {
-      if (radio.value === 0) {
+      if (radio.value === "") {
         notice("warning", "警告", "请先选择要加载的工程！");
       } else {
-        setCurrentProjectId(radio.value.toString());
-        projectList.value.forEach((item) => {
-          if (item.id === radio.value) {
-            setCurrentProjectName(item.projectName);
-          }
-        });
+        router.replace({ path: radio.value });
         context.emit("selectProjectId");
       }
     };
 
     onMounted(async () => {
       await getProject();
-      let temp = getCurrentProjectId();
+      let temp = router.currentRoute.value.params.id;
       if (temp === null) {
-        radio.value = 0;
+        radio.value = "";
       } else {
-        radio.value = parseInt(temp);
+        radio.value = temp as string;
       }
     });
 
@@ -116,7 +108,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .select-project {
   padding: 20px 10px 10px 10px;
-  background: #A6BED7;
+  background: #a6bed7;
   .main {
     padding-top: 10px;
     padding-bottom: 10px;

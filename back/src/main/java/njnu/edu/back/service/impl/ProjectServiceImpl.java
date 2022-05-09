@@ -67,8 +67,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<Map<String, Object>> getProjectId(String email) {
-        return projectMapper.getProjectId(email);
+    public List<Map<String, Object>> getProjectsByEmail(String email) {
+        return projectMapper.getProjectsByEmail(email);
     }
 
     @Override

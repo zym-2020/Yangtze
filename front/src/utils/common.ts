@@ -288,14 +288,13 @@ export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse
   })
   sectionAdd.forEach(item => {
     if (item.show && map.getLayer(item.type + item.id) === undefined) {
-      addLayer(item)
-      // if (isLoaded) {
-      //   addLayer(item)
-      // } else {
-      //   map.once('render', () => {
-      //     addLayer(item)
-      //   })
-      // }
+      if (isLoaded) {
+        addLayer(item)
+      } else {
+        map.on('load', () => {
+          addLayer(item)
+        })
+      }
     }
   })
 

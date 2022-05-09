@@ -47,9 +47,9 @@ public class ProjectController {
     }
 
     @AuthCheck
-    @RequestMapping(value = "/getProjectId", method = RequestMethod.GET)
-    public JsonResult getProjectId(@JwtTokenParser("email") String email) {
-        return ResultUtils.success(projectService.getProjectId(email));
+    @RequestMapping(value = "/getProjectsByEmail", method = RequestMethod.GET)
+    public JsonResult getProjectsByEmail(@JwtTokenParser("email") String email) {
+        return ResultUtils.success(projectService.getProjectsByEmail(email));
     }
 
     @AuthCheck

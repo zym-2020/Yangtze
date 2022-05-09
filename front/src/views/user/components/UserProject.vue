@@ -22,13 +22,13 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
-import { getProjectId } from "@/api/request";
+import { getProjectsByEmail } from "@/api/request";
 export default defineComponent({
   setup() {
     const data = ref([]);
 
     const getProjectList = async () => {
-      const projectList = await getProjectId();
+      const projectList = await getProjectsByEmail();
       if (projectList != null) {
         data.value = projectList.data;
       }
