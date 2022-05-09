@@ -1,47 +1,57 @@
 <template>
   <div class="header-main">
-    <div class="img" @click="toNav('首页')">
-      <img src="/logo.jpg" alt="" height="50" />
-    </div>
-    <div :class="active === 0 ? 'active nav' : 'nav'" @click="toNav('首页')">
-      首页
-    </div>
-    <div :class="active === 1 ? 'active nav' : 'nav'" @click="toNav('资源')">
-      资源
-    </div>
-    <div :class="active === 2 ? 'active nav' : 'nav'" @click="toNav('场景')">
-      场景
-    </div>
-    <div :class="active === 3 ? 'active nav' : 'nav'" @click="toNav('应用')">
-      应用
-    </div>
-    <el-dropdown trigger="click" @command="userNav">
-      <div class="avatar">
-        <el-avatar
-          src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
-          :size="40"
-        />
+    <header id="topnav" class="topNav">
+      <div class="inner">
+        <div class="logo" @click="toHome">
+          <h1 class="logo-text">NHRI</h1>
+          <h1 class="logo-text">NHRI</h1>
+        </div>
+        <nav role="navigation">
+          <ul>
+            <li v-for="port in ports" :key="port.index">
+              <a :href="port.href">{{ port.text }}</a>
+            </li>
+            <li v-if="login">
+              <el-dropdown trigger="click" @command="userNav">
+                <div class="avatar">
+                  <el-avatar
+                    src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
+                    :size="40"
+                  />
+                </div>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item command="1">个人空间</el-dropdown-item>
+                    <el-dropdown-item v-if="adminFlag" command="2"
+                      >admin界面</el-dropdown-item
+                    >
+                    <el-dropdown-item command="3">退出</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </li>
+          </ul>
+        </nav>
       </div>
-      <template #dropdown>
-        <el-dropdown-menu>
-          <el-dropdown-item command="1">个人空间</el-dropdown-item>
-          <el-dropdown-item v-if="adminFlag" command="2"
-            >admin界面</el-dropdown-item
-          >
-        </el-dropdown-menu>
-      </template>
-    </el-dropdown>
+    </header>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent } from "vue";
 import router from "@/router";
 import { useStore } from "@/store";
+import { getToken } from "@/utils/auth";
 export default defineComponent({
   setup() {
     const store = useStore();
-    const active = ref(0);
+    const login = computed(() => {
+      if (getToken() === null) {
+        return false;
+      } else {
+        return true;
+      }
+    });
     const adminFlag = computed(() => {
       let flag = false;
       store.state.user.roles.forEach((item) => {
@@ -51,85 +61,188 @@ export default defineComponent({
       });
       return flag;
     });
-    const toNav = (param: string) => {
-      switch (param) {
-        case "首页":
-          active.value = 0;
-          router.push({ path: "/" });
-          break;
-        case "资源":
-          active.value = 1;
-          router.push({ path: "/data" });
-          break;
-        case "场景":
-          active.value = 2;
-          router.push({ path: "/scenario" });
-          break;
-        case "应用":
-          active.value = 3;
-          router.push({ path: "/analyze" });
-      }
-    };
 
     const userNav = (param: string) => {
       if (param === "1") {
         router.push({ path: "/user/space" });
       } else if (param === "2") {
         router.push({ path: "/user/admin" });
+      } else if (param === '3') {
+        store.dispatch("logout", undefined)
       }
     };
 
+    const ports = computed(() => {
+      const tempPorts = [
+        { href: "#/data", text: "资源门户" },
+        { href: "#/scenario", text: "一张图" },
+        { href: "#/analyze", text: "分析中心" },
+      ];
+      if (getToken() === null) {
+        tempPorts.push({ href: "#/login", text: "登录" });
+      }
+      return tempPorts;
+    });
+
+    const toHome = () => {
+      router.push({ path: "/" });
+    };
     return {
-      toNav,
-      active,
+      ports,
+      toHome,
+      userNav,
       adminFlag,
-      userNav
+      login,
     };
   },
 });
 </script>
 
-<style lang="scss" scoped>
-.header-main {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  background: #0089ce;
-  line-height: 60px;
+<style scoped lang="scss">
+body {
+  &.header-fixed {
+    .logo {
+      font-size: 30px;
+    }
+  }
+}
+* {
+  margin: 0;
+  padding: 0;
+  line-height: 0.8;
+}
+ul,
+li,
+a,
+.logo {
+  font-family: "Lato", "Verdana", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  margin: 0;
+  padding: 0;
+}
+.inner {
+  width: 90%;
   position: relative;
-  .img {
-    height: 50px;
-    margin-top: 5px;
-    margin-left: 20px;
-    cursor: pointer;
-  }
-  .nav {
-    font-size: 18px;
-    text-align: center;
-    width: 80px;
-    color: white;
-    height: 60px;
-    &:hover {
-      box-sizing: border-box;
-      border-bottom: solid 3px #bdd8f4;
-      cursor: pointer;
+  margin: 0 auto;
+}
+header {
+  position: fixed;
+  width: 100%;
+  padding-top: 0px;
+  background-image: linear-gradient(
+    rgba(13, 21, 27, 0.8),
+    rgba(24, 64, 95, 0.3)
+  );
+  transition: 0.7s all;
+  // z-index: 3000;
+  backdrop-filter: blur(8px);
+}
+body {
+  &.header-fixed {
+    header {
+      position: fixed;
+      top: 0;
+      right: 0;
+      padding-top: 0;
+      width: 100%;
+      z-index: 2;
     }
   }
-  .active {
-    box-sizing: border-box;
-    border-bottom: solid 3px #bdd8f4;
-    cursor: pointer;
-  }
+}
+li {
+  list-style: none;
   .el-dropdown {
-    position: absolute;
-    right: 10%;
-    .avatar {
-      height: 60px;
-      .el-avatar {
-        margin-top: 10px;
-        cursor: pointer;
-      }
+    margin-left: 10px;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+}
+nav {
+  overflow: hidden;
+  ul {
+    float: right;
+  }
+  li {
+    display: inline;
+    float: left;
+    &:last-child {
+      float: right;
     }
+  }
+  a {
+    display: inline-block;
+    color: rgba(245, 247, 255, 1);
+    text-decoration: none;
+    font-family: "SimHei";
+    font-size: 16px;
+    padding: 24px;
+    transition: 1s all;
+    background-image: url("/wave_cut_new.png");
+    background-position: top left;
+    &:hover {
+      transition: 2s all;
+      border-bottom-left-radius: 10%;
+      border-bottom-right-radius: 10%;
+      background-position: bottom right;
+    }
+  }
+}
+.logo {
+  float: left;
+  margin-top: 0;
+  font-size: 48px;
+  line-height: 50px;
+  color: #fff;
+  &:hover {
+    cursor: pointer;
+  }
+  h1 {
+    &.logo-text {
+      position: absolute;
+      padding: 10px;
+      color: #fff;
+      font-size: 1em;
+    }
+    &:nth-child(1) {
+      color: transparent;
+      -webkit-text-stroke: 2px #03a9f4;
+    }
+    &:nth-child(2) {
+      color: #03a9f4;
+      animation: water-wave 5s infinite;
+    }
+  }
+}
+
+@keyframes water-wave {
+  0%,
+  100% {
+    clip-path: polygon(
+      0% 18%,
+      15% 28%,
+      32% 72%,
+      54% 70%,
+      70% 18%,
+      84% 20%,
+      100% 60%,
+      100% 100%,
+      0% 100%
+    );
+  }
+  50% {
+    clip-path: polygon(
+      0 80%,
+      16% 45%,
+      34% 20%,
+      51% 45%,
+      67% 60%,
+      84% 72%,
+      100% 18%,
+      100% 100%,
+      0% 100%
+    );
   }
 }
 </style>

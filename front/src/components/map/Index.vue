@@ -18,14 +18,14 @@
       </div>
       <div class="body">|</div>
     </div>
-    <tools class="drag tools" v-drag></tools>
-    <data-select class="drag data-select" v-if="dataSelectFlag"></data-select>
-    <router-view
+    <!-- <tools class="drag tools" v-drag></tools>
+    <data-select class="drag data-select" v-if="dataSelectFlag"></data-select> -->
+    <!-- <router-view
       class="drag router-view"
       v-analyseDrag
       @riverBed="riverBed"
       :map="map"
-    />
+    /> -->
   </div>
 </template>
 
@@ -56,7 +56,6 @@ export default defineComponent({
     const tdtVec: AnySourceData = {
       type: "raster",
       tiles: [
-        // "http://t0.tianditu.gov.cn/DataServer?T=img_w&x={x}&y={y}&l={z}&tk=35a94ab5985969d0b93229c30db6abd6",
         "http://t0.tianditu.com/vec_w/wmts?tk=35a94ab5985969d0b93229c30db6abd6&SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=vec&STYLE=default&TILEMATRIXSET=w&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=tiles",
       ],
       tileSize: 256,
@@ -235,66 +234,66 @@ export default defineComponent({
       }
     };
 
-    watch(analyse, (newVal: Analyse, oldVal: Analyse) => {
-      watchAnalyse(
-        map.value as mapBoxGl.Map,
-        newVal,
-        oldVal,
-        addLayer,
-        delLayer,
-        map.value?.loaded() as boolean
-      );
-    });
+    // watch(analyse, (newVal: Analyse, oldVal: Analyse) => {
+    //   watchAnalyse(
+    //     map.value as mapBoxGl.Map,
+    //     newVal,
+    //     oldVal,
+    //     addLayer,
+    //     delLayer,
+    //     map.value?.loaded() as boolean
+    //   );
+    // });
 
-    watch(layerDataList, (newVal: Resource[], oldVal: Resource[]) => {
-      const add: Resource[] = newVal.filter((item) => {
-        let flag = true;
-        for (let i = 0; i < oldVal.length; i++) {
-          if (
-            item.id?.toString() === oldVal[i].id?.toString() &&
-            item.type === oldVal[i].type
-          ) {
-            flag = false;
-            break;
-          }
-        }
-        if (flag) return item;
-      });
-      const del: Resource[] = oldVal.filter((item) => {
-        let flag = true;
-        for (let i = 0; i < newVal.length; i++) {
-          if (
-            item.id?.toString() === newVal[i].id?.toString() &&
-            item.type === newVal[i].type
-          ) {
-            flag = false;
-            break;
-          }
-        }
-        if (flag) return item;
-      });
+    // watch(layerDataList, (newVal: Resource[], oldVal: Resource[]) => {
+    //   const add: Resource[] = newVal.filter((item) => {
+    //     let flag = true;
+    //     for (let i = 0; i < oldVal.length; i++) {
+    //       if (
+    //         item.id?.toString() === oldVal[i].id?.toString() &&
+    //         item.type === oldVal[i].type
+    //       ) {
+    //         flag = false;
+    //         break;
+    //       }
+    //     }
+    //     if (flag) return item;
+    //   });
+    //   const del: Resource[] = oldVal.filter((item) => {
+    //     let flag = true;
+    //     for (let i = 0; i < newVal.length; i++) {
+    //       if (
+    //         item.id?.toString() === newVal[i].id?.toString() &&
+    //         item.type === newVal[i].type
+    //       ) {
+    //         flag = false;
+    //         break;
+    //       }
+    //     }
+    //     if (flag) return item;
+    //   });
 
-      add.forEach((item) => {
-        if (
-          item.show &&
-          (map.value as mapBoxGl.Map).getLayer(item.type + item.id) ===
-            undefined
-        ) {
-          addLayer(item);
-          // if ((map.value as mapBoxGl.Map).loaded()) {
-          //   addLayer(item);
-          // } else {
-          //   (map.value as mapBoxGl.Map).once("load", () => {
-          //     addLayer(item);
-          //   });
-          // }
-        }
-      });
+    //   add.forEach((item) => {
+    //     if (
+    //       item.show &&
+    //       (map.value as mapBoxGl.Map).getLayer(item.type + item.id) ===
+    //         undefined
+    //     ) {
+    //       addLayer(item);
+    //       // if ((map.value as mapBoxGl.Map).loaded()) {
+    //       //   addLayer(item);
+    //       // } else {
+    //       //   (map.value as mapBoxGl.Map).once("load", () => {
+    //       //     addLayer(item);
+    //       //   });
+    //       // }
+    //     }
+    //   });
 
-      del.forEach((item) => {
-        delLayer(item.type, item.id as string, item.show as boolean);
-      });
-    });
+    //   del.forEach((item) => {
+    //     delLayer(item.type, item.id as string, item.show as boolean);
+    //   });
+    // });
 
     const riverBed = (val: number) => {
       if (val === 0) {
@@ -312,9 +311,10 @@ export default defineComponent({
     };
 
     onMounted(async () => {
+      console.log(map)
       initMap();
       const arr = mergeResource();
-      console.log(map);
+      console.log("arr", arr);
       if (arr.length > 0) {
         arr.forEach((item) => {
           if (
@@ -350,18 +350,17 @@ export default defineComponent({
 <style lang="scss" scoped>
 .map {
   width: 100%;
+  height: 100%;
   position: relative;
   .container {
-    height: 800px;
+    height: calc(100% - 200px);
+    width: 100%;
     /deep/ .mapboxgl-ctrl-logo {
       display: none !important;
     }
-    // /deep/ .mapboxgl-ctrl-attrib-button {
-    //   display: none !important;
-    // }
   }
   .controller {
-    height: calc(100% - 800px);
+    height: 200px;
     .head {
       height: 40px;
       display: flex;

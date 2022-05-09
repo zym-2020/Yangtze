@@ -267,4 +267,9 @@ public class ProjectServiceImpl implements ProjectService {
     public List<Map<String, Object>> getProjects() {
         return projectMapper.getProjects();
     }
+
+    @Override
+    public Map<String, Object> findProjectById(String projectId) {
+        return projectMapper.findProjectById(UUID.fromString(projectId));
+    }
 }

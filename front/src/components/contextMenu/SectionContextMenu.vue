@@ -8,16 +8,20 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import { getSectionValue, delSection } from "@/api/request";
-import { getCurrentProjectName, getCurrentProjectId } from "@/utils/project";
+// import { getCurrentProjectName, getCurrentProjectId } from "@/utils/project";
 import { useStore } from "@/store";
 import { Analyse } from "@/store/resourse/resourceState"
+import router from "@/router";
 export default defineComponent({
   props: {
     contextData: {
       type: Object,
     },
+    projectName: {
+      type: String
+    }
   },
   emits: ["sendSectionValue"],
   setup(props, context) {
@@ -25,7 +29,7 @@ export default defineComponent({
     const showSection = async () => {
       console.log(props.contextData);
       const sectionValue = await getSectionValue(
-        getCurrentProjectName() as string,
+        props.projectName as string,
         (props.contextData as any).label,
         (props.contextData as any).selectDemName,
         (props.contextData as any).selectDemId
@@ -42,9 +46,10 @@ export default defineComponent({
             }
         })
         const layerDataList = store.state.resource.layerDataList
-        await store.dispatch("setResource", {projectJsonBean: {layerDataList: layerDataList, analyse: analyse}, id: getCurrentProjectId() as string})
-        await delSection(getCurrentProjectName() as string, (props.contextData as any).label, (props.contextData as any).selectDemName)
+        await store.dispatch("setResource", {projectJsonBean: {layerDataList: layerDataList, analyse: analyse}, id: router.currentRoute.value.params.id as string})
+        await delSection(props.projectName as string, (props.contextData as any).label, (props.contextData as any).selectDemName)
     }
+
     return {
       showSection,
       deleteSection

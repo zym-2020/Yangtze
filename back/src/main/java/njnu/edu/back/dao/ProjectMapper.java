@@ -31,4 +31,6 @@ public interface ProjectMapper {
 
     List<Map<String, Object>> getProjects();
 
+    Map<String, Object> findProjectById(@Param("id") UUID id);
+
 }

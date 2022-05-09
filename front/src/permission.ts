@@ -19,7 +19,6 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
                     await store.dispatch("getUserInfo", undefined)
                     const roles = store.state.user.roles
                     store.dispatch("generateRoutes", roles)
-                    console.log(roles, store.state.permission.addRouters)
                     store.state.permission.addRouters.forEach(item => {
                         router.addRoute(item)
                     })

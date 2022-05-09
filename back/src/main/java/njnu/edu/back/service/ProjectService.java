@@ -33,4 +33,6 @@ public interface ProjectService {
     Map<String, List<Double>> getSectionContrastValue(String email, String projectName, String sectionName);
 
     List<Map<String, Object>> getProjects();
+
+    Map<String, Object> findProjectById(String projectId);
 }

@@ -10,6 +10,7 @@ import njnu.edu.back.proj.Project;
 import njnu.edu.back.proj.dto.AddProject;
 import njnu.edu.back.proj.support.projectJson.ProjectJsonBean;
 import njnu.edu.back.service.ProjectService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -94,6 +95,12 @@ public class ProjectController {
     @RequestMapping(value = "/getProjects", method = RequestMethod.GET)
     public JsonResult getProjects() {
         return ResultUtils.success(projectService.getProjects());
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/findProjectById/{projectId}", method = RequestMethod.GET)
+    public JsonResult findProjectById(@PathVariable String projectId) {
+        return ResultUtils.success(projectService.findProjectById(projectId));
     }
 
 }

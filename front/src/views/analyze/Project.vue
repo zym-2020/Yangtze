@@ -1,8 +1,12 @@
 <template>
   <div>
     <div class="project-main">
-      <div class="tools">1</div>
-      <div class="map"></div>
+      <div class="tools">
+        <left-tools></left-tools>
+      </div>
+      <div class="main-map">
+        <main-map></main-map>
+      </div>
       <div class="layer">
         <project-layer :projectName="projectName"></project-layer>
       </div>
@@ -11,16 +15,21 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref, watch } from "vue";
+import LeftTools from "@/components/tools/LeftTools.vue";
 import ProjectLayer from "@/components/layer/ProjectLayer.vue";
+import MainMap from "@/components/map/Index.vue";
 import { ResourceState } from "@/store/resourse/resourceState";
 import router from "@/router";
 import { useStore } from "@/store";
+import { findProjectById } from "@/api/request";
 export default defineComponent({
-  components: { ProjectLayer },
+  components: { ProjectLayer, MainMap, LeftTools },
   setup() {
+    const projectResult = ref<ResourceState>();
     const store = useStore();
-    const projectName = ref('')
+    const projectName = ref("");
+
     const classify = (projectResult: ResourceState) => {
       store.commit("INIT", undefined);
       projectResult.layerDataList.forEach((item) => {
@@ -28,18 +37,52 @@ export default defineComponent({
       });
       store.commit("SET_ANALYSE", projectResult.analyse);
     };
-    onMounted(() => {
-      const result: ResourceState = JSON.parse(
-        router.currentRoute.value.params.result as string
-      );
-      classify(result)
-      projectName.value = router.currentRoute.value.params.project_name as string
-      console.log(store.state.resource)
-    });
+
+    watch(
+      () => router.currentRoute.value.path,
+      async () => {
+        if (router.currentRoute.value.name === "project") {
+          const data = await findProjectById(
+            router.currentRoute.value.params.id as string
+          );
+          if (data != null) {
+            if (data.data === null) {
+              router.replace({ path: "/404" });
+            } else {
+              projectResult.value = JSON.parse((data.data as any).result);
+              classify(projectResult.value as ResourceState);
+              projectName.value = (data.data as any).project_name;
+            }
+          }
+        }
+      }
+    ),
+      onMounted(async () => {
+        if (router.currentRoute.value.params.result === undefined) {
+          const data = await findProjectById(
+            router.currentRoute.value.params.id as string
+          );
+          if (data != null) {
+            if (data.data === null) {
+              router.replace({ path: "/404" });
+            } else {
+              projectResult.value = JSON.parse((data.data as any).result);
+              classify(projectResult.value as ResourceState);
+              projectName.value = (data.data as any).project_name;
+            }
+          }
+        } else {
+          projectResult.value = JSON.parse(
+            router.currentRoute.value.params.result as string
+          );
+          classify(projectResult.value as ResourceState);
+          projectName.value = router.currentRoute.value.params.name as string;
+        }
+      });
 
     return {
-        projectName
-    }
+      projectName,
+    };
   },
 });
 </script>
@@ -50,7 +93,7 @@ export default defineComponent({
   .tools {
     width: 300px;
   }
-  .map {
+  .main-map {
     width: calc(100% - 600px);
   }
   .layer {

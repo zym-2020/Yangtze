@@ -62,6 +62,10 @@ export async function getProjects() {
     return await get(`/project/getProjects`)
 }
 
+export async function findProjectById(projectId: string) {
+    return await get(`/project/findProjectById/${projectId}`)
+}
+
 //========================vectorRelationship相关接口=================================
 export async function vectorPageQuery(size: number, start: number) {
     return await get(`/vectorRelationship/pageQuery/${size}/${start}`)

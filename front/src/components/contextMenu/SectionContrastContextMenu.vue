@@ -10,18 +10,21 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { getSectionContrastValue } from "@/api/request";
-import { getCurrentProjectName } from "@/utils/project";
+
 export default defineComponent({
   props: {
     sectionContrastContextData: {
       type: Object,
     },
+    projectName: {
+      type: String
+    }
   },
   emits: ['sendSectionContrastValue'],
   setup(props, context) {
     const contrastClick = async () => {
       const data = await getSectionContrastValue(
-        getCurrentProjectName() as string,
+        props.projectName as string,
         (props.sectionContrastContextData as any).label
       );
       if (data != null) {

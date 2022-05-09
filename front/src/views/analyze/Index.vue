@@ -16,7 +16,6 @@ export default defineComponent({
     onMounted(async () => {
       const projectList = await getProjects();
       if (projectList != null) {
-        console.log(projectList.data);
         projects.value = projectList.data;
       }
     });
@@ -26,7 +25,6 @@ export default defineComponent({
       project_name: string;
       result: string;
     }) => {
-      console.log(project.id);
       router.push({
         name: "project",
         params: {
