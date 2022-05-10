@@ -232,7 +232,7 @@ export default defineComponent({
     };
 
     const delLayer = (type: string, id: string, show: boolean) => {
-      if (show) {
+      if (show && map.value?.getLayer(type + id)) {
         (map.value as mapBoxGl.Map).removeLayer(type + id);
         map.value?.removeSource(type + id);
       }
@@ -278,6 +278,7 @@ export default defineComponent({
       });
 
       add.forEach((item) => {
+        console.log("map.layer");
         if (
           item.show &&
           (map.value as mapBoxGl.Map).getLayer(item.type + item.id) ===
@@ -292,9 +293,16 @@ export default defineComponent({
           }
         }
       });
-
+      console.log("map.del", del);
       del.forEach((item) => {
-        delLayer(item.type, item.id as string, item.show as boolean);
+        
+        if (flag.value) {
+          delLayer(item.type, item.id as string, item.show as boolean);
+        } else {
+          (map.value as mapBoxGl.Map).on("load", () => {
+            delLayer(item.type, item.id as string, item.show as boolean);
+          });
+        }
       });
     });
 
@@ -315,8 +323,9 @@ export default defineComponent({
 
     onMounted(async () => {
       initMap();
-      
+
       const arr = mergeResource();
+      console.log("arr", arr);
       if (arr.length > 0) {
         arr.forEach((item) => {
           if (
@@ -325,7 +334,7 @@ export default defineComponent({
               item.type + item.id?.toString()
             ) === undefined
           )
-            if ((map.value as mapBoxGl.Map).loaded()) {
+            if (flag.value) {
               addLayer(item);
             } else {
               (map.value as mapBoxGl.Map).once("load", () => {
@@ -343,7 +352,7 @@ export default defineComponent({
       changeActive,
       riverBed,
       dataSelectFlag,
-      map
+      map,
     };
   },
 });

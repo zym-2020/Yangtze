@@ -41,6 +41,7 @@ export default defineComponent({
     watch(
       () => router.currentRoute.value.path,
       async () => {
+        console.log("Project.watch")
         if (router.currentRoute.value.name === "project") {
           const data = await findProjectById(
             router.currentRoute.value.params.id as string
@@ -54,11 +55,14 @@ export default defineComponent({
               projectName.value = (data.data as any).project_name;
             }
           }
+        } else {
+          store.commit("INIT", undefined);
         }
       }
     ),
       onMounted(async () => {
         if (router.currentRoute.value.params.result === undefined) {
+          console.log("Project.if")
           const data = await findProjectById(
             router.currentRoute.value.params.id as string
           );
@@ -72,6 +76,7 @@ export default defineComponent({
             }
           }
         } else {
+          console.log("Project.else")
           projectResult.value = JSON.parse(
             router.currentRoute.value.params.result as string
           );

@@ -283,8 +283,16 @@ export const mergeResource = () => {
 export const watchAnalyse = (map: mapBoxGl.Map, newVal: Analyse, oldVal: Analyse, addLayer: (resource: Resource) => void, delLayer: (type: string, id: string, show: boolean) => void, isLoaded: boolean) => {
   const sectionAdd = getAddArr(newVal.section.analysisResultList, oldVal.section.analysisResultList)
   const sectionDel = getDelArr(newVal.section.analysisResultList, oldVal.section.analysisResultList)
+  console.log("map.sectiondel", sectionDel);
   sectionDel.forEach(item => {
-    delLayer(item.type, item.id as string, item.show as boolean)
+    if (isLoaded) {
+      delLayer(item.type, item.id as string, item.show as boolean)
+    } else {
+      map.on('load', () => {
+        delLayer(item.type, item.id as string, item.show as boolean)
+      })
+    }
+
   })
   sectionAdd.forEach(item => {
     if (item.show && map.getLayer(item.type + item.id) === undefined) {
