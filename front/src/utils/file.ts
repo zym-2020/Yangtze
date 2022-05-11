@@ -54,7 +54,7 @@ export async function handlePostFiles(chunkList: string[], fileChunk: { file: Bl
             if (chunkList.length) {
                 const name = chunkList.shift()
                 const token = getToken()
-                const formData = new FormData
+                const formData = new FormData()
                 formData.append("file", fileChunk[parseInt(name as string)].file)
                 formData.append("MD5", MD5)
                 formData.append("name", name as string)

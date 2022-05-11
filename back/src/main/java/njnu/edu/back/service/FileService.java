@@ -3,6 +3,8 @@ package njnu.edu.back.service;
 import njnu.edu.back.proj.dto.AddFileDTO;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -33,4 +35,5 @@ public interface FileService {
 
     void deleteFile(String id);
 
+    void getAvatar(String pictureName, HttpServletResponse response);
 }

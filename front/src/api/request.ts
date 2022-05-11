@@ -22,8 +22,12 @@ export async function register(jsonData: RegisterJsonData) {
 
 
 //========================Project相关接口=================================
-export async function addProject(jsonData: ProjectJsonData) {
-    return await post(`/project/addProject`, jsonData)
+export async function addProject(formData: FormData) {
+    return await post(`/project/addProject`, formData)
+}
+
+export async function addProjectWithoutAvatar(jsonData: ProjectJsonData) {
+    return await post(`/project/addProjectWithoutAvatar`, jsonData)
 }
 
 export async function getProjectsByEmail() {
@@ -58,8 +62,8 @@ export async function getSectionContrastValue(projectName: string, sectionName: 
     return await get(`/project/getSectionContrastValue/${projectName}/${sectionName}`)
 }
 
-export async function getProjects() {
-    return await get(`/project/getProjects`)
+export async function getProjects(size: number, page: number) {
+    return await get(`/project/getProjects/${size}/${page}`)
 }
 
 export async function findProjectById(projectId: string) {

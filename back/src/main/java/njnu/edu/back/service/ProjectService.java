@@ -1,8 +1,11 @@
 package njnu.edu.back.service;
 
+import com.alibaba.fastjson.JSONObject;
 import njnu.edu.back.proj.dto.AddProject;
 import njnu.edu.back.proj.support.projectJson.ProjectJsonBean;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +17,9 @@ import java.util.Map;
  * @Description:
  */
 public interface ProjectService {
-    void addProject(AddProject addProject, String email);
+    void addProject(AddProject addProject, String email, MultipartFile multipartFile);
+
+    void addProjectWithoutAvatar(AddProject addProject, String email);
 
     String getResultById(String id);
 
@@ -32,7 +37,8 @@ public interface ProjectService {
 
     Map<String, List<Double>> getSectionContrastValue(String email, String projectName, String sectionName);
 
-    List<Map<String, Object>> getProjects();
+    JSONObject pageQuery(int size, int page);
 
     Map<String, Object> findProjectById(String projectId);
+
 }

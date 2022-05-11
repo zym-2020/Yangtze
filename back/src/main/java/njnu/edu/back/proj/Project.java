@@ -24,4 +24,5 @@ public class Project {
     String description;
     Date createTime;
     String result;
+    String avatar;
 }

@@ -147,10 +147,10 @@ export default defineComponent({
           document.body.clientWidth * 0.1 +
           "px";
       }
-      if (table.clientHeight - (event.clientY - table.offsetTop) < 150) {
+      if (table.clientHeight - (event.clientY - table.offsetTop - 60) < 150) {
         menu.style.top = event.clientY - table.offsetTop - 150 + "px";
       } else {
-        menu.style.top = event.clientY - table.offsetTop + "px";
+        menu.style.top = event.clientY - table.offsetTop - 60 + "px";
       }
 
       function closeMenu() {

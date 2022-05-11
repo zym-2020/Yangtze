@@ -3,7 +3,7 @@
 <mapper namespace="njnu.edu.back.dao.ProjectMapper">
 
     <insert id="addProject" parameterType="njnu.edu.back.proj.dto.AddProject">
-        insert into projects values(default, #{projectName}, #{creator}, #{description}, #{createTime}, #{result});
+        insert into projects values(default, #{projectName}, #{creator}, #{description}, now(), #{result}, #{avatar});
     </insert>
 
     <select id="getResult" resultType="java.lang.String">
@@ -22,12 +22,16 @@
         select result from projects where creator = #{email} and project_Name = #{projectName};
     </select>
 
-    <select id="getProjects" resultType="java.util.HashMap">
-        select * from projects;
+    <select id="pageQuery" resultType="java.util.HashMap">
+        select projects.*, users.name from projects, users where projects.creator=users.email order by projects.create_time limit #{size} offset #{start};
     </select>
 
     <select id="findProjectById" resultType="java.util.HashMap">
         select * from projects where id = #{id};
+    </select>
+
+    <select id="countAll" resultType="java.lang.Integer">
+        select count(*) from projects;
     </select>
 
 </mapper>

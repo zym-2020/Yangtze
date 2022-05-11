@@ -128,7 +128,6 @@ interface PageResult {
 import { computed, defineComponent, onBeforeMount, reactive, ref } from "vue";
 import { vectorPageQuery, rasterPageQuery } from "@/api/request";
 import { useStore } from "@/store";
-import { getCurrentProjectId } from "@/utils/project";
 import router from "@/router";
 export default defineComponent({
   emits: ["returnData"],

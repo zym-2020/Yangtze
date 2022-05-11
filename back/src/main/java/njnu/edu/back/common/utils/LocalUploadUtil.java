@@ -58,6 +58,7 @@ public class LocalUploadUtil {
                 outs.write(bytes, 0, len);
             }
             outs.close();
+            ins.close();
         } catch (Exception e) {
             e.printStackTrace();
             throw new MyException(ResultEnum.DEFAULT_EXCEPTION);

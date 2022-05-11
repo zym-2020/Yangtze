@@ -15,7 +15,7 @@
       </div>
 
       <div class="right">
-        <svg style="width: 20px; height: 20px">
+        <svg style="width: 20px; height: 20px" @click="createFlag = true">
           <title>创建工程</title>
           <use xlink:href="#icon-chuangjianrenwu"></use>
         </svg>
@@ -74,6 +74,10 @@
     <el-dialog v-model="manageFlag" width="600px" :show-close="false">
       <project-manage v-if="manageFlag" @selectProjectId="selectProjectId" />
     </el-dialog>
+
+    <el-dialog v-model="createFlag" width="600px" :show-close="false">
+      <create-project @createProject="createProject"></create-project>
+    </el-dialog>
   </div>
 </template>
 
@@ -83,6 +87,7 @@ import { computedResource } from "@/utils/common";
 import { notice } from "@/utils/notice";
 import AddData from '@/components/tools/AddData.vue'
 import ProjectManage from '@/components/tools/ProjectManage.vue'
+import CreateProject from '@/components/tools/CreateProject.vue'
 import SectionContextMenu from "@/components/contextMenu/SectionContextMenu.vue";
 import SectionContrastContextMenu from "@/components/contextMenu/SectionContrastContextMenu.vue";
 import SectionShow from "@/components/projectDialog/SectionShow.vue";
@@ -114,7 +119,8 @@ export default defineComponent({
     SectionShow,
     SectionContrastContextMenu,
     SectionContrastShow,
-    ProjectManage
+    ProjectManage,
+    CreateProject
   },
 
   setup(props) {
@@ -122,6 +128,7 @@ export default defineComponent({
       return props.projectName
     })
     const manageFlag = ref(false);
+    const createFlag = ref(false)
     const sectionContextMenuFlag = ref(false);
     const sectionContrastContextMenuFlag = ref(false);
     const sectionShow = ref(false);
@@ -173,6 +180,10 @@ export default defineComponent({
 
     const selectProjectId = () => {
       manageFlag.value = false
+    }
+
+    const createProject = () => {
+      createFlag.value = false
     }
 
     const sendSectionValue = (val: { code: number; data: []; msg: [] }) => {
@@ -253,6 +264,7 @@ export default defineComponent({
       projectName,
       manageFlag,
       addFlag,
+      createFlag,
       returnData,
       contextData,
       sectionContrastContextData,
@@ -267,7 +279,8 @@ export default defineComponent({
       sectionContrastContextMenuFlag,
       sectionValue,
       sectionContrastValue,
-      selectProjectId
+      selectProjectId,
+      createProject
     };
   },
 });
@@ -321,10 +334,6 @@ export default defineComponent({
     .el-dialog__body {
       padding: 0;
     }
-    // .el-dialog__headerbtn {
-    //   height: 40px;
-    //   width: 40px;
-    // }
   }
 }
 .section-context-menu,

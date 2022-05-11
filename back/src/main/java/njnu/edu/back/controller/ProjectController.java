@@ -13,6 +13,7 @@ import njnu.edu.back.service.ProjectService;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -35,10 +36,22 @@ public class ProjectController {
 
     @AuthCheck
     @RequestMapping(value = "/addProject", method = RequestMethod.POST)
-    public JsonResult addProject(@RequestBody AddProject addProject, @JwtTokenParser("email") String email) {
-        projectService.addProject(addProject, email);
+    public JsonResult addProject(@RequestParam String projectName, @RequestParam String description, @RequestParam String result, @JwtTokenParser("email") String email, @RequestParam MultipartFile file) {
+        AddProject addProject = new AddProject();
+        addProject.setProjectName(projectName);
+        addProject.setResult(result);
+        addProject.setDescription(description);
+        projectService.addProject(addProject, email, file);
         return ResultUtils.success();
     }
+
+    @AuthCheck
+    @RequestMapping(value = "/addProjectWithoutAvatar", method = RequestMethod.POST)
+    public JsonResult addProjectWithoutAvatar(@RequestBody AddProject addProject, @JwtTokenParser("email") String email) {
+        projectService.addProjectWithoutAvatar(addProject, email);
+        return ResultUtils.success();
+    }
+
 
     @AuthCheck
     @RequestMapping(value = "/getResult/{id}", method = RequestMethod.GET)
@@ -92,9 +105,9 @@ public class ProjectController {
     }
 
     @AuthCheck
-    @RequestMapping(value = "/getProjects", method = RequestMethod.GET)
-    public JsonResult getProjects() {
-        return ResultUtils.success(projectService.getProjects());
+    @RequestMapping(value = "/getProjects/{size}/{page}", method = RequestMethod.GET)
+    public JsonResult getProjects(@PathVariable int size, @PathVariable int page) {
+        return ResultUtils.success(projectService.pageQuery(size, page));
     }
 
     @AuthCheck
@@ -102,5 +115,7 @@ public class ProjectController {
     public JsonResult findProjectById(@PathVariable String projectId) {
         return ResultUtils.success(projectService.findProjectById(projectId));
     }
+
+
 
 }

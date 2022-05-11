@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * Created with IntelliJ IDEA.
  *
@@ -72,5 +74,9 @@ public class FileController {
         return ResultUtils.success();
     }
 
-
+    @CrossOrigin
+    @RequestMapping(value = "/avatar/{pictureName}", method = RequestMethod.GET)
+    public void getAvatar(@PathVariable String pictureName, HttpServletResponse response) {
+        fileService.getAvatar(pictureName, response);
+    }
 }

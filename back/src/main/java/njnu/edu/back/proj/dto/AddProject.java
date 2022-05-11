@@ -22,4 +22,5 @@ public class AddProject {
     String description;
     Date createTime = new Date();
     String result;
+    String avatar;
 }

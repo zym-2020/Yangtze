@@ -7,6 +7,7 @@ import lombok.SneakyThrows;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.common.utils.AnalyseUtil;
+import njnu.edu.back.common.utils.CommonUtils;
 import njnu.edu.back.dao.ProjectMapper;
 import njnu.edu.back.dao.RasterRelationshipMapper;
 import njnu.edu.back.proj.RasterRelationship;
@@ -18,11 +19,10 @@ import njnu.edu.back.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.InputStreamReader;
+import javax.servlet.http.HttpServletRequest;
+import java.io.*;
 import java.util.*;
 
 
@@ -53,11 +53,59 @@ public class ProjectServiceImpl implements ProjectService {
     String pythonDir;
 
     @Override
-    public void addProject(AddProject addProject, String email) {
+    public void addProject(AddProject addProject, String email, MultipartFile multipartFile) {
         addProject.setCreator(email);
-        String path = baseDir + email + "\\" + addProject.getProjectName();
+        String path = baseDir + email + "\\projects\\" + addProject.getProjectName();
         File file = new File(path);
         file.mkdir();
+        InputStream in = null;
+        FileOutputStream out = null;
+        String ip = "";
+        String uuid = UUID.randomUUID().toString();
+        String suffix = multipartFile.getName().substring(multipartFile.getName().lastIndexOf(".") + 1);
+        try {
+            in = multipartFile.getInputStream();
+
+            File outFile = new File(baseDir + "other\\avatar");
+            if(!outFile.exists()) {
+                outFile.mkdir();
+            }
+            out = new FileOutputStream(outFile + "\\" + uuid + "." + suffix);
+            int len = -1;
+            byte[] bytes = new byte[1024];
+            while((len = in.read(bytes)) != -1) {
+                out.write(bytes, 0 ,len);
+            }
+            ip = CommonUtils.getIp();
+            out.close();
+            in.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        } finally {
+            try {
+                if(in != null) {
+                    in.close();
+                }
+                if(out != null) {
+                    out.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+            }
+        }
+        addProject.setAvatar("http://" + ip + ":8002\\file\\avatar\\" + uuid + "." + suffix);
+        projectMapper.addProject(addProject);
+    }
+
+    @Override
+    public void addProjectWithoutAvatar(AddProject addProject, String email) {
+        addProject.setCreator(email);
+        String path = baseDir + email + "\\projects\\" + addProject.getProjectName();
+        File file = new File(path);
+        file.mkdir();
+        addProject.setAvatar("");
         projectMapper.addProject(addProject);
     }
 
@@ -264,12 +312,17 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<Map<String, Object>> getProjects() {
-        return projectMapper.getProjects();
+    public JSONObject pageQuery(int size, int page) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("total", projectMapper.countAll());
+        jsonObject.put("list", projectMapper.pageQuery(size, page * size));
+        return jsonObject;
     }
 
     @Override
     public Map<String, Object> findProjectById(String projectId) {
         return projectMapper.findProjectById(UUID.fromString(projectId));
     }
+
+
 }
