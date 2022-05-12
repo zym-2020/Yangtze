@@ -1,5 +1,5 @@
 export interface UserState {
-    token: string
+
     name: string
     email: string
     avatar: string
@@ -8,7 +8,7 @@ export interface UserState {
 }
 
 export const state: UserState = {
-    token: "",
+
     name: "",
     email: "",
     avatar: "",

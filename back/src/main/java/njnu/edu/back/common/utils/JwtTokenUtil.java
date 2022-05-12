@@ -129,6 +129,7 @@ public class JwtTokenUtil {
         claims.put("name", user.getName());
         claims.put("email", user.getEmail());
         claims.put("roles", JSON.toJSONString(user.getRoles()));
+        claims.put("avatar", user.getAvatar());
         return generateToken(claims);
 
     }

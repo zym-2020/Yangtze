@@ -19,4 +19,7 @@ public interface UserMapper {
 
     int addUser(AddUserDTO addUserDTO);
 
+    User updateUserInfo(User user);
+
+    User updateUserInfoWithoutAvatar(User user);
 }

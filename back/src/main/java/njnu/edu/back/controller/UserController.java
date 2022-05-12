@@ -5,10 +5,12 @@ import njnu.edu.back.common.auth.AuthCheck;
 import njnu.edu.back.common.resolver.JwtTokenParser;
 import njnu.edu.back.common.result.JsonResult;
 import njnu.edu.back.common.result.ResultUtils;
+import njnu.edu.back.pojo.User;
 import njnu.edu.back.pojo.dto.AddUserDTO;
 import njnu.edu.back.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Created with IntelliJ IDEA.
@@ -44,6 +46,24 @@ public class UserController {
         jsonObject.putOnce("email", email);
         jsonObject.putOnce("roles", roles);
         return ResultUtils.success(jsonObject);
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/getUserByEmail", method = RequestMethod.GET)
+    public JsonResult getUserByEmail(@JwtTokenParser("email") String email) {
+        return ResultUtils.success(userService.getUserByEmail(email));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/setUserInfo", method = RequestMethod.PATCH)
+    public JsonResult setUserInfo(@JwtTokenParser("email") String email, @RequestParam MultipartFile avatar, @RequestParam String name, @RequestParam String contactEmail, @RequestParam String occupation, @RequestParam String department) {
+        return ResultUtils.success(userService.setUserInfo(email, name, contactEmail,occupation, department, avatar));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/setUserInfoWithoutAvatar", method = RequestMethod.PATCH)
+    public JsonResult setUserInfoWithoutAvatar(@JwtTokenParser("email") String email, @RequestBody User user) {
+        return ResultUtils.success(userService.setUserInfoWithoutAvatar(email, user));
     }
 
 }

@@ -2,7 +2,7 @@ import { MutationTree } from 'vuex'
 import { UserState } from './userState'
 
 export type Mutations<S = UserState> = {
-    ["SET_TOKEN"](state: S, token: string): void
+
     ["SET_NAME"](state: S, name: string): void,
     ["SET_AVATAR"](state: S, avatar: string): void,
     ["SET_ROLES"](state: S, roles: string[]): void,
@@ -11,9 +11,7 @@ export type Mutations<S = UserState> = {
 }
 
 export const userMutations: MutationTree<UserState> & Mutations = {
-    ["SET_TOKEN"](state: UserState, token: string) {
-        state.token = token
-    },
+
     ["SET_NAME"](state: UserState, name: string) {
         state.name = name
     },

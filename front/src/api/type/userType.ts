@@ -73,3 +73,10 @@ export interface RenameJsonData {
     id: string,
     name: string
 }
+
+export interface SetUserInfoWithoutAvatarJsonData {
+    name: string
+    contactEmail: string
+    occupation: string
+    department: string
+}

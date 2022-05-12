@@ -24,4 +24,8 @@ public class User {
     String email;
     String password;
     String[] roles;
+    String contactEmail;
+    String avatar;
+    String occupation;
+    String department;
 }

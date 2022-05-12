@@ -1,5 +1,5 @@
 import { get, post, del, patch } from './axios'
-import { RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData, MergeFileJsonData, AddFileJsonData, RenameJsonData } from './type/userType'
+import { RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData, MergeFileJsonData, AddFileJsonData, RenameJsonData, SetUserInfoWithoutAvatarJsonData } from './type/userType'
 import { ResourceState } from '@/store/resourse/resourceState'
 
 
@@ -16,7 +16,17 @@ export async function register(jsonData: RegisterJsonData) {
     return await post(`/user/register`, jsonData)
 }
 
+export async function getUserByEmail() {
+    return await get(`/user/getUserByEmail`)
+}
 
+export async function setUserInfo(formData: FormData) {
+    return await patch(`/user/setUserInfo`, formData)
+}  
+
+export async function setUserInfoWithoutAvatar(jsonData: SetUserInfoWithoutAvatarJsonData) {
+    return await patch(`/user/setUserInfoWithoutAvatar`, jsonData)
+}
 
 //========================VectorTile相关接口=================================
 

@@ -161,7 +161,7 @@ export default defineComponent({
       /deep/ .el-upload:hover {
         border-color: #a6bed7;
       }
-      .el-icon.avatar-uploader-icon {
+      .avatar-uploader-icon {
         font-size: 28px;
         color: #8c939d;
         width: 50px;

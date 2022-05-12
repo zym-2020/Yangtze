@@ -15,7 +15,11 @@
               <el-dropdown trigger="click" @command="userNav">
                 <div class="avatar">
                   <el-avatar
-                    src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
+                    :src="
+                      avatarUrl === ''
+                        ? 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
+                        : avatarUrl
+                    "
                     :size="40"
                   />
                 </div>
@@ -42,6 +46,7 @@ import { computed, defineComponent } from "vue";
 import router from "@/router";
 import { useStore } from "@/store";
 import { getToken } from "@/utils/auth";
+
 export default defineComponent({
   setup() {
     const store = useStore();
@@ -51,6 +56,9 @@ export default defineComponent({
       } else {
         return true;
       }
+    });
+    const avatarUrl = computed(() => {
+      return store.state.user.avatar;
     });
     const adminFlag = computed(() => {
       let flag = false;
@@ -67,8 +75,8 @@ export default defineComponent({
         router.push({ path: "/user/space" });
       } else if (param === "2") {
         router.push({ path: "/user/admin" });
-      } else if (param === '3') {
-        store.dispatch("logout", undefined)
+      } else if (param === "3") {
+        store.dispatch("logout", undefined);
       }
     };
 
@@ -93,6 +101,7 @@ export default defineComponent({
       userNav,
       adminFlag,
       login,
+      avatarUrl,
     };
   },
 });

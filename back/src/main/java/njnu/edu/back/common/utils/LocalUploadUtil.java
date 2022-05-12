@@ -177,5 +177,35 @@ public class LocalUploadUtil {
         }
     }
 
+    public static void uploadAvatar(String path, MultipartFile multipartFile) {
+        InputStream in = null;
+        FileOutputStream out = null;
+        try {
+            in = multipartFile.getInputStream();
+            out = new FileOutputStream(new File(path));
+            byte[] b = new byte[1024];
+            while(in.read(b) != -1) {
+                out.write(b);
+            }
+            out.flush();
+            out.close();
+            in.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        } finally {
+            try {
+                if(in != null) {
+                    in.close();
+                }
+                if (out != null) {
+                    out.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+            }
+        }
+    }
 
 }

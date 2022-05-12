@@ -1,5 +1,6 @@
 import router from '@/router/index'
 import NProgress from 'nprogress'
+import 'nprogress/nprogress.css' 
 import { RouteLocationNormalized } from 'vue-router'
 import { useStore } from '@/store'
 import { getToken, hasPermission } from '@/utils/auth'
@@ -34,6 +35,7 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
             } else {
                 
                 next()
+                NProgress.done()
             }
         }
     } else {
