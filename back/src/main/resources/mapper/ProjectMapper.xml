@@ -2,16 +2,16 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="njnu.edu.back.dao.ProjectMapper">
 
-    <insert id="addProject" parameterType="njnu.edu.back.proj.dto.AddProject">
-        insert into projects values(default, #{projectName}, #{creator}, #{description}, now(), #{result}, #{avatar});
-    </insert>
+    <select id="addProject" parameterType="njnu.edu.back.pojo.dto.AddProject" resultType="java.util.HashMap">
+        insert into projects values(default, #{projectName}, #{creator}, #{description}, now(), #{result}, #{avatar}) returning *;
+    </select>
 
     <select id="getResult" resultType="java.lang.String">
         select result from projects where id = #{id}
     </select>
     
     <select id="getProjectsByEmail" resultType="java.util.HashMap">
-        select id, project_name as "projectName", description as des, create_time as "createTime", result from projects where creator = #{email} order by create_time;
+        select id, project_name as "projectName", description as des, create_time as "createTime", avatar, result from projects where creator = #{email} order by create_time;
     </select>
 
     <update id="setResult">
@@ -23,7 +23,7 @@
     </select>
 
     <select id="pageQuery" resultType="java.util.HashMap">
-        select projects.*, users.name from projects, users where projects.creator=users.email order by projects.create_time limit #{size} offset #{start};
+        select projects.*, users.name from projects, users where projects.creator=users.email order by projects.create_time desc limit #{size} offset #{start};
     </select>
 
     <select id="findProjectById" resultType="java.util.HashMap">

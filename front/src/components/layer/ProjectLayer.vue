@@ -85,13 +85,14 @@
 import { defineComponent, computed, ref, reactive } from "vue";
 import { computedResource } from "@/utils/common";
 import { notice } from "@/utils/notice";
-import AddData from '@/components/tools/AddData.vue'
-import ProjectManage from '@/components/tools/ProjectManage.vue'
-import CreateProject from '@/components/tools/CreateProject.vue'
+import AddData from "@/components/tools/AddData.vue";
+import ProjectManage from "@/components/tools/ProjectManage.vue";
+import CreateProject from "@/components/tools/CreateProject.vue";
 import SectionContextMenu from "@/components/contextMenu/SectionContextMenu.vue";
 import SectionContrastContextMenu from "@/components/contextMenu/SectionContrastContextMenu.vue";
 import SectionShow from "@/components/projectDialog/SectionShow.vue";
 import SectionContrastShow from "@/components/projectDialog/SectionContrastShow.vue";
+import router from '@/router'
 
 interface Children {
   id?: string;
@@ -120,22 +121,22 @@ export default defineComponent({
     SectionContrastContextMenu,
     SectionContrastShow,
     ProjectManage,
-    CreateProject
+    CreateProject,
   },
 
   setup(props) {
     const projectName = computed(() => {
-      return props.projectName
-    })
+      return props.projectName;
+    });
     const manageFlag = ref(false);
-    const createFlag = ref(false)
+    const createFlag = ref(false);
     const sectionContextMenuFlag = ref(false);
     const sectionContrastContextMenuFlag = ref(false);
     const sectionShow = ref(false);
     const sectionContrastShow = ref(false);
     const contextData = ref({});
     const sectionContrastContextData = ref({});
-    const addFlag = ref(false)
+    const addFlag = ref(false);
     const sectionContrastValue = reactive({
       id: "",
       name: "",
@@ -175,16 +176,24 @@ export default defineComponent({
     };
 
     const returnData = () => {
-      addFlag.value = false
-    }
+      addFlag.value = false;
+    };
 
     const selectProjectId = () => {
-      manageFlag.value = false
-    }
+      manageFlag.value = false;
+    };
 
-    const createProject = () => {
-      createFlag.value = false
-    }
+    const createProject = (val: any) => {
+      createFlag.value = false;
+      router.push({
+        name: "project",
+        params: {
+          id: val.id,
+          name: val.project_name,
+          result: val.result,
+        },
+      });
+    };
 
     const sendSectionValue = (val: { code: number; data: []; msg: [] }) => {
       sectionValue.name = (contextData.value as any).label;
@@ -280,7 +289,7 @@ export default defineComponent({
       sectionValue,
       sectionContrastValue,
       selectProjectId,
-      createProject
+      createProject,
     };
   },
 });

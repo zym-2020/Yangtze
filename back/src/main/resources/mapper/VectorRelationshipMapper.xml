@@ -9,7 +9,7 @@
         select count(*) from vector_relationship;
     </select>
 
-    <insert id="addVector" parameterType="njnu.edu.back.proj.dto.AddVector">
+    <insert id="addVector" parameterType="njnu.edu.back.pojo.dto.AddVector">
         insert into vector_relationship values(#{id}::uuid, #{tableName}, #{category}, #{address}, #{meta}, #{fileName}, #{uploader}, now(), #{source}, #{type}) returning id;
     </insert>
 

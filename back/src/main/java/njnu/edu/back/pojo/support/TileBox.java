@@ -1,4 +1,4 @@
-package njnu.edu.back.proj.support;
+package njnu.edu.back.pojo.support;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

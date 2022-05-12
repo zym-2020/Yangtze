@@ -1,6 +1,6 @@
 package njnu.edu.back.dao;
 
-import njnu.edu.back.proj.support.TileBox;
+import njnu.edu.back.pojo.support.TileBox;
 import org.springframework.stereotype.Repository;
 
 /**

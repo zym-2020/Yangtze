@@ -2,7 +2,7 @@ package njnu.edu.back.service.impl;
 
 import njnu.edu.back.common.utils.TileUtil;
 import njnu.edu.back.dao.VectorTile;
-import njnu.edu.back.proj.support.TileBox;
+import njnu.edu.back.pojo.support.TileBox;
 import njnu.edu.back.service.VectorTileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

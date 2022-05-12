@@ -1,10 +1,8 @@
-package njnu.edu.back.proj;
+package njnu.edu.back.pojo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.UUID;
 
 /**
  * Created with IntelliJ IDEA.

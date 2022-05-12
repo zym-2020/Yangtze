@@ -1,6 +1,6 @@
 package njnu.edu.back.dao;
 
-import njnu.edu.back.proj.RasterRelationship;
+import njnu.edu.back.pojo.RasterRelationship;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 

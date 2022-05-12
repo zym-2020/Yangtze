@@ -1,4 +1,4 @@
-package njnu.edu.back.proj.support.projectJson;
+package njnu.edu.back.pojo.support.projectJson;
 
 import cn.hutool.json.JSONObject;
 import lombok.AllArgsConstructor;

@@ -3,12 +3,19 @@
     <div class="search">
       <el-input v-model="search" placeholder="搜索" :autofocus="true" />
       <el-button class="btn" type="primary" plain>搜索</el-button>
+      <el-button class="btn" type="info" plain @click="createFlag = true"
+        >创建项目</el-button
+      >
     </div>
     <div class="body">
       <el-row>
         <el-col :span="4" v-for="(item, index) in projects" :key="index">
           <div class="project">
-            <project-card class="card" :projectInfo="item" @click="toProject(item)"></project-card>
+            <project-card
+              class="card"
+              :projectInfo="item"
+              @click="toProject(item)"
+            ></project-card>
           </div>
         </el-col>
       </el-row>
@@ -19,10 +26,14 @@
         layout="prev, pager, next"
         :total="total"
         @current-change="currentChange"
-        :page-size="10"
+        :page-size="12"
       >
       </el-pagination>
     </div>
+
+    <el-dialog v-model="createFlag" width="600px" :show-close="false">
+      <create-project @createProject="createProject"></create-project>
+    </el-dialog>
   </div>
 </template>
 
@@ -31,30 +42,45 @@ import { defineComponent, onMounted, ref } from "vue";
 import { getProjects } from "@/api/request";
 import ProjectCard from "@/components/cards/ProjectCard.vue";
 import router from "@/router";
+import CreateProject from "@/components/tools/CreateProject.vue";
 export default defineComponent({
   components: {
     ProjectCard,
+    CreateProject,
   },
   setup() {
     const projects = ref<any[]>([]);
     const search = ref("");
-    const total = ref(0)
+    const total = ref(0);
+    const createFlag = ref(false);
 
     onMounted(async () => {
-      const projectList = await getProjects(10, 0);
+      const projectList = await getProjects(12, 0);
       if (projectList != null) {
-        projects.value = (projectList.data as any).list
-        total.value = (projectList.data as any).total
+        projects.value = (projectList.data as any).list;
+        total.value = (projectList.data as any).total;
       }
     });
 
     const currentChange = async (page: number) => {
-      const projectList = await getProjects(10, page - 1);
+      const projectList = await getProjects(12, page - 1);
       if (projectList != null) {
-        projects.value = (projectList.data as any).list
-        total.value = (projectList.data as any).total
+        projects.value = (projectList.data as any).list;
+        total.value = (projectList.data as any).total;
       }
-    }
+    };
+
+    const createProject = (val: any) => {
+      createFlag.value = false;
+      router.push({
+        name: "project",
+        params: {
+          id: val.id,
+          name: val.project_name,
+          result: val.result,
+        },
+      });
+    };
 
     const toProject = (project: {
       id: string;
@@ -74,10 +100,11 @@ export default defineComponent({
     return {
       projects,
       search,
+      createFlag,
       toProject,
       total,
       currentChange,
-
+      createProject,
     };
   },
 });
@@ -117,8 +144,16 @@ export default defineComponent({
   .page {
     position: absolute;
     bottom: 100px;
-    left: calc((100% - 572px) / 2);
+    width: 600px;
+    left: calc((100% - 600px) / 2);
   }
-  
+}
+/deep/.el-dialog {
+  .el-dialog__header {
+    padding: 0;
+  }
+  .el-dialog__body {
+    padding: 0;
+  }
 }
 </style>

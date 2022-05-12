@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="njnu.edu.back.dao.RasterRelationshipMapper">
-    <resultMap id="RasterRelationshipMap" type="njnu.edu.back.proj.RasterRelationship">
+    <resultMap id="RasterRelationshipMap" type="njnu.edu.back.pojo.RasterRelationship">
         <id column="id" property="id"/>
         <result column="file_name" property="fileName"/>
         <result column="category" property="category"/>

@@ -1,6 +1,6 @@
 package njnu.edu.back.dao;
 
-import njnu.edu.back.proj.dto.AddVector;
+import njnu.edu.back.pojo.dto.AddVector;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 

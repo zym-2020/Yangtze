@@ -5,21 +5,12 @@ import njnu.edu.back.common.auth.AuthCheck;
 import njnu.edu.back.common.resolver.JwtTokenParser;
 import njnu.edu.back.common.result.JsonResult;
 import njnu.edu.back.common.result.ResultUtils;
-import njnu.edu.back.dao.ProjectMapper;
-import njnu.edu.back.proj.Project;
-import njnu.edu.back.proj.dto.AddProject;
-import njnu.edu.back.proj.support.projectJson.ProjectJsonBean;
+import njnu.edu.back.pojo.dto.AddProject;
+import njnu.edu.back.pojo.support.projectJson.ProjectJsonBean;
 import njnu.edu.back.service.ProjectService;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
 
 /**
  * Created with IntelliJ IDEA.
@@ -41,15 +32,13 @@ public class ProjectController {
         addProject.setProjectName(projectName);
         addProject.setResult(result);
         addProject.setDescription(description);
-        projectService.addProject(addProject, email, file);
-        return ResultUtils.success();
+        return ResultUtils.success(projectService.addProject(addProject, email, file));
     }
 
     @AuthCheck
     @RequestMapping(value = "/addProjectWithoutAvatar", method = RequestMethod.POST)
     public JsonResult addProjectWithoutAvatar(@RequestBody AddProject addProject, @JwtTokenParser("email") String email) {
-        projectService.addProjectWithoutAvatar(addProject, email);
-        return ResultUtils.success();
+        return ResultUtils.success(projectService.addProjectWithoutAvatar(addProject, email));
     }
 
 

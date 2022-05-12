@@ -2,6 +2,7 @@ import { useStore } from '@/store'
 import { Resource, Analyse } from '@/store/resourse/resourceState'
 import mapBoxGl, { AnySourceData } from "mapbox-gl";
 
+
 const store = useStore()
 
 interface O {

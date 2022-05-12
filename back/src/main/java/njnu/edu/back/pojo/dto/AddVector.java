@@ -1,30 +1,27 @@
-package njnu.edu.back.proj;
+package njnu.edu.back.pojo.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
 /**
  * Created with IntelliJ IDEA.
  *
  * @Author: Yiming
- * @Date: 2022/05/02/15:15
+ * @Date: 2022/04/15/20:29
  * @Description:
  */
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class File {
+@AllArgsConstructor
+public class AddVector {
     String id;
-    String name;
+    String tableName;
+    String category;
     String address;
-    String fileName;
-    Integer level;
-    String parentId;
-    Date createTime;
-    String uploader;
     String meta;
-    boolean folder;
+    String fileName;
+    String uploader;
+    String source;
+    String type;
 }

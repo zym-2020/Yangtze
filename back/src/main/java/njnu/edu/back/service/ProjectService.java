@@ -1,11 +1,11 @@
 package njnu.edu.back.service;
 
 import com.alibaba.fastjson.JSONObject;
-import njnu.edu.back.proj.dto.AddProject;
-import njnu.edu.back.proj.support.projectJson.ProjectJsonBean;
+import njnu.edu.back.pojo.Project;
+import njnu.edu.back.pojo.dto.AddProject;
+import njnu.edu.back.pojo.support.projectJson.ProjectJsonBean;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -17,9 +17,9 @@ import java.util.Map;
  * @Description:
  */
 public interface ProjectService {
-    void addProject(AddProject addProject, String email, MultipartFile multipartFile);
+    Map<String, Object> addProject(AddProject addProject, String email, MultipartFile multipartFile);
 
-    void addProjectWithoutAvatar(AddProject addProject, String email);
+    Map<String, Object> addProjectWithoutAvatar(AddProject addProject, String email);
 
     String getResultById(String id);
 

@@ -1,8 +1,7 @@
 package njnu.edu.back.dao;
 
-import njnu.edu.back.proj.Project;
-import njnu.edu.back.proj.dto.AddProject;
-import njnu.edu.back.proj.support.projectJson.ProjectJsonBean;
+import njnu.edu.back.pojo.Project;
+import njnu.edu.back.pojo.dto.AddProject;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -19,7 +18,7 @@ import java.util.UUID;
  */
 @Repository
 public interface ProjectMapper {
-    void addProject(AddProject addProject);
+    Map<String, Object> addProject(AddProject addProject);
 
     String getResult(@Param("id") UUID id);
 

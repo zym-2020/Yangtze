@@ -1,7 +1,6 @@
 package njnu.edu.back.service.impl;
 
 import cn.hutool.json.JSONArray;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.SneakyThrows;
 import njnu.edu.back.common.exception.MyException;
@@ -10,10 +9,11 @@ import njnu.edu.back.common.utils.AnalyseUtil;
 import njnu.edu.back.common.utils.CommonUtils;
 import njnu.edu.back.dao.ProjectMapper;
 import njnu.edu.back.dao.RasterRelationshipMapper;
-import njnu.edu.back.proj.RasterRelationship;
-import njnu.edu.back.proj.dto.AddProject;
-import njnu.edu.back.proj.support.projectJson.ProjectJsonBean;
-import njnu.edu.back.proj.support.projectJson.Resource;
+import njnu.edu.back.pojo.Project;
+import njnu.edu.back.pojo.RasterRelationship;
+import njnu.edu.back.pojo.dto.AddProject;
+import njnu.edu.back.pojo.support.projectJson.ProjectJsonBean;
+import njnu.edu.back.pojo.support.projectJson.Resource;
 import njnu.edu.back.service.ProjectService;
 import njnu.edu.back.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.util.*;
 
@@ -53,7 +52,7 @@ public class ProjectServiceImpl implements ProjectService {
     String pythonDir;
 
     @Override
-    public void addProject(AddProject addProject, String email, MultipartFile multipartFile) {
+    public Map<String, Object> addProject(AddProject addProject, String email, MultipartFile multipartFile) {
         addProject.setCreator(email);
         String path = baseDir + email + "\\projects\\" + addProject.getProjectName();
         File file = new File(path);
@@ -62,7 +61,7 @@ public class ProjectServiceImpl implements ProjectService {
         FileOutputStream out = null;
         String ip = "";
         String uuid = UUID.randomUUID().toString();
-        String suffix = multipartFile.getName().substring(multipartFile.getName().lastIndexOf(".") + 1);
+        String suffix = multipartFile.getOriginalFilename().substring(multipartFile.getOriginalFilename().lastIndexOf(".") + 1);
         try {
             in = multipartFile.getInputStream();
 
@@ -95,18 +94,18 @@ public class ProjectServiceImpl implements ProjectService {
                 throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
             }
         }
-        addProject.setAvatar("http://" + ip + ":8002\\file\\avatar\\" + uuid + "." + suffix);
-        projectMapper.addProject(addProject);
+        addProject.setAvatar("http://" + ip + ":8002/file/avatar/" + uuid + "." + suffix);
+        return projectMapper.addProject(addProject);
     }
 
     @Override
-    public void addProjectWithoutAvatar(AddProject addProject, String email) {
+    public Map<String, Object> addProjectWithoutAvatar(AddProject addProject, String email) {
         addProject.setCreator(email);
         String path = baseDir + email + "\\projects\\" + addProject.getProjectName();
         File file = new File(path);
         file.mkdir();
         addProject.setAvatar("");
-        projectMapper.addProject(addProject);
+        return projectMapper.addProject(addProject);
     }
 
     @Override

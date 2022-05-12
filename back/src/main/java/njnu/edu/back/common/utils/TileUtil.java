@@ -1,11 +1,6 @@
 package njnu.edu.back.common.utils;
 
-import njnu.edu.back.common.exception.MyException;
-import njnu.edu.back.proj.support.TileBox;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import njnu.edu.back.pojo.support.TileBox;
 
 /**
  * Created with IntelliJ IDEA.

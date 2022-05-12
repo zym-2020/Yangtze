@@ -1,11 +1,10 @@
-package njnu.edu.back.proj;
+package njnu.edu.back.pojo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Table;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.

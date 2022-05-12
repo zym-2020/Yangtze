@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="njnu.edu.back.dao.FileMapper">
-    <insert id="addFile" parameterType="njnu.edu.back.proj.dto.AddFileDTO">
+    <insert id="addFile" parameterType="njnu.edu.back.pojo.dto.AddFileDTO">
         insert into files values(#{id}::uuid, #{name}, #{address}, #{fileName}, #{level}, #{parentId}, now(), #{uploader}, #{meta}, #{folder});
     </insert>
 
@@ -21,7 +21,7 @@
         delete from files where id = #{id}::uuid;
     </delete>
 
-    <select id="findById" resultType="njnu.edu.back.proj.File">
+    <select id="findById" resultType="njnu.edu.back.pojo.File">
         select * from files where id = #{id}::uuid;
     </select>
 </mapper>

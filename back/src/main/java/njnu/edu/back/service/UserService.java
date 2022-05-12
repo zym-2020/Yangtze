@@ -1,8 +1,7 @@
 package njnu.edu.back.service;
 
 
-import njnu.edu.back.proj.User;
-import njnu.edu.back.proj.dto.AddUserDTO;
+import njnu.edu.back.pojo.dto.AddUserDTO;
 
 /**
  * Created with IntelliJ IDEA.
