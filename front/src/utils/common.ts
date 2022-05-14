@@ -1,7 +1,8 @@
 import { useStore } from '@/store'
 import { Resource, Analyse } from '@/store/resourse/resourceState'
 import mapBoxGl, { AnySourceData } from "mapbox-gl";
-
+import jsSHA from 'jssha';
+import Identicon from 'identicon.js';
 
 const store = useStore()
 
@@ -53,6 +54,13 @@ export const uuid = (len?: number, radix?: number) => {
   return uuid.join('');
 }
 
+export const imgBase64 = (name: string) => {
+  let shaObj = new jsSHA('SHA-512', 'TEXT');
+  shaObj.update(name);
+  var hash = shaObj.getHash('HEX');
+  let data = new Identicon(hash, 280).toString();
+  return 'data:image/png;base64,' + data;
+};
 
 
 interface Children {

@@ -40,6 +40,7 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
         }
     } else {
         if (to.path === '/login' || to.path === '/register' || to.path === '/') {
+            
             next()
             NProgress.done
         } else {

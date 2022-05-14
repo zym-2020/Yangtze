@@ -26,7 +26,7 @@ export default defineComponent({
       if (uploadFile.status === "ready") {
         imageUrl.value = URL.createObjectURL(uploadFile.raw);
         file.value = uploadFile.raw;
-        context.emit('upload', file.value)
+        context.emit("upload", file.value);
       }
     };
 

@@ -98,7 +98,9 @@ public class FileServiceImpl implements FileService {
     @Override
     public int checkMergeState(String key) {
         int state = (int) redisService.get(key);
-        redisService.del(key);
+        if(state == 1 || state == -1) {
+            redisService.del(key);
+        }
         return state;
     }
 

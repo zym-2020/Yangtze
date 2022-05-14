@@ -1,12 +1,17 @@
 <template>
   <div class="main">
-    <div class="search">
-      <el-input v-model="search" placeholder="搜索" :autofocus="true" />
-      <el-button class="btn" type="primary" plain>搜索</el-button>
-      <el-button class="btn" type="info" plain @click="createFlag = true"
-        >创建项目</el-button
-      >
-    </div>
+    <page-header :pageTitle="'分析中心'">
+      <template #search>
+        <div class="search">
+          <el-input v-model="search" placeholder="搜索" :autofocus="true" />
+          <el-button class="btn" type="primary" plain>搜索</el-button>
+          <el-button class="btn" type="info" plain @click="createFlag = true"
+            >创建项目</el-button
+          >
+        </div>
+      </template>
+    </page-header>
+
     <div class="body">
       <el-row>
         <el-col :span="4" v-for="(item, index) in projects" :key="index">
@@ -43,10 +48,12 @@ import { getProjects } from "@/api/request";
 import ProjectCard from "@/components/cards/ProjectCard.vue";
 import router from "@/router";
 import CreateProject from "@/components/tools/CreateProject.vue";
+import PageHeader from "@/components/page/PageHeader.vue";
 export default defineComponent({
   components: {
     ProjectCard,
     CreateProject,
+    PageHeader,
   },
   setup() {
     const projects = ref<any[]>([]);
@@ -115,9 +122,9 @@ export default defineComponent({
   height: calc(100vh - 60px);
   position: relative;
   .search {
-    height: 50px;
-    line-height: 50px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
+    // height: 50px;
+    // line-height: 50px;
+    // box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
     .el-input {
       width: 500px;
       margin-left: 50px;
@@ -143,9 +150,10 @@ export default defineComponent({
 
   .page {
     position: absolute;
+    width: 100%;
     bottom: 100px;
-    width: 600px;
-    left: calc((100% - 600px) / 2);
+    display: flex;
+    justify-content: space-around;
   }
 }
 /deep/.el-dialog {

@@ -6,7 +6,7 @@
           <div class="avatar">
             <el-avatar
               :size="80"
-              :src="avatarUrl === '' ? 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png' : avatarUrl"
+              :src="avatarUrl === '' ? 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png' : 'http://localhost:8002' + avatarUrl"
               fit="cover"
             />
           </div>
