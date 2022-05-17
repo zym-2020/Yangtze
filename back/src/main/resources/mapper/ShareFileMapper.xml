@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="njnu.edu.back.dao.ShareFileMapper">
+    <insert id="addShareFile" parameterType="njnu.edu.back.pojo.ShareFile">
+        insert into share_files values(default, #{name}, #{description}, #{originAddress}, #{visualSource}, #{visualType}, #{structuredSource}, #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}, #{creator}, now(), #{meta});
+    </insert>
+</mapper>

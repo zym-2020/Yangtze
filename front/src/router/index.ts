@@ -78,7 +78,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
             {
                 path: '',
                 redirect: '/analyze/list'
-                
+
             },
             {
                 path: 'list',
@@ -116,11 +116,53 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 }
             },
             {
+                path: 'share',
+                name: 'share',
+                component: () => import('@/views/user/UploadShareFile.vue'),
+                meta: {
+                    roles: ['member', 'admin']
+                }
+            },
+            {
                 path: 'admin',
                 component: () => import('@/views/user/Admin.vue'),
                 meta: {
                     roles: ['admin']
-                }
+                },
+                children: [
+                    {
+                        path: '',
+                        redirect: '/user/admin/resource'
+                    },
+                    {
+                        path: 'resource',
+                        component: () => import('@/views/user/views/ResourceManage.vue'),
+                        meta: {
+                            roles: ['admin']
+                        }
+                    },
+                    {
+                        path: 'scenario',
+                        component: () => import('@/views/user/views/ScenarioManage.vue'),
+                        meta: {
+                            roles: ['admin']
+                        }
+                    },
+                    {
+                        path: 'project',
+                        component: () => import('@/views/user/views/ProjectManage.vue'),
+                        meta: {
+                            roles: ['admin']
+                        }
+                    },
+                    {
+                        path: 'message',
+                        component: () => import('@/views/user/views/MessageManage.vue'),
+                        meta: {
+                            roles: ['admin']
+                        }
+                    }
+                ]
             }
         ]
     },

@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "1493700",
+      "name": "message_light",
+      "font_class": "message_light",
+      "unicode": "e7db",
+      "unicode_decimal": 59355
+    },
+    {
       "icon_id": "5392443",
       "name": "上传头像",
       "font_class": "shangchuantouxiang",

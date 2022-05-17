@@ -4,6 +4,7 @@ export function notice(type: "success" | "warning" | "info" | "error", title: st
     ElNotification({
         type: type,
         title: title,
-        message: msg
+        message: msg,
+        offset: 100,
     })
 }

@@ -80,3 +80,21 @@ export interface SetUserInfoWithoutAvatarJsonData {
     occupation: string
     department: string
 }
+
+export interface AddShareFileJsonData {
+    meta: {
+        provider: string
+        time: string
+        range: string
+        detail: string
+    }
+    fileInfo: {
+        name: string
+        description: string
+        originAddress: string
+        visualSource: string
+        visualType: string
+        structuredSource: string
+        tags: string[]
+    }
+}

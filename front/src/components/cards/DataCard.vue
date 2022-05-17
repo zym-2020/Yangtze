@@ -3,6 +3,7 @@
     <div class="top">
       <el-avatar :size="40" :src="avatar" />
       <div class="text">hahah</div>
+      <slot name="creator"></slot>
     </div>
     <div class="des">
       数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述
@@ -50,6 +51,7 @@ export default defineComponent({
   margin-bottom: 20px;
   .top {
     display: flex;
+    position: relative;
     height: 40px;
     line-height: 40px;
     .text {

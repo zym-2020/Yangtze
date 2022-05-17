@@ -145,7 +145,7 @@ header {
     rgba(24, 64, 95, 0.3)
   );
   transition: 0.7s all;
-  // z-index: 3000;
+  z-index: 3000;
   backdrop-filter: blur(8px);
 }
 body {
