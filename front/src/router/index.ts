@@ -48,7 +48,20 @@ export const asyncRouters: Array<RouteRecordRaw> = [
         children: [
             {
                 path: '',
+                redirect: '/data/list'
+
+            },
+            {
+                path: 'list',
                 component: () => import('@/views/data/Index.vue'),
+            },
+            {
+                path: ':id',
+                name: 'shareFile',
+                component: () => import('@/views/data/ShareFileIndex.vue'),
+                meta: {
+                    roles: ['member', 'admin']
+                }
             }
         ]
     },

@@ -6,9 +6,9 @@
       <el-button type="info" plain @click="toAdd">创建共享条目</el-button>
     </div>
     <div class="body">
-      <div v-for="(item, index) in 10" :key="index">
+      <div v-for="(item, index) in fileList" :key="index">
         <div class="card">
-          <data-card>
+          <data-card :fileInfo="item">
             <template #creator>
               <div class="creator">
                 <div style="line-height: 40px"><strong>创建人：</strong></div>
@@ -46,22 +46,33 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import DataCard from "@/components/cards/DataCard.vue";
 import router from "@/router";
+import { pageQueryOrderByDownload } from "@/api/request";
 export default defineComponent({
   components: { DataCard },
   setup() {
     const activeName = ref("first");
-    const search = ref('')
+    const search = ref("");
+    const fileList = ref<any[]>([]);
     const toAdd = () => {
       router.push({ name: "share" });
     };
+
+    onMounted(async () => {
+      const data = await pageQueryOrderByDownload(0, 10);
+      if (data != null) {
+        console.log(data.data);
+        fileList.value = data.data.list
+      }
+    });
 
     return {
       activeName,
       search,
       toAdd,
+      fileList
     };
   },
 });

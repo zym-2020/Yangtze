@@ -62,6 +62,22 @@ export const imgBase64 = (name: string) => {
   return 'data:image/png;base64,' + data;
 };
 
+export const generateColorByText = (text: string) => {
+  let tmp = ""
+  for (let i = 0; i < text.length; i++) {
+    tmp += text.charCodeAt(i).toString(16)
+  }
+  console.log(tmp)
+  if (tmp.length > 6) {
+    tmp = tmp.substring(tmp.length - 6, tmp.length)
+  } else if (tmp.length > 3) {
+    tmp = tmp.substring(tmp.length - 3, tmp.length)
+  } else {
+    tmp = 'aquamarine'
+  }
+  return '#' + tmp
+}
+
 
 interface Children {
   label: string;

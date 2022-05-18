@@ -1,7 +1,11 @@
 package njnu.edu.back.service.impl;
 
+import njnu.edu.back.dao.FileMetaMapper;
 import njnu.edu.back.service.FileMetaService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,4 +16,12 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class FileMetaServiceImpl implements FileMetaService {
+
+    @Autowired
+    FileMetaMapper fileMetaMapper;
+
+    @Override
+    public Map<String, Object> getFileMetaById(String id) {
+        return fileMetaMapper.getFileMetaById(id);
+    }
 }

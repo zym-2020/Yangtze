@@ -1,5 +1,7 @@
 package njnu.edu.back.service;
 
+import java.util.Map;
+
 /**
  * Created with IntelliJ IDEA.
  *
@@ -8,4 +10,5 @@ package njnu.edu.back.service;
  * @Description:
  */
 public interface FileMetaService {
+    Map<String, Object> getFileMetaById(String id);
 }

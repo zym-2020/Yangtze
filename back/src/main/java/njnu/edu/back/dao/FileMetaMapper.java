@@ -1,7 +1,10 @@
 package njnu.edu.back.dao;
 
 import njnu.edu.back.pojo.FileMeta;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,4 +16,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FileMetaMapper {
     String addFileMeta(FileMeta fileMeta);
+
+    Map<String, Object> getFileMetaById(@Param("id") String id);
 }

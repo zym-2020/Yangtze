@@ -2,45 +2,79 @@
   <div class="data-card">
     <div class="top">
       <el-avatar :size="40" :src="avatar" />
-      <div class="text">hahah</div>
+      <div class="text">{{ name }}</div>
       <slot name="creator"></slot>
     </div>
     <div class="des">
-      数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述数据描述
+      {{ description }}
     </div>
     <div class="bottom">
       <div class="bottom-top">
         <div class="time">
           <strong>上次更新时间：</strong>
-          <span>2022-05-14</span>
+          <span>{{ updateTime }}</span>
         </div>
         <div class="watch">
           <el-icon><View /></el-icon>
-          <span>1520</span>
+          <span>{{ watch }}</span>
         </div>
       </div>
       <div class="bottom-bottom">
-        <el-tag class="ml-2" type="success">Tag 2</el-tag>
-        <el-tag class="ml-2" type="info">Tag 3</el-tag>
-        <el-tag class="ml-2" type="warning">Tag 4</el-tag>
-        <el-tag class="ml-2" type="danger">Tag 5</el-tag>
+        <el-tag
+          v-for="(item, index) in tagList"
+          :key="index"
+   
+        >
+          {{ item }}
+        </el-tag>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
-import { imgBase64 } from "@/utils/common";
+import { computed, defineComponent, onMounted, ref } from "vue";
+import { imgBase64, generateColorByText, dateFormat } from "@/utils/common";
+
 export default defineComponent({
-  setup() {
-    const avatar = ref("");
-    onMounted(() => {
-      avatar.value = imgBase64("哈哈");
+  props: {
+    fileInfo: {
+      type: Object,
+    },
+  },
+  setup(props) {
+    const name = computed(() => {
+      return (props.fileInfo as any).name;
     });
+    const avatar = computed(() => {
+      return imgBase64(name.value);
+    });
+    const description = computed(() => {
+      return (props.fileInfo as any).description;
+    });
+    const updateTime = computed(() => {
+      return dateFormat((props.fileInfo as any).updateTime, "yyyy-MM-dd");
+    });
+    const watch = computed(() => {
+      return (props.fileInfo as any).watch;
+    });
+    const tagList = computed(() => {
+      return (props.fileInfo as any).tags;
+    });
+
+    const getColor = (text: string) => {
+      return generateColorByText(text);
+    };
+
 
     return {
       avatar,
+      name,
+      description,
+      updateTime,
+      watch,
+      tagList,
+      getColor,
     };
   },
 });

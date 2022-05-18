@@ -135,3 +135,16 @@ export async function deleteFile(id: string) {
 export async function addShareFile(jsonData: AddShareFileJsonData) {
     return await post(`/share/addShareFile`, jsonData)
 }
+
+export async function pageQueryOrderByDownload(page: number, size: number) {
+    return await get(`/share/pageQueryOrderByDownload/${page}/${size}`)
+}
+
+export async function getFileInfoAndMeta(id: string) {
+    return await get(`/share/getFileInfoAndMeta/${id}`)
+}
+
+//========================fileMeta相关接口=================================
+export async function getFileMetaById(id: string) {
+    return await get(`/fileMeta/getFileMetaById/${id}`)
+}

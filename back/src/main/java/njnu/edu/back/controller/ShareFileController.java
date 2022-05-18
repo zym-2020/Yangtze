@@ -9,10 +9,7 @@ import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.common.result.ResultUtils;
 import njnu.edu.back.service.ShareFileService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -37,4 +34,15 @@ public class ShareFileController {
             throw new MyException(-99, "没有权限！");
         }
     }
+
+    @RequestMapping(value = "/pageQueryOrderByDownload/{page}/{size}", method = RequestMethod.GET)
+    public JsonResult pageQueryOrderByDownload(@PathVariable int page, @PathVariable int size) {
+        return ResultUtils.success(shareFileService.pageQueryOrderByDownload(page, size));
+    }
+
+    @RequestMapping(value = "/getFileInfoAndMeta/{id}", method = RequestMethod.GET)
+    public JsonResult getFileInfoAndMeta(@PathVariable String id) {
+        return ResultUtils.success(shareFileService.getFileInfoAndMeta(id));
+    }
+
 }

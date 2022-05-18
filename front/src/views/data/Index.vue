@@ -21,7 +21,10 @@
               </template>
             </el-input>
             <div class="statistics">
-              <div class="result">共<span>5140</span>条结果</div>
+              <div class="result">
+                共<span>{{ total }}</span
+                >条结果
+              </div>
               <div class="sort">
                 排序方式
                 <el-select v-model="selectValue">
@@ -35,15 +38,15 @@
               </div>
             </div>
             <el-divider />
-            <div v-for="(item, index) in 10" :key="index">
-              <data-card></data-card>
+            <div v-for="(item, index) in fileList" :key="index">
+              <data-card :fileInfo="item" class="card" @click="toDetail(index)"></data-card>
             </div>
 
             <div class="pagination">
               <el-pagination
                 background
                 layout="prev, pager, next"
-                :total="1000"
+                :total="total"
               />
             </div>
           </div>
@@ -54,10 +57,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import PageHeader from "@/components/page/PageHeader.vue";
 import DataCollapse from "@/components/page/DataCollapse.vue";
 import DataCard from "@/components/cards/DataCard.vue";
+import { pageQueryOrderByDownload } from "@/api/request";
+import router from '@/router'
 export default defineComponent({
   components: {
     PageHeader,
@@ -66,8 +71,18 @@ export default defineComponent({
   },
   setup() {
     const input = ref("");
-    const selectValue = ref("上次更新时间");
+    const selectValue = ref("下载量");
+    const fileList = ref<any[]>([]);
+    const total = ref(0);
     const options = ref<{ label: string; value: string }[]>([
+      {
+        label: "下载量",
+        value: "download",
+      },
+      {
+        label: "浏览量",
+        value: "watch",
+      },
       {
         label: "上次更新时间",
         value: "update",
@@ -77,10 +92,34 @@ export default defineComponent({
         value: "name",
       },
     ]);
+
+    const toDetail = (index: number) => {
+      router.push({
+        name: 'shareFile',
+        params: {
+          id: fileList.value[index].id,
+          fileInfo: JSON.stringify(fileList.value[index])
+        }
+      })
+    }
+
+    onMounted(async () => {
+      const data = await pageQueryOrderByDownload(0, 10);
+      if (data != null) {
+        if ((data as any).code === 0) {
+          fileList.value = data.data.list;
+          total.value = data.data.total;
+        }
+      }
+    });
+
     return {
       input,
       options,
       selectValue,
+      fileList,
+      total,
+      toDetail
     };
   },
 });
@@ -127,6 +166,9 @@ export default defineComponent({
               top: 20px;
             }
           }
+        }
+        .card {
+          cursor: pointer;
         }
       }
     }

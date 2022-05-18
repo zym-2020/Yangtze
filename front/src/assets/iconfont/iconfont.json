@@ -6,6 +6,41 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "6403470",
+      "name": "download",
+      "font_class": "download",
+      "unicode": "e610",
+      "unicode_decimal": 58896
+    },
+    {
+      "icon_id": "15205994",
+      "name": "view",
+      "font_class": "view",
+      "unicode": "e633",
+      "unicode_decimal": 58931
+    },
+    {
+      "icon_id": "1713574",
+      "name": "数据",
+      "font_class": "shuju",
+      "unicode": "e63c",
+      "unicode_decimal": 58940
+    },
+    {
+      "icon_id": "6850413",
+      "name": "数据库",
+      "font_class": "shujuku",
+      "unicode": "e604",
+      "unicode_decimal": 58884
+    },
+    {
+      "icon_id": "7088596",
+      "name": "数据库",
+      "font_class": "shujuku1",
+      "unicode": "e68f",
+      "unicode_decimal": 59023
+    },
+    {
       "icon_id": "1493700",
       "name": "message_light",
       "font_class": "message_light",

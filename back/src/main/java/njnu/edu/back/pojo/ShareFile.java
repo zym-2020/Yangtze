@@ -28,5 +28,8 @@ public class ShareFile {
     String[] tags;
     String creator;
     Date createTime;
+    Date updateTime;
+    Integer download;
+    Integer watch;
     String meta;
 }
