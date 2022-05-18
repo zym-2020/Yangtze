@@ -144,6 +144,10 @@ export async function getFileInfoAndMeta(id: string) {
     return await get(`/share/getFileInfoAndMeta/${id}`)
 }
 
+export async function addWatchCount(id: string) {
+    return await patch(`/share/addWatchCount/${id}`)
+}
+
 //========================fileMeta相关接口=================================
 export async function getFileMetaById(id: string) {
     return await get(`/fileMeta/getFileMetaById/${id}`)

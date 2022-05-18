@@ -20,12 +20,12 @@
             </div>
             <div class="basicInfo-item">
               <data-description
-                :data="{ key: '数据类型：', value: '栅格&矢量' }"
+                :data="{ key: '数据类型：', value: fileMeta.type }"
               ></data-description>
             </div>
             <div class="basicInfo-item">
               <data-description
-                :data="{ key: '数据标签：', value: '栅格&矢量' }"
+                :data="{ key: '数据标签：', value: fileInfo.tags }"
               ></data-description>
             </div>
             <div class="basicInfo-item">
@@ -48,20 +48,25 @@
             </div>
             <div class="providerInfo-item">
               <data-description
-                :data="{ key: '电&#12288;话：', value: '123-4567-8943' }"
+                :data="{
+                  key: '电&#12288;话：',
+                  value: fileMeta.provider_phone,
+                }"
               ></data-description>
             </div>
             <div class="providerInfo-item">
               <data-description
-                :data="{ key: '邮&#12288;箱：', value: '123@qq.com' }"
+                :data="{
+                  key: '邮&#12288;箱：',
+                  value: fileMeta.provider_email,
+                }"
               ></data-description>
             </div>
             <div class="providerInfo-item">
               <data-description
                 :data="{
                   key: '地&#12288;址：',
-                  value:
-                    '南京市栖霞区文苑路1号南京师范大学地理科学学院（210023）',
+                  value: fileMeta.provider_address,
                 }"
               ></data-description>
             </div>
@@ -220,10 +225,6 @@ export default defineComponent({
     const date = (time: string) => {
       return dateFormat(time, "yyyy-MM-dd");
     };
-
-    onMounted(() => {
-      console.log(props.fileInfo, props.fileMeta);
-    });
 
     return {
       fileInfo,

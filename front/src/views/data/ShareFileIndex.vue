@@ -19,7 +19,11 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
-import { getFileInfoAndMeta, getFileMetaById } from "@/api/request";
+import {
+  getFileInfoAndMeta,
+  getFileMetaById,
+  addWatchCount,
+} from "@/api/request";
 import DataDetailHeader from "@/components/page/DataDetailHeader.vue";
 import DataDetail from "@/components/resourcePages/DataDetail.vue";
 import DataStatistics from "@/components/resourcePages/DataStatistics.vue";
@@ -36,6 +40,12 @@ export default defineComponent({
       active.value = val;
     };
     onMounted(async () => {
+      if (
+        router.currentRoute.value.params.id != null &&
+        router.currentRoute.value.params.id != undefined
+      ) {
+        addWatchCount(router.currentRoute.value.params.id as string);
+      }
       if (router.currentRoute.value.params.fileInfo === undefined) {
         const data = await getFileInfoAndMeta(
           router.currentRoute.value.params.id as string

@@ -19,4 +19,6 @@ public interface ShareFileService {
     Map<String, Object> pageQueryOrderByDownload(int page, int size);
 
     Map<String, Object> getFileInfoAndMeta(String id);
+
+    void addWatchCount(String id);
 }

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="njnu.edu.back.dao.FileMetaMapper">
     <select id="addFileMeta" parameterType="njnu.edu.back.pojo.FileMeta" resultType="java.lang.String">
-        insert into file_meta values(default, #{provider}, #{time}, #{range}, #{detail}) returning id;
+        insert into file_meta values(default, #{provider}, #{time}, #{range}, #{detail}, #{type}, #{providerPhone}, #{providerEmail}, #{providerAddress}, #{getOnline}) returning id;
     </select>
 
     <select id="getFileMetaById" resultType="java.util.HashMap">

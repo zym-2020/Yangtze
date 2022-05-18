@@ -20,4 +20,9 @@ public class FileMeta {
     String time;
     String range;
     String detail;
+    String type;
+    String providerPhone;
+    String providerEmail;
+    String providerAddress;
+    Boolean getOnline;
 }

@@ -39,7 +39,7 @@
             </div>
             <el-divider />
             <div v-for="(item, index) in fileList" :key="index">
-              <data-card :fileInfo="item" class="card" @click="toDetail(index)"></data-card>
+              <data-card :fileInfo="item" class="card" @clickName="toDetail(index)"></data-card>
             </div>
 
             <div class="pagination">
@@ -169,6 +169,7 @@ export default defineComponent({
         }
         .card {
           cursor: pointer;
+          margin-bottom: 40px;
         }
       }
     }

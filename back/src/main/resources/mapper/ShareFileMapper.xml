@@ -32,4 +32,8 @@
     <select id="getShareFileById" resultMap="ShareFileResultMap">
         select * from share_files where id = #{id}::uuid;
     </select>
+
+    <update id="addWatchCount">
+        update share_files set watch = watch + 1 where id = #{id}::uuid
+    </update>
 </mapper>

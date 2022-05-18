@@ -45,4 +45,10 @@ public class ShareFileController {
         return ResultUtils.success(shareFileService.getFileInfoAndMeta(id));
     }
 
+    @RequestMapping(value = "/addWatchCount/{id}", method = RequestMethod.PATCH)
+    public JsonResult addWatchCount(@PathVariable String id) {
+        shareFileService.addWatchCount(id);
+        return ResultUtils.success();
+    }
+
 }

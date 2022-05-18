@@ -2,7 +2,7 @@
   <div class="data-card">
     <div class="top">
       <el-avatar :size="40" :src="avatar" />
-      <div class="text">{{ name }}</div>
+      <div class="text" @click="clickName">{{ name }}</div>
       <slot name="creator"></slot>
     </div>
     <div class="des">
@@ -20,11 +20,7 @@
         </div>
       </div>
       <div class="bottom-bottom">
-        <el-tag
-          v-for="(item, index) in tagList"
-          :key="index"
-   
-        >
+        <el-tag v-for="(item, index) in tagList" :key="index">
           {{ item }}
         </el-tag>
       </div>
@@ -33,7 +29,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent } from "vue";
 import { imgBase64, generateColorByText, dateFormat } from "@/utils/common";
 
 export default defineComponent({
@@ -42,7 +38,8 @@ export default defineComponent({
       type: Object,
     },
   },
-  setup(props) {
+  emits: ['clickName'],
+  setup(props, context) {
     const name = computed(() => {
       return (props.fileInfo as any).name;
     });
@@ -66,6 +63,9 @@ export default defineComponent({
       return generateColorByText(text);
     };
 
+    const clickName = () => {
+      context.emit('clickName')
+    }
 
     return {
       avatar,
@@ -75,6 +75,7 @@ export default defineComponent({
       watch,
       tagList,
       getColor,
+      clickName
     };
   },
 });
@@ -96,6 +97,8 @@ export default defineComponent({
   }
   .des {
     margin-top: 15px;
+    font-size: 14px;
+    line-height: 30px;
   }
   .bottom {
     .bottom-top {

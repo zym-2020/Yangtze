@@ -3,7 +3,12 @@
     <div class="key">
       <div class="text">{{ key }}</div>
     </div>
-    <div class="value">{{ value }}</div>
+    <div class="value" v-if="!flag">{{ value }}</div>
+    <div v-else class="value">
+      <el-tag v-for="(item, index) in value" :key="index">
+        {{ item }}
+      </el-tag>
+    </div>
   </div>
 </template>
 
@@ -22,10 +27,14 @@ export default defineComponent({
     const value = computed(() => {
       return (props.data as any).value;
     });
+    const flag = computed(() => {
+      return (props.data as any).key === "数据标签：";
+    });
 
     return {
       key,
       value,
+      flag,
     };
   },
 });
@@ -42,6 +51,9 @@ export default defineComponent({
   }
   .value {
     width: 350px;
+    .el-tag {
+      margin-right: 5px;
+    }
   }
 }
 </style>

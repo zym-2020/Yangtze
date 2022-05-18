@@ -23,4 +23,6 @@ public interface ShareFileMapper {
     int countAll();
 
     ShareFile getShareFileById(@Param("id") String id);
+
+    void addWatchCount(@Param("id") String id);
 }

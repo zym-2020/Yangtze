@@ -66,4 +66,9 @@ public class ShareFileServiceImpl implements ShareFileService {
         resultMap.put("fileMeta", metaFileMap);
         return resultMap;
     }
+
+    @Override
+    public void addWatchCount(String id) {
+        shareFileMapper.addWatchCount(id);
+    }
 }
