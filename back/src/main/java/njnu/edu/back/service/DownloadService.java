@@ -1,5 +1,6 @@
 package njnu.edu.back.service;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -10,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
  * @Description:
  */
 public interface DownloadService {
-    void downloadShareFile(HttpServletResponse response, String id);
+    void downloadShareFile(HttpServletResponse response, String id, String userId, HttpServletRequest request);
 
     String getDownloadURL(String id, String userId);
 }

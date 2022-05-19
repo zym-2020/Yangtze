@@ -3,8 +3,10 @@ package njnu.edu.back.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
+import njnu.edu.back.dao.BrowseHistoryMapper;
 import njnu.edu.back.dao.FileMetaMapper;
 import njnu.edu.back.dao.ShareFileMapper;
+import njnu.edu.back.pojo.BrowseHistory;
 import njnu.edu.back.pojo.FileMeta;
 import njnu.edu.back.pojo.ShareFile;
 import njnu.edu.back.service.ShareFileService;
@@ -30,6 +32,9 @@ public class ShareFileServiceImpl implements ShareFileService {
 
     @Autowired
     FileMetaMapper fileMetaMapper;
+
+    @Autowired
+    BrowseHistoryMapper browseHistoryMapper;
 
     @Override
     public void addShareFile(JSONObject jsonObject, String email) {
@@ -68,7 +73,8 @@ public class ShareFileServiceImpl implements ShareFileService {
     }
 
     @Override
-    public void addWatchCount(String id) {
+    public void addWatchCount(String id, String userId, String ip) {
         shareFileMapper.addWatchCount(id);
+        browseHistoryMapper.addHistory(new BrowseHistory(null, userId, null, ip, id));
     }
 }

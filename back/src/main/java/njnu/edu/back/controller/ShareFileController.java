@@ -11,6 +11,8 @@ import njnu.edu.back.service.ShareFileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * Created with IntelliJ IDEA.
  *
@@ -46,8 +48,8 @@ public class ShareFileController {
     }
 
     @RequestMapping(value = "/addWatchCount/{id}", method = RequestMethod.PATCH)
-    public JsonResult addWatchCount(@PathVariable String id) {
-        shareFileService.addWatchCount(id);
+    public JsonResult addWatchCount(@PathVariable String id, @JwtTokenParser("id") String userId, HttpServletRequest request) {
+        shareFileService.addWatchCount(id, userId, request.getRemoteAddr());
         return ResultUtils.success();
     }
 

@@ -20,5 +20,5 @@ public interface ShareFileService {
 
     Map<String, Object> getFileInfoAndMeta(String id);
 
-    void addWatchCount(String id);
+    void addWatchCount(String id, String userId, String ip);
 }

@@ -3,7 +3,9 @@ package njnu.edu.back.service.impl;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.common.utils.Encrypt;
+import njnu.edu.back.dao.DownloadHistoryMapper;
 import njnu.edu.back.dao.ShareFileMapper;
+import njnu.edu.back.pojo.DownloadHistory;
 import njnu.edu.back.pojo.ShareFile;
 import njnu.edu.back.service.DownloadService;
 import njnu.edu.back.service.RedisService;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,11 +39,14 @@ public class DownloadServiceImpl implements DownloadService {
     @Autowired
     RedisService redisService;
 
+    @Autowired
+    DownloadHistoryMapper downloadHistoryMapper;
+
     @Value("${encrypt.key}")
     String key;
 
     @Override
-    public void downloadShareFile(HttpServletResponse response, String id) {
+    public void downloadShareFile(HttpServletResponse response, String id, String userId, HttpServletRequest request) {
         String tempId = (String) redisService.get(id);
         if(tempId == null) {
             throw new MyException(-1, "链接已失效");
@@ -72,6 +78,7 @@ public class DownloadServiceImpl implements DownloadService {
                 sos.close();
                 in.close();
                 shareFileMapper.addDownload(id);
+                downloadHistoryMapper.addHistory(new DownloadHistory(null, userId, null, request.getRemoteAddr(), id, "origin"));
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new MyException(-1, "文件下载错误");
