@@ -17,3 +17,7 @@ jwt:
   expiration: 345600 #JWT的超期限时间(60*60*24*4)
   failExpiration: 259200  #JWT彻底失效的时间,超期后再过3天(60*60*24*3)
   tokenHead: 'Bearer '  #JWT负载中拿到开头
+
+
+encrypt:
+  key: abcdef0123456789

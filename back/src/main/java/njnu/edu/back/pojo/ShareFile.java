@@ -32,4 +32,5 @@ public class ShareFile {
     Integer download;
     Integer watch;
     String meta;
+    String avatar;
 }

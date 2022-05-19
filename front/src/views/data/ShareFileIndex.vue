@@ -2,6 +2,7 @@
   <div class="share-file">
     <data-detail-header
       :name="fileInfo.name"
+      :info="{ watch: fileInfo.watch, download: fileInfo.download }"
       @activeClick="activeClick"
     ></data-detail-header>
     <div class="main">

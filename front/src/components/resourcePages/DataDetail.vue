@@ -36,6 +36,11 @@
           </div>
         </el-col>
         <el-col :span="12">
+          <div class="avatar">
+            <el-avatar shape="square" :size="200" :src="avatar" />
+          </div>
+        </el-col>
+        <el-col :span="24">
           <div class="providerInfo">
             <div class="divider">
               <div class="mark"></div>
@@ -107,8 +112,10 @@
                   <div class="type-item-top-text">原始数据</div>
                 </div>
                 <div class="type-item-bottom">
-                  <el-button size="small"> 下载 </el-button>
-                  <el-button size="small"> 添加订单 </el-button>
+                  <el-button size="small" v-if="fileMeta.get_online" @click="downloadOrigin">
+                    下载
+                  </el-button>
+                  <el-button size="small" v-else> 添加订单 </el-button>
                 </div>
               </div>
               <div class="type-item">
@@ -119,8 +126,10 @@
                   <div class="type-item-top-text">整合数据</div>
                 </div>
                 <div class="type-item-bottom">
-                  <el-button size="small"> 下载 </el-button>
-                  <el-button size="small"> 添加订单 </el-button>
+                  <el-button size="small" v-if="fileMeta.get_online">
+                    下载
+                  </el-button>
+                  <el-button size="small" v-else> 添加订单 </el-button>
                 </div>
               </div>
               <div class="type-item">
@@ -131,8 +140,10 @@
                   <div class="type-item-top-text">可视化数据</div>
                 </div>
                 <div class="type-item-bottom">
-                  <el-button size="small"> 下载 </el-button>
-                  <el-button size="small"> 添加订单 </el-button>
+                  <el-button size="small" v-if="fileMeta.get_online">
+                    下载
+                  </el-button>
+                  <el-button size="small" v-else> 添加订单 </el-button>
                 </div>
               </div>
             </div>
@@ -175,19 +186,19 @@
             <div class="mark"></div>
             <div class="text"><strong>数据获取方式</strong></div>
           </div>
-          <div class="content">在线获取</div>
-          <div class="content">订单获取</div>
+          <div class="content" v-if="fileMeta.get_online">在线获取</div>
+          <div class="content" v-else>订单获取</div>
         </div>
         <div class="Process">
           <div class="divider">
             <div class="mark"></div>
             <div class="text"><strong>数据获取流程</strong></div>
           </div>
-          <div class="online">
+          <div class="online" v-if="fileMeta.get_online">
             <div class="title">在线获取</div>
             <div class="content">点击下载按钮</div>
           </div>
-          <div class="list">
+          <div class="list" v-else>
             <div class="title">订单获取</div>
             <div class="content">[1] 加入数据订单</div>
             <div class="content">[2] 简单填写数据使用用途</div>
@@ -202,8 +213,12 @@
 <script lang="ts">
 import { computed, defineComponent, onMounted } from "vue";
 import DataDescription from "../page/DataDescription.vue";
-import { dateFormat } from "@/utils/common";
+import { dateFormat, imgBase64 } from "@/utils/common";
+import { decrypt } from '@/utils/auth'
+import { useStore } from '@/store'
+import { getDownloadURL } from '@/api/request'
 import "@/assets/css/wangeditor.css";
+import { notice } from "@/utils/notice";
 export default defineComponent({
   components: { DataDescription },
   props: {
@@ -215,6 +230,7 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const store = useStore()
     const fileInfo = computed(() => {
       return props.fileInfo;
     });
@@ -222,14 +238,39 @@ export default defineComponent({
       return props.fileMeta;
     });
 
+    const avatar = computed(() => {
+      if (
+        (props.fileInfo as any).avatar != "" &&
+        (props.fileInfo as any).avatar != undefined &&
+        (props.fileInfo as any).avatar != null
+      ) {
+        return "http://localhost:8002" + (props.fileInfo as any).avatar;
+      }
+
+      return imgBase64((props.fileInfo as any).name === undefined ? '' : (props.fileInfo as any).name);
+    });
+
     const date = (time: string) => {
       return dateFormat(time, "yyyy-MM-dd");
     };
+
+    const downloadOrigin = async () => {
+      const data = await getDownloadURL((fileInfo.value as any).id)
+      if(data != null) {
+        if((data as any).code === 0) {
+          window.location.href = "http://localhost:8002/download/downloadShareFile/" + decrypt(data.data, store.state.user.id)
+        } else {
+          notice("error", "错误", (data as any).msg)
+        }
+      }
+    }
 
     return {
       fileInfo,
       fileMeta,
       date,
+      avatar,
+      downloadOrigin
     };
   },
 });
@@ -245,6 +286,25 @@ export default defineComponent({
     width: 950px;
     margin-top: 10px;
 
+    .avatar {
+      position: relative;
+      .el-avatar {
+        position: absolute;
+        right: 100px;
+      }
+    }
+
+    .providerInfo {
+      margin-top: 40px;
+      .providerInfo-item {
+        /deep/ .data-description {
+          .value {
+            width: 840px;
+          }
+        }
+      }
+    }
+
     .divider {
       height: 25px;
       display: flex;
@@ -258,19 +318,20 @@ export default defineComponent({
         margin-left: 10px;
       }
     }
-    .basicInfo-item,
-    .providerInfo-item {
+    .basicInfo-item, .providerInfo-item {
       margin-top: 10px;
     }
+
+
     .description {
-      margin-top: 50px;
+      margin-top: 40px;
 
       .des {
         margin: 10px;
       }
     }
     .detail {
-      margin-top: 50px;
+      margin-top: 40px;
     }
 
     .download {

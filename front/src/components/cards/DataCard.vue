@@ -44,6 +44,9 @@ export default defineComponent({
       return (props.fileInfo as any).name;
     });
     const avatar = computed(() => {
+      if((props.fileInfo as any).avatar != '' && (props.fileInfo as any).avatar != undefined && (props.fileInfo as any).avatar != null) {
+        return 'http://localhost:8002' + (props.fileInfo as any).avatar
+      }
       return imgBase64(name.value);
     });
     const description = computed(() => {

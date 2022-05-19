@@ -152,3 +152,9 @@ export async function addWatchCount(id: string) {
 export async function getFileMetaById(id: string) {
     return await get(`/fileMeta/getFileMetaById/${id}`)
 }
+
+
+//========================download相关接口=================================
+export async function getDownloadURL(id: string) {
+    return await get(`/download/getDownloadURL/${id}`)
+}

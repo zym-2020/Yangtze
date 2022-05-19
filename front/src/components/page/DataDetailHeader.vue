@@ -7,12 +7,12 @@
           <div class="icon">
             <el-icon><View /></el-icon>浏览量
             <el-divider direction="vertical" />
-            <div>0</div>
+            <div>{{ watch }}</div>
           </div>
           <div class="icon">
             <el-icon><Download /></el-icon>下载量
             <el-divider direction="vertical" />
-            <div>0</div>
+            <div>{{ download }}</div>
           </div>
         </div>
       </div>
@@ -47,12 +47,21 @@ export default defineComponent({
     name: {
       type: String,
     },
+    info: {
+      type: Object,
+    },
   },
   emits: ["activeClick"],
   setup(props, context) {
     const active = ref(1);
     const name = computed(() => {
       return props.name;
+    });
+    const watch = computed(() => {
+      return (props.info as any).watch;
+    });
+    const download = computed(() => {
+      return (props.info as any).download;
     });
     const activeClick = (number: number) => {
       active.value = number;
@@ -63,6 +72,8 @@ export default defineComponent({
       active,
       activeClick,
       name,
+      watch,
+      download,
     };
   },
 });
@@ -94,10 +105,10 @@ export default defineComponent({
           height: 30px;
           border-radius: 8px;
           display: flex;
-          border: 1px solid #EDEDED;
+          border: 1px solid #ededed;
           line-height: 30px;
           padding: 0px 10px;
-          background: #F1F1F1;
+          background: #f1f1f1;
           margin-left: 10px;
           .el-icon {
             margin-top: 7px;

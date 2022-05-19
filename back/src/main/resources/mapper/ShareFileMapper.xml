@@ -16,6 +16,7 @@
         <result column="download" property="download"/>
         <result column="watch" property="watch"/>
         <result column="update_time" property="updateTime"/>
+        <result column="avatar" property="avatar"/>
     </resultMap>
     <insert id="addShareFile" parameterType="njnu.edu.back.pojo.ShareFile">
         insert into share_files values(default, #{name}, #{description}, #{originAddress}, #{visualSource}, #{visualType}, #{structuredSource}, #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}, #{creator}, now(), #{meta}, #{download}, #{watch}, now());
@@ -34,6 +35,14 @@
     </select>
 
     <update id="addWatchCount">
-        update share_files set watch = watch + 1 where id = #{id}::uuid
+        update share_files set watch = watch + 1 where id = #{id}::uuid;
     </update>
+
+    <update id="addDownload">
+        update share_files set download = download + 1 where id = #{id}::uuid;
+    </update>
+
+    <select id="getOriginAddressAndGetOnline" resultType="java.util.HashMap">
+        select name, origin_address, get_online from share_files, file_meta where share_files.id = #{id}::uuid and file_meta.id = share_files.meta::uuid;
+    </select>
 </mapper>

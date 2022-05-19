@@ -31,4 +31,24 @@ public class Encrypt {
             throw new MyException(-99, "md5加密出错!");
         }
     }
+
+    /**
+    * @Description:仅仅适用于text与id相同长度
+    * @Author: Yiming
+    * @Date: 2022/5/19
+    */
+
+    public static String encryptByUserId(String text, String id, char[] key) {
+        String temp = "";
+
+        char[] chars1 = text.toCharArray();
+        char[] chars2 = id.toCharArray();
+        for(int i = 0; i < text.length(); i++) {
+            int a = (chars1[i] + chars2[i]) % 16;
+            int b = (chars1[i] + chars2[i]) / 16;
+            temp += key[a];
+            temp += key[b];
+        }
+        return temp;
+    }
 }
