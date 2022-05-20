@@ -7,10 +7,7 @@ import njnu.edu.back.common.result.ResultUtils;
 import njnu.edu.back.pojo.DownloadHistory;
 import njnu.edu.back.service.DownloadHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -35,6 +32,12 @@ public class DownloadHistoryController{
         downloadHistory.setIp(request.getRemoteAddr());
         downloadHistoryService.addHistory(downloadHistory);
         return ResultUtils.success();
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/pageQuery/{dataId}/{size}/{page}", method = RequestMethod.GET)
+    public JsonResult pageQuery(@PathVariable int size, @PathVariable int page, @PathVariable String dataId) {
+        return ResultUtils.success(downloadHistoryService.pageQuery(size, page, dataId));
     }
 
 }

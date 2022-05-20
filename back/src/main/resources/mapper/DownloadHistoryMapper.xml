@@ -4,4 +4,8 @@
     <insert id="addHistory" parameterType="njnu.edu.back.pojo.DownloadHistory">
         insert into download_history values(default, #{userId}, now(), #{ip}, #{dataId}, #{dataType});
     </insert>
+
+    <select id="pageQuery" resultType="java.util.HashMap">
+        select download_history.*, users.name, users.avatar from download_history, users where download_history.data_id = #{dataId} and user_id::uuid = users.id order by download_time desc limit #{size} offset #{start};
+    </select>
 </mapper>

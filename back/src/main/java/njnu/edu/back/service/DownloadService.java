@@ -2,6 +2,8 @@ package njnu.edu.back.service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,7 +13,8 @@ import javax.servlet.http.HttpServletResponse;
  * @Description:
  */
 public interface DownloadService {
-    void downloadShareFile(HttpServletResponse response, String id, String userId, HttpServletRequest request);
+    void downloadShareFile(HttpServletResponse response, String id, String userId, String ip);
 
     String getDownloadURL(String id, String userId);
+
 }

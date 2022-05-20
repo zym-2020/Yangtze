@@ -78,6 +78,28 @@ export const generateColorByText = (text: string) => {
   return '#' + tmp
 }
 
+export function getLastOrNextFewDateBy(number: number) {
+  function fun_date(aa: number) {
+    var date1 = new Date(),
+      time1 = date1.getFullYear() + "-" + (date1.getMonth() + 1) + "-" + date1.getDate();//time1表示当前时间
+    var date2 = new Date(date1);
+    date2.setDate(date1.getDate() + aa);
+    var time2 = (date2.getMonth() + 1) + "-" + date2.getDate();
+    return time2
+  }
+  const timeList = []
+  if(number < 0) {
+    for(let i = 0; i > number; i--) {
+      timeList.push(fun_date(i))
+    }
+  } else {
+    for(let i = 0; i < number; i++) {
+      timeList.push(fun_date(i))
+    }
+  }
+  return timeList
+}
+
 
 interface Children {
   label: string;

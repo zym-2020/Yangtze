@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -46,7 +47,7 @@ public class DownloadServiceImpl implements DownloadService {
     String key;
 
     @Override
-    public void downloadShareFile(HttpServletResponse response, String id, String userId, HttpServletRequest request) {
+    public void downloadShareFile(HttpServletResponse response, String id, String userId, String ip) {
         String tempId = (String) redisService.get(id);
         if(tempId == null) {
             throw new MyException(-1, "链接已失效");
@@ -78,7 +79,7 @@ public class DownloadServiceImpl implements DownloadService {
                 sos.close();
                 in.close();
                 shareFileMapper.addDownload(id);
-                downloadHistoryMapper.addHistory(new DownloadHistory(null, userId, null, request.getRemoteAddr(), id, "origin"));
+                downloadHistoryMapper.addHistory(new DownloadHistory(null, userId, null, ip, id, "origin"));
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new MyException(-1, "文件下载错误");
@@ -107,4 +108,5 @@ public class DownloadServiceImpl implements DownloadService {
         redisService.set(uuid, id, 30l);
         return Encrypt.encryptByUserId(uuid, userId, key.toCharArray());
     }
+
 }

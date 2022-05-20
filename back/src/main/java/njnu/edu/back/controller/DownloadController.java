@@ -37,8 +37,8 @@ public class DownloadController {
     * @Date: 2022/5/19
     */
 
-    @RequestMapping(value = "/downloadShareFile/{id}", method = RequestMethod.GET)
-    public void downloadShareFile(@PathVariable String id, HttpServletResponse response, @JwtTokenParser("id") String userId, HttpServletRequest request) {
-        downloadService.downloadShareFile(response, id, userId, request);
+    @RequestMapping(value = "/downloadShareFile/{userId}/{id}", method = RequestMethod.GET)
+    public void downloadShareFile(@PathVariable String id, HttpServletResponse response, @PathVariable String userId, HttpServletRequest request) {
+        downloadService.downloadShareFile(response, id, userId, request.getRemoteAddr());
     }
 }

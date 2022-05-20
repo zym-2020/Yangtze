@@ -258,7 +258,7 @@ export default defineComponent({
       const data = await getDownloadURL((fileInfo.value as any).id)
       if(data != null) {
         if((data as any).code === 0) {
-          window.location.href = "http://localhost:8002/download/downloadShareFile/" + decrypt(data.data, store.state.user.id)
+          window.location.href = "http://172.21.213.177:8002/download/downloadShareFile/" + store.state.user.id + "/" + decrypt(data.data, store.state.user.id)
         } else {
           notice("error", "错误", (data as any).msg)
         }

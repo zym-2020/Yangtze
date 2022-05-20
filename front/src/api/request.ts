@@ -158,3 +158,8 @@ export async function getFileMetaById(id: string) {
 export async function getDownloadURL(id: string) {
     return await get(`/download/getDownloadURL/${id}`)
 }
+
+//========================downloadHistory相关接口=================================
+export async function pageQueryDownloadHistory(size: number, page: number, id: string) {
+    return await get(`/downloadHistory/pageQuery/${id}/${size}/${page}`)
+}   
