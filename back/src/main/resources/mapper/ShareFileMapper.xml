@@ -19,12 +19,21 @@
         <result column="avatar" property="avatar"/>
     </resultMap>
     <insert id="addShareFile" parameterType="njnu.edu.back.pojo.ShareFile">
-        insert into share_files values(default, #{name}, #{description}, #{originAddress}, #{visualSource}, #{visualType}, #{structuredSource}, #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}, #{creator}, now(), #{meta}, #{download}, #{watch}, now());
+        insert into share_files values(default, #{name}, #{description}, #{originAddress}, #{visualSource}, #{visualType}, #{structuredSource}, #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}, #{creator}, now(), #{meta}, #{download}, #{watch}, now(), #{avatar});
     </insert>
 
     <select id="pageQueryOrderByDownload" resultMap="ShareFileResultMap">
-        select * from share_files order by download, watch desc limit #{size} offset #{start};
+        select * from share_files order by download desc limit #{size} offset #{start};
     </select>
+
+    <select id="pageQueryDESC" resultMap="ShareFileResultMap">
+        select * from share_files order by ${property} desc limit #{size} offset #{start};
+    </select>
+
+    <select id="pageQueryASC" resultMap="ShareFileResultMap">
+        select * from share_files order by ${property} asc limit #{size} offset #{start};
+    </select>
+
 
     <select id="countAll" resultType="java.lang.Integer">
         select count(*) from share_files;

@@ -5,18 +5,41 @@
     </div>
     <div class="admin-main">
       <el-scrollbar class="scroll">
-        <router-view />
+        <!-- <router-view /> -->
+        <router-view v-slot="{ Component }">
+          <keep-alive>
+            <component
+              :is="Component"
+              v-if="route.meta.keepAlive"
+              :key="route.path"
+            />
+          </keep-alive>
+          <component
+            :is="Component"
+            v-if="!route.meta.keepAlive"
+            :key="route.path"
+          />
+        </router-view>
       </el-scrollbar>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, computed } from "vue";
 import AdminLeft from "./components/AdminLeft.vue";
+import router from '@/router'
 export default defineComponent({
   components: { AdminLeft },
-  setup() {},
+  setup() {
+    const route = computed(() => {
+      return router.currentRoute.value;
+    });
+
+    return {
+      route,
+    };
+  },
 });
 </script>
 

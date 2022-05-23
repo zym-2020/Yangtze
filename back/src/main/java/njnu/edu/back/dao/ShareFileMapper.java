@@ -18,7 +18,10 @@ import java.util.Map;
 public interface ShareFileMapper {
     void addShareFile(ShareFile shareFile);
 
-    List<ShareFile> pageQueryOrderByDownload(@Param("size") int size, @Param("start") int start);
+
+    List<ShareFile> pageQueryDESC(@Param("size") int size, @Param("start") int start, @Param("property") String property);
+
+    List<ShareFile> pageQueryASC(@Param("size") int size, @Param("start") int start, @Param("property") String property);
 
     int countAll();
 

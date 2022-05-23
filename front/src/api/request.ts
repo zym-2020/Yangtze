@@ -1,5 +1,5 @@
 import { get, post, del, patch } from './axios'
-import { RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData, MergeFileJsonData, AddFileJsonData, RenameJsonData, SetUserInfoWithoutAvatarJsonData, AddShareFileJsonData } from './type/userType'
+import { RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData, MergeFileJsonData, AddFileJsonData, RenameJsonData, SetUserInfoWithoutAvatarJsonData } from './type/userType'
 import { ResourceState } from '@/store/resourse/resourceState'
 
 
@@ -132,12 +132,12 @@ export async function deleteFile(id: string) {
 }
 
 //========================share_file相关接口=================================
-export async function addShareFile(jsonData: AddShareFileJsonData) {
-    return await post(`/share/addShareFile`, jsonData)
+export async function addShareFile(formData: FormData) {
+    return await post(`/share/addShareFile`, formData)
 }
 
-export async function pageQueryOrderByDownload(page: number, size: number) {
-    return await get(`/share/pageQueryOrderByDownload/${page}/${size}`)
+export async function pageQuery(property: string, flag: boolean, page: number, size: number) {
+    return await get(`/share/pageQuery/${property}/${flag}/${page}/${size}`)
 }
 
 export async function getFileInfoAndMeta(id: string) {

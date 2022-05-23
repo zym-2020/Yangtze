@@ -54,6 +54,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
             {
                 path: 'list',
                 component: () => import('@/views/data/Index.vue'),
+                meta: {
+                    keepAlive: true
+                }
             },
             {
                 path: ':id',
@@ -97,7 +100,8 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 path: 'list',
                 component: () => import('@/views/analyze/Index.vue'),
                 meta: {
-                    roles: ['member', 'admin']
+                    roles: ['member', 'admin'],
+                    keepAlive: true
                 }
             },
             {
@@ -125,7 +129,8 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 path: 'space',
                 component: () => import('@/views/user/Index.vue'),
                 meta: {
-                    roles: ['member', 'admin']
+                    roles: ['member', 'admin'],
+                    keepAlive: true
                 }
             },
             {
@@ -151,7 +156,8 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                         path: 'resource',
                         component: () => import('@/views/user/views/ResourceManage.vue'),
                         meta: {
-                            roles: ['admin']
+                            roles: ['admin'],
+                            keepAlive: true
                         }
                     },
                     {
@@ -165,7 +171,8 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                         path: 'project',
                         component: () => import('@/views/user/views/ProjectManage.vue'),
                         meta: {
-                            roles: ['admin']
+                            roles: ['admin'],
+                            keepAlive: true
                         }
                     },
                     {

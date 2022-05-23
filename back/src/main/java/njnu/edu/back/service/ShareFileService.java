@@ -2,6 +2,7 @@ package njnu.edu.back.service;
 
 import com.alibaba.fastjson.JSONObject;
 import njnu.edu.back.pojo.ShareFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -14,9 +15,10 @@ import java.util.Map;
  * @Description:
  */
 public interface ShareFileService {
-    void addShareFile(JSONObject jsonObject, String email);
+    void addShareFile(JSONObject jsonObject, String email, MultipartFile file);
 
-    Map<String, Object> pageQueryOrderByDownload(int page, int size);
+    Map<String, Object> pageQuery(int page, int size, String property, boolean flag);
+
 
     Map<String, Object> getFileInfoAndMeta(String id);
 

@@ -27,7 +27,7 @@
               </div>
               <div class="sort">
                 排序方式
-                <el-select v-model="selectValue">
+                <el-select v-model="selectValue" @change="changeHandle">
                   <el-option
                     v-for="(item, index) in options"
                     :key="index"
@@ -39,7 +39,11 @@
             </div>
             <el-divider />
             <div v-for="(item, index) in fileList" :key="index">
-              <data-card :fileInfo="item" class="card" @clickName="toDetail(index)"></data-card>
+              <data-card
+                :fileInfo="item"
+                class="card"
+                @clickName="toDetail(index)"
+              ></data-card>
             </div>
 
             <div class="pagination">
@@ -47,6 +51,8 @@
                 background
                 layout="prev, pager, next"
                 :total="total"
+                :current-page="currentPage"
+                @current-change="pageChange"
               />
             </div>
           </div>
@@ -61,8 +67,8 @@ import { defineComponent, onMounted, ref } from "vue";
 import PageHeader from "@/components/page/PageHeader.vue";
 import DataCollapse from "@/components/page/DataCollapse.vue";
 import DataCard from "@/components/cards/DataCard.vue";
-import { pageQueryOrderByDownload } from "@/api/request";
-import router from '@/router'
+import { pageQuery } from "@/api/request";
+import router from "@/router";
 export default defineComponent({
   components: {
     PageHeader,
@@ -74,6 +80,7 @@ export default defineComponent({
     const selectValue = ref("下载量");
     const fileList = ref<any[]>([]);
     const total = ref(0);
+    const currentPage = ref(1);
     const options = ref<{ label: string; value: string }[]>([
       {
         label: "下载量",
@@ -93,18 +100,65 @@ export default defineComponent({
       },
     ]);
 
+    const changeHandle = async (val: any) => {
+      switch (val) {
+        case "download":
+          const data1 = await pageQuery("download", false, 0, 10);
+          if (data1 != null) {
+            if ((data1 as any).code === 0) {
+              fileList.value = data1.data.list;
+              total.value = data1.data.total;
+              currentPage.value = 1;
+            }
+          }
+          break;
+        case "watch":
+          const data2 = await pageQuery("watch", false, 0, 10);
+          if (data2 != null) {
+            if ((data2 as any).code === 0) {
+              fileList.value = data2.data.list;
+              total.value = data2.data.total;
+              currentPage.value = 1;
+            }
+          }
+          break;
+        case "update":
+          const data3 = await pageQuery("update_time", false, 0, 10);
+          if (data3 != null) {
+            if ((data3 as any).code === 0) {
+              fileList.value = data3.data.list;
+              total.value = data3.data.total;
+              currentPage.value = 1;
+            }
+          }
+          break;
+        case "name":
+          const data4 = await pageQuery("name", false, 0, 10);
+          if (data4 != null) {
+            if ((data4 as any).code === 0) {
+              fileList.value = data4.data.list;
+              total.value = data4.data.total;
+              currentPage.value = 1;
+            }
+          }
+          break;
+      }
+    };
+
+    const pageChange = () => {};
+
     const toDetail = (index: number) => {
       router.push({
-        name: 'shareFile',
+        name: "shareFile",
         params: {
           id: fileList.value[index].id,
-          fileInfo: JSON.stringify(fileList.value[index])
-        }
-      })
-    }
+          fileInfo: JSON.stringify(fileList.value[index]),
+        },
+      });
+    };
 
     onMounted(async () => {
-      const data = await pageQueryOrderByDownload(0, 10);
+      const data = await pageQuery("download", false, 0, 10);
       if (data != null) {
         if ((data as any).code === 0) {
           fileList.value = data.data.list;
@@ -119,7 +173,10 @@ export default defineComponent({
       selectValue,
       fileList,
       total,
-      toDetail
+      toDetail,
+      changeHandle,
+      currentPage,
+      pageChange,
     };
   },
 });

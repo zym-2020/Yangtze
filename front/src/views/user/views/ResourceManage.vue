@@ -49,7 +49,7 @@
 import { defineComponent, onMounted, ref } from "vue";
 import DataCard from "@/components/cards/DataCard.vue";
 import router from "@/router";
-import { pageQueryOrderByDownload } from "@/api/request";
+import { pageQuery } from "@/api/request";
 export default defineComponent({
   components: { DataCard },
   setup() {
@@ -61,7 +61,7 @@ export default defineComponent({
     };
 
     onMounted(async () => {
-      const data = await pageQueryOrderByDownload(0, 10);
+      const data = await pageQuery("update_time", false, 0, 10);
       if (data != null) {
         console.log(data.data);
         fileList.value = data.data.list

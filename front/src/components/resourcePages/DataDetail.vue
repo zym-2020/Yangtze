@@ -336,6 +336,7 @@ export default defineComponent({
 
     .download {
       margin-top: 30px;
+      margin-bottom: 80px;
       .type {
         margin-top: 20px;
         display: flex;
@@ -357,7 +358,7 @@ export default defineComponent({
   .right {
     width: 300px;
     margin-top: 10px;
-    height: calc(100vh - 170px);
+    min-height: calc(100vh - 170px);
     background: #f6f7fa;
     .body {
       margin: 20px 10px;

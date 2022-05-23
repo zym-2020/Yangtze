@@ -18,6 +18,10 @@
           <el-icon><View /></el-icon>
           <span>{{ watch }}</span>
         </div>
+        <div class="download">
+          <el-icon><Download /></el-icon>
+          <span>{{ download }}</span>
+        </div>
       </div>
       <div class="bottom-bottom">
         <el-tag v-for="(item, index) in tagList" :key="index">
@@ -58,6 +62,9 @@ export default defineComponent({
     const watch = computed(() => {
       return (props.fileInfo as any).watch;
     });
+    const download = computed(() => {
+      return (props.fileInfo as any).download
+    })
     const tagList = computed(() => {
       return (props.fileInfo as any).tags;
     });
@@ -76,6 +83,7 @@ export default defineComponent({
       description,
       updateTime,
       watch,
+      download,
       tagList,
       getColor,
       clickName
@@ -107,7 +115,7 @@ export default defineComponent({
     .bottom-top {
       display: flex;
       margin-top: 10px;
-      .watch {
+      .watch, .download {
         margin-left: 20px;
         position: relative;
         .el-icon {
