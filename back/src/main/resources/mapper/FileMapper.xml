@@ -21,7 +21,25 @@
         delete from files where id = #{id}::uuid;
     </delete>
 
-    <select id="findById" resultType="njnu.edu.back.pojo.File">
+    <delete id="deleteFolder">
+        with recursive temp_files as (
+            select * from files where id = #{id}::uuid
+            union
+            select f.* from files f
+            inner join temp_files on temp_files.id::text = f.parent_id
+        ) delete from files where id in (select id from temp_files);
+    </delete>
+
+    <select id="recursionFindFiles" resultType="java.util.HashMap">
+        with recursive temp_files as (
+            select * from files where id = #{id}::uuid
+            union
+            select f.* from files f
+            inner join temp_files on temp_files.id::text = f.parent_id
+        ) select * from temp_files where folder = false;
+    </select>
+
+    <select id="findById" resultType="java.util.HashMap">
         select * from files where id = #{id}::uuid;
     </select>
 </mapper>

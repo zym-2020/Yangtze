@@ -27,5 +27,9 @@ public interface FileMapper {
 
     void delete(@Param("id") String id);
 
-    File findById(@Param("id") String id);
+    void deleteFolder(@Param("id") String id);
+
+    List<Map<String, Object>> recursionFindFiles(@Param("id") String id);
+
+    Map<String, Object> findById(@Param("id") String id);
 }

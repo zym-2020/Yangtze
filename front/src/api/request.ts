@@ -131,6 +131,10 @@ export async function deleteFile(id: string) {
     return await del(`/file/deleteFile/${id}`)
 }
 
+export async function deleteFolder(id: string) {
+    return await del(`/file/deleteFolder/${id}`)
+}
+
 //========================share_file相关接口=================================
 export async function addShareFile(formData: FormData) {
     return await post(`/share/addShareFile`, formData)

@@ -35,4 +35,6 @@ public interface FileService {
     void deleteFile(String id);
 
     void getAvatar(String pictureName, HttpServletResponse response);
+
+    void deleteFolder(String id);
 }

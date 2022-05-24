@@ -11,6 +11,7 @@ import '@/assets/iconfont/iconfont.js'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import { drag, analyseDrag } from '@/directives/drag'
+import { inputFocus } from '@/directives/focus'
 
 const app = createApp(App)
 Object.keys(Icons).forEach(key => {
@@ -18,6 +19,7 @@ Object.keys(Icons).forEach(key => {
 })
 app.directive("analyseDrag", analyseDrag)
 app.directive("drag", drag)
+app.directive("inputFocus", inputFocus)
 
 
 app.use(ElementPlus)

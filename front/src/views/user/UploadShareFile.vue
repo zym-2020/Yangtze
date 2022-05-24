@@ -183,6 +183,7 @@ import {
   ref,
   shallowRef,
   onBeforeUnmount,
+  onMounted,
 } from "vue";
 import "@wangeditor/editor/dist/css/style.css"; // 引入 css
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
@@ -193,6 +194,7 @@ import { addShareFile } from "@/api/request";
 import { notice } from "@/utils/notice";
 import type { FormInstance } from "element-plus";
 import AvatarUpload from "@/components/upload/AvatarUpload.vue";
+import router from "@/router";
 
 export default defineComponent({
   components: { PageHeader, Editor, Toolbar, ResourceDialog, AvatarUpload },
@@ -419,6 +421,13 @@ export default defineComponent({
       if (editor == null) return;
       editor.destroy();
     });
+
+    onMounted(() => {
+      if(router.currentRoute.value.params.originFileAddress != undefined && router.currentRoute.value.params.originFileName != undefined) {
+        form.origin.name = router.currentRoute.value.params.originFileName as string
+        form.origin.address = router.currentRoute.value.params.originFileAddress as string
+      }
+    })
 
     return {
       form,

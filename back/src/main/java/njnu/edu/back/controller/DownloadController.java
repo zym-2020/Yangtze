@@ -41,4 +41,15 @@ public class DownloadController {
     public void downloadShareFile(@PathVariable String id, HttpServletResponse response, @PathVariable String userId, HttpServletRequest request) {
         downloadService.downloadShareFile(response, id, userId, request.getRemoteAddr());
     }
+
+    /**
+    * @Description:下载用户个人空间文件接口
+    * @Author: Yiming
+    * @Date: 2022/5/24
+    */
+
+    @RequestMapping(value = "/downloadLocalFile/{id}", method = RequestMethod.GET)
+    public void downloadLocalFile(@PathVariable String id, HttpServletResponse response) {
+        downloadService.downloadLocalFile(response, id);
+    }
 }

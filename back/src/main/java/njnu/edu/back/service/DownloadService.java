@@ -15,6 +15,8 @@ import java.util.Map;
 public interface DownloadService {
     void downloadShareFile(HttpServletResponse response, String id, String userId, String ip);
 
+    void downloadLocalFile(HttpServletResponse response, String id);
+
     String getDownloadURL(String id, String userId);
 
 }

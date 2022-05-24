@@ -38,7 +38,15 @@
         :sort-by="['folder', 'name']"
       >
         <template #default="scope">
-          <div style="display: flex; align-items: center">
+          <div v-if="renameId === scope.row.id">
+            <el-input
+              v-model="renameValue"
+              v-inputFocus
+              @blur="blurHandle"
+              @keyup.enter="enterHandle"
+            />
+          </div>
+          <div style="display: flex; align-items: center" v-else>
             <svg style="width: 20px; height: 20px" @click="open">
               <use
                 :xlink:href="
@@ -96,16 +104,17 @@
       v-show="folderFlag"
       :contextMenuInstance="contextMenuInstance"
       @delSuccess="delSuccess"
+      @rename="contextRename"
     ></user-folder-context-menu>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, nextTick, onMounted, ref } from "vue";
 import UserFolderContextMenu from "@/components/contextMenu/UserFolderContextMenu.vue";
 import UploadDialog from "./UploadDialog.vue";
 import FolderDialog from "./FolderDialog.vue";
-import { findByLevel, addFile, findByParentId } from "@/api/request";
+import { findByLevel, addFile, findByParentId, rename } from "@/api/request";
 import { dateFormat, uuid } from "@/utils/common";
 import { notice } from "@/utils/notice";
 export default defineComponent({
@@ -116,12 +125,15 @@ export default defineComponent({
   },
   setup() {
     const folderFlag = ref(false);
+    const renameId = ref("");
     const tableData = ref<any[]>([]);
     const path = ref<{ name: string; parentId: string; id: string }[]>([]);
     const dialogUpload = ref(false);
     const dialogCreateFolder = ref(false);
     const level = ref(0);
     const contextMenuInstance = ref({});
+    const renameValue = ref("");
+    let oldName = "";
 
     const contextMenuClick = (row: any, column: any, event: any) => {
       event.preventDefault();
@@ -224,11 +236,37 @@ export default defineComponent({
         }
       });
     };
+    const contextRename = () => {
+      renameId.value = (contextMenuInstance.value as any).id;
+      renameValue.value = (contextMenuInstance.value as any).name;
+      oldName = (contextMenuInstance.value as any).name;
+    };
+
+    const blurHandle = () => {
+      renameId.value = "";
+    };
+
+    const enterHandle = async () => {
+      if (oldName != renameValue.value) {
+        const data = await rename({
+          id: (contextMenuInstance.value as any).id,
+          name: renameValue.value,
+        });
+        if (data != null && (data as any).code === 0) {
+          tableData.value.forEach((item) => {
+            if (item.id === (contextMenuInstance.value as any).id) {
+              item.name = renameValue.value;
+            }
+          });
+          notice("success", "成功", "重命名成功");
+        }
+      }
+      renameId.value = "";
+    };
 
     onMounted(async () => {
       const tableList = await findByLevel(level.value);
       if (tableList != null) {
-        console.log(tableList);
         tableData.value = tableList.data;
       }
     });
@@ -247,6 +285,11 @@ export default defineComponent({
       level,
       contextMenuInstance,
       delSuccess,
+      contextRename,
+      renameId,
+      renameValue,
+      blurHandle,
+      enterHandle,
     };
   },
 });

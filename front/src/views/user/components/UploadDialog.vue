@@ -118,11 +118,11 @@ interface Tree {
 export default defineComponent({
   props: {
     level: {
-      type: Number
+      type: Number,
     },
     parentId: {
-      type: String
-    }
+      type: String,
+    },
   },
   setup(props) {
     const options = ref([
@@ -247,7 +247,7 @@ export default defineComponent({
               total: fileChunk.length,
               level: props.level as number,
               parentId: props.parentId as string,
-              meta: ''
+              meta: "",
             });
             checkStatus(key.data);
           }

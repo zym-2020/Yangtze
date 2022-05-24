@@ -111,8 +111,8 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public void deleteFile(String id) {
-        File file = fileMapper.findById(id);
-        String address = file.getAddress();
+        Map<String, Object> file = fileMapper.findById(id);
+        String address = (String) file.get("address");
         LocalUploadUtil.DeleteFolder(address);
         fileMapper.delete(id);
     }
@@ -153,5 +153,14 @@ public class FileServiceImpl implements FileService {
             }
         }
 
+    }
+
+    @Override
+    public void deleteFolder(String id) {
+        List<Map<String, Object>> files = fileMapper.recursionFindFiles(id);
+        for(Map<String, Object> map : files) {
+            LocalUploadUtil.DeleteFolder((String) map.get("address"));
+        }
+        fileMapper.deleteFolder(id);
     }
 }
