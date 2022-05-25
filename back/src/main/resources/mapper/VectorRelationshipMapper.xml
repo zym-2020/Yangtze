@@ -14,6 +14,6 @@
     </insert>
 
     <select id="queryAnalyseVector" resultType="java.util.HashMap">
-        select id, file_name as name, meta, upload_time as time, table_name as "tableName", type as "vectorType" from vector_relationship where id = #{id};
+        select id, file_name as name, meta, upload_time as time, table_name as "tableName", type as "vectorType" from vector_relationship where id::text = #{id};
     </select>
 </mapper>

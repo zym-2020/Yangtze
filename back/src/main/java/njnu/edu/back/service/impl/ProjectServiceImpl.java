@@ -110,7 +110,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public String getResultById(String id) {
-        return projectMapper.getResult(UUID.fromString(id));
+        return projectMapper.getResult(id);
     }
 
     @Override
@@ -120,12 +120,12 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public int setResult(ProjectJsonBean result, String id) {
-        return projectMapper.setResult(JSONObject.toJSONString(result), UUID.fromString(id));
+        return projectMapper.setResult(JSONObject.toJSONString(result), id);
     }
 
     @Override
     public void saveSectionValue(String DEMId, Double lat1, Double lon1, Double lat2, Double lon2, String sectionName, String email, String projectName) {
-        RasterRelationship rasterRelationship = rasterRelationshipMapper.getById(UUID.fromString(DEMId));
+        RasterRelationship rasterRelationship = rasterRelationshipMapper.getById(DEMId);
         String path = rasterRelationship.getAddress() + "\\" + rasterRelationship.getFileName();
         String resultPath = baseDir + email + "\\projects\\" + projectName + "\\断面形态";
         File file = new File(resultPath);
@@ -320,7 +320,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public Map<String, Object> findProjectById(String projectId) {
-        return projectMapper.findProjectById(UUID.fromString(projectId));
+        return projectMapper.findProjectById(projectId);
     }
 
 

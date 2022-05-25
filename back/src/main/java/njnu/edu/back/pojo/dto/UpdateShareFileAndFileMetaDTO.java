@@ -1,24 +1,30 @@
-package njnu.edu.back.pojo;
+package njnu.edu.back.pojo.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-import java.util.List;
-
 /**
  * Created with IntelliJ IDEA.
  *
  * @Author: Yiming
- * @Date: 2022/05/16/14:57
+ * @Date: 2022/05/25/16:01
  * @Description:
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ShareFile {
+public class UpdateShareFileAndFileMetaDTO {
     String id;
+    String provider;
+    String time;
+    String range;
+    String detail;
+    String type;
+    String providerPhone;
+    String providerEmail;
+    String providerAddress;
+    Boolean getOnline;
     String name;
     String description;
     String originName;
@@ -29,11 +35,5 @@ public class ShareFile {
     String visualType;
     String structuredSource;
     String[] tags;
-    String creator;
-    Date createTime;
-    Date updateTime;
-    Integer download;
-    Integer watch;
-    String meta;
     String avatar;
 }

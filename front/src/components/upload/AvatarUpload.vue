@@ -13,12 +13,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import type { UploadFile } from "element-plus";
+import router from '@/router'
 export default defineComponent({
+
   emits: ["upload"],
-  setup(_, context) {
-    const imageUrl = ref("");
+  setup(props, context) {
+    const imageUrl = ref('');
     const file = ref<File>();
 
     const avatar = ref<HTMLElement>();
@@ -29,6 +31,13 @@ export default defineComponent({
         context.emit("upload", file.value);
       }
     };
+
+    onMounted(() => {
+      const fileInfo: any = router.currentRoute.value.params.fileInfo
+      if(fileInfo.avatar != '' && fileInfo.avatar != undefined && fileInfo.avatar != null) {
+        imageUrl.value = "http://localhost:8002" + fileInfo.avatar
+      }
+    })
 
     return {
       imageUrl,

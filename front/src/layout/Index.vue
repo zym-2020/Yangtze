@@ -17,7 +17,6 @@
           <component
             :is="Component"
             v-if="!route.meta.keepAlive"
-            :key="route.path"
           />
         </router-view>
       </el-main>

@@ -17,11 +17,11 @@ import java.util.UUID;
  */
 @Repository
 public interface RasterRelationshipMapper {
-    String getAddress(@Param("id") UUID rasterId);
+    String getAddress(@Param("id") String rasterId);
 
     List<Map<String, Object>> pageQuery(@Param("size") int size, @Param("start") int start);
 
     int countAll();
 
-    RasterRelationship getById(@Param("id") UUID rasterId);
+    RasterRelationship getById(@Param("id") String rasterId);
 }

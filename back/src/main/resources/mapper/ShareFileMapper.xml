@@ -17,13 +17,20 @@
         <result column="watch" property="watch"/>
         <result column="update_time" property="updateTime"/>
         <result column="avatar" property="avatar"/>
+        <result column="origin_name" property="originName"/>
+        <result column="structured_name" property="structuredName"/>
+        <result column="visual_name" property="visualName"/>
     </resultMap>
     <insert id="addShareFile" parameterType="njnu.edu.back.pojo.ShareFile">
-        insert into share_files values(default, #{name}, #{description}, #{originAddress}, #{visualSource}, #{visualType}, #{structuredSource}, #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}, #{creator}, now(), #{meta}, #{download}, #{watch}, now(), #{avatar});
+        insert into share_files values(default, #{name}, #{description}, #{originAddress}, #{visualSource}, #{visualType}, #{structuredSource}, #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}, #{creator}, now(), #{meta}, #{download}, #{watch}, now(), #{avatar}, #{originName}, #{structuredName}, #{visualName});
     </insert>
 
-    <select id="pageQueryOrderByDownload" resultMap="ShareFileResultMap">
-        select * from share_files order by download desc limit #{size} offset #{start};
+    <select id="pageQueryByAdminDESC" resultType="java.util.HashMap">
+        select share_files.*, users.name as "userName", users.avatar as "userAvatar" from users, share_files where users.email = share_files.creator order by ${property} desc limit #{size} offset #{start};
+    </select>
+
+    <select id="pageQueryByAdminASC" resultType="java.util.HashMap">
+        select share_files.*, users.name, users.avatar from users, share_files where users.email = share_files.creator order by ${property} asc limit #{size} offset #{start};
     </select>
 
     <select id="pageQueryDESC" resultMap="ShareFileResultMap">
@@ -34,24 +41,65 @@
         select * from share_files order by ${property} asc limit #{size} offset #{start};
     </select>
 
+    <select id="fuzzyQueryDESC" resultMap="ShareFileResultMap">
+        select * from share_files where name like #{keyWords} order by ${property} desc limit #{size} offset #{start};
+    </select>
+
+    <select id="fuzzyQueryASC" resultMap="ShareFileResultMap">
+        select * from share_files where name like #{keyWords} order by ${property} asc limit #{size} offset #{start};
+    </select>
+
+    <select id="countFuzzyQuery" resultType="java.lang.Integer">
+        select count(*) from share_files where name like #{keyWords};
+    </select>
 
     <select id="countAll" resultType="java.lang.Integer">
         select count(*) from share_files;
     </select>
 
     <select id="getShareFileById" resultMap="ShareFileResultMap">
-        select * from share_files where id = #{id}::uuid;
+        select * from share_files where id::text = #{id};
     </select>
 
     <update id="addWatchCount">
-        update share_files set watch = watch + 1 where id = #{id}::uuid;
+        update share_files set watch = watch + 1 where id::text = #{id};
     </update>
 
     <update id="addDownload">
-        update share_files set download = download + 1 where id = #{id}::uuid;
+        update share_files set download = download + 1 where id::text = #{id};
     </update>
 
     <select id="getOriginAddressAndGetOnline" resultType="java.util.HashMap">
-        select name, origin_address, get_online from share_files, file_meta where share_files.id = #{id}::uuid and file_meta.id = share_files.meta::uuid;
+        select origin_name, origin_address, get_online from share_files, file_meta where share_files.id::text = #{id} and file_meta.id::text = share_files.meta;
     </select>
+
+    <update id="updateFileInfoAndFileMeta" parameterType="njnu.edu.back.pojo.dto.UpdateShareFileAndFileMetaDTO">
+        update share_files
+        set
+            name = #{name},
+            description = #{description},
+            origin_name = #{originName},
+            structured_name = #{structuredName},
+            visual_source = #{visualSource},
+            visual_name = #{visualName},
+            origin_address = #{originAddress},
+            visual_type = #{visualType},
+            structured_source = #{structuredSource},
+            tags = #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler},
+            avatar = #{avatar}
+        where id::text = #{id};
+
+        update file_meta
+        set
+            provider = #{provider},
+            time = #{time},
+            range = #{range},
+            detail = #{detail},
+            type = #{type},
+            provider_phone = #{providerPhone},
+            provider_email = #{providerEmail},
+            provider_address = #{providerAddress},
+            get_online = #{getOnline}
+        where id::text = (select meta from share_files where id::text = #{id});
+    </update>
 </mapper>

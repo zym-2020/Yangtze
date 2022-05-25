@@ -34,7 +34,7 @@ public class RasterTileServiceImpl implements RasterTileService {
     public void getRaster(String rasterId, String x, String y, String z, HttpServletResponse response) {
         int temp = ((int) Math.pow(2, Integer.parseInt(z)) - Integer.parseInt(y)) - 1;
         y = Integer.toString(temp);
-        String address = rasterRelationshipMapper.getAddress(UUID.fromString(rasterId));
+        String address = rasterRelationshipMapper.getAddress(rasterId);
         String path = address + "\\tiles\\" + z + "\\" + x + "\\" + y + ".png";
         ServletOutputStream sos = null;
         InputStream in = null;

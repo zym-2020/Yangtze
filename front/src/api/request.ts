@@ -144,12 +144,30 @@ export async function pageQuery(property: string, flag: boolean, page: number, s
     return await get(`/share/pageQuery/${property}/${flag}/${page}/${size}`)
 }
 
+export async function pageQueryByAdmin(property: string, flag: boolean, page: number, size: number) {
+    return await get(`/share/pageQueryByAdmin/${property}/${flag}/${page}/${size}`)
+}
+
 export async function getFileInfoAndMeta(id: string) {
     return await get(`/share/getFileInfoAndMeta/${id}`)
 }
 
 export async function addWatchCount(id: string) {
     return await patch(`/share/addWatchCount/${id}`)
+}
+
+export async function fuzzyQuery(property: string, flag: boolean, keyWords: string, page: number, size: number) {
+    return await get(`/share/fuzzyQuery/${property}/${flag}/${keyWords}/${page}/${size}`)
+}
+
+//这里懒得写了，字段太多
+export async function updateShareFileNoAvatar(jsonData: any) {
+    return await patch(`/share/updateShareFileNoAvatar`, jsonData)
+}
+
+//这个也是一样，懒得写了
+export async function updateShareFile(formData: FormData) {
+    return await patch(`/share/updateShareFile`, formData)
 }
 
 //========================fileMeta相关接口=================================

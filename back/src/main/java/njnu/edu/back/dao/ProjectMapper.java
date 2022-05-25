@@ -20,17 +20,17 @@ import java.util.UUID;
 public interface ProjectMapper {
     Map<String, Object> addProject(AddProject addProject);
 
-    String getResult(@Param("id") UUID id);
+    String getResult(@Param("id") String id);
 
     List<Map<String, Object>> getProjectsByEmail(@Param("email") String email);
 
-    int setResult(@Param("result") String result, @Param("id") UUID id);
+    int setResult(@Param("result") String result, @Param("id") String id);
 
     String getResultByEmailAndProjectName(@Param("email") String email, @Param("projectName") String projectName);
 
     List<Map<String, Object>> pageQuery(@Param("size") int size, @Param("start") int start);
 
-    Map<String, Object> findProjectById(@Param("id") UUID id);
+    Map<String, Object> findProjectById(@Param("id") String id);
 
     int countAll();
 }

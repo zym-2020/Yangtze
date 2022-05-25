@@ -14,16 +14,16 @@
     </select>
 
     <update id="rename">
-        update files set name = #{name} where id = #{id}::uuid;
+        update files set name = #{name} where id::text = #{id};
     </update>
 
     <delete id="delete">
-        delete from files where id = #{id}::uuid;
+        delete from files where id::text = #{id};
     </delete>
 
     <delete id="deleteFolder">
         with recursive temp_files as (
-            select * from files where id = #{id}::uuid
+            select * from files where id::text = #{id}
             union
             select f.* from files f
             inner join temp_files on temp_files.id::text = f.parent_id
@@ -32,7 +32,7 @@
 
     <select id="recursionFindFiles" resultType="java.util.HashMap">
         with recursive temp_files as (
-            select * from files where id = #{id}::uuid
+            select * from files where id::text = #{id}
             union
             select f.* from files f
             inner join temp_files on temp_files.id::text = f.parent_id
@@ -40,6 +40,6 @@
     </select>
 
     <select id="findById" resultType="java.util.HashMap">
-        select * from files where id = #{id}::uuid;
+        select * from files where id::text = #{id};
     </select>
 </mapper>

@@ -109,7 +109,7 @@ public class VectorRelationshipServiceImpl implements VectorRelationshipService 
             throw new MyException(-1, "矢量插入错误");
         } else {
             redisService.del(uuid);
-            return vectorRelationshipMapper.queryAnalyseVector(UUID.fromString(state));
+            return vectorRelationshipMapper.queryAnalyseVector(state);
         }
 
     }

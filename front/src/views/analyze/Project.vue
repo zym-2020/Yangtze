@@ -22,13 +22,14 @@ import MainMap from "@/components/map/Index.vue";
 import { ResourceState } from "@/store/resourse/resourceState";
 import router from "@/router";
 import { useStore } from "@/store";
-import { findProjectById } from "@/api/request";
 export default defineComponent({
   components: { ProjectLayer, MainMap, LeftTools },
   setup() {
-    const projectResult = ref<ResourceState>();
+    const projectResult = ref<ResourceState>(
+      JSON.parse(router.currentRoute.value.params.result as string)
+    );
     const store = useStore();
-    const projectName = ref("");
+    const projectName = ref(router.currentRoute.value.params.name);
 
     const classify = (projectResult: ResourceState) => {
       store.commit("INIT", undefined);
@@ -41,49 +42,18 @@ export default defineComponent({
     watch(
       () => router.currentRoute.value.path,
       async () => {
-        console.log("Project.watch")
         if (router.currentRoute.value.name === "project") {
-          const data = await findProjectById(
-            router.currentRoute.value.params.id as string
-          );
-          if (data != null) {
-            if (data.data === null) {
-              router.replace({ path: "/404" });
-            } else {
-              projectResult.value = JSON.parse((data.data as any).result);
-              classify(projectResult.value as ResourceState);
-              projectName.value = (data.data as any).project_name;
-            }
-          }
+          projectResult.value = JSON.parse(router.currentRoute.value.params.result as string)
+          projectName.value = router.currentRoute.value.params.name as string
+          classify(projectResult.value)
         } else {
           store.commit("INIT", undefined);
         }
       }
-    ),
-      onMounted(async () => {
-        if (router.currentRoute.value.params.result === undefined) {
-          console.log("Project.if")
-          const data = await findProjectById(
-            router.currentRoute.value.params.id as string
-          );
-          if (data != null) {
-            if (data.data === null) {
-              router.replace({ path: "/404" });
-            } else {
-              projectResult.value = JSON.parse((data.data as any).result);
-              classify(projectResult.value as ResourceState);
-              projectName.value = (data.data as any).project_name;
-            }
-          }
-        } else {
-          console.log("Project.else")
-          projectResult.value = JSON.parse(
-            router.currentRoute.value.params.result as string
-          );
-          classify(projectResult.value as ResourceState);
-          projectName.value = router.currentRoute.value.params.name as string;
-        }
-      });
+    );
+    onMounted(async () => {
+      classify(projectResult.value);
+    });
 
     return {
       projectName,

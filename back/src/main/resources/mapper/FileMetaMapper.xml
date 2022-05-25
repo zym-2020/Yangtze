@@ -6,6 +6,6 @@
     </select>
 
     <select id="getFileMetaById" resultType="java.util.HashMap">
-        select * from file_meta where id = #{id}::uuid;
+        select * from file_meta where id::text = #{id};
     </select>
 </mapper>

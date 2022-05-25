@@ -37,6 +37,7 @@ import DataSelect from "../riverbed/components/DataSelect.vue";
 import { useStore } from "@/store";
 import { Resource, Analyse } from "@/store/resourse/resourceState";
 import { mergeResource, watchAnalyse } from "@/utils/common";
+import router from "@/router";
 export default defineComponent({
   components: {
     DataSelect,
@@ -237,6 +238,13 @@ export default defineComponent({
         map.value?.removeSource(type + id);
       }
     };
+
+    watch(() => router.currentRoute.value.path, () => {
+      if(router.currentRoute.value.name === 'project') {
+        map.value?.setCenter([121.193496, 31.791046])
+        map.value?.setZoom(8)
+      }
+    })
 
     watch(analyse, (newVal: Analyse, oldVal: Analyse) => {
       watchAnalyse(

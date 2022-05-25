@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import {
   getFileInfoAndMeta,
   getFileMetaById,
@@ -34,41 +34,26 @@ export default defineComponent({
   components: { DataDetailHeader, DataDetail, DataStatistics, SimilarData },
   setup() {
     const active = ref(1);
-    const fileInfo = ref<any>({});
-    const fileMeta = ref<any>({});
+    // const fileInfo = ref<any>(router.currentRoute.value.params.fileInfo);
+    // const fileMeta = ref<any>(router.currentRoute.value.params.fileMeta);
+    const fileInfo = computed(() => {
+      return router.currentRoute.value.params.fileInfo
+    });
+    const fileMeta = computed(() => {
+      return router.currentRoute.value.params.fileMeta
+    });
+
 
     const activeClick = (val: number) => {
       active.value = val;
     };
     onMounted(async () => {
+      console.log(123)
       if (
         router.currentRoute.value.params.id != null &&
         router.currentRoute.value.params.id != undefined
       ) {
         addWatchCount(router.currentRoute.value.params.id as string);
-      }
-      if (router.currentRoute.value.params.fileInfo === undefined) {
-        const data = await getFileInfoAndMeta(
-          router.currentRoute.value.params.id as string
-        );
-        if (data != null) {
-          if ((data as any).code != 0) {
-            router.replace({ path: "/404" });
-          } else {
-            fileInfo.value = data.data.fileInfo;
-            fileMeta.value = data.data.fileMeta;
-          }
-        }
-      } else {
-        fileInfo.value = JSON.parse(
-          router.currentRoute.value.params.fileInfo as string
-        );
-        const data = await getFileMetaById(fileInfo.value.meta);
-        if (data != null) {
-          if ((data as any).code === 0) {
-            fileMeta.value = data.data;
-          }
-        }
       }
     });
 

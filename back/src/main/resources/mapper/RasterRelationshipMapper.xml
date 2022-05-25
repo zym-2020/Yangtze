@@ -12,7 +12,7 @@
         <result column="source" property="source"/>
     </resultMap>
     <select id="getAddress" resultType="java.lang.String">
-        select address from raster_relationship where id = #{id};
+        select address from raster_relationship where id::text = #{id};
     </select>
 
     <select id="pageQuery" resultType="java.util.HashMap">
@@ -24,6 +24,6 @@
     </select>
 
     <select id="getById" resultMap="RasterRelationshipMap">
-        select * from raster_relationship where id = #{id}
+        select * from raster_relationship where id::text = #{id}
     </select>
 </mapper>

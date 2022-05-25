@@ -142,6 +142,15 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 }
             },
             {
+                path: 'updateShare/:id',
+                name: 'updateShare',
+                component: () => import('@/views/user/UpdateShareFile.vue'),
+                meta: {
+                    roles: ['member', 'admin'],
+                    keepAlive: true
+                }
+            },
+            {
                 path: 'admin',
                 component: () => import('@/views/user/Admin.vue'),
                 meta: {

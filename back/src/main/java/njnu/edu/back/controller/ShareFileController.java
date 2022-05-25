@@ -9,6 +9,7 @@ import njnu.edu.back.common.result.JsonResult;
 import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.common.result.ResultUtils;
 import njnu.edu.back.pojo.FileMeta;
+import njnu.edu.back.pojo.dto.UpdateShareFileAndFileMetaDTO;
 import njnu.edu.back.service.ShareFileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -29,12 +30,48 @@ public class ShareFileController {
     @Autowired
     ShareFileService shareFileService;
 
+    /**
+    * @Description: admin用户使用该接口，直接公开数据
+    * @Author: Yiming
+    * @Date: 2022/5/25
+    */
+
     @AuthCheck
     @RequestMapping(value = "/addShareFile", method = RequestMethod.POST)
     public JsonResult addShareFile(@RequestParam String jsonString, @RequestParam MultipartFile file, @JwtTokenParser("email") String email, @JwtTokenParser("roles") String[] roles) {
         if(roles[0].equals("admin")) {
             JSONObject jsonObject = JSON.parseObject(jsonString);
             shareFileService.addShareFile(jsonObject, email, file);
+            return ResultUtils.success();
+        } else {
+            throw new MyException(-99, "没有权限！");
+        }
+    }
+
+    /**
+    * @Description:admin用户使用改接口直接修改数据
+    * @Author: Yiming
+    * @Date: 2022/5/25
+    */
+
+    @AuthCheck
+    @RequestMapping(value = "/updateShareFileNoAvatar", method = RequestMethod.PATCH)
+    public JsonResult updateShareFileNoAvatar(@RequestBody UpdateShareFileAndFileMetaDTO updateShareFileAndFileMetaDTO, @JwtTokenParser("roles") String[] roles) {
+        if(roles[0].equals("admin")) {
+            shareFileService.updateShareFileAndFileMetaNoAvatar(updateShareFileAndFileMetaDTO);
+            return ResultUtils.success();
+        } else {
+            throw new MyException(-99, "没有权限！");
+        }
+
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/updateShareFile", method = RequestMethod.PATCH)
+    public JsonResult updateShare(@RequestParam String jsonString, @JwtTokenParser("roles") String[] roles, @RequestParam MultipartFile multipartFile) {
+        if(roles[0].equals("admin")) {
+            UpdateShareFileAndFileMetaDTO updateShareFileAndFileMetaDTO = JSONObject.parseObject(jsonString, UpdateShareFileAndFileMetaDTO.class);
+            shareFileService.updateShareFileAndFileMeta(updateShareFileAndFileMetaDTO, multipartFile);
             return ResultUtils.success();
         } else {
             throw new MyException(-99, "没有权限！");
@@ -60,5 +97,16 @@ public class ShareFileController {
         return ResultUtils.success();
     }
 
+    @AuthCheck
+    @RequestMapping(value = "/fuzzyQuery/{property}/{flag}/{keyWords}/{page}/{size}", method = RequestMethod.GET)
+    public JsonResult fuzzyQuery(@PathVariable String property, @PathVariable String keyWords, @PathVariable boolean flag, @PathVariable int page, @PathVariable int size) {
+        return ResultUtils.success(shareFileService.fuzzyQuery(page, size, property, flag, keyWords));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/pageQueryByAdmin/{property}/{flag}/{page}/{size}", method = RequestMethod.GET)
+    public JsonResult pageQueryByAdmin(@PathVariable String property, @PathVariable boolean flag, @PathVariable int page, @PathVariable int size) {
+        return ResultUtils.success(shareFileService.pageQueryByAdmin(page, size, property, flag));
+    }
 
 }

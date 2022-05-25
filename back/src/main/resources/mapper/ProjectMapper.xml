@@ -7,7 +7,7 @@
     </select>
 
     <select id="getResult" resultType="java.lang.String">
-        select result from projects where id = #{id}
+        select result from projects where id::text = #{id}
     </select>
     
     <select id="getProjectsByEmail" resultType="java.util.HashMap">
@@ -15,7 +15,7 @@
     </select>
 
     <update id="setResult">
-        update projects set result = #{result} where id = #{id};
+        update projects set result = #{result} where id::text = #{id};
     </update>
 
     <select id="getResultByEmailAndProjectName" resultType="java.lang.String">
@@ -27,7 +27,7 @@
     </select>
 
     <select id="findProjectById" resultType="java.util.HashMap">
-        select * from projects where id = #{id};
+        select * from projects where id::text = #{id};
     </select>
 
     <select id="countAll" resultType="java.lang.Integer">

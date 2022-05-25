@@ -8,15 +8,12 @@
     <div class="body">
       <div v-for="(item, index) in fileList" :key="index">
         <div class="card">
-          <data-card :fileInfo="item">
+          <data-card :fileInfo="updateKeys(item)">
             <template #creator>
               <div class="creator">
                 <div style="line-height: 40px"><strong>创建人：</strong></div>
-                <el-avatar
-                  :size="25"
-                  src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
-                />
-                <div class="name">zym</div>
+                <el-avatar :size="25" :src="getUserAvatar(item.userAvatar)" />
+                <div class="name">{{ item.userName }}</div>
                 <div class="btn">
                   <el-dropdown trigger="click">
                     <el-button size="small">
@@ -26,9 +23,13 @@
                     </el-button>
                     <template #dropdown>
                       <el-dropdown-menu>
-                        <el-dropdown-item>编辑</el-dropdown-item>
-                        <el-dropdown-item>整改</el-dropdown-item>
-                        <el-dropdown-item>删除</el-dropdown-item>
+                        <el-dropdown-item
+                          v-if="email === item.creator"
+                          @click="operate(1, item)"
+                          >编辑</el-dropdown-item
+                        >
+                        <el-dropdown-item command="2">下架</el-dropdown-item>
+                        <el-dropdown-item command="3">删除</el-dropdown-item>
                       </el-dropdown-menu>
                     </template>
                   </el-dropdown>
@@ -46,25 +47,78 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import DataCard from "@/components/cards/DataCard.vue";
 import router from "@/router";
-import { pageQuery } from "@/api/request";
+import { pageQueryByAdmin } from "@/api/request";
+import { useStore } from "@/store";
 export default defineComponent({
   components: { DataCard },
   setup() {
     const activeName = ref("first");
     const search = ref("");
     const fileList = ref<any[]>([]);
+    const store = useStore();
+    const email = computed(() => {
+      return store.state.user.email;
+    });
     const toAdd = () => {
       router.push({ name: "share" });
     };
 
+    const getUserAvatar = (url: string) => {
+      return url != undefined && url != undefined && url != ""
+        ? "http://localhost:8002" + url
+        : "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png";
+    };
+
+    const updateKeys = (object: any) => {
+      const keyMap = {
+        create_time: "createTime",
+        origin_address: "originAddress",
+        structured_source: "structuredSource",
+        update_time: "updateTime",
+        visual_source: "visualSource",
+        visual_type: "visualType",
+        origin_name: "originName",
+        visual_name: "visualName",
+        structured_name: "structuredName",
+      };
+      Object.keys(object).map((key) => {
+        if (
+          key === "create_time" ||
+          key === "origin_address" ||
+          key === "structured_source" ||
+          key === "update_time" ||
+          key === "visual_source" ||
+          key === "visual_type" ||
+          key === "origin_name" ||
+          key === "visual_name" ||
+          key === "structured_name"
+        ) {
+          const newKey = keyMap[key];
+          object[newKey] = object[key];
+          delete object[key];
+        }
+      });
+      return object;
+    };
+
+    const operate = (param: number, fileInfo: any) => {
+      if (param === 1) {
+        router.push({
+          name: "updateShare",
+          params: {
+            id: fileInfo.id,
+          },
+        });
+      }
+    };
+
     onMounted(async () => {
-      const data = await pageQuery("update_time", false, 0, 10);
+      const data = await pageQueryByAdmin("update_time", false, 0, 10);
       if (data != null) {
-        console.log(data.data);
-        fileList.value = data.data.list
+        fileList.value = data.data.list;
       }
     });
 
@@ -72,7 +126,11 @@ export default defineComponent({
       activeName,
       search,
       toAdd,
-      fileList
+      fileList,
+      getUserAvatar,
+      updateKeys,
+      email,
+      operate,
     };
   },
 });
@@ -102,7 +160,7 @@ export default defineComponent({
       display: flex;
       right: 50px;
       .el-avatar {
-        margin-top: 10px;
+        margin-top: 8px;
       }
       .name {
         line-height: 40px;

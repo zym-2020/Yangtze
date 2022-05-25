@@ -10,6 +10,7 @@ import njnu.edu.back.dao.ShareFileMapper;
 import njnu.edu.back.pojo.BrowseHistory;
 import njnu.edu.back.pojo.FileMeta;
 import njnu.edu.back.pojo.ShareFile;
+import njnu.edu.back.pojo.dto.UpdateShareFileAndFileMetaDTO;
 import njnu.edu.back.service.ShareFileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,6 +60,17 @@ public class ShareFileServiceImpl implements ShareFileService {
         shareFileMapper.addShareFile(shareFile);
     }
 
+    @Override
+    public Map<String, Object> pageQueryByAdmin(int page, int size, String property, boolean flag) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("total", shareFileMapper.countAll());
+        if(flag) {
+            map.put("list", shareFileMapper.pageQueryByAdminASC(size, size * page, property));
+        } else {
+            map.put("list", shareFileMapper.pageQueryByAdminDESC(size, size * page, property));
+        }
+        return map;
+    }
 
     @Override
     public Map<String, Object> pageQuery(int page, int size, String property, boolean flag) {
@@ -94,5 +106,32 @@ public class ShareFileServiceImpl implements ShareFileService {
     public void addWatchCount(String id, String userId, String ip) {
         shareFileMapper.addWatchCount(id);
         browseHistoryMapper.addHistory(new BrowseHistory(null, userId, null, ip, id));
+    }
+
+    @Override
+    public Map<String, Object> fuzzyQuery(int page, int size, String property, boolean flag, String keyWords) {
+        Map<String, Object> result = new HashMap<>();
+        keyWords = "%" + keyWords + "%";
+        result.put("total", shareFileMapper.countFuzzyQuery(keyWords));
+        if(flag) {
+            result.put("list", shareFileMapper.fuzzyQueryASC(size, page * size, property, keyWords));
+        } else {
+            result.put("list", shareFileMapper.fuzzyQueryDESC(size, page * size, property, keyWords));
+        }
+        return result;
+    }
+
+    @Override
+    public void updateShareFileAndFileMetaNoAvatar(UpdateShareFileAndFileMetaDTO updateShareFileAndFileMetaDTO) {
+        shareFileMapper.updateFileInfoAndFileMeta(updateShareFileAndFileMetaDTO);
+    }
+
+    @Override
+    public void updateShareFileAndFileMeta(UpdateShareFileAndFileMetaDTO updateShareFileAndFileMetaDTO, MultipartFile multipartFile) {
+        String uuid = UUID.randomUUID().toString();
+        String suffix = multipartFile.getOriginalFilename().substring(multipartFile.getOriginalFilename().lastIndexOf(".") + 1);
+        LocalUploadUtil.uploadAvatar(basedir + "other\\avatar\\" + uuid + "." + suffix, multipartFile);
+        updateShareFileAndFileMetaDTO.setAvatar("/file/avatar/" + uuid + "." + suffix);
+        shareFileMapper.updateFileInfoAndFileMeta(updateShareFileAndFileMetaDTO);
     }
 }

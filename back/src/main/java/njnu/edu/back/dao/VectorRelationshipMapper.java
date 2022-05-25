@@ -23,5 +23,5 @@ public interface VectorRelationshipMapper {
 
     int addVector(AddVector addVector);
 
-    Map<String, Object> queryAnalyseVector(@Param("id") UUID id);
+    Map<String, Object> queryAnalyseVector(@Param("id") String id);
 }

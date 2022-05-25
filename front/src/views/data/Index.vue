@@ -15,7 +15,7 @@
           <div class="list">
             <el-input v-model="input" placeholder="请输入关键字">
               <template #append>
-                <el-button
+                <el-button @click="search"
                   ><el-icon><Search /></el-icon
                 ></el-button>
               </template>
@@ -27,7 +27,7 @@
               </div>
               <div class="sort">
                 排序方式
-                <el-select v-model="selectValue" @change="changeHandle">
+                <el-select v-model="selectValue" @change="search">
                   <el-option
                     v-for="(item, index) in options"
                     :key="index"
@@ -67,8 +67,11 @@ import { defineComponent, onMounted, ref } from "vue";
 import PageHeader from "@/components/page/PageHeader.vue";
 import DataCollapse from "@/components/page/DataCollapse.vue";
 import DataCard from "@/components/cards/DataCard.vue";
-import { pageQuery } from "@/api/request";
+import { pageQuery, fuzzyQuery } from "@/api/request";
 import router from "@/router";
+
+import NProgress from 'nprogress'
+NProgress.configure({ showSpinner: false })
 export default defineComponent({
   components: {
     PageHeader,
@@ -77,7 +80,8 @@ export default defineComponent({
   },
   setup() {
     const input = ref("");
-    const selectValue = ref("下载量");
+    const keyWord = ref("");
+    const selectValue = ref("download");
     const fileList = ref<any[]>([]);
     const total = ref(0);
     const currentPage = ref(1);
@@ -100,49 +104,49 @@ export default defineComponent({
       },
     ]);
 
-    const changeHandle = async (val: any) => {
-      switch (val) {
+    const search = async () => {
+      NProgress.start()
+      keyWord.value = input.value;
+      let property = "";
+      let flag = false;
+      switch (selectValue.value) {
         case "download":
-          const data1 = await pageQuery("download", false, 0, 10);
-          if (data1 != null) {
-            if ((data1 as any).code === 0) {
-              fileList.value = data1.data.list;
-              total.value = data1.data.total;
-              currentPage.value = 1;
-            }
-          }
+          property = "download";
+          flag = false;
           break;
         case "watch":
-          const data2 = await pageQuery("watch", false, 0, 10);
-          if (data2 != null) {
-            if ((data2 as any).code === 0) {
-              fileList.value = data2.data.list;
-              total.value = data2.data.total;
-              currentPage.value = 1;
-            }
-          }
+          property = "watch";
+          flag = false;
           break;
         case "update":
-          const data3 = await pageQuery("update_time", false, 0, 10);
-          if (data3 != null) {
-            if ((data3 as any).code === 0) {
-              fileList.value = data3.data.list;
-              total.value = data3.data.total;
-              currentPage.value = 1;
-            }
-          }
+          property = "update_time";
+          flag = false;
           break;
         case "name":
-          const data4 = await pageQuery("name", false, 0, 10);
-          if (data4 != null) {
-            if ((data4 as any).code === 0) {
-              fileList.value = data4.data.list;
-              total.value = data4.data.total;
-              currentPage.value = 1;
-            }
-          }
+          property = "name";
+          flag = false;
           break;
       }
+      if (keyWord.value === "") {
+        const data = await pageQuery(property, flag, 0, 10);
+        if (data != null) {
+          if ((data as any).code === 0) {
+            fileList.value = data.data.list;
+            total.value = data.data.total;
+            currentPage.value = 1;
+          }
+        }
+      } else {
+        const data = await fuzzyQuery(property, flag, keyWord.value, 0, 10);
+        if (data != null) {
+          if ((data as any).code === 0) {
+            fileList.value = data.data.list;
+            total.value = data.data.total;
+            currentPage.value = 1;
+          }
+        }
+      }
+      NProgress.done()
     };
 
     const pageChange = () => {};
@@ -174,9 +178,9 @@ export default defineComponent({
       fileList,
       total,
       toDetail,
-      changeHandle,
       currentPage,
       pageChange,
+      search,
     };
   },
 });

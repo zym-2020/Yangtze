@@ -61,7 +61,7 @@ public class DownloadServiceImpl implements DownloadService {
         }
         Map<String, Object> map = shareFileMapper.getOriginAddressAndGetOnline(id);
         if((boolean) map.get("get_online")) {
-            String fileName = (String) map.get("name") + "(原始文件).zip";
+            String fileName = (String) map.get("origin_name");
             File file = new File((String) map.get("origin_address"));
             if(!file.exists()) {
                 throw new MyException(-1, "文件不存在");
