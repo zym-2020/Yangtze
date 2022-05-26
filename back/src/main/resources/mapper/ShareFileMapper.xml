@@ -33,12 +33,12 @@
         select share_files.*, users.name, users.avatar from users, share_files where users.email = share_files.creator order by ${property} asc limit #{size} offset #{start};
     </select>
 
-    <select id="pageQueryDESC" resultMap="ShareFileResultMap">
-        select * from share_files order by ${property} desc limit #{size} offset #{start};
+    <select id="fuzzyQueryDESC" resultMap="ShareFileResultMap">
+        select * from share_files where name like #{keyWord} order by ${property} desc limit #{size} offset #{start};
     </select>
 
-    <select id="pageQueryASC" resultMap="ShareFileResultMap">
-        select * from share_files order by ${property} asc limit #{size} offset #{start};
+    <select id="fuzzyQueryASC" resultMap="ShareFileResultMap">
+        select * from share_files where name like #{keyWord} order by ${property} asc limit #{size} offset #{start};
     </select>
 
     <select id="fuzzyQueryClassifyDESC" resultMap="ShareFileResultMap">
