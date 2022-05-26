@@ -81,6 +81,15 @@ export interface SetUserInfoWithoutAvatarJsonData {
     department: string
 }
 
+export interface FuzzyQueryClassifyJsonData {
+    size: number
+    page: number
+    property: string
+    keyWord: string
+    flag: boolean
+    tags?: string[]
+}
+
 // export interface AddShareFileJsonData {
 //     meta: {
 //         provider: string

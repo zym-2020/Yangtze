@@ -8,7 +8,7 @@
             <div class="title">
               <strong>类别</strong>
             </div>
-            <data-collapse></data-collapse>
+            <data-collapse @selectList="getSelectList"></data-collapse>
           </div>
         </div>
         <div class="right">
@@ -67,11 +67,11 @@ import { defineComponent, onMounted, ref } from "vue";
 import PageHeader from "@/components/page/PageHeader.vue";
 import DataCollapse from "@/components/page/DataCollapse.vue";
 import DataCard from "@/components/cards/DataCard.vue";
-import { pageQuery, fuzzyQuery } from "@/api/request";
+import { fuzzyQuery, fuzzyQueryClassify } from "@/api/request";
 import router from "@/router";
 
-import NProgress from 'nprogress'
-NProgress.configure({ showSpinner: false })
+import NProgress from "nprogress";
+NProgress.configure({ showSpinner: false });
 export default defineComponent({
   components: {
     PageHeader,
@@ -83,6 +83,7 @@ export default defineComponent({
     const keyWord = ref("");
     const selectValue = ref("download");
     const fileList = ref<any[]>([]);
+    const classify = ref<any[]>([]);
     const total = ref(0);
     const currentPage = ref(1);
     const options = ref<{ label: string; value: string }[]>([
@@ -105,7 +106,7 @@ export default defineComponent({
     ]);
 
     const search = async () => {
-      NProgress.start()
+      NProgress.start();
       keyWord.value = input.value;
       let property = "";
       let flag = false;
@@ -127,8 +128,15 @@ export default defineComponent({
           flag = false;
           break;
       }
-      if (keyWord.value === "") {
-        const data = await pageQuery(property, flag, 0, 10);
+      if (classify.value.length > 0) {
+        const data = await fuzzyQueryClassify({
+          size: 10,
+          page: 0,
+          property: property,
+          flag: flag,
+          keyWord: keyWord.value,
+          tags: classify.value,
+        });
         if (data != null) {
           if ((data as any).code === 0) {
             fileList.value = data.data.list;
@@ -137,7 +145,13 @@ export default defineComponent({
           }
         }
       } else {
-        const data = await fuzzyQuery(property, flag, keyWord.value, 0, 10);
+        const data = await fuzzyQuery({
+          size: 10,
+          page: 0,
+          property: property,
+          flag: flag,
+          keyWord: keyWord.value,
+        });
         if (data != null) {
           if ((data as any).code === 0) {
             fileList.value = data.data.list;
@@ -146,7 +160,7 @@ export default defineComponent({
           }
         }
       }
-      NProgress.done()
+      NProgress.done();
     };
 
     const pageChange = () => {};
@@ -161,8 +175,72 @@ export default defineComponent({
       });
     };
 
+    const getSelectList = async (val: any[]) => {
+      classify.value = val;
+      NProgress.start();
+      let property = "";
+      let flag = false;
+      switch (selectValue.value) {
+        case "download":
+          property = "download";
+          flag = false;
+          break;
+        case "watch":
+          property = "watch";
+          flag = false;
+          break;
+        case "update":
+          property = "update_time";
+          flag = false;
+          break;
+        case "name":
+          property = "name";
+          flag = false;
+          break;
+      }
+      if (val.length > 0) {
+        const data = await fuzzyQueryClassify({
+          size: 10,
+          page: 0,
+          property: property,
+          flag: flag,
+          keyWord: keyWord.value,
+          tags: val,
+        });
+        if (data != null) {
+          if ((data as any).code === 0) {
+            fileList.value = data.data.list;
+            total.value = data.data.total;
+            currentPage.value = 1;
+          }
+        }
+      } else {
+        const data = await fuzzyQuery({
+          size: 10,
+          page: 0,
+          property: property,
+          flag: flag,
+          keyWord: keyWord.value,
+        });
+        if (data != null) {
+          if ((data as any).code === 0) {
+            fileList.value = data.data.list;
+            total.value = data.data.total;
+            currentPage.value = 1;
+          }
+        }
+      }
+      NProgress.done();
+    };
+
     onMounted(async () => {
-      const data = await pageQuery("download", false, 0, 10);
+      const data = await fuzzyQuery({
+        size: 10,
+        page: 0,
+        property: "download",
+        flag: false,
+        keyWord: keyWord.value,
+      });
       if (data != null) {
         if ((data as any).code === 0) {
           fileList.value = data.data.list;
@@ -181,6 +259,7 @@ export default defineComponent({
       currentPage,
       pageChange,
       search,
+      getSelectList,
     };
   },
 });

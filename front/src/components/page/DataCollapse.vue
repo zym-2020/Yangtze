@@ -22,34 +22,35 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 export default defineComponent({
-  setup() {
+  emits: ["selectList"],
+  setup(props, context) {
     const categoryList = ref([
-      {
-        title: "国家和经济",
-        data: [
-          {
-            name: "阿富汗",
-            count: 5,
-          },
-          {
-            name: "非洲",
-            count: 7,
-          },
-        ],
-      },
-      {
-        title: "国家和经济",
-        data: [
-          {
-            name: "阿富汗",
-            count: 5,
-          },
-          {
-            name: "非洲",
-            count: 7,
-          },
-        ],
-      },
+      // {
+      //   title: "国家和经济",
+      //   data: [
+      //     {
+      //       name: "阿富汗",
+      //       count: 5,
+      //     },
+      //     {
+      //       name: "非洲",
+      //       count: 7,
+      //     },
+      //   ],
+      // },
+      // {
+      //   title: "国家和经济",
+      //   data: [
+      //     {
+      //       name: "阿富汗",
+      //       count: 5,
+      //     },
+      //     {
+      //       name: "非洲",
+      //       count: 7,
+      //     },
+      //   ],
+      // },
       {
         title: "国家和经济",
         data: [
@@ -101,19 +102,19 @@ export default defineComponent({
     ]);
     const selectList = ref<any[]>([]);
     const handleChange = (val: string[]) => {
-      console.log(val);
+      // console.log(val);
     };
 
     const change = (val: any) => {
       for (let i = 0; i < selectList.value.length; i++) {
-        if (JSON.stringify(val) === JSON.stringify(selectList.value[i])) {
+        if (val.name === selectList.value[i]) {
           selectList.value.splice(i, 1);
-          console.log(selectList.value)
+          context.emit("selectList", selectList.value)
           return;
         }
       }
-      selectList.value.push(val);
-      console.log(selectList.value)
+      selectList.value.push(val.name);
+      context.emit("selectList", selectList.value)
     };
 
     return {

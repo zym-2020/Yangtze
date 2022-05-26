@@ -20,7 +20,7 @@ public interface ShareFileService {
 
     Map<String, Object> pageQueryByAdmin(int page, int size, String property, boolean flag);
 
-    Map<String, Object> pageQuery(int page, int size, String property, boolean flag);
+    Map<String, Object> fuzzyQueryClassify(int page, int size, String property, boolean flag, String keyWord, String[] tags);
 
     Map<String, Object> getFileInfoAndMeta(String id);
 
