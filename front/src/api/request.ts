@@ -1,5 +1,5 @@
 import { get, post, del, patch } from './axios'
-import { RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData, MergeFileJsonData, AddFileJsonData, RenameJsonData, SetUserInfoWithoutAvatarJsonData } from './type/userType'
+import { RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData, MergeFileJsonData, AddFileJsonData, RenameJsonData, SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData } from './type/userType'
 import { ResourceState } from '@/store/resourse/resourceState'
 
 
@@ -140,10 +140,6 @@ export async function addShareFile(formData: FormData) {
     return await post(`/share/addShareFile`, formData)
 }
 
-export async function pageQuery(property: string, flag: boolean, page: number, size: number) {
-    return await get(`/share/pageQuery/${property}/${flag}/${page}/${size}`)
-}
-
 export async function pageQueryByAdmin(property: string, flag: boolean, page: number, size: number) {
     return await get(`/share/pageQueryByAdmin/${property}/${flag}/${page}/${size}`)
 }
@@ -156,8 +152,12 @@ export async function addWatchCount(id: string) {
     return await patch(`/share/addWatchCount/${id}`)
 }
 
-export async function fuzzyQuery(property: string, flag: boolean, keyWords: string, page: number, size: number) {
-    return await get(`/share/fuzzyQuery/${property}/${flag}/${keyWords}/${page}/${size}`)
+export async function fuzzyQuery(jsonData: FuzzyQueryClassifyJsonData) {
+    return await post(`/share/fuzzyQuery`, jsonData)
+}
+
+export async function fuzzyQueryClassify(jsonData: FuzzyQueryClassifyJsonData) {
+    return await post(`/share/fuzzyQueryClassify`, jsonData)
 }
 
 //这里懒得写了，字段太多

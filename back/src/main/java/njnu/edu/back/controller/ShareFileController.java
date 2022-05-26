@@ -1,6 +1,7 @@
 package njnu.edu.back.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import njnu.edu.back.common.auth.AuthCheck;
 import njnu.edu.back.common.exception.MyException;
@@ -79,12 +80,6 @@ public class ShareFileController {
     }
 
     @AuthCheck
-    @RequestMapping(value = "/pageQuery/{property}/{flag}/{page}/{size}", method = RequestMethod.GET)
-    public JsonResult pageQuery(@PathVariable String property, @PathVariable boolean flag, @PathVariable int page, @PathVariable int size) {
-        return ResultUtils.success(shareFileService.pageQuery(page, size, property, flag));
-    }
-
-    @AuthCheck
     @RequestMapping(value = "/getFileInfoAndMeta/{id}", method = RequestMethod.GET)
     public JsonResult getFileInfoAndMeta(@PathVariable String id) {
         return ResultUtils.success(shareFileService.getFileInfoAndMeta(id));
@@ -98,15 +93,33 @@ public class ShareFileController {
     }
 
     @AuthCheck
-    @RequestMapping(value = "/fuzzyQuery/{property}/{flag}/{keyWords}/{page}/{size}", method = RequestMethod.GET)
-    public JsonResult fuzzyQuery(@PathVariable String property, @PathVariable String keyWords, @PathVariable boolean flag, @PathVariable int page, @PathVariable int size) {
-        return ResultUtils.success(shareFileService.fuzzyQuery(page, size, property, flag, keyWords));
+    @RequestMapping(value = "/fuzzyQuery", method = RequestMethod.POST)
+    public JsonResult fuzzyQuery(@RequestBody JSONObject jsonObject) {
+        int page = jsonObject.getInteger("page");
+        int size = jsonObject.getInteger("size");
+        String property = jsonObject.getString("property");
+        String keyWord = jsonObject.getString("keyWord");
+        boolean flag = jsonObject.getBoolean("flag");
+        return ResultUtils.success(shareFileService.fuzzyQuery(page, size, property, flag, keyWord));
     }
 
     @AuthCheck
     @RequestMapping(value = "/pageQueryByAdmin/{property}/{flag}/{page}/{size}", method = RequestMethod.GET)
     public JsonResult pageQueryByAdmin(@PathVariable String property, @PathVariable boolean flag, @PathVariable int page, @PathVariable int size) {
         return ResultUtils.success(shareFileService.pageQueryByAdmin(page, size, property, flag));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/fuzzyQueryClassify", method = RequestMethod.POST)
+    public JsonResult fuzzyQueryClassify(@RequestBody JSONObject jsonObject) {
+        int size = jsonObject.getInteger("size");
+        int page = jsonObject.getInteger("page");
+        String property = jsonObject.getString("property");
+        String keyWord = jsonObject.getString("keyWord");
+        boolean flag = jsonObject.getBoolean("flag");
+        JSONArray jsonArray = jsonObject.getJSONArray("tags");
+        String[] tags = jsonArray.toArray(new String[jsonArray.size()]);
+        return ResultUtils.success(shareFileService.fuzzyQueryClassify(page, size, property, flag, keyWord, tags));
     }
 
 }

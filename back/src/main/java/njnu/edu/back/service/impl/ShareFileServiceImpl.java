@@ -73,18 +73,17 @@ public class ShareFileServiceImpl implements ShareFileService {
     }
 
     @Override
-    public Map<String, Object> pageQuery(int page, int size, String property, boolean flag) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("total", shareFileMapper.countAll());
+    public Map<String, Object> fuzzyQueryClassify(int page, int size, String property, boolean flag, String keyWord, String[] tags) {
+        Map<String, Object> result = new HashMap<>();
+        keyWord = "%" + keyWord + "%";
+        result.put("total", shareFileMapper.countFuzzyQueryClassify(keyWord, tags));
         if(flag) {
-            map.put("list", shareFileMapper.pageQueryASC(size, page * size, property));
+            result.put("list", shareFileMapper.fuzzyQueryClassifyASC(size, size * page, property, keyWord, tags));
         } else {
-            map.put("list", shareFileMapper.pageQueryDESC(size, page * size, property));
+            result.put("list", shareFileMapper.fuzzyQueryClassifyDESC(size, size * page, property, keyWord, tags));
         }
-
-        return map;
+        return result;
     }
-
 
     @Override
     public Map<String, Object> getFileInfoAndMeta(String id) {

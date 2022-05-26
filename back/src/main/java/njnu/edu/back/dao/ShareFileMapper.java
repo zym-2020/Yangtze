@@ -23,17 +23,19 @@ public interface ShareFileMapper {
 
     List<Map<String, Object>> pageQueryByAdminASC(@Param("size") int size, @Param("start") int start, @Param("property") String property);
 
-    List<ShareFile> pageQueryDESC(@Param("size") int size, @Param("start") int start, @Param("property") String property);
+    List<ShareFile> fuzzyQueryDESC(@Param("size") int size, @Param("start") int start, @Param("property") String property, @Param("keyWord") String keyWord);
 
-    List<ShareFile> pageQueryASC(@Param("size") int size, @Param("start") int start, @Param("property") String property);
+    List<ShareFile> fuzzyQueryASC(@Param("size") int size, @Param("start") int start, @Param("property") String property, @Param("keyWord") String keyWord);
 
-    List<ShareFile> fuzzyQueryDESC(@Param("size") int size, @Param("start") int start, @Param("property") String property, @Param("keyWords") String keyWords);
+    List<ShareFile> fuzzyQueryClassifyDESC(@Param("size") int size, @Param("start") int start, @Param("property") String property, @Param("keyWord") String keyWord, @Param("tags") String[] tags);
 
-    List<ShareFile> fuzzyQueryASC(@Param("size") int size, @Param("start") int start, @Param("property") String property, @Param("keyWords") String keyWords);
+    List<ShareFile> fuzzyQueryClassifyASC(@Param("size") int size, @Param("start") int start, @Param("property") String property, @Param("keyWord") String keyWord, @Param("tags") String[] tags);
 
     int countAll();
 
-    int countFuzzyQuery(@Param("keyWords") String keyWords);
+    int countFuzzyQuery(@Param("keyWord") String keyWord);
+
+    int countFuzzyQueryClassify(@Param("keyWord") String keyWord, @Param("tags") String[] tags);
 
     ShareFile getShareFileById(@Param("id") String id);
 

@@ -41,20 +41,37 @@
         select * from share_files order by ${property} asc limit #{size} offset #{start};
     </select>
 
-    <select id="fuzzyQueryDESC" resultMap="ShareFileResultMap">
-        select * from share_files where name like #{keyWords} order by ${property} desc limit #{size} offset #{start};
+    <select id="fuzzyQueryClassifyDESC" resultMap="ShareFileResultMap">
+        select * from (
+                      select * from share_files where tags @> #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}::text[]
+                          ) as t
+        where t.name like #{keyWord}
+        order by ${property} desc
+        limit #{size} offset #{start};
     </select>
 
-    <select id="fuzzyQueryASC" resultMap="ShareFileResultMap">
-        select * from share_files where name like #{keyWords} order by ${property} asc limit #{size} offset #{start};
+    <select id="fuzzyQueryClassifyASC" resultMap="ShareFileResultMap">
+        select * from (
+                          select * from share_files where tags @> #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}::text[]
+                      ) as t
+        where t.name like #{keyWord}
+        order by ${property} asc
+        limit #{size} offset #{start};
     </select>
 
     <select id="countFuzzyQuery" resultType="java.lang.Integer">
-        select count(*) from share_files where name like #{keyWords};
+        select count(*) from share_files where name like #{keyWord};
     </select>
 
     <select id="countAll" resultType="java.lang.Integer">
         select count(*) from share_files;
+    </select>
+
+    <select id="countFuzzyQueryClassify" resultType="java.lang.Integer">
+        select count(*) from (
+                             select * from share_files where tags @> #{tags}::text[]
+                                 ) as t
+        where t.name like #{keyWord};
     </select>
 
     <select id="getShareFileById" resultMap="ShareFileResultMap">
