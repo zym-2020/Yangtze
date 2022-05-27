@@ -21,8 +21,6 @@
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref } from "vue";
 import {
-  getFileInfoAndMeta,
-  getFileMetaById,
   addWatchCount,
 } from "@/api/request";
 import DataDetailHeader from "@/components/page/DataDetailHeader.vue";
@@ -34,8 +32,6 @@ export default defineComponent({
   components: { DataDetailHeader, DataDetail, DataStatistics, SimilarData },
   setup() {
     const active = ref(1);
-    // const fileInfo = ref<any>(router.currentRoute.value.params.fileInfo);
-    // const fileMeta = ref<any>(router.currentRoute.value.params.fileMeta);
     const fileInfo = computed(() => {
       return router.currentRoute.value.params.fileInfo
     });

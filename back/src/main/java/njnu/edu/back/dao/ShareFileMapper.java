@@ -46,4 +46,5 @@ public interface ShareFileMapper {
     Map<String, Object> getOriginAddressAndGetOnline(@Param("id") String id);
 
     void updateFileInfoAndFileMeta(UpdateShareFileAndFileMetaDTO updateShareFileAndFileMetaDTO);
+
 }

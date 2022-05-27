@@ -5,6 +5,7 @@ import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.common.utils.LocalUploadUtil;
 import njnu.edu.back.dao.FileMapper;
+import njnu.edu.back.dao.ShareFileMapper;
 import njnu.edu.back.pojo.File;
 import njnu.edu.back.pojo.dto.AddFileDTO;
 import njnu.edu.back.service.FileService;
@@ -40,6 +41,7 @@ public class FileServiceImpl implements FileService {
 
     @Autowired
     RedisService redisService;
+    
 
     @Override
     public void addFile(AddFileDTO addFileDTO, String email) {
@@ -111,10 +113,12 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public void deleteFile(String id) {
-        Map<String, Object> file = fileMapper.findById(id);
-        String address = (String) file.get("address");
-        LocalUploadUtil.DeleteFolder(address);
+        Map<String, Object> file = fileMapper.findDeleteById(id);
         fileMapper.delete(id);
+        if(file != null) {
+            String address = (String) file.get("address");
+            LocalUploadUtil.DeleteFolder(address);
+        }
     }
 
     @Override
