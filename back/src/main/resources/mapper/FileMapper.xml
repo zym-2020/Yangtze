@@ -36,10 +36,14 @@
             union
             select f.* from files f
             inner join temp_files on temp_files.id::text = f.parent_id
-        ) select * from temp_files where folder = false;
+        ) select * from temp_files where folder = false and address not in (select origin_address from share_files);
     </select>
 
     <select id="findById" resultType="java.util.HashMap">
         select * from files where id::text = #{id};
+    </select>
+
+    <select id="findDeleteById" resultType="java.util.HashMap">
+        select * from files where id::text = #{id} and address not in (select origin_address from share_files);
     </select>
 </mapper>

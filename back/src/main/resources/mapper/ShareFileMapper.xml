@@ -103,7 +103,8 @@
             visual_type = #{visualType},
             structured_source = #{structuredSource},
             tags = #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler},
-            avatar = #{avatar}
+            avatar = #{avatar},
+            update_time = now()
         where id::text = #{id};
 
         update file_meta
@@ -119,4 +120,5 @@
             get_online = #{getOnline}
         where id::text = (select meta from share_files where id::text = #{id});
     </update>
+
 </mapper>

@@ -32,4 +32,6 @@ public interface FileMapper {
     List<Map<String, Object>> recursionFindFiles(@Param("id") String id);
 
     Map<String, Object> findById(@Param("id") String id);
+
+    Map<String, Object> findDeleteById(@Param("id") String id);
 }

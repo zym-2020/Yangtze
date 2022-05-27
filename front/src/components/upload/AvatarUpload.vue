@@ -34,7 +34,8 @@ export default defineComponent({
 
     onMounted(() => {
       const fileInfo: any = router.currentRoute.value.params.fileInfo
-      if(fileInfo.avatar != '' && fileInfo.avatar != undefined && fileInfo.avatar != null) {
+      if(fileInfo != undefined && fileInfo != null && fileInfo.avatar != '' && fileInfo.avatar != undefined && fileInfo.avatar != null) {
+        console.log(1)
         imageUrl.value = "http://localhost:8002" + fileInfo.avatar
       }
     })

@@ -24,7 +24,7 @@
       :data="tableData"
       style="width: 100%"
       height="calc(80vh - 23px)"
-      :default-sort="{ prop: 'name', order: 'descending' }"
+      :default-sort="{ prop: 'name', order: 'ascending' }"
       @row-contextmenu="contextMenuClick"
       @cell-dblclick="dblclick"
       highlight-current-row
