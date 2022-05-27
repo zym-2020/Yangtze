@@ -19,9 +19,9 @@ import java.util.Map;
 public interface ShareFileMapper {
     void addShareFile(ShareFile shareFile);
 
-    List<Map<String, Object>> pageQueryByAdminDESC(@Param("size") int size, @Param("start") int start, @Param("property") String property);
+    List<Map<String, Object>> pageQueryByAdminDESC(@Param("size") int size, @Param("start") int start, @Param("property") String property, @Param("keyWord") String keyWord);
 
-    List<Map<String, Object>> pageQueryByAdminASC(@Param("size") int size, @Param("start") int start, @Param("property") String property);
+    List<Map<String, Object>> pageQueryByAdminASC(@Param("size") int size, @Param("start") int start, @Param("property") String property, @Param("keyWord") String keyWord);
 
     List<ShareFile> fuzzyQueryDESC(@Param("size") int size, @Param("start") int start, @Param("property") String property, @Param("keyWord") String keyWord);
 

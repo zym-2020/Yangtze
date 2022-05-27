@@ -26,11 +26,11 @@
     </insert>
 
     <select id="pageQueryByAdminDESC" resultType="java.util.HashMap">
-        select share_files.*, users.name as "userName", users.avatar as "userAvatar" from users, share_files where users.email = share_files.creator order by ${property} desc limit #{size} offset #{start};
+        select share_files.*, users.name as "userName", users.avatar as "userAvatar" from users, share_files where share_files.name like #{keyWord} and users.email = share_files.creator order by ${property} desc limit #{size} offset #{start};
     </select>
 
     <select id="pageQueryByAdminASC" resultType="java.util.HashMap">
-        select share_files.*, users.name, users.avatar from users, share_files where users.email = share_files.creator order by ${property} asc limit #{size} offset #{start};
+        select share_files.*, users.name as "userName", users.avatar as "userAvatar" from users, share_files where share_files.name like #{keyWord} and users.email = share_files.creator order by ${property} asc limit #{size} offset #{start};
     </select>
 
     <select id="fuzzyQueryDESC" resultMap="ShareFileResultMap">

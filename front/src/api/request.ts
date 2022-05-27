@@ -140,8 +140,8 @@ export async function addShareFile(formData: FormData) {
     return await post(`/share/addShareFile`, formData)
 }
 
-export async function pageQueryByAdmin(property: string, flag: boolean, page: number, size: number) {
-    return await get(`/share/pageQueryByAdmin/${property}/${flag}/${page}/${size}`)
+export async function pageQueryByAdmin(jsonData: FuzzyQueryClassifyJsonData) {
+    return await post(`/share/pageQueryByAdmin`, jsonData)
 }
 
 export async function getFileInfoAndMeta(id: string) {

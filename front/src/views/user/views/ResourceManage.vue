@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="head">
-      <el-input v-model="search" placeholder="搜索" />
-      <el-button type="primary" plain>搜索</el-button>
+      <el-input v-model="search" placeholder="搜索" @keyup.enter="searchFile"/>
+      <el-button type="primary" plain @click="searchFile">搜索</el-button>
       <el-button type="info" plain @click="toAdd">创建共享条目</el-button>
     </div>
     <div class="body">
@@ -115,10 +115,33 @@ export default defineComponent({
       }
     };
 
-    onMounted(async () => {
-      const data = await pageQueryByAdmin("update_time", false, 0, 10);
+    const searchFile = async () => {
+      const data = await pageQueryByAdmin({
+        property: "update_time",
+        flag: true,
+        keyWord: search.value,
+        page: 0,
+        size: 10,
+      });
       if (data != null) {
-        fileList.value = data.data.list;
+        if ((data as any).code === 0) {
+          fileList.value = data.data.list;
+        }
+      }
+    };
+
+    onMounted(async () => {
+      const data = await pageQueryByAdmin({
+        property: "update_time",
+        flag: true,
+        keyWord: "",
+        page: 0,
+        size: 10,
+      });
+      if (data != null) {
+        if ((data as any).code === 0) {
+          fileList.value = data.data.list;
+        }
       }
     });
 
@@ -131,6 +154,7 @@ export default defineComponent({
       updateKeys,
       email,
       operate,
+      searchFile,
     };
   },
 });
