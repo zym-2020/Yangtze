@@ -31,4 +31,8 @@ public interface ShareFileService {
     void updateShareFileAndFileMetaNoAvatar(UpdateShareFileAndFileMetaDTO updateShareFileAndFileMetaDTO);
 
     void updateShareFileAndFileMeta(UpdateShareFileAndFileMetaDTO updateShareFileAndFileMetaDTO, MultipartFile multipartFile);
+
+    List<Map<String, Object>> deleteShareFileById(int page, int size, String property, String keyWord, String id);
+
+    void updateStatusById(String id, int status);
 }

@@ -4,6 +4,7 @@
       <el-avatar :size="40" :src="avatar" />
       <div class="text" @click="clickName">{{ name }}</div>
       <slot name="creator"></slot>
+      <slot name="status"></slot>
     </div>
     <div class="des">
       {{ description }}

@@ -36,4 +36,5 @@ public class ShareFile {
     Integer watch;
     String meta;
     String avatar;
+    Integer status;
 }

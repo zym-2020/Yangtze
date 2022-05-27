@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="head">
-      <el-input v-model="search" placeholder="搜索" @keyup.enter="searchFile"/>
+      <el-input v-model="search" placeholder="搜索" @keyup.enter="searchFile" />
       <el-button type="primary" plain @click="searchFile">搜索</el-button>
       <el-button type="info" plain @click="toAdd">创建共享条目</el-button>
     </div>
@@ -9,6 +9,14 @@
       <div v-for="(item, index) in fileList" :key="index">
         <div class="card">
           <data-card :fileInfo="updateKeys(item)">
+            <template #status>
+              <div v-if="item.status === 1" class="online">
+                <el-tag type="success">Online</el-tag>
+              </div>
+              <div v-else class="offline">
+                <el-tag type="info">Offline</el-tag>
+              </div>
+            </template>
             <template #creator>
               <div class="creator">
                 <div style="line-height: 40px"><strong>创建人：</strong></div>
@@ -28,8 +36,19 @@
                           @click="operate(1, item)"
                           >编辑</el-dropdown-item
                         >
-                        <el-dropdown-item command="2">下架</el-dropdown-item>
-                        <el-dropdown-item command="3">删除</el-dropdown-item>
+                        <el-dropdown-item
+                          v-if="item.status === 1"
+                          @click="operate(2, item)"
+                          >下线</el-dropdown-item
+                        >
+                        <el-dropdown-item
+                          v-if="item.status === -1"
+                          @click="operate(3, item, index)"
+                          >上线</el-dropdown-item
+                        >
+                        <el-dropdown-item @click="operate(4, item)"
+                          >删除</el-dropdown-item
+                        >
                       </el-dropdown-menu>
                     </template>
                   </el-dropdown>
@@ -40,9 +59,19 @@
         </div>
       </div>
       <div class="pagination">
-        <el-pagination background layout="prev, pager, next" :total="1000" />
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="total"
+          :current-page="currentPage"
+          @current-change="currentChange"
+          :hide-on-single-page="true"
+        />
       </div>
     </div>
+    <el-dialog v-model="offlineFlag" width="600px" :modal="false">
+      <offline-dialog @commitInfo="commitInfo" />
+    </el-dialog>
   </div>
 </template>
 
@@ -50,10 +79,17 @@
 import { computed, defineComponent, onMounted, ref } from "vue";
 import DataCard from "@/components/cards/DataCard.vue";
 import router from "@/router";
-import { pageQueryByAdmin } from "@/api/request";
+import {
+  pageQueryByAdmin,
+  deleteShareFileById,
+  updateStatusById,
+} from "@/api/request";
 import { useStore } from "@/store";
+import { ElMessageBox } from "element-plus";
+import OfflineDialog from "@/components/dialog/OfflineDialog.vue";
+import { notice } from "@/utils/notice";
 export default defineComponent({
-  components: { DataCard },
+  components: { DataCard, OfflineDialog },
   setup() {
     const activeName = ref("first");
     const search = ref("");
@@ -62,9 +98,13 @@ export default defineComponent({
     const email = computed(() => {
       return store.state.user.email;
     });
+    const currentPage = ref(1);
+    const total = ref(0);
     const toAdd = () => {
       router.push({ name: "share" });
     };
+    const offlineFlag = ref(false);
+    const offlineItem = ref<any>();
 
     const getUserAvatar = (url: string) => {
       return url != undefined && url != undefined && url != ""
@@ -104,7 +144,7 @@ export default defineComponent({
       return object;
     };
 
-    const operate = (param: number, fileInfo: any) => {
+    const operate = async (param: number, fileInfo: any, index: number) => {
       if (param === 1) {
         router.push({
           name: "updateShare",
@@ -112,8 +152,46 @@ export default defineComponent({
             id: fileInfo.id,
           },
         });
+      } else if (param === 2) {
+        offlineFlag.value = true;
+        offlineItem.value = fileInfo;
+      } else if (param === 3) {
+        const data = await updateStatusById({
+          id: fileInfo.id as string,
+          status: 1,
+        });
+        if (data != null) {
+          if ((data as any).code === 0) {
+            fileList.value[index].status = 1;
+            notice("success", "成功", "条目上线成功");
+          }
+        }
+      } else if (param === 4) {
+        ElMessageBox.confirm("这将删除数据条目及条目下的数据！", "警告", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        })
+          .then(async () => {
+            const data = await deleteShareFileById({
+              size: 10,
+              page: currentPage.value - 1,
+              keyWord: search.value,
+              property: "update_time",
+              id: fileInfo.id,
+            });
+            if (data != null) {
+              if ((data as any).code === 0) {
+                fileList.value = data.data;
+                total.value = total.value - 1;
+              }
+            }
+          })
+          .catch(() => {});
       }
     };
+
+    const currentChange = () => {};
 
     const searchFile = async () => {
       const data = await pageQueryByAdmin({
@@ -130,6 +208,20 @@ export default defineComponent({
       }
     };
 
+    const commitInfo = async (val: any) => {
+      const data = await updateStatusById({
+        id: (offlineItem.value as any).id,
+        status: -1,
+      });
+      if (data != null) {
+        if ((data as any).code === 0) {
+          offlineItem.value.status = -1;
+          notice("success", "成功", "条目成功下线");
+        }
+      }
+      offlineFlag.value = false;
+    };
+
     onMounted(async () => {
       const data = await pageQueryByAdmin({
         property: "update_time",
@@ -141,6 +233,7 @@ export default defineComponent({
       if (data != null) {
         if ((data as any).code === 0) {
           fileList.value = data.data.list;
+          total.value = data.data.total;
         }
       }
     });
@@ -155,6 +248,11 @@ export default defineComponent({
       email,
       operate,
       searchFile,
+      currentPage,
+      currentChange,
+      total,
+      offlineFlag,
+      commitInfo,
     };
   },
 });
@@ -179,6 +277,10 @@ export default defineComponent({
     border-radius: 6px;
     margin-bottom: 10px;
     padding: 10px;
+    .online,
+    .offline {
+      margin-left: 10px;
+    }
     .creator {
       position: absolute;
       display: flex;
@@ -201,6 +303,14 @@ export default defineComponent({
     margin-bottom: 40px;
     display: flex;
     justify-content: space-around;
+  }
+}
+/deep/.el-dialog {
+  .el-dialog__header {
+    padding: 0;
+  }
+  .el-dialog__body {
+    padding: 0;
   }
 }
 </style>

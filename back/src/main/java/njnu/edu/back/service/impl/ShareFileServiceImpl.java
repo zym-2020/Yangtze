@@ -63,8 +63,8 @@ public class ShareFileServiceImpl implements ShareFileService {
     @Override
     public Map<String, Object> pageQueryByAdmin(int page, int size, String property, boolean flag, String keyWord) {
         Map<String, Object> map = new HashMap<>();
-        map.put("total", shareFileMapper.countAll());
         keyWord = "%" + keyWord + "%";
+        map.put("total", shareFileMapper.countFuzzyQuery(keyWord));
         if(flag) {
             map.put("list", shareFileMapper.pageQueryByAdminASC(size, size * page, property, keyWord));
         } else {
@@ -133,5 +133,16 @@ public class ShareFileServiceImpl implements ShareFileService {
         LocalUploadUtil.uploadAvatar(basedir + "other\\avatar\\" + uuid + "." + suffix, multipartFile);
         updateShareFileAndFileMetaDTO.setAvatar("/file/avatar/" + uuid + "." + suffix);
         shareFileMapper.updateFileInfoAndFileMeta(updateShareFileAndFileMetaDTO);
+    }
+
+    @Override
+    public List<Map<String, Object>> deleteShareFileById(int page, int size, String property, String keyWord, String id) {
+        keyWord = "%" + keyWord + "%";
+        return shareFileMapper.deleteShareFileById(id, size, size * page, property, keyWord);
+    }
+
+    @Override
+    public void updateStatusById(String id, int status) {
+        shareFileMapper.updateStatusById(id, status);
     }
 }

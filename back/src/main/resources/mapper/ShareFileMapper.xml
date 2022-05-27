@@ -20,30 +20,31 @@
         <result column="origin_name" property="originName"/>
         <result column="structured_name" property="structuredName"/>
         <result column="visual_name" property="visualName"/>
+        <result column="column" property="column"/>
     </resultMap>
     <insert id="addShareFile" parameterType="njnu.edu.back.pojo.ShareFile">
-        insert into share_files values(default, #{name}, #{description}, #{originAddress}, #{visualSource}, #{visualType}, #{structuredSource}, #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}, #{creator}, now(), #{meta}, #{download}, #{watch}, now(), #{avatar}, #{originName}, #{structuredName}, #{visualName});
+        insert into share_files values(default, #{name}, #{description}, #{originAddress}, #{visualSource}, #{visualType}, #{structuredSource}, #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}, #{creator}, now(), #{meta}, #{download}, #{watch}, now(), #{avatar}, #{originName}, #{structuredName}, #{visualName}, #{status});
     </insert>
 
     <select id="pageQueryByAdminDESC" resultType="java.util.HashMap">
-        select share_files.*, users.name as "userName", users.avatar as "userAvatar" from users, share_files where share_files.name like #{keyWord} and users.email = share_files.creator order by ${property} desc limit #{size} offset #{start};
+        select share_files.*, users.name as "userName", users.avatar as "userAvatar" from users, share_files where status != 0 and share_files.name like #{keyWord} and users.email = share_files.creator order by ${property} desc limit #{size} offset #{start};
     </select>
 
     <select id="pageQueryByAdminASC" resultType="java.util.HashMap">
-        select share_files.*, users.name as "userName", users.avatar as "userAvatar" from users, share_files where share_files.name like #{keyWord} and users.email = share_files.creator order by ${property} asc limit #{size} offset #{start};
+        select share_files.*, users.name as "userName", users.avatar as "userAvatar" from users, share_files where status != 0 and share_files.name like #{keyWord} and users.email = share_files.creator order by ${property} asc limit #{size} offset #{start};
     </select>
 
     <select id="fuzzyQueryDESC" resultMap="ShareFileResultMap">
-        select * from share_files where name like #{keyWord} order by ${property} desc limit #{size} offset #{start};
+        select * from share_files where name like #{keyWord} and status = 1 order by ${property} desc limit #{size} offset #{start};
     </select>
 
     <select id="fuzzyQueryASC" resultMap="ShareFileResultMap">
-        select * from share_files where name like #{keyWord} order by ${property} asc limit #{size} offset #{start};
+        select * from share_files where name like #{keyWord} and status = 1order by ${property} asc limit #{size} offset #{start};
     </select>
 
     <select id="fuzzyQueryClassifyDESC" resultMap="ShareFileResultMap">
         select * from (
-                      select * from share_files where tags @> #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}::text[]
+                      select * from share_files where tags @> #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}::text[] and status = 1
                           ) as t
         where t.name like #{keyWord}
         order by ${property} desc
@@ -52,7 +53,7 @@
 
     <select id="fuzzyQueryClassifyASC" resultMap="ShareFileResultMap">
         select * from (
-                          select * from share_files where tags @> #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}::text[]
+                        select * from share_files where tags @> #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}::text[] and status = 1
                       ) as t
         where t.name like #{keyWord}
         order by ${property} asc
@@ -60,7 +61,7 @@
     </select>
 
     <select id="countFuzzyQuery" resultType="java.lang.Integer">
-        select count(*) from share_files where name like #{keyWord};
+        select count(*) from share_files where name like #{keyWord} and status = 1;
     </select>
 
     <select id="countAll" resultType="java.lang.Integer">
@@ -69,7 +70,7 @@
 
     <select id="countFuzzyQueryClassify" resultType="java.lang.Integer">
         select count(*) from (
-                             select * from share_files where tags @> #{tags}::text[]
+                             select * from share_files where tags @> #{tags}::text[] and status = 1;
                                  ) as t
         where t.name like #{keyWord};
     </select>
@@ -119,6 +120,18 @@
             provider_address = #{providerAddress},
             get_online = #{getOnline}
         where id::text = (select meta from share_files where id::text = #{id});
+    </update>
+
+    <select id="deleteShareFileById" resultType="java.util.HashMap">
+        delete from file_meta where id::text = (select meta from share_files where id::text = #{id});
+        delete from share_files where id::text = #{id};
+        delete from browse_history where data_id = #{id};
+        delete from download_history where data_id = #{id};
+        select share_files.*, users.name as "userName", users.avatar as "userAvatar" from users, share_files where share_files.name like #{keyWord} and users.email = share_files.creator order by ${property} desc limit #{size} offset #{start};
+    </select>
+
+    <update id="updateStatusById">
+        update share_files set status = #{status} where id::text = #{id};
     </update>
 
 </mapper>

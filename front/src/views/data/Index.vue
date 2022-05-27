@@ -53,6 +53,7 @@
                 :total="total"
                 :current-page="currentPage"
                 @current-change="pageChange"
+                :hide-on-single-page="true"
               />
             </div>
           </div>

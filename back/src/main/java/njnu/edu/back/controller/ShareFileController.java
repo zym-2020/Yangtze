@@ -111,13 +111,18 @@ public class ShareFileController {
 
     @AuthCheck
     @RequestMapping(value = "/pageQueryByAdmin", method = RequestMethod.POST)
-    public JsonResult pageQueryByAdmin(@RequestBody JSONObject jsonObject) {
-        int page = jsonObject.getInteger("page");
-        int size = jsonObject.getInteger("size");
-        String property = jsonObject.getString("property");
-        String keyWord = jsonObject.getString("keyWord");
-        boolean flag = jsonObject.getBoolean("flag");
-        return ResultUtils.success(shareFileService.pageQueryByAdmin(page, size, property, flag, keyWord));
+    public JsonResult pageQueryByAdmin(@RequestBody JSONObject jsonObject, @JwtTokenParser("roles") String[] roles) {
+        if(roles[0].equals("admin")) {
+            int page = jsonObject.getInteger("page");
+            int size = jsonObject.getInteger("size");
+            String property = jsonObject.getString("property");
+            String keyWord = jsonObject.getString("keyWord");
+            boolean flag = jsonObject.getBoolean("flag");
+            return ResultUtils.success(shareFileService.pageQueryByAdmin(page, size, property, flag, keyWord));
+        } else {
+            throw new MyException(-99, "没有权限！");
+        }
+
     }
 
     @AuthCheck
@@ -131,6 +136,33 @@ public class ShareFileController {
         JSONArray jsonArray = jsonObject.getJSONArray("tags");
         String[] tags = jsonArray.toArray(new String[jsonArray.size()]);
         return ResultUtils.success(shareFileService.fuzzyQueryClassify(page, size, property, flag, keyWord, tags));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/deleteShareFileById", method = RequestMethod.DELETE)
+    public JsonResult deleteShareFileById(@RequestBody JSONObject jsonObject, @JwtTokenParser("roles") String[] roles) {
+        if(roles[0].equals("admin")) {
+            int size = jsonObject.getInteger("size");
+            int page = jsonObject.getInteger("page");
+            String property = jsonObject.getString("property");
+            String keyWord = jsonObject.getString("keyWord");
+            String id = jsonObject.getString("id");
+            return ResultUtils.success(shareFileService.deleteShareFileById(page, size, property, keyWord, id));
+        } else {
+            throw new MyException(-99, "没有权限！");
+        }
+
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/updateStatusById", method = RequestMethod.PATCH)
+    public JsonResult updateStatusById(@RequestBody JSONObject jsonObject, @JwtTokenParser("roles") String[] roles) {
+        if(roles[0].equals("admin")) {
+            shareFileService.updateStatusById(jsonObject.getString("id"), jsonObject.getInteger("status"));
+            return ResultUtils.success();
+        } else {
+            throw new MyException(-99, "没有权限！");
+        }
     }
 
 }
