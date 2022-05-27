@@ -13,7 +13,7 @@
         </div>
         <div class="right">
           <div class="list">
-            <el-input v-model="input" placeholder="请输入关键字">
+            <el-input v-model="input" placeholder="请输入关键字" @keyup.enter="search">
               <template #append>
                 <el-button @click="search"
                   ><el-icon><Search /></el-icon

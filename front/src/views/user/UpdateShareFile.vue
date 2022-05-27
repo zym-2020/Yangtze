@@ -329,29 +329,49 @@ export default defineComponent({
 
     const options = ref([
       {
-        label: "国家和经济",
-        options: ["阿富汗", "非洲"],
+        label: "水文参数数据",
+        options: ["潮位", "大断面", "含沙量", "流量", "流速", "流向", "悬移质"],
       },
       {
-        label: "国家和经济",
-        options: ["阿富汗", "非洲"],
+        label: "水文数据",
+        options: ["深泓线", "沙滩", "浓度场", "流场", "冲淤"],
       },
       {
-        label: "国家和经济",
-        options: ["阿富汗", "非洲"],
+        label: "流场数据",
+        options: ["流场矢量线数据", "流场栅格数据"],
       },
       {
-        label: "源目录",
-        options: ["金融", "世行数据目录"],
+        label: "物理模型数据",
+        options: ["模型照片", "试验照片", "等高线", "长江BMP图像"],
       },
       {
-        label: "收集",
-        options: ["乌克兰 数据集"],
+        label: "基础数据",
+        options: ["水文参数数据", "三维点数据", "流场数据", "工程数据", "数模数据", "物模数据", "影像数据"],
+      },
+      {
+        label: "辅助数据",
+        options: ["潮位站", "长江流域遥感影像", "等高线", "长江BMP图像"],
+      },
+      {
+        label: "工程实施数据",
+        options: ["工程前数据", "工程后数据"]
+      },
+      {
+        label: "处理数据",
+        options: ["原始数据", "整合数据"]
+      },
+      {
+        label: "辅助数据",
+        options: ["PPT", "PDF", "DOC", "XLS"]
+      },
+      {
+        label: "数据库数据",
+        options: ["水文Access数据库"]
       },
       {
         label: "资源类型",
-        options: ["excel", "pdf"],
-      },
+        options: ["excel"]
+      }
     ]);
 
     const form = reactive({

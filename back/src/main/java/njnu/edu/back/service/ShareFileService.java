@@ -18,7 +18,7 @@ import java.util.Map;
 public interface ShareFileService {
     void addShareFile(JSONObject jsonObject, String email, MultipartFile file);
 
-    Map<String, Object> pageQueryByAdmin(int page, int size, String property, boolean flag);
+    Map<String, Object> pageQueryByAdmin(int page, int size, String property, boolean flag, String keyWord);
 
     Map<String, Object> fuzzyQueryClassify(int page, int size, String property, boolean flag, String keyWord, String[] tags);
 

@@ -50,7 +50,7 @@ public class ShareFileController {
     }
 
     /**
-    * @Description:admin用户使用改接口直接修改数据
+    * @Description:admin用户使用改接口直接修改数据（不修改头像）
     * @Author: Yiming
     * @Date: 2022/5/25
     */
@@ -66,6 +66,12 @@ public class ShareFileController {
         }
 
     }
+
+    /**
+     * @Description:admin用户使用该接口直接修改数据
+     * @Author: Yiming
+     * @Date: 2022/5/25
+     */
 
     @AuthCheck
     @RequestMapping(value = "/updateShareFile", method = RequestMethod.PATCH)
@@ -104,9 +110,14 @@ public class ShareFileController {
     }
 
     @AuthCheck
-    @RequestMapping(value = "/pageQueryByAdmin/{property}/{flag}/{page}/{size}", method = RequestMethod.GET)
-    public JsonResult pageQueryByAdmin(@PathVariable String property, @PathVariable boolean flag, @PathVariable int page, @PathVariable int size) {
-        return ResultUtils.success(shareFileService.pageQueryByAdmin(page, size, property, flag));
+    @RequestMapping(value = "/pageQueryByAdmin", method = RequestMethod.POST)
+    public JsonResult pageQueryByAdmin(@RequestBody JSONObject jsonObject) {
+        int page = jsonObject.getInteger("page");
+        int size = jsonObject.getInteger("size");
+        String property = jsonObject.getString("property");
+        String keyWord = jsonObject.getString("keyWord");
+        boolean flag = jsonObject.getBoolean("flag");
+        return ResultUtils.success(shareFileService.pageQueryByAdmin(page, size, property, flag, keyWord));
     }
 
     @AuthCheck

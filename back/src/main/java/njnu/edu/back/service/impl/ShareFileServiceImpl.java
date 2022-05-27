@@ -61,13 +61,14 @@ public class ShareFileServiceImpl implements ShareFileService {
     }
 
     @Override
-    public Map<String, Object> pageQueryByAdmin(int page, int size, String property, boolean flag) {
+    public Map<String, Object> pageQueryByAdmin(int page, int size, String property, boolean flag, String keyWord) {
         Map<String, Object> map = new HashMap<>();
         map.put("total", shareFileMapper.countAll());
+        keyWord = "%" + keyWord + "%";
         if(flag) {
-            map.put("list", shareFileMapper.pageQueryByAdminASC(size, size * page, property));
+            map.put("list", shareFileMapper.pageQueryByAdminASC(size, size * page, property, keyWord));
         } else {
-            map.put("list", shareFileMapper.pageQueryByAdminDESC(size, size * page, property));
+            map.put("list", shareFileMapper.pageQueryByAdminDESC(size, size * page, property, keyWord));
         }
         return map;
     }
