@@ -1,15 +1,18 @@
 <template>
-    <div>首页</div>
+    <HomeWrapper />
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
+import HomeWrapper from '../components/pageWrapper/homeWrapper.vue';
+export default {
+    name:'Home', 
+    components: {
+        HomeWrapper
+    }, 
     setup() {
     }
-})
+}
 </script>
 
 <style lang="scss" scoped>
-
 </style>
