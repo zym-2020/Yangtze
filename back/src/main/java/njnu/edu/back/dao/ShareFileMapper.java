@@ -47,4 +47,7 @@ public interface ShareFileMapper {
 
     void updateFileInfoAndFileMeta(UpdateShareFileAndFileMetaDTO updateShareFileAndFileMetaDTO);
 
+    List<Map<String, Object>> deleteShareFileById(@Param("id") String id, @Param("size") int size, @Param("start") int start, @Param("property") String property, @Param("keyWord") String keyWord);
+
+    void updateStatusById(@Param("id") String id, @Param("status") int status);
 }

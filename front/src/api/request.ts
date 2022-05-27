@@ -1,5 +1,6 @@
 import { get, post, del, patch } from './axios'
-import { RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData, MergeFileJsonData, AddFileJsonData, RenameJsonData, SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData } from './type/userType'
+import { RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData, MergeFileJsonData, AddFileJsonData, RenameJsonData, 
+    SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData } from './type/userType'
 import { ResourceState } from '@/store/resourse/resourceState'
 
 
@@ -168,6 +169,14 @@ export async function updateShareFileNoAvatar(jsonData: any) {
 //这个也是一样，懒得写了
 export async function updateShareFile(formData: FormData) {
     return await patch(`/share/updateShareFile`, formData)
+}
+
+export async function deleteShareFileById(jsonData: DeleteShareFileByIdJsonDaya) {
+    return await del(`/share/deleteShareFileById`, jsonData)
+}
+
+export async function updateStatusById(jsonData: UpdateStatusByIdJsonData) {
+    return await patch(`/share/updateStatusById`, jsonData)
 }
 
 //========================fileMeta相关接口=================================

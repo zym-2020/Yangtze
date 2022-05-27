@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "28650242",
+      "name": "投诉举报",
+      "font_class": "tousujubao",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
+      "icon_id": "5831700",
+      "name": "安全",
+      "font_class": "anquan",
+      "unicode": "e682",
+      "unicode_decimal": 59010
+    },
+    {
       "icon_id": "6403470",
       "name": "download",
       "font_class": "download",
