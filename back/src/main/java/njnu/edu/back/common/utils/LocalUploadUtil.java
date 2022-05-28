@@ -1,5 +1,6 @@
 package njnu.edu.back.common.utils;
 
+import cn.hutool.json.JSONObject;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,7 +46,7 @@ public class LocalUploadUtil {
         String path = dir + "\\temp\\" + MD5;
         File file = new File(path);
         if(!file.exists()) {
-            file.mkdir();
+            file.mkdirs();
         }
         InputStream ins = null;
         FileOutputStream outs = null;
@@ -206,6 +207,18 @@ public class LocalUploadUtil {
                 throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
             }
         }
+    }
+
+    /**
+    * @Description:注册新用户时给新用户生成文件目录
+    * @Author: Yiming
+    * @Date: 2022/5/28
+    */
+
+    public static void createUserFolder(String basePath, String email) {
+        new File(basePath + email + "/projects").mkdirs();
+        new File(basePath + email + "/temp").mkdirs();
+        new File(basePath + email + "/upload").mkdirs();
     }
 
 }

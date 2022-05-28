@@ -46,9 +46,12 @@ public class FileController {
     }
 
     @AuthCheck
-    @RequestMapping(value = "/getNoUpload/{MD5}/{total}", method = RequestMethod.GET)
-    public JsonResult getNoUpload(@PathVariable String MD5, @JwtTokenParser("email") String email, @PathVariable int total) {
-        return ResultUtils.success(fileService.getNoUpload(MD5, email, total));
+    @RequestMapping(value = "/getNoUpload", method = RequestMethod.POST)
+    public JsonResult getNoUpload(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
+        String MD5 = jsonObject.getStr("MD5");
+        int total = jsonObject.getInt("total");
+        JSONObject metaData = jsonObject.getJSONObject("meta");
+        return ResultUtils.success(fileService.getNoUpload(MD5, email, total, metaData));
     }
 
     @AuthCheck
@@ -59,9 +62,9 @@ public class FileController {
     }
 
     @AuthCheck
-    @RequestMapping(value = "/mergeFile", method = RequestMethod.POST)
-    public JsonResult mergeFile(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
-        return ResultUtils.success(fileService.mergeFile(email, jsonObject.getStr("MD5"), jsonObject.getStr("type"), jsonObject.getStr("name"), jsonObject.getInt("total"), jsonObject.getInt("level"), jsonObject.getStr("parentId"), jsonObject.getStr("meta")));
+    @RequestMapping(value = "/mergeFile/{MD5}", method = RequestMethod.POST)
+    public JsonResult mergeFile(@PathVariable String MD5, @JwtTokenParser("email") String email) {
+        return ResultUtils.success(fileService.mergeFile(email, MD5));
     }
 
     @AuthCheck

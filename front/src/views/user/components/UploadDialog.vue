@@ -237,19 +237,33 @@ export default defineComponent({
       } else {
         getFileMd5(uploadFile.value[0].raw as File, async (md5: string) => {
           const fileChunk = createFileChunk(uploadFile.value[0].raw as File);
-          const chunkList = await getNoUpload(md5, fileChunk.length);
-          await handlePostFiles(chunkList.data, fileChunk, md5);
-          if (chunkList.data.length === 0) {
-            const key = await mergeFile({
-              MD5: md5,
-              type: typeValue.value,
+          const chunkList = await getNoUpload({
+            MD5: md5,
+            total: fileChunk.length,
+            meta: {
               name: uploadFile.value[0].name,
               total: fileChunk.length,
               level: props.level as number,
               parentId: props.parentId as string,
               meta: "",
-            });
-            checkStatus(key.data);
+            },
+          });
+          if (chunkList != null && (chunkList as any).code === 0) {
+            await handlePostFiles(chunkList.data, fileChunk, md5);
+            if (chunkList.data.length === 0) {
+              const key = await mergeFile(md5);
+              if (key != null && (key as any).code === 0) {
+                checkStatus(key.data);
+              } else {
+                notice("error", "失败", "文件合并时出错，请重新上传");
+              }
+            }
+          } else {
+            notice(
+              "warning",
+              "警告",
+              "上传初始化失败，请检查文件及相关描述是否出错"
+            );
           }
         });
       }

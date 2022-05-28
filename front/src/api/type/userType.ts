@@ -48,16 +48,6 @@ export interface SectionContrastJsonData {
     projectName: string
 }
 
-export interface MergeFileJsonData {
-    MD5: string,
-    type: string,
-    name: string,
-    total: number,
-    level: number,
-    parentId: string,
-    meta: string
-}
-
 export interface AddFileJsonData {
     id?: string
     name: string
@@ -101,4 +91,16 @@ export interface DeleteShareFileByIdJsonDaya {
 export interface UpdateStatusByIdJsonData {
     id: string
     status: number
+}
+
+export interface GetNoUploadJsonData {
+    MD5: string
+    total: number
+    meta: {
+        name: string
+        total: number
+        level: number
+        parentId: string
+        meta: string
+    }
 }

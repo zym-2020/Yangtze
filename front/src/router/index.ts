@@ -12,6 +12,9 @@ export const constantRoutes: Array<RouteRecordRaw> = [
             {
                 path: '',
                 component: Home,
+                meta: {
+                    keepAlive: true
+                }
             },
         ]
     },
@@ -79,7 +82,8 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 path: '',
                 component: () => import('@/views/scenario/Index.vue'),
                 meta: {
-                    roles: ['member', 'admin']
+                    roles: ['member', 'admin'],
+                    keepAlive: true
                 }
             }
         ]

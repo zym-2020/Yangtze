@@ -1,5 +1,6 @@
 package njnu.edu.back.service;
 
+import cn.hutool.json.JSONObject;
 import njnu.edu.back.pojo.dto.AddFileDTO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,11 +23,11 @@ public interface FileService {
 
     List<Map<String, Object>> findByParentId(String parentId);
 
-    List<String> getNoUpload(String MD5, String email, int total);
+    List<String> getNoUpload(String MD5, String email, int total, JSONObject jsonObject);
 
     void uploadFile(MultipartFile multipartFile, String MD5, String email, String name);
 
-    String mergeFile(String email, String MD5, String type, String name, int total, int level, String parentId, String meta);
+    String mergeFile(String email, String MD5);
 
     int checkMergeState(String key);
 

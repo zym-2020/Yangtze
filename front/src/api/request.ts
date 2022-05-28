@@ -1,6 +1,6 @@
 import { get, post, del, patch } from './axios'
-import { RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData, MergeFileJsonData, AddFileJsonData, RenameJsonData, 
-    SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData } from './type/userType'
+import { RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData, AddFileJsonData, RenameJsonData, 
+    SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData, GetNoUploadJsonData } from './type/userType'
 import { ResourceState } from '@/store/resourse/resourceState'
 
 
@@ -100,12 +100,12 @@ export async function rasterPageQuery(size: number, start: number) {
 }
 
 //========================file相关接口=================================
-export async function getNoUpload(md5: string, total: number) {
-    return await get(`/file/getNoUpload/${md5}/${total}`)
+export async function getNoUpload(jsonData: GetNoUploadJsonData) {
+    return await post(`/file/getNoUpload`, jsonData)
 }
 
-export async function mergeFile(jsonData: MergeFileJsonData) {
-    return await post(`/file/mergeFile`, jsonData)
+export async function mergeFile(md5: string) {
+    return await post(`/file/mergeFile/${md5}`)
 }
 
 export async function checkMergeState(key: string) {

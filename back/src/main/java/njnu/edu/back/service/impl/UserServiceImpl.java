@@ -66,6 +66,7 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.getUserByEmail(addUserDTO.getEmail());
         if(user == null) {
             addUserDTO.setPassword(Encrypt.md5(addUserDTO.getPassword()));
+            LocalUploadUtil.createUserFolder(baseDir, addUserDTO.getEmail());
             return userMapper.addUser(addUserDTO);
         } else {
             throw new MyException(ResultEnum.EXIST_OBJECT);

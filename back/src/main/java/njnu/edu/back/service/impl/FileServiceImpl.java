@@ -1,5 +1,6 @@
 package njnu.edu.back.service.impl;
 
+import cn.hutool.json.JSONObject;
 import lombok.SneakyThrows;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
@@ -61,8 +62,12 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public List<String> getNoUpload(String MD5, String email, int total) {
-        return LocalUploadUtil.getNoUploadChunk(MD5, basedir + email, total);
+    public List<String> getNoUpload(String MD5, String email, int total, JSONObject metaData) {
+        List<String> result = LocalUploadUtil.getNoUploadChunk(MD5, basedir + email, total);
+        if(result.size() == total) {
+            redisService.set(MD5, metaData);
+        }
+        return result;
     }
 
     @Override
@@ -72,11 +77,21 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public String mergeFile(String email, String MD5, String type, String name, int total, int level, String parentId, String meta) {
+    public String mergeFile(String email, String MD5) {
         String uuid = UUID.randomUUID().toString();
+        JSONObject metaData = (JSONObject) redisService.get(MD5);
+        if(metaData == null) {
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
+        redisService.del(MD5);
+        String name = metaData.getStr("name");
+        int total = metaData.getInt("total");
+        int level = metaData.getInt("level");
+        String parentId = metaData.getStr("parentId");
+        String meta = metaData.getStr("meta");
         String suffix = name.substring(name.lastIndexOf(".") + 1);
         String from = basedir + email + "\\temp\\" + MD5;
-        String to = basedir + email + "\\upload\\" + type + "\\" + uuid + "." + suffix;
+        String to = basedir + email + "\\upload\\" + uuid + "." + suffix;
         String key = UUID.randomUUID().toString();
         redisService.set(key, 0, 24*60*3l);
         new Thread() {
