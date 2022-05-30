@@ -69,6 +69,7 @@ import { pageQueryByEmail, offlineById } from "@/api/request";
 import { notice } from "@/utils/notice";
 import DataCard from "@/components/cards/DataCard.vue";
 import { ElMessageBox } from "element-plus";
+import router from "@/router";
 export default defineComponent({
   components: { DataCard },
   setup() {
@@ -78,6 +79,12 @@ export default defineComponent({
 
     const operate = (number: number, info: any) => {
       if (number === 1) {
+        router.push({
+          name: "updateShare",
+          params: {
+            id: info.id,
+          },
+        });
       } else if (number === 2) {
         ElMessageBox.confirm(
           "您确定要下线条目吗？下线后若想重新上线需要管理员审核",

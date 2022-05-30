@@ -85,6 +85,13 @@ export default defineComponent({
       // bounds: [120.127027, 31.161315, 121.994353, 32.023517],
       maxzoom: 12,
     };
+    // const rasterDEM: AnySourceData = {
+    //   type: "raster-dem",
+    //   tiles: [
+    //     "http://localhost:8002/raster/getRaster/5bab3434-cf39-46d1-bcc7-3c433bf44016/{x}/{y}/{z}",
+    //   ],
+    //   maxzoom: 12,
+    // };
 
     const map = ref<mapBoxGl.Map>();
     const initMap = () => {
@@ -122,6 +129,14 @@ export default defineComponent({
               type: "raster",
               source: "rasterDEM",
             },
+            // {
+            //   id: "rasterDEM",
+            //   type: "hillshade",
+            //   source: "rasterDEM",
+            //   paint: {
+            //     "hillshade-shadow-color" : "red"
+            //   }
+            // }
           ],
         },
 
@@ -239,12 +254,15 @@ export default defineComponent({
       }
     };
 
-    watch(() => router.currentRoute.value.path, () => {
-      if(router.currentRoute.value.name === 'project') {
-        map.value?.setCenter([121.193496, 31.791046])
-        map.value?.setZoom(8)
+    watch(
+      () => router.currentRoute.value.path,
+      () => {
+        if (router.currentRoute.value.name === "project") {
+          map.value?.setCenter([121.193496, 31.791046]);
+          map.value?.setZoom(8);
+        }
       }
-    })
+    );
 
     watch(analyse, (newVal: Analyse, oldVal: Analyse) => {
       watchAnalyse(
@@ -303,7 +321,6 @@ export default defineComponent({
       });
       console.log("map.del", del);
       del.forEach((item) => {
-        
         if (flag.value) {
           delLayer(item.type, item.id as string, item.show as boolean);
         } else {
