@@ -11,4 +11,6 @@ import java.util.Map;
  */
 public interface FileMetaService {
     Map<String, Object> getFileMetaById(String id);
+
+    Map<String, Object> getFileMetaAndUserInfo(String id, String email);
 }

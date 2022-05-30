@@ -108,6 +108,23 @@ public class ShareFileServiceImpl implements ShareFileService {
     }
 
     @Override
+    public Map<String, Object> getFileInfoAndMetaAndUserInfo(String id) {
+        ShareFile shareFileMap = shareFileMapper.getShareFileById(id);
+        if(shareFileMap == null) {
+            throw new MyException(ResultEnum.NO_OBJECT);
+        }
+        Map<String, Object> metaFileAndUserInfoMap = fileMetaMapper.getFileMetaAndUserInfo(shareFileMap.getMeta(), shareFileMap.getCreator());
+        if(metaFileAndUserInfoMap == null) {
+            throw new MyException(ResultEnum.NO_OBJECT);
+        }
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("fileInfo", shareFileMap);
+        resultMap.put("fileMeta", metaFileAndUserInfoMap);
+        return resultMap;
+
+    }
+
+    @Override
     public void addWatchCount(String id, String userId, String ip) {
         shareFileMapper.addWatchCount(id);
         browseHistoryMapper.addHistory(new BrowseHistory(null, userId, null, ip, id));

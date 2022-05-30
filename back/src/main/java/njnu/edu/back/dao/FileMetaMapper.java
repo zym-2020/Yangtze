@@ -18,4 +18,6 @@ public interface FileMetaMapper {
     String addFileMeta(FileMeta fileMeta);
 
     Map<String, Object> getFileMetaById(@Param("id") String id);
+
+    Map<String, Object> getFileMetaAndUserInfo(@Param("id") String id, @Param("email") String email);
 }

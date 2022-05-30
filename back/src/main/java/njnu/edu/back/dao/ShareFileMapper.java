@@ -43,6 +43,7 @@ public interface ShareFileMapper {
 
     ShareFile getShareFileById(@Param("id") String id);
 
+
     void addWatchCount(@Param("id") String id);
 
     void addDownload(@Param("id") String id);

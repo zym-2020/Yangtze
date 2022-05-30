@@ -28,4 +28,10 @@ public class FileMetaController {
     public JsonResult getFileMetaById(@PathVariable String id) {
         return ResultUtils.success(fileMetaService.getFileMetaById(id));
     }
+
+    @AuthCheck
+    @RequestMapping(value = "/getFileMetaAndUserInfo/{id}/{email}", method = RequestMethod.GET)
+    public JsonResult getFileMetaAndUserInfo(@PathVariable String id, @PathVariable String email) {
+        return ResultUtils.success(fileMetaService.getFileMetaAndUserInfo(id, email));
+    }
 }

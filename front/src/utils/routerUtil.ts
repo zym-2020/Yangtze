@@ -1,5 +1,5 @@
 import { RouteLocationNormalized } from 'vue-router'
-import { getFileInfoAndMeta, getFileMetaById, findProjectById } from '@/api/request'
+import { getFileInfoAndMeta, getFileMetaAndUserInfo, findProjectById, getFileInfoAndMetaAndUserInfo } from '@/api/request'
 
 
 export async function toIdPages(to: RouteLocationNormalized) {
@@ -25,7 +25,7 @@ export async function toIdPages(to: RouteLocationNormalized) {
         if (to.params.id != '' && to.params.id != null && to.params.id != undefined) {
             if (to.params.fileInfo != undefined && to.params.fileInfo != null && to.params.fileInfo != '') {
                 const fileInfo = JSON.parse(to.params.fileInfo as string)
-                const data = await getFileMetaById(fileInfo.meta)
+                const data = await getFileMetaAndUserInfo(fileInfo.meta, fileInfo.creator)
                 if (data != null) {
                     if ((data as any).code === 0) {
                         to.params.fileMeta = data.data
@@ -37,7 +37,7 @@ export async function toIdPages(to: RouteLocationNormalized) {
                 }
                 return 0
             } else {
-                const data = await getFileInfoAndMeta(to.params.id as string)
+                const data = await getFileInfoAndMetaAndUserInfo(to.params.id as string)
                 if (data != null) {
                     if ((data as any).code === 0) {
                         to.params.fileInfo = data.data.fileInfo

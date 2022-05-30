@@ -149,6 +149,10 @@ export async function getFileInfoAndMeta(id: string) {
     return await get(`/share/getFileInfoAndMeta/${id}`)
 }
 
+export async function getFileInfoAndMetaAndUserInfo(id: string) {
+    return await get(`/share/getFileInfoAndMetaAndUserInfo/${id}`)
+}
+
 export async function addWatchCount(id: string) {
     return await patch(`/share/addWatchCount/${id}`)
 }
@@ -192,8 +196,9 @@ export async function deleteShareFileAsMember(id: string, page: number, size: nu
 }
 
 //========================fileMeta相关接口=================================
-export async function getFileMetaById(id: string) {
-    return await get(`/fileMeta/getFileMetaById/${id}`)
+
+export async function getFileMetaAndUserInfo(id: string, email: string) {
+    return await get(`/fileMeta/getFileMetaAndUserInfo/${id}/${email}`)
 }
 
 

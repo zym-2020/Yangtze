@@ -8,4 +8,8 @@
     <select id="getFileMetaById" resultType="java.util.HashMap">
         select * from file_meta where id::text = #{id};
     </select>
+
+    <select id="getFileMetaAndUserInfo" resultType="java.util.HashMap">
+        select file_meta.*, users.name, users.avatar from file_meta, users where file_meta.id::text = #{id} and email = #{email};
+    </select>
 </mapper>

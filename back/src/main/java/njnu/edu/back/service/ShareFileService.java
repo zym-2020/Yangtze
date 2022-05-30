@@ -24,6 +24,8 @@ public interface ShareFileService {
 
     Map<String, Object> getFileInfoAndMeta(String id);
 
+    Map<String, Object> getFileInfoAndMetaAndUserInfo(String id);
+
     Map<String, Object> pageQueryByEmail(String email, int page, int size);
 
     void addWatchCount(String id, String userId, String ip);

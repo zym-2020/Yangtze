@@ -62,6 +62,12 @@ public class ShareFileController {
     }
 
     @AuthCheck
+    @RequestMapping(value = "/getFileInfoAndMetaAndUserInfo/{id}", method = RequestMethod.GET)
+    public JsonResult getFileInfoAndMetaAndUserInfo(@PathVariable String id) {
+        return ResultUtils.success(shareFileService.getFileInfoAndMetaAndUserInfo(id));
+    }
+
+    @AuthCheck
     @RequestMapping(value = "/addWatchCount/{id}", method = RequestMethod.PATCH)
     public JsonResult addWatchCount(@PathVariable String id, @JwtTokenParser("id") String userId, HttpServletRequest request) {
         shareFileService.addWatchCount(id, userId, request.getRemoteAddr());
