@@ -56,4 +56,6 @@ public interface ShareFileMapper {
     void updateStatusById(@Param("id") String id, @Param("status") int status);
 
     void offlineById(@Param("id") String id);
+
+    List<ShareFile> deleteShareFileAsMember(@Param("id") String id, @Param("size") int size, @Param("start") int start, @Param("email") String email);
 }

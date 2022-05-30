@@ -135,7 +135,7 @@
         delete from share_files where id::text = #{id};
         delete from browse_history where data_id = #{id};
         delete from download_history where data_id = #{id};
-        select share_files.*, users.name as "userName", users.avatar as "userAvatar" from users, share_files where share_files.name like #{keyWord} and users.email = share_files.creator order by ${property} desc limit #{size} offset #{start};
+        select share_files.*, users.name as "userName", users.avatar as "userAvatar" from users, share_files where share_files.name like #{keyWord} and users.email = share_files.creator and status != 0 order by ${property} desc limit #{size} offset #{start};
     </select>
 
     <update id="updateStatusById">
@@ -145,4 +145,12 @@
     <update id="offlineById">
         update share_files set status = -1 where id::text = #{id};
     </update>
+
+    <select id="deleteShareFileAsMember" resultMap="ShareFileResultMap">
+        delete from file_meta where id::text = (select meta from share_files where id::text = #{id});
+        delete from share_files where id::text = #{id};
+        delete from browse_history where data_id = #{id};
+        delete from download_history where data_id = #{id};
+        select * from share_files where (status = 1 or status = -1) and creator = #{email} order by update_time asc limit #{size} offset #{start};
+    </select>
 </mapper>

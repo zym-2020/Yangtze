@@ -45,10 +45,7 @@ public class ShareFileServiceImpl implements ShareFileService {
     String basedir;
 
     @Override
-    public void addShareFile(JSONObject jsonObject, String email, MultipartFile file, String[] roles) {
-        String uuid = UUID.randomUUID().toString();
-        String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
-        LocalUploadUtil.uploadAvatar(basedir + "other\\avatar\\" + uuid + "." + suffix, file);
+    public void addShareFile(JSONObject jsonObject, String email, MultipartFile file) {
         FileMeta fileMeta = jsonObject.getObject("meta", FileMeta.class);
         ShareFile shareFile = jsonObject.getObject("fileInfo", ShareFile.class);
         String meta = fileMetaMapper.addFileMeta(fileMeta);
@@ -56,12 +53,15 @@ public class ShareFileServiceImpl implements ShareFileService {
         shareFile.setCreator(email);
         shareFile.setDownload(0);
         shareFile.setWatch(0);
-        shareFile.setAvatar("/file/avatar/" + uuid + "." + suffix);
-        if(roles[0].equals("admin")) {
-            shareFile.setStatus(1);
+        if(!file.isEmpty()) {
+            String uuid = UUID.randomUUID().toString();
+            String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
+            LocalUploadUtil.uploadAvatar(basedir + "other\\avatar\\" + uuid + "." + suffix, file);
+            shareFile.setAvatar("/file/avatar/" + uuid + "." + suffix);
         } else {
-            shareFile.setStatus(0);
+            shareFile.setAvatar("");
         }
+        shareFile.setStatus(0);
         shareFileMapper.addShareFile(shareFile);
     }
 
@@ -162,5 +162,11 @@ public class ShareFileServiceImpl implements ShareFileService {
     @Override
     public void offlineById(String id) {
         shareFileMapper.offlineById(id);
+    }
+
+    @Override
+    public List<ShareFile> deleteShareFileAsMember(String id, int size, int page, String email) {
+
+        return shareFileMapper.deleteShareFileAsMember(id, size, page * size, email);
     }
 }

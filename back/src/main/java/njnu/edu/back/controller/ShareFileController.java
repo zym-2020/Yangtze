@@ -31,54 +31,28 @@ public class ShareFileController {
     @Autowired
     ShareFileService shareFileService;
 
-    /**
-    * @Description: admin用户使用该接口，直接公开数据
-    * @Author: Yiming
-    * @Date: 2022/5/25
-    */
-
     @AuthCheck
     @RequestMapping(value = "/addShareFile", method = RequestMethod.POST)
-    public JsonResult addShareFile(@RequestParam String jsonString, @RequestParam MultipartFile file, @JwtTokenParser("email") String email, @JwtTokenParser("roles") String[] roles) {
+    public JsonResult addShareFile(@RequestParam String jsonString, @RequestParam MultipartFile file, @JwtTokenParser("email") String email) {
         JSONObject jsonObject = JSON.parseObject(jsonString);
-        shareFileService.addShareFile(jsonObject, email, file, roles);
+        shareFileService.addShareFile(jsonObject, email, file);
         return ResultUtils.success();
     }
 
-    /**
-    * @Description:admin用户使用改接口直接修改数据（不修改头像）
-    * @Author: Yiming
-    * @Date: 2022/5/25
-    */
 
     @AuthCheck
     @RequestMapping(value = "/updateShareFileNoAvatar", method = RequestMethod.PATCH)
-    public JsonResult updateShareFileNoAvatar(@RequestBody UpdateShareFileAndFileMetaDTO updateShareFileAndFileMetaDTO, @JwtTokenParser("roles") String[] roles) {
-        if(roles[0].equals("admin")) {
-            shareFileService.updateShareFileAndFileMetaNoAvatar(updateShareFileAndFileMetaDTO);
-            return ResultUtils.success();
-        } else {
-            throw new MyException(-99, "没有权限！");
-        }
-
+    public JsonResult updateShareFileNoAvatar(@RequestBody UpdateShareFileAndFileMetaDTO updateShareFileAndFileMetaDTO) {
+        shareFileService.updateShareFileAndFileMetaNoAvatar(updateShareFileAndFileMetaDTO);
+        return ResultUtils.success();
     }
-
-    /**
-     * @Description:admin用户使用该接口直接修改数据
-     * @Author: Yiming
-     * @Date: 2022/5/25
-     */
 
     @AuthCheck
     @RequestMapping(value = "/updateShareFile", method = RequestMethod.PATCH)
-    public JsonResult updateShare(@RequestParam String jsonString, @JwtTokenParser("roles") String[] roles, @RequestParam MultipartFile multipartFile) {
-        if(roles[0].equals("admin")) {
-            UpdateShareFileAndFileMetaDTO updateShareFileAndFileMetaDTO = JSONObject.parseObject(jsonString, UpdateShareFileAndFileMetaDTO.class);
-            shareFileService.updateShareFileAndFileMeta(updateShareFileAndFileMetaDTO, multipartFile);
-            return ResultUtils.success();
-        } else {
-            throw new MyException(-99, "没有权限！");
-        }
+    public JsonResult updateShare(@RequestParam String jsonString, @RequestParam MultipartFile multipartFile) {
+        UpdateShareFileAndFileMetaDTO updateShareFileAndFileMetaDTO = JSONObject.parseObject(jsonString, UpdateShareFileAndFileMetaDTO.class);
+        shareFileService.updateShareFileAndFileMeta(updateShareFileAndFileMetaDTO, multipartFile);
+        return ResultUtils.success();
     }
 
     @AuthCheck
@@ -178,6 +152,12 @@ public class ShareFileController {
     public JsonResult offlineById(@PathVariable String id) {
         shareFileService.offlineById(id);
         return ResultUtils.success();
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/deleteShareFileAsMember/{id}/{page}/{size}", method = RequestMethod.DELETE)
+    public JsonResult deleteShareFileAsMember(@PathVariable String id, @PathVariable int page, @PathVariable int size, @JwtTokenParser("email") String email) {
+        return ResultUtils.success(shareFileService.deleteShareFileAsMember(id, size, page, email));
     }
 
 }

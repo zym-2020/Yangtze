@@ -195,6 +195,7 @@ import { notice } from "@/utils/notice";
 import type { FormInstance } from "element-plus";
 import AvatarUpload from "@/components/upload/AvatarUpload.vue";
 import router from "@/router";
+import { useStore } from "@/store";
 
 export default defineComponent({
   components: { PageHeader, Editor, Toolbar, ResourceDialog, AvatarUpload },
@@ -215,6 +216,9 @@ export default defineComponent({
 
     const fileRef = ref<HTMLElement>();
     const metaRef = ref<HTMLElement>();
+    const status = ref(
+      (router.currentRoute.value.params.fileInfo as any).status
+    );
 
     const handleCreated = (editor: any) => {
       editorRef.value = editor; // 记录 editor 实例，重要！
@@ -272,53 +276,56 @@ export default defineComponent({
       await formEl1.validate(async (valid1, fields) => {
         await formEl2.validate(async (valid2) => {
           if (valid1 && valid2) {
-            const jsonData = {
-              id: router.currentRoute.value.params.id,
-              provider: metaForm.provider,
-              time: metaForm.time,
-              range: metaForm.range,
-              detail: metaForm.valueHtml,
-              type: metaForm.type,
-              providerPhone: metaForm.phone,
-              providerEmail: metaForm.email,
-              providerAddress: metaForm.address,
-              getOnline: metaForm.getMode === "在线获取" ? true : false,
-              name: form.name,
-              description: form.description,
-              originName: form.origin.name,
-              structuredName: form.struct.name,
-              visualName: form.visual.name,
-              originAddress: form.origin.address,
-              visualSource: "",
-              visualType: "",
-              structuredSource: "",
-              tags: form.tagList,
-              avatar: form.avatar,
-            };
-            if (updateAvatarFlag.value) {
-              delete jsonData.avatar;
-              const formData = new FormData();
-              formData.append("jsonString", JSON.stringify(jsonData));
-              formData.append("multipartFile", form.avatar);
-              const data = await updateShareFile(formData);
-              if (data != null) {
-                if ((data as any).code === 0) {
-                  notice("success", "成功", "更新成功!");
-                } else if ((data as any).code === -99) {
-                  notice("warning", "警告", "您没有权限！");
-                } else {
-                  notice("error", "错误", "数据公布错误!");
+            if (status.value === 1) {
+            } else if (status.value === -1) {
+              const jsonData = {
+                id: router.currentRoute.value.params.id,
+                provider: metaForm.provider,
+                time: metaForm.time,
+                range: metaForm.range,
+                detail: metaForm.valueHtml,
+                type: metaForm.type,
+                providerPhone: metaForm.phone,
+                providerEmail: metaForm.email,
+                providerAddress: metaForm.address,
+                getOnline: metaForm.getMode === "在线获取" ? true : false,
+                name: form.name,
+                description: form.description,
+                originName: form.origin.name,
+                structuredName: form.struct.name,
+                visualName: form.visual.name,
+                originAddress: form.origin.address,
+                visualSource: "",
+                visualType: "",
+                structuredSource: "",
+                tags: form.tagList,
+                avatar: form.avatar,
+              };
+              if (updateAvatarFlag.value) {
+                delete jsonData.avatar;
+                const formData = new FormData();
+                formData.append("jsonString", JSON.stringify(jsonData));
+                formData.append("multipartFile", form.avatar);
+                const data = await updateShareFile(formData);
+                if (data != null) {
+                  if ((data as any).code === 0) {
+                    notice("success", "成功", "更新成功!");
+                  } else if ((data as any).code === -99) {
+                    notice("warning", "警告", "您没有权限！");
+                  } else {
+                    notice("error", "错误", "数据公布错误!");
+                  }
                 }
-              }
-            } else {
-              const data = await updateShareFileNoAvatar(jsonData);
-              if (data != null) {
-                if ((data as any).code === 0) {
-                  notice("success", "成功", "更新成功!");
-                } else if ((data as any).code === -99) {
-                  notice("warning", "警告", "您没有权限！");
-                } else {
-                  notice("error", "错误", "数据公布错误!");
+              } else {
+                const data = await updateShareFileNoAvatar(jsonData);
+                if (data != null) {
+                  if ((data as any).code === 0) {
+                    notice("success", "成功", "更新成功!");
+                  } else if ((data as any).code === -99) {
+                    notice("warning", "警告", "您没有权限！");
+                  } else {
+                    notice("error", "错误", "数据公布错误!");
+                  }
                 }
               }
             }
@@ -346,7 +353,15 @@ export default defineComponent({
       },
       {
         label: "基础数据",
-        options: ["水文参数数据", "三维点数据", "流场数据", "工程数据", "数模数据", "物模数据", "影像数据"],
+        options: [
+          "水文参数数据",
+          "三维点数据",
+          "流场数据",
+          "工程数据",
+          "数模数据",
+          "物模数据",
+          "影像数据",
+        ],
       },
       {
         label: "辅助数据",
@@ -354,24 +369,24 @@ export default defineComponent({
       },
       {
         label: "工程实施数据",
-        options: ["工程前数据", "工程后数据"]
+        options: ["工程前数据", "工程后数据"],
       },
       {
         label: "处理数据",
-        options: ["原始数据", "整合数据"]
+        options: ["原始数据", "整合数据"],
       },
       {
         label: "辅助数据",
-        options: ["PPT", "PDF", "DOC", "XLS"]
+        options: ["PPT", "PDF", "DOC", "XLS"],
       },
       {
         label: "数据库数据",
-        options: ["水文Access数据库"]
+        options: ["水文Access数据库"],
       },
       {
         label: "资源类型",
-        options: ["excel"]
-      }
+        options: ["excel"],
+      },
     ]);
 
     const form = reactive({
@@ -412,30 +427,69 @@ export default defineComponent({
         : "订单获取",
     });
 
-    watch(() => router.currentRoute.value.path, () => {
-        if(router.currentRoute.value.name === 'updateShare') {
-            form.name = (router.currentRoute.value.params.fileInfo as any).name
-            form.description = (router.currentRoute.value.params.fileInfo as any).description
-            form.tagList = (router.currentRoute.value.params.fileInfo as any).tags
-            form.origin.name = (router.currentRoute.value.params.fileInfo as any).originName
-            form.origin.address = (router.currentRoute.value.params.fileInfo as any).originAddress
-            form.struct.name = (router.currentRoute.value.params.fileInfo as any).structuredName
-            form.struct.address = (router.currentRoute.value.params.fileInfo as any).structuredSource
-            form.visual.name = (router.currentRoute.value.params.fileInfo as any).visualName
-            form.visual.address = (router.currentRoute.value.params.fileInfo as any).visualSource
-            form.avatar = (router.currentRoute.value.params.fileInfo as any).avatar
-            metaForm.provider = (router.currentRoute.value.params.fileMeta as any).provider
-            metaForm.time = (router.currentRoute.value.params.fileMeta as any).time
-            metaForm.range = (router.currentRoute.value.params.fileMeta as any).range
-            metaForm.valueHtml = (router.currentRoute.value.params.fileMeta as any).detail
-            metaForm.phone = (router.currentRoute.value.params.fileMeta as any).provider_phone
-            metaForm.email = (router.currentRoute.value.params.fileMeta as any).provider_email
-            metaForm.address = (router.currentRoute.value.params.fileMeta as any).provider_address
-            metaForm.type = (router.currentRoute.value.params.fileMeta as any).type
-            metaForm.getMode = (router.currentRoute.value.params.fileMeta as any).get_online ? "在线获取" : "订单获取"
+    watch(
+      () => router.currentRoute.value.path,
+      () => {
+        if (router.currentRoute.value.name === "updateShare") {
+          form.name = (router.currentRoute.value.params.fileInfo as any).name;
+          form.description = (
+            router.currentRoute.value.params.fileInfo as any
+          ).description;
+          form.tagList = (
+            router.currentRoute.value.params.fileInfo as any
+          ).tags;
+          form.origin.name = (
+            router.currentRoute.value.params.fileInfo as any
+          ).originName;
+          form.origin.address = (
+            router.currentRoute.value.params.fileInfo as any
+          ).originAddress;
+          form.struct.name = (
+            router.currentRoute.value.params.fileInfo as any
+          ).structuredName;
+          form.struct.address = (
+            router.currentRoute.value.params.fileInfo as any
+          ).structuredSource;
+          form.visual.name = (
+            router.currentRoute.value.params.fileInfo as any
+          ).visualName;
+          form.visual.address = (
+            router.currentRoute.value.params.fileInfo as any
+          ).visualSource;
+          form.avatar = (
+            router.currentRoute.value.params.fileInfo as any
+          ).avatar;
+          metaForm.provider = (
+            router.currentRoute.value.params.fileMeta as any
+          ).provider;
+          metaForm.time = (
+            router.currentRoute.value.params.fileMeta as any
+          ).time;
+          metaForm.range = (
+            router.currentRoute.value.params.fileMeta as any
+          ).range;
+          metaForm.valueHtml = (
+            router.currentRoute.value.params.fileMeta as any
+          ).detail;
+          metaForm.phone = (
+            router.currentRoute.value.params.fileMeta as any
+          ).provider_phone;
+          metaForm.email = (
+            router.currentRoute.value.params.fileMeta as any
+          ).provider_email;
+          metaForm.address = (
+            router.currentRoute.value.params.fileMeta as any
+          ).provider_address;
+          metaForm.type = (
+            router.currentRoute.value.params.fileMeta as any
+          ).type;
+          metaForm.getMode = (router.currentRoute.value.params.fileMeta as any)
+            .get_online
+            ? "在线获取"
+            : "订单获取";
         }
-        
-    })
+      }
+    );
 
     const validateOrigin = (rule: any, value: any, callback: any) => {
       if (value.name === "" || value.address === "") {

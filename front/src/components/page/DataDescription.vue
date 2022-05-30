@@ -53,6 +53,7 @@ export default defineComponent({
     width: 350px;
     .el-tag {
       margin-right: 5px;
+      margin-bottom: 5px;
     }
   }
 }

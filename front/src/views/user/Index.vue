@@ -6,73 +6,82 @@
           <div class="avatar">
             <el-avatar
               :size="80"
-              :src="avatarUrl === '' ? 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png' : 'http://localhost:8002' + avatarUrl"
+              :src="
+                avatarUrl === ''
+                  ? 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
+                  : 'http://localhost:8002' + avatarUrl
+              "
               fit="cover"
             />
           </div>
           <div class="userInfo" v-if="!editFlag">
-            <el-button type="primary" round @click="editFlag = true"
-              >编辑</el-button
-            >
-            <div
-              class="info"
-              v-if="
-                userInfo.name != '' &&
-                userInfo.name != undefined &&
-                userInfo.name != null
-              "
-            >
-              <div>
-                <svg style="width: 20px; height: 20px">
-                  <use xlink:href="#icon-nickname"></use>
-                </svg>
+            <div v-if="userInfo.id != ''">
+              <el-button type="primary" round @click="editFlag = true"
+                >编辑</el-button
+              >
+              <div
+                class="info"
+                v-if="
+                  userInfo.name != '' &&
+                  userInfo.name != undefined &&
+                  userInfo.name != null
+                "
+              >
+                <div>
+                  <svg style="width: 20px; height: 20px">
+                    <use xlink:href="#icon-nickname"></use>
+                  </svg>
+                </div>
+                <div class="text">{{ userInfo.name }}</div>
               </div>
-              <div class="text">{{ userInfo.name }}</div>
+              <div
+                class="info"
+                v-if="
+                  userInfo.contactEmail != '' &&
+                  userInfo.contactEmail != undefined &&
+                  userInfo.contactEmail != null
+                "
+              >
+                <div>
+                  <svg style="width: 20px; height: 20px">
+                    <use xlink:href="#icon-email"></use>
+                  </svg>
+                </div>
+                <div class="text">{{ userInfo.contactEmail }}</div>
+              </div>
+              <div
+                class="info"
+                v-if="
+                  userInfo.occupation != '' &&
+                  userInfo.occupation != undefined &&
+                  userInfo.occupation != null
+                "
+              >
+                <div>
+                  <svg style="width: 20px; height: 20px">
+                    <use xlink:href="#icon-zhiye"></use>
+                  </svg>
+                </div>
+                <div class="text">{{ userInfo.occupation }}</div>
+              </div>
+              <div
+                class="info"
+                v-if="
+                  userInfo.department != '' &&
+                  userInfo.department != undefined &&
+                  userInfo.department != null
+                "
+              >
+                <div>
+                  <svg style="width: 20px; height: 20px">
+                    <use xlink:href="#icon-company"></use>
+                  </svg>
+                </div>
+                <div class="text">{{ userInfo.department }}</div>
+              </div>
             </div>
-            <div
-              class="info"
-              v-if="
-                userInfo.contactEmail != '' &&
-                userInfo.contactEmail != undefined &&
-                userInfo.contactEmail != null
-              "
-            >
-              <div>
-                <svg style="width: 20px; height: 20px">
-                  <use xlink:href="#icon-email"></use>
-                </svg>
-              </div>
-              <div class="text">{{ userInfo.contactEmail }}</div>
-            </div>
-            <div
-              class="info"
-              v-if="
-                userInfo.occupation != '' &&
-                userInfo.occupation != undefined &&
-                userInfo.occupation != null
-              "
-            >
-              <div>
-                <svg style="width: 20px; height: 20px">
-                  <use xlink:href="#icon-zhiye"></use>
-                </svg>
-              </div>
-              <div class="text">{{ userInfo.occupation }}</div>
-            </div>
-            <div
-              class="info"
-              v-if="
-                userInfo.department != '' &&
-                userInfo.department != undefined &&
-                userInfo.department != null
-              "
-            >
-              <div>
-                <svg style="width: 20px; height: 20px">
-                  <use xlink:href="#icon-company"></use>
-                </svg>
-              </div>
-              <div class="text">{{ userInfo.department }}</div>
+            <div v-else>
+              <el-skeleton :rows="5" animated />
             </div>
           </div>
           <div v-else class="userEdit">
@@ -168,20 +177,26 @@ import UserProject from "./components/UserProject.vue";
 import { useStore } from "@/store";
 import { getUserByEmail } from "@/api/request";
 import AvatarUpload from "@/components/upload/AvatarUpload.vue";
-import UserShareFile from "./components/UserShareFile.vue"
-import UserMessage from "./components/UserMessage.vue"
+import UserShareFile from "./components/UserShareFile.vue";
+import UserMessage from "./components/UserMessage.vue";
 
 export default defineComponent({
-  components: { UserResource, UserProject, AvatarUpload, UserShareFile, UserMessage },
+  components: {
+    UserResource,
+    UserProject,
+    AvatarUpload,
+    UserShareFile,
+    UserMessage,
+  },
   setup() {
     const activeName = ref("resource");
     const store = useStore();
-    const flag = ref(false)
+    const flag = ref(false);
     const editFlag = ref(false);
-    const avatar = ref<File>()
+    const avatar = ref<File>();
     const avatarUrl = computed(() => {
-      return store.state.user.avatar
-    })
+      return store.state.user.avatar;
+    });
     const userInfo = reactive({
       id: "",
       name: "",
@@ -205,9 +220,9 @@ export default defineComponent({
     };
 
     const upload = (val: any) => {
-      avatar.value = val
-      flag.value = true
-    }
+      avatar.value = val;
+      flag.value = true;
+    };
 
     const commit = async () => {
       await store.dispatch("updateUserInfo", {
@@ -216,10 +231,10 @@ export default defineComponent({
         contactEmail: userInfo.contactEmail,
         occupation: userInfo.occupation,
         department: userInfo.department,
-        flag: flag.value
-      })
-      editFlag.value = false
-    }
+        flag: flag.value,
+      });
+      editFlag.value = false;
+    };
 
     onMounted(async () => {
       await getUserInfo();
@@ -230,7 +245,7 @@ export default defineComponent({
       editFlag,
       upload,
       commit,
-      avatarUrl
+      avatarUrl,
     };
   },
 });

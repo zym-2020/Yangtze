@@ -195,12 +195,12 @@ import { notice } from "@/utils/notice";
 import type { FormInstance } from "element-plus";
 import AvatarUpload from "@/components/upload/AvatarUpload.vue";
 import router from "@/router";
-import { useStore } from '@/store'
+import { useStore } from "@/store";
 
 export default defineComponent({
   components: { PageHeader, Editor, Toolbar, ResourceDialog, AvatarUpload },
   setup() {
-    const store = useStore()
+    const store = useStore();
     const defaultProps = {
       children: "children",
       label: "label",
@@ -216,6 +216,7 @@ export default defineComponent({
 
     const fileRef = ref<HTMLElement>();
     const metaRef = ref<HTMLElement>();
+    const avatarFlag = ref(false);
 
     const handleCreated = (editor: any) => {
       editorRef.value = editor; // 记录 editor 实例，重要！
@@ -261,7 +262,7 @@ export default defineComponent({
     };
 
     const upload = (val: any) => {
-      console.log(val);
+      avatarFlag.value = true;
       form.avatar = val;
     };
 
@@ -297,16 +298,17 @@ export default defineComponent({
             };
             const formData = new FormData();
             formData.append("jsonString", JSON.stringify(jsonData));
-            formData.append("file", form.avatar);
+            if (avatarFlag.value) {
+              formData.append("file", form.avatar);
+            } else {
+              formData.append("file", new Blob());
+            }
+
             const data = await addShareFile(formData);
             if (data != null) {
               if ((data as any).code === 0) {
-                if(store.state.user.roles[0] === 'admin') {
-                  notice("success", "成功", "公布成功!");
-                } else {
-                  notice("success", "成功", "请等待管理员审核通过！")
-                }
-                
+                notice("success", "成功", "请等待管理员审核通过！");
+
                 // init();
               } else {
                 notice("error", "错误", "数据公布错误!");

@@ -187,6 +187,10 @@ export async function offlineById(id: string) {
     return await patch(`/share/offlineById/${id}`)
 }
 
+export async function deleteShareFileAsMember(id: string, page: number, size: number) {
+    return await del(`/share/deleteShareFileAsMember/${id}/${page}/${size}`)
+}
+
 //========================fileMeta相关接口=================================
 export async function getFileMetaById(id: string) {
     return await get(`/fileMeta/getFileMetaById/${id}`)

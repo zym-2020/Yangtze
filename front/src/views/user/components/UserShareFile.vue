@@ -3,7 +3,7 @@
     <el-scrollbar height="80vh" :always="false" v-if="fileList.length > 0">
       <div v-for="(item, index) in fileList" :key="index">
         <div class="card">
-          <data-card :fileInfo="item">
+          <data-card :fileInfo="item" @clickName="toShareFile(index)">
             <template #status>
               <div v-if="item.status === 1" class="online">
                 <el-tag type="success">Online</el-tag>
@@ -65,7 +65,11 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
-import { pageQueryByEmail, offlineById } from "@/api/request";
+import {
+  pageQueryByEmail,
+  offlineById,
+  deleteShareFileAsMember,
+} from "@/api/request";
 import { notice } from "@/utils/notice";
 import DataCard from "@/components/cards/DataCard.vue";
 import { ElMessageBox } from "element-plus";
@@ -77,7 +81,7 @@ export default defineComponent({
     const total = ref(0);
     const currentPage = ref(1);
 
-    const operate = (number: number, info: any) => {
+    const operate = async (number: number, info: any) => {
       if (number === 1) {
         router.push({
           name: "updateShare",
@@ -108,10 +112,31 @@ export default defineComponent({
             }
           })
           .catch(() => {});
+      } else if (number === 3) {
+      } else if (number === 4) {
+        const data = await deleteShareFileAsMember(
+          info.id,
+          currentPage.value - 1,
+          10
+        );
+        if ((data as any).code === 0) {
+          fileList.value = data.data;
+          notice("success", "成功", "删除成功！");
+        }
       }
     };
 
     const currentChange = () => {};
+
+    const toShareFile = (index: number) => {
+      router.push({
+        name: "shareFile",
+        params: {
+          id: fileList.value[index].id,
+          fileInfo: JSON.stringify(fileList.value[index]),
+        },
+      });
+    };
 
     onMounted(async () => {
       const data = await pageQueryByEmail(0, 10);
@@ -131,6 +156,7 @@ export default defineComponent({
       total,
       currentPage,
       currentChange,
+      toShareFile,
     };
   },
 });
@@ -146,6 +172,7 @@ export default defineComponent({
     border-radius: 6px;
     margin-bottom: 10px;
     padding: 10px;
+    cursor: pointer;
     .online,
     .offline {
       margin-left: 10px;
