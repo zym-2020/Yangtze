@@ -31,11 +31,15 @@ public interface ShareFileMapper {
 
     List<ShareFile> fuzzyQueryClassifyASC(@Param("size") int size, @Param("start") int start, @Param("property") String property, @Param("keyWord") String keyWord, @Param("tags") String[] tags);
 
+    List<ShareFile> pageQueryByEmail(@Param("email") String email, @Param("start") int start, @Param("size") int size);
+
     int countAll();
 
     int countFuzzyQuery(@Param("keyWord") String keyWord);
 
     int countFuzzyQueryClassify(@Param("keyWord") String keyWord, @Param("tags") String[] tags);
+
+    int countPageQueryByEmail(@Param("email") String email);
 
     ShareFile getShareFileById(@Param("id") String id);
 
@@ -50,4 +54,6 @@ public interface ShareFileMapper {
     List<Map<String, Object>> deleteShareFileById(@Param("id") String id, @Param("size") int size, @Param("start") int start, @Param("property") String property, @Param("keyWord") String keyWord);
 
     void updateStatusById(@Param("id") String id, @Param("status") int status);
+
+    void offlineById(@Param("id") String id);
 }

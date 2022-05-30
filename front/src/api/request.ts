@@ -161,6 +161,10 @@ export async function fuzzyQueryClassify(jsonData: FuzzyQueryClassifyJsonData) {
     return await post(`/share/fuzzyQueryClassify`, jsonData)
 }
 
+export async function pageQueryByEmail(page: number, size: number) {
+    return await get(`/share/pageQueryByEmail/${page}/${size}`)
+}
+
 //这里懒得写了，字段太多
 export async function updateShareFileNoAvatar(jsonData: any) {
     return await patch(`/share/updateShareFileNoAvatar`, jsonData)
@@ -177,6 +181,10 @@ export async function deleteShareFileById(jsonData: DeleteShareFileByIdJsonDaya)
 
 export async function updateStatusById(jsonData: UpdateStatusByIdJsonData) {
     return await patch(`/share/updateStatusById`, jsonData)
+}
+
+export async function offlineById(id: string) {
+    return await patch(`/share/offlineById/${id}`)
 }
 
 //========================fileMeta相关接口=================================

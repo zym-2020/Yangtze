@@ -195,10 +195,12 @@ import { notice } from "@/utils/notice";
 import type { FormInstance } from "element-plus";
 import AvatarUpload from "@/components/upload/AvatarUpload.vue";
 import router from "@/router";
+import { useStore } from '@/store'
 
 export default defineComponent({
   components: { PageHeader, Editor, Toolbar, ResourceDialog, AvatarUpload },
   setup() {
+    const store = useStore()
     const defaultProps = {
       children: "children",
       label: "label",
@@ -259,9 +261,9 @@ export default defineComponent({
     };
 
     const upload = (val: any) => {
-      console.log(val)
-      form.avatar  = val
-    }
+      console.log(val);
+      form.avatar = val;
+    };
 
     const commit = async (
       formEl1: FormInstance | undefined,
@@ -293,16 +295,19 @@ export default defineComponent({
                 tags: form.tagList,
               },
             };
-            const formData = new FormData()
-            formData.append("jsonString", JSON.stringify(jsonData))
-            formData.append("file", form.avatar)
+            const formData = new FormData();
+            formData.append("jsonString", JSON.stringify(jsonData));
+            formData.append("file", form.avatar);
             const data = await addShareFile(formData);
             if (data != null) {
               if ((data as any).code === 0) {
-                notice("success", "成功", "公布成功!");
-                init();
-              } else if ((data as any).code === -99) {
-                notice("warning", "警告", "您没有权限！");
+                if(store.state.user.roles[0] === 'admin') {
+                  notice("success", "成功", "公布成功!");
+                } else {
+                  notice("success", "成功", "请等待管理员审核通过！")
+                }
+                
+                // init();
               } else {
                 notice("error", "错误", "数据公布错误!");
               }
@@ -351,7 +356,15 @@ export default defineComponent({
       },
       {
         label: "基础数据",
-        options: ["水文参数数据", "三维点数据", "流场数据", "工程数据", "数模数据", "物模数据", "影像数据"],
+        options: [
+          "水文参数数据",
+          "三维点数据",
+          "流场数据",
+          "工程数据",
+          "数模数据",
+          "物模数据",
+          "影像数据",
+        ],
       },
       {
         label: "辅助数据",
@@ -359,24 +372,24 @@ export default defineComponent({
       },
       {
         label: "工程实施数据",
-        options: ["工程前数据", "工程后数据"]
+        options: ["工程前数据", "工程后数据"],
       },
       {
         label: "处理数据",
-        options: ["原始数据", "整合数据"]
+        options: ["原始数据", "整合数据"],
       },
       {
         label: "辅助数据",
-        options: ["PPT", "PDF", "DOC", "XLS"]
+        options: ["PPT", "PDF", "DOC", "XLS"],
       },
       {
         label: "数据库数据",
-        options: ["水文Access数据库"]
+        options: ["水文Access数据库"],
       },
       {
         label: "资源类型",
-        options: ["excel"]
-      }
+        options: ["excel"],
+      },
     ]);
 
     const form = reactive({
@@ -395,7 +408,7 @@ export default defineComponent({
         name: "",
         address: "",
       },
-      avatar: ''
+      avatar: "",
     });
 
     const metaForm = reactive({
@@ -443,11 +456,16 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      if(router.currentRoute.value.params.originFileAddress != undefined && router.currentRoute.value.params.originFileName != undefined) {
-        form.origin.name = router.currentRoute.value.params.originFileName as string
-        form.origin.address = router.currentRoute.value.params.originFileAddress as string
+      if (
+        router.currentRoute.value.params.originFileAddress != undefined &&
+        router.currentRoute.value.params.originFileName != undefined
+      ) {
+        form.origin.name = router.currentRoute.value.params
+          .originFileName as string;
+        form.origin.address = router.currentRoute.value.params
+          .originFileAddress as string;
       }
-    })
+    });
 
     return {
       form,
@@ -468,7 +486,7 @@ export default defineComponent({
       metaRules,
       fileRef,
       metaRef,
-      upload
+      upload,
     };
   },
 });

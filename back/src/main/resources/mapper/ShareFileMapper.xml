@@ -39,7 +39,7 @@
     </select>
 
     <select id="fuzzyQueryASC" resultMap="ShareFileResultMap">
-        select * from share_files where name like #{keyWord} and status = 1order by ${property} asc limit #{size} offset #{start};
+        select * from share_files where name like #{keyWord} and status = 1 order by ${property} asc limit #{size} offset #{start};
     </select>
 
     <select id="fuzzyQueryClassifyDESC" resultMap="ShareFileResultMap">
@@ -60,6 +60,10 @@
         limit #{size} offset #{start};
     </select>
 
+    <select id="pageQueryByEmail" resultMap="ShareFileResultMap">
+        select * from share_files where (status = 1 or status = -1) and creator = #{email} order by update_time asc limit #{size} offset #{start};
+    </select>
+
     <select id="countFuzzyQuery" resultType="java.lang.Integer">
         select count(*) from share_files where name like #{keyWord} and status = 1;
     </select>
@@ -70,9 +74,13 @@
 
     <select id="countFuzzyQueryClassify" resultType="java.lang.Integer">
         select count(*) from (
-                             select * from share_files where tags @> #{tags}::text[] and status = 1;
+                             select * from share_files where tags @> #{tags}::text[] and status = 1
                                  ) as t
         where t.name like #{keyWord};
+    </select>
+
+    <select id="countPageQueryByEmail" resultType="java.lang.Integer">
+        select count(*) from share_files where status = 1 and creator = #{email};
     </select>
 
     <select id="getShareFileById" resultMap="ShareFileResultMap">
@@ -134,4 +142,7 @@
         update share_files set status = #{status} where id::text = #{id};
     </update>
 
+    <update id="offlineById">
+        update share_files set status = -1 where id::text = #{id};
+    </update>
 </mapper>

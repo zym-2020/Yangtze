@@ -45,7 +45,7 @@ public class ShareFileServiceImpl implements ShareFileService {
     String basedir;
 
     @Override
-    public void addShareFile(JSONObject jsonObject, String email, MultipartFile file) {
+    public void addShareFile(JSONObject jsonObject, String email, MultipartFile file, String[] roles) {
         String uuid = UUID.randomUUID().toString();
         String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
         LocalUploadUtil.uploadAvatar(basedir + "other\\avatar\\" + uuid + "." + suffix, file);
@@ -57,6 +57,11 @@ public class ShareFileServiceImpl implements ShareFileService {
         shareFile.setDownload(0);
         shareFile.setWatch(0);
         shareFile.setAvatar("/file/avatar/" + uuid + "." + suffix);
+        if(roles[0].equals("admin")) {
+            shareFile.setStatus(1);
+        } else {
+            shareFile.setStatus(0);
+        }
         shareFileMapper.addShareFile(shareFile);
     }
 
@@ -122,6 +127,14 @@ public class ShareFileServiceImpl implements ShareFileService {
     }
 
     @Override
+    public Map<String, Object> pageQueryByEmail(String email, int page, int size) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("total", shareFileMapper.countPageQueryByEmail(email));
+        result.put("list", shareFileMapper.pageQueryByEmail(email, page * size, size));
+        return result;
+    }
+
+    @Override
     public void updateShareFileAndFileMetaNoAvatar(UpdateShareFileAndFileMetaDTO updateShareFileAndFileMetaDTO) {
         shareFileMapper.updateFileInfoAndFileMeta(updateShareFileAndFileMetaDTO);
     }
@@ -144,5 +157,10 @@ public class ShareFileServiceImpl implements ShareFileService {
     @Override
     public void updateStatusById(String id, int status) {
         shareFileMapper.updateStatusById(id, status);
+    }
+
+    @Override
+    public void offlineById(String id) {
+        shareFileMapper.offlineById(id);
     }
 }

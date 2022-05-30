@@ -40,13 +40,9 @@ public class ShareFileController {
     @AuthCheck
     @RequestMapping(value = "/addShareFile", method = RequestMethod.POST)
     public JsonResult addShareFile(@RequestParam String jsonString, @RequestParam MultipartFile file, @JwtTokenParser("email") String email, @JwtTokenParser("roles") String[] roles) {
-        if(roles[0].equals("admin")) {
-            JSONObject jsonObject = JSON.parseObject(jsonString);
-            shareFileService.addShareFile(jsonObject, email, file);
-            return ResultUtils.success();
-        } else {
-            throw new MyException(-99, "没有权限！");
-        }
+        JSONObject jsonObject = JSON.parseObject(jsonString);
+        shareFileService.addShareFile(jsonObject, email, file, roles);
+        return ResultUtils.success();
     }
 
     /**
@@ -139,6 +135,12 @@ public class ShareFileController {
     }
 
     @AuthCheck
+    @RequestMapping(value = "/pageQueryByEmail/{page}/{size}", method = RequestMethod.GET)
+    public JsonResult pageQueryByEmail(@JwtTokenParser("email") String email, @PathVariable int page, @PathVariable int size) {
+        return ResultUtils.success(shareFileService.pageQueryByEmail(email, page, size));
+    }
+
+    @AuthCheck
     @RequestMapping(value = "/deleteShareFileById", method = RequestMethod.DELETE)
     public JsonResult deleteShareFileById(@RequestBody JSONObject jsonObject, @JwtTokenParser("roles") String[] roles) {
         if(roles[0].equals("admin")) {
@@ -154,6 +156,12 @@ public class ShareFileController {
 
     }
 
+    /**
+    * @Description:admin权限接口，修改资源条目状态
+    * @Author: Yiming
+    * @Date: 2022/5/30
+    */
+
     @AuthCheck
     @RequestMapping(value = "/updateStatusById", method = RequestMethod.PATCH)
     public JsonResult updateStatusById(@RequestBody JSONObject jsonObject, @JwtTokenParser("roles") String[] roles) {
@@ -163,6 +171,13 @@ public class ShareFileController {
         } else {
             throw new MyException(-99, "没有权限！");
         }
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/offlineById/{id}", method = RequestMethod.PATCH)
+    public JsonResult offlineById(@PathVariable String id) {
+        shareFileService.offlineById(id);
+        return ResultUtils.success();
     }
 
 }
