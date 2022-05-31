@@ -114,15 +114,23 @@ export default defineComponent({
           .catch(() => {});
       } else if (number === 3) {
       } else if (number === 4) {
-        const data = await deleteShareFileAsMember(
-          info.id,
-          currentPage.value - 1,
-          10
-        );
-        if ((data as any).code === 0) {
-          fileList.value = data.data;
-          notice("success", "成功", "删除成功！");
-        }
+        ElMessageBox.confirm("您确定要删除该条目吗？", "警告", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        })
+          .then(async () => {
+            const data = await deleteShareFileAsMember(
+              info.id,
+              currentPage.value - 1,
+              10
+            );
+            if ((data as any).code === 0) {
+              fileList.value = data.data;
+              notice("success", "成功", "删除成功！");
+            }
+          })
+          .catch(() => {});
       }
     };
 

@@ -175,13 +175,17 @@ export default defineComponent({
     const dblclick = async (row: any) => {
       if (row.folder) {
         const dataList = await findByParentId(row.id);
-        tableData.value = dataList.data;
-        path.value.push({
-          name: row.name,
-          parentId: row.parent_id,
-          id: row.id,
-        });
-        level.value = level.value + 1;
+        if (dataList != null) {
+          if ((dataList as any).code === 0) {
+            tableData.value = dataList.data;
+            path.value.push({
+              name: row.name,
+              parentId: row.parent_id,
+              id: row.id,
+            });
+            level.value = level.value + 1;
+          }
+        }
       }
     };
 
@@ -203,8 +207,9 @@ export default defineComponent({
     };
 
     const createFolder = async (val: string) => {
+      const uid = uuid()
       const data = await addFile({
-        id: uuid(),
+        id: uid,
         name: val,
         address: "",
         fileName: "",
@@ -215,8 +220,9 @@ export default defineComponent({
         folder: true,
       });
       dialogCreateFolder.value = false;
-      if ((data as any).code === 0) {
+      if (data != null && (data as any).code === 0) {
         tableData.value.push({
+          id: uid,
           name: val,
           level: level.value,
           parentId:

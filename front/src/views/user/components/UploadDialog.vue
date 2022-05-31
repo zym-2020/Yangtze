@@ -102,6 +102,7 @@ import { genFileId, UploadFile } from "element-plus";
 import type { UploadInstance, UploadRawFile } from "element-plus";
 import { notice } from "@/utils/notice";
 import JSZip from "jszip";
+import { getFileSize } from '@/utils/common'
 import {
   createFileChunk,
   getFileMd5,
@@ -237,6 +238,7 @@ export default defineComponent({
       } else {
         getFileMd5(uploadFile.value[0].raw as File, async (md5: string) => {
           const fileChunk = createFileChunk(uploadFile.value[0].raw as File);
+          
           const chunkList = await getNoUpload({
             MD5: md5,
             total: fileChunk.length,
@@ -246,6 +248,7 @@ export default defineComponent({
               level: props.level as number,
               parentId: props.parentId as string,
               meta: "",
+              size: getFileSize((uploadFile.value[0].size) as number)
             },
           });
           if (chunkList != null && (chunkList as any).code === 0) {

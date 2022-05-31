@@ -24,7 +24,6 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
                     store.state.permission.addRouters.forEach(item => {
                         router.addRoute(item)
                     })
-                    console.log(router.getRoutes())
                     next({ ...to, replace: true })
                     NProgress.done()
 
@@ -48,7 +47,6 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
         }
     } else {
         if (to.path === '/login' || to.path === '/register' || to.path === '/') {
-
             next()
             NProgress.done
         } else {
@@ -56,6 +54,6 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
             NProgress.done
         }
     }
-
+    NProgress.done()
 
 })

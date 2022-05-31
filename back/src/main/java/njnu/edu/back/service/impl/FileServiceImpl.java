@@ -89,6 +89,7 @@ public class FileServiceImpl implements FileService {
         int level = metaData.getInt("level");
         String parentId = metaData.getStr("parentId");
         String meta = metaData.getStr("meta");
+        String size = metaData.getStr("size");
         String suffix = name.substring(name.lastIndexOf(".") + 1);
         String from = basedir + email + "\\temp\\" + MD5;
         String to = basedir + email + "\\upload\\" + uuid + "." + suffix;
@@ -101,7 +102,7 @@ public class FileServiceImpl implements FileService {
                 int state = LocalUploadUtil.merge(from, to, total);
                 if(state == 1) {
                     redisService.set(key, 1, 24*60*3l);
-                    AddFileDTO addFileDTO = new AddFileDTO(uuid, name, to, uuid + "." + suffix, level, parentId, email, meta, false);
+                    AddFileDTO addFileDTO = new AddFileDTO(uuid, name, to, uuid + "." + suffix, level, parentId, email, meta, false, size);
                     fileMapper.addFile(addFileDTO);
                 } else {
                     redisService.set(key, -1, 24*60*3l);

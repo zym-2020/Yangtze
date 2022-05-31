@@ -9,7 +9,7 @@
       共享此文件
     </div>
     <div class="context" v-if="!instance.folder">解压</div>
-    <div class="context">权限管理</div>
+
     <div class="context">属性</div>
   </div>
 </template>

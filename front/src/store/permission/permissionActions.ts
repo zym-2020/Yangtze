@@ -17,7 +17,6 @@ export type Actions = {
 export const permissionActions: ActionTree<PermissionState, RootState> & Actions = {
     generateRoutes({ commit }: AugmentedActionContext, roles: string[]) {
         const temp = JSON.parse(JSON.stringify(asyncRouters))
-        console.log(temp, asyncRouters)
         const result = filterAsyncRoutes(asyncRouters, roles)
         commit('SET_ROUTERS', result)
     },

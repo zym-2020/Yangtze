@@ -102,5 +102,6 @@ export interface GetNoUploadJsonData {
         level: number
         parentId: string
         meta: string
+        size?: string
     }
 }
