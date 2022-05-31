@@ -24,6 +24,7 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
                     store.state.permission.addRouters.forEach(item => {
                         router.addRoute(item)
                     })
+                    console.log(router.getRoutes())
                     next({ ...to, replace: true })
                     NProgress.done()
 
