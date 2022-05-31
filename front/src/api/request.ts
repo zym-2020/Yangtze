@@ -211,3 +211,8 @@ export async function getDownloadURL(id: string) {
 export async function pageQueryDownloadHistory(size: number, page: number, id: string) {
     return await get(`/downloadHistory/pageQuery/${id}/${size}/${page}`)
 }   
+
+//========================browseHistory相关接口=================================
+export async function getDataGroup(dataId: string, number: number) {
+    return await get(`/browseHistory/getDataGroup/${dataId}/${number}`)
+}

@@ -35,4 +35,10 @@ public class BrowseHistoryController {
         browseHistoryService.addHistory(browseHistory);
         return ResultUtils.success();
     }
+
+    @AuthCheck
+    @RequestMapping(value = "/getDataGroup/{dataId}/{number}", method = RequestMethod.GET)
+    public JsonResult getDataGroup(@PathVariable String dataId, @PathVariable int number) {
+        return ResultUtils.success(browseHistoryService.getDataGroupByDate(dataId, number));
+    }
 }

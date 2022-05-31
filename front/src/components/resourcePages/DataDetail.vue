@@ -168,7 +168,7 @@
             >{{ date(fileInfo.createTime) }} 创建</el-divider
           >
         </div>
-        <div class="history">
+        <!-- <div class="history">
           <div class="divider">
             <div class="mark"></div>
             <div class="text"><strong>修改历史</strong></div>
@@ -180,7 +180,7 @@
             更新次数：11
             <span style="color: #94bddb; cursor: pointer">查看</span>
           </div>
-        </div>
+        </div> -->
         <div class="explain">
           <div class="divider">
             <div class="mark"></div>

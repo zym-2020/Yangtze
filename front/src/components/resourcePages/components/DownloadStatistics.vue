@@ -31,30 +31,28 @@
           small
           background
           layout="prev, pager, next"
-          :total="50"
+          :total="total"
+          :hide-on-single-page="true"
         />
       </div>
     </div>
-    <div class="right">
+    <!-- <div class="right">
       <div ref="chart" class="chart"></div>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref } from "vue";
 import { dateFormat, getLastOrNextFewDateBy } from "@/utils/common";
+import { pageQueryDownloadHistory } from "@/api/request";
+import router from '@/router'
 import * as echarts from "echarts";
 export default defineComponent({
-  props: {
-    downloadData: {
-      type: Object,
-    },
-  },
-  setup(props) {
-    const tableData = computed(() => {
-      return props.downloadData;
-    });
+
+  setup() {
+    const tableData = ref<any[]>([])
+    const total = ref(0)
     const chart = ref<HTMLElement>();
     const chartInit = () => {
       const option = {
@@ -83,23 +81,23 @@ export default defineComponent({
         },
         xAxis: {
           type: "category",
-          data: getLastOrNextFewDateBy(-6),
+          data: getLastOrNextFewDateBy(new Date().toLocaleDateString(), -10),
         },
         series: [
           {
             name: "原始数据",
             type: "bar",
-            data: [18203, 23489, 29034, 104970, 131744, 630230],
+            data: [18203, 23489, 29034, 104970, 131744, 630230, 630230, 630230, 630230, 630230],
           },
           {
             name: "整合数据",
             type: "bar",
-            data: [19325, 23438, 31000, 121594, 134141, 681807],
+            data: [19325, 23438, 31000, 121594, 134141, 681807, 630230, 630230, 630230, 630230],
           },
           {
             name: "可视化数据",
             type: "bar",
-            data: [19325, 23438, 31000, 121594, 134141, 681807],
+            data: [19325, 23438, 31000, 121594, 134141, 681807, 630230, 630230, 630230, 630230],
           },
         ],
         dataZoom: [
@@ -118,6 +116,17 @@ export default defineComponent({
       });
       myChart.setOption(option);
     };
+
+    const initData = async () => {
+      const data = await pageQueryDownloadHistory(10, 0, (router.currentRoute.value.params as any).id)
+      if(data != null) {
+        if((data as any).code === 0) {
+          tableData.value = data.data.list
+          total.value = data.data.total
+        }
+      }
+    }
+
     const date = (time: string) => {
       return dateFormat(time);
     };
@@ -138,8 +147,9 @@ export default defineComponent({
       }
     };
 
-    onMounted(() => {
-      chartInit();
+    onMounted(async () => {
+      await initData()
+      // chartInit();
     });
 
     return {
@@ -148,6 +158,7 @@ export default defineComponent({
       avatar,
       tableData,
       chart,
+      total
     };
   },
 });
@@ -157,7 +168,7 @@ export default defineComponent({
 .download-statistics {
   display: flex;
   .left {
-    width: 800px;
+    width: 1250px;
     .page {
       margin-top: 40px;
       width: 100%;

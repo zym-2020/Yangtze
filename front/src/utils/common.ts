@@ -78,23 +78,26 @@ export const generateColorByText = (text: string) => {
   return '#' + tmp
 }
 
-export function getLastOrNextFewDateBy(number: number) {
-  function fun_date(aa: number) {
-    var date1 = new Date(),
-      time1 = date1.getFullYear() + "-" + (date1.getMonth() + 1) + "-" + date1.getDate();//time1表示当前时间
-    var date2 = new Date(date1);
-    date2.setDate(date1.getDate() + aa);
-    var time2 = (date2.getMonth() + 1) + "-" + date2.getDate();
-    return time2
-  }
+export function getLastOrNextFewDateBy(date: string, day: number) {
+
+  function getNextDate(date: string, day: number) {
+    var dd = new Date(date);
+    dd.setDate(dd.getDate() + day);
+    var y = dd.getFullYear();
+    var m = dd.getMonth() + 1 < 10 ? "0" + (dd.getMonth() + 1) : dd.getMonth() + 1;
+    var d = dd.getDate() < 10 ? "0" + dd.getDate() : dd.getDate();
+    return y + "-" + m + "-" + d;
+  };
+
+
   const timeList = []
-  if(number < 0) {
-    for(let i = 0; i > number; i--) {
-      timeList.push(fun_date(i))
+  if (day < 0) {
+    for (let i = 0; i > day; i--) {
+      timeList.push(getNextDate(date, i))
     }
   } else {
-    for(let i = 0; i < number; i++) {
-      timeList.push(fun_date(i))
+    for (let i = 0; i < day; i++) {
+      timeList.push(getNextDate(date, i))
     }
   }
   return timeList
