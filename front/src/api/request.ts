@@ -1,5 +1,5 @@
 import { get, post, del, patch } from './axios'
-import { RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData, MergeFileJsonData, AddFileJsonData, RenameJsonData, SetUserInfoWithoutAvatarJsonData } from './type/userType'
+import { RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData, MergeFileJsonData, AddFileJsonData, RenameJsonData, SetUserInfoWithoutAvatarJsonData, AddMessageJsonData } from './type/userType'
 import { ResourceState } from '@/store/resourse/resourceState'
 
 
@@ -184,4 +184,28 @@ export async function getDownloadURL(id: string) {
 //========================downloadHistory相关接口=================================
 export async function pageQueryDownloadHistory(size: number, page: number, id: string) {
     return await get(`/downloadHistory/pageQuery/${id}/${size}/${page}`)
-}   
+}
+//========================messagebox相关接口=================================
+export async function pageQuerys(property: string, flag: boolean, page: number, size: number) {
+    return await get(`/admin/message/pageQuerys/${property}/${flag}/${page}/${size}`)
+}
+
+export async function QueryByType(property: string) {
+    return await get(`/admin/message/QueryByType/${property}`)
+}
+
+export async function QueryByUser(property: string, type: string) {
+    return await get(`/admin/message/QueryByUser/${property}/${type}`)
+}
+
+export async function QueryByReceiver(property: string) {
+    return await get(`/admin/message/QueryByReceiver/${property}`)
+}
+
+export async function addMessage(jsonData: AddMessageJsonData) {
+    return await post(`/admin/message/addMessage`, jsonData)
+}
+
+export async function QueryByTime(property: string) {
+    return await get(`/admin/message/QueryByTime/${property}`)
+}

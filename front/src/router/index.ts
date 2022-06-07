@@ -190,7 +190,60 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                         meta: {
                             roles: ['admin']
                         }
-                    }
+                    },
+                    {
+                        path: 'msuess',
+                        component: () => import('@/views/user/views/MsuessManage.vue'),
+                        meta: {
+                            roles: ['admin']
+                        }
+                    
+
+                    },
+                    {
+                        path: 'mfail',
+                        component: () => import('@/views/user/views/MfailManage.vue'),
+                        meta: {
+                            roles: ['admin']
+                        }
+                    
+
+                    },
+                    {
+                        path: 'mexamine',
+                        component: () => import('@/views/user/views/MexamineManage.vue'),
+                        meta: {
+                            roles: ['admin']
+                        }
+                    
+
+                    },
+                    {
+                        path: 'muploadfail',
+                        component: () => import('@/views/user/views/MuploadfailManage.vue'),
+                        meta: {
+                            roles: ['admin']
+                        }
+                    
+
+                    },
+                    {
+                        path: 'mweclome',
+                        component: () => import('@/views/user/views/MweclomeManage.vue'),
+                        meta: {
+                            roles: ['admin']
+                        }
+                    
+
+                    },                    {
+                        path: 'mdownloadfail',
+                        component: () => import('@/views/user/views/MdownloadfailManage.vue'),
+                        meta: {
+                            roles: ['admin']
+                        }
+                    
+
+                    },
                 ]
             }
         ]

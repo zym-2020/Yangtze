@@ -81,6 +81,20 @@ export interface SetUserInfoWithoutAvatarJsonData {
     department: string
 }
 
+export interface AddMessageJsonData {
+    dataName: string
+    messageType: string
+    dataUploadTime: string
+    dataExamineTime: string
+    dataCache: string,
+    messageRequest: string,
+    reply: boolean,
+    messageId: string,
+    messageSender: string,
+    messageReceiver: string,
+    messageResponse: string,
+    id: string
+}
 // export interface AddShareFileJsonData {
 //     meta: {
 //         provider: string
