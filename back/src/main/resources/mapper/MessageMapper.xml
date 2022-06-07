@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="njnu.edu.back.dao.MessageMapper">
+    <resultMap id="MessageResultMap" type="njnu.edu.back.pojo.Message">
+        <id column="id" property="id"/>
+        <result column="data_name" property="dataName"/>
+        <result column="data_upload_time" property="dataUploadTime"/>
+        <result column="data_examine_time" property="dataExamineTime"/>
+        <result column="data_cache" property="dataCache"/>
+        <result column="message_request" property="messageRequest"/>
+        <result column="reply" property="reply"/>
+        <result column="message_id" property="messageId"/>
+        <result column="message_sender" property="messageSender"/>
+        <result column="message_receiver" property="messageReceiver"/>
+        <result column="message_response" property="messageResponse"/>
+        <result column="message_type" property="messageType"/>
+
+        <!--应该与数据库字段顺序一一对应-->
+    </resultMap>
+    <insert id="addMessage" parameterType="njnu.edu.back.pojo.dto.AddMessageDTO">
+        insert into message
+        values (#{dataName}, now(), #{dataExamineTime}, #{dataCache}, #{messageRequest}, #{reply}, #{messageId}::uuid,
+                #{messageSender}, #{messageReceiver},
+                #{messageResponse}, #{messageType}, #{id});
+    </insert>
+
+
+    <select id="pageQueryDESC" resultMap="MessageResultMap">
+        select *
+        from message
+        order by ${property} desc limit #{size}
+        offset #{start};
+    </select>
+
+    <select id="pageQueryASC" resultMap="MessageResultMap">
+        select *
+        from message
+        order by ${property} asc limit #{size}
+        offset #{start};
+    </select>
+
+    <select id="QueryByType" resultMap="MessageResultMap">
+        select *
+        from message
+        where message_response = #{property};
+    </select>
+
+    <select id="QueryByUser" resultMap="MessageResultMap">
+        select name,
+        from message
+        where message_receiver = #{property}
+          and message_response = #{type};
+    </select>
+
+    <select id="QueryByReceiver" resultMap="MessageResultMap">
+        select name,
+        from message
+        where message_receiver = #{property};
+    </select>
+
+    <select id="QueryByTime" resultMap="MessageResultMap">
+        select *
+        from message
+        where data_upload_time is not null
+          and message_id::text = #{property}
+        order by data_upload_time desc limit 1;
+    </select>
+</mapper>

@@ -8,8 +8,9 @@
         :name="index"
       >
         <div v-for="(dataItem, index) in item.data" :key="index">
+        <!-- :label="dataItem.name + '（' + dataItem.count + '）'"  -->
           <el-checkbox
-            :label="dataItem.name + '（' + dataItem.count + '）'"
+            :label=dataItem.name 
             size="default"
             @change="change(dataItem)"
           />
@@ -85,14 +86,22 @@ export default defineComponent({
         ],
       },
       {
-        title: "流场数据",
+        title: "物理模型数据",
         data: [
           {
-            name: "流场矢量线数据",
+            name: "模型照片",
             count: 5,
           },
           {
-            name: "流场栅格数据",
+            name: "试验照片",
+            count: 7,
+          },
+          {
+            name: "等高线",
+            count: 7,
+          },
+          {
+            name: "长江BMP图像",
             count: 7,
           },
         ],
@@ -244,6 +253,7 @@ export default defineComponent({
     ]);
 
     const selectList = ref<any[]>([]);
+     
     const handleChange = (val: string[]) => {
       // console.log(val);
     };
@@ -264,6 +274,7 @@ export default defineComponent({
       handleChange,
       categoryList,
       change,
+      
     };
   },
 });

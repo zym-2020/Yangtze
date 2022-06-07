@@ -47,10 +47,10 @@ export default defineComponent({
 .admin {
   display: flex;
   .left {
-    width: 300px;
+    width: 200px;
   }
   .admin-main {
-    width: calc(100% - 300px);
+    width: calc(100% - 200px);
     height: calc(100vh - 60px);
     .scroll {
       max-height: 100%;

@@ -111,3 +111,34 @@ export interface AddRecordJsonData {
     fileName: string
     state: number
 }
+export interface AddMessageJsonData {
+    dataName: string
+    messageType: string
+    dataUploadTime: string
+    dataExamineTime: string
+    dataCache: string,
+    messageRequest: string,
+    reply: boolean,
+    messageId: string,
+    messageSender: string,
+    messageReceiver: string,
+    messageResponse: string,
+    id: string
+}
+// export interface AddShareFileJsonData {
+//     meta: {
+//         provider: string
+//         time: string
+//         range: string
+//         detail: string
+//     }
+//     fileInfo: {
+//         name: string
+//         description: string
+//         originAddress: string
+//         visualSource: string
+//         visualType: string
+//         structuredSource: string
+//         tags: string[]
+//     }
+// }
