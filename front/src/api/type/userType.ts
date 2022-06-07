@@ -80,7 +80,53 @@ export interface SetUserInfoWithoutAvatarJsonData {
     occupation: string
     department: string
 }
+export interface SetUserInfoWithoutAvatarJsonData {
+    name: string
+    contactEmail: string
+    occupation: string
+    department: string
+}
 
+export interface FuzzyQueryClassifyJsonData {
+    size: number
+    page: number
+    property: string
+    keyWord: string
+    flag: boolean
+    tags?: string[]
+}
+
+export interface DeleteShareFileByIdJsonDaya {
+    size: number
+    page: number
+    property: string
+    keyWord: string
+    id: string
+}
+
+export interface UpdateStatusByIdJsonData {
+    id: string
+    status: number
+}
+
+export interface GetNoUploadJsonData {
+    MD5: string
+    total: number
+    meta: {
+        name: string
+        total: number
+        level: number
+        parentId: string
+        meta: string
+        size?: string
+    }
+}
+
+export interface AddRecordJsonData {
+    id?: string
+    fileName: string
+    state: number
+}
 export interface AddMessageJsonData {
     id: string
     dataName: string
