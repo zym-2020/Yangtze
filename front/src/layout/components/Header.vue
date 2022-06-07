@@ -35,8 +35,7 @@
                     <el-dropdown-item v-if="adminFlag" command="2"
                       >admin界面</el-dropdown-item
                     >
-                    
-                    <el-dropdown-item command="3">上传记录</el-dropdown-item>
+                    <el-dropdown-item command="3">上传记录<el-badge :value="'new'" style="margin-left: 5px" v-if="dotFlag"/></el-dropdown-item>
                     <el-dropdown-item command="4">消息</el-dropdown-item>
                     <el-dropdown-item command="5">退出</el-dropdown-item>
                   </el-dropdown-menu>
