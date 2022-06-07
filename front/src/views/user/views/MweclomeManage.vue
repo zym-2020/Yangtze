@@ -177,7 +177,7 @@ li {
 }
 .grid-container {
   display: grid;
-  background: url("E:/水科院/Yangtze/front/src/assets/background.jpg") 0 0/ 100%
+  background: url("../../../assets/background.jpg") 0 0/ 100%
     100% no-repeat;
   background-size: cover;
   position: relative;
