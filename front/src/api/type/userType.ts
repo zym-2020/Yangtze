@@ -82,6 +82,7 @@ export interface SetUserInfoWithoutAvatarJsonData {
 }
 
 export interface AddMessageJsonData {
+    id: string
     dataName: string
     messageType: string
     dataUploadTime: string
@@ -89,11 +90,11 @@ export interface AddMessageJsonData {
     dataCache: string,
     messageRequest: string,
     reply: boolean,
-    messageId: string,
+    fileId: string,
     messageSender: string,
     messageReceiver: string,
     messageResponse: string,
-    id: string
+    
 }
 // export interface AddShareFileJsonData {
 //     meta: {

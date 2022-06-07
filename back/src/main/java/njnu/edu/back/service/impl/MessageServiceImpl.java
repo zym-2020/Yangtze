@@ -24,7 +24,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public void addMessage(AddMessageDTO addMessageDTO, String id) {
-        addMessageDTO.setMessageId(id);
+        addMessageDTO.setFileId(id);
         addMessageDTO.setId(UUID.randomUUID().toString());
         messageMapper.addMessage(addMessageDTO);
     }
