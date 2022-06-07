@@ -14,7 +14,7 @@
         <el-button size="small" @click="dialogCreateFolder = true"
           >创建文件夹</el-button
         >
-        <el-button size="small">刷新</el-button>
+        <el-button size="small" @click="flushed">刷新</el-button>
         <el-button type="info" size="small" @click="dialogUpload = true"
           >上传</el-button
         >
@@ -49,11 +49,7 @@
           <div style="display: flex; align-items: center" v-else>
             <svg style="width: 20px; height: 20px" @click="open">
               <use
-                :xlink:href="
-                  scope.row.folder === true
-                    ? '#icon-wenjianjia'
-                    : '#icon-wenjian'
-                "
+                :xlink:href="getIcon(scope.row.folder, scope.row.name)"
               ></use>
             </svg>
             <span style="margin-left: 10px">{{ scope.row.name }}</span>
@@ -96,6 +92,7 @@
       <upload-dialog
         :level="level"
         :parentId="path.length > 0 ? path[path.length - 1].id : '-1'"
+        @commitFile="dialogUpload = false"
       ></upload-dialog>
     </el-dialog>
 
@@ -110,13 +107,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, nextTick, onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import UserFolderContextMenu from "@/components/contextMenu/UserFolderContextMenu.vue";
 import UploadDialog from "./UploadDialog.vue";
 import FolderDialog from "./FolderDialog.vue";
 import { findByLevel, addFile, findByParentId, rename } from "@/api/request";
 import { dateFormat, uuid } from "@/utils/common";
 import { notice } from "@/utils/notice";
+import NProgress from "nprogress";
+
+NProgress.configure({ showSpinner: false });
 export default defineComponent({
   components: {
     UserFolderContextMenu,
@@ -172,8 +172,30 @@ export default defineComponent({
       document.addEventListener("click", closeMenu);
     };
 
+    const getIcon = (folder: boolean, fileName: string) => {
+      if (folder) {
+        return "#icon-wenjianjia";
+      } else {
+        const fileExtName = fileName.substring(
+          fileName.lastIndexOf("."),
+          fileName.length
+        );
+        if (
+          fileExtName === ".zip" ||
+          fileExtName === ".7z" ||
+          fileExtName === ".tar" ||
+          fileExtName === ".rar"
+        ) {
+          return "#icon-zip";
+        } else {
+          return "#icon-wenjian";
+        }
+      }
+    };
+
     const dblclick = async (row: any) => {
       if (row.folder) {
+        NProgress.start();
         const dataList = await findByParentId(row.id);
         if (dataList != null) {
           if ((dataList as any).code === 0) {
@@ -186,19 +208,22 @@ export default defineComponent({
             level.value = level.value + 1;
           }
         }
+        NProgress.done();
       }
     };
 
     const backClick = async () => {
       if (path.value.length > 0) {
+        NProgress.start();
         const dataList = await findByParentId(
           path.value[path.value.length - 1].parentId
         );
-        if (dataList != null) {
+        if (dataList != null && (dataList as any).code === 0) {
           tableData.value = dataList.data;
           path.value.pop();
           level.value = level.value - 1;
         }
+        NProgress.done();
       }
     };
 
@@ -207,9 +232,7 @@ export default defineComponent({
     };
 
     const createFolder = async (val: string) => {
-      const uid = uuid()
       const data = await addFile({
-        id: uid,
         name: val,
         address: "",
         fileName: "",
@@ -222,10 +245,10 @@ export default defineComponent({
       dialogCreateFolder.value = false;
       if (data != null && (data as any).code === 0) {
         tableData.value.push({
-          id: uid,
+          id: data.data,
           name: val,
           level: level.value,
-          parentId:
+          parent_id:
             path.value.length > 0 ? path.value[path.value.length - 1].id : "-1",
           folder: true,
           create_time: date(new Date().toString()),
@@ -270,9 +293,26 @@ export default defineComponent({
       renameId.value = "";
     };
 
+    const flushed = async () => {
+      NProgress.start();
+      let id = "";
+      if (path.value.length === 0) {
+        id = "-1";
+      } else {
+        id = path.value[path.value.length - 1].id;
+      }
+      const data = await findByParentId(id);
+      if (data != null) {
+        if ((data as any).code === 0) {
+          tableData.value = data.data;
+        }
+      }
+      NProgress.done();
+    };
+
     onMounted(async () => {
       const tableList = await findByLevel(level.value);
-      if (tableList != null) {
+      if (tableList != null && (tableList as any).code === 0) {
         tableData.value = tableList.data;
       }
     });
@@ -296,6 +336,8 @@ export default defineComponent({
       renameValue,
       blurHandle,
       enterHandle,
+      getIcon,
+      flushed,
     };
   },
 });

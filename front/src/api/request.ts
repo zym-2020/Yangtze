@@ -1,6 +1,6 @@
 import { get, post, del, patch } from './axios'
 import { RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData, AddFileJsonData, RenameJsonData, 
-    SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData, GetNoUploadJsonData } from './type/userType'
+    SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData, GetNoUploadJsonData, AddRecordJsonData } from './type/userType'
 import { ResourceState } from '@/store/resourse/resourceState'
 
 
@@ -104,8 +104,8 @@ export async function getNoUpload(jsonData: GetNoUploadJsonData) {
     return await post(`/file/getNoUpload`, jsonData)
 }
 
-export async function mergeFile(md5: string) {
-    return await post(`/file/mergeFile/${md5}`)
+export async function mergeFile(md5: string, uid: string) {
+    return await post(`/file/mergeFile/${md5}/${uid}`)
 }
 
 export async function checkMergeState(key: string) {
@@ -215,4 +215,17 @@ export async function pageQueryDownloadHistory(size: number, page: number, id: s
 //========================browseHistory相关接口=================================
 export async function getDataGroup(dataId: string, number: number) {
     return await get(`/browseHistory/getDataGroup/${dataId}/${number}`)
+}
+
+//========================uploadRecord相关接口=================================
+export async function getRecords(number: number) {
+    return await get(`/uploadRecord/getRecords/${number}`)
+}
+
+export async function delRecord(id: string) {
+    return await del(`/uploadRecord/delRecord/${id}`)
+}
+
+export async function addRecord(jsonData: AddRecordJsonData) {
+    return await post(`/uploadRecord/addRecord`, jsonData)
 }

@@ -20,6 +20,7 @@ module.exports = {
             },
         }
     },
+    
     configureWebpack: {
         plugins: [
             new CopyWebpackPlugin({

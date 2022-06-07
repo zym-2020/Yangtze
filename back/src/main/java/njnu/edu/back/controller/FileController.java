@@ -29,8 +29,7 @@ public class FileController {
     @AuthCheck
     @RequestMapping(value = "/addFile", method = RequestMethod.POST)
     public JsonResult addFile(@RequestBody AddFileDTO addFileDTO, @JwtTokenParser("email") String email) {
-        fileService.addFile(addFileDTO, email);
-        return ResultUtils.success();
+        return ResultUtils.success(fileService.addFile(addFileDTO, email));
     }
 
     @AuthCheck
@@ -41,8 +40,8 @@ public class FileController {
 
     @AuthCheck
     @RequestMapping(value = "/findByParentId/{parentId}", method = RequestMethod.GET)
-    public JsonResult findByParentId(@PathVariable String parentId) {
-        return ResultUtils.success(fileService.findByParentId(parentId));
+    public JsonResult findByParentId(@PathVariable String parentId, @JwtTokenParser("email") String email) {
+        return ResultUtils.success(fileService.findByParentId(parentId, email));
     }
 
     @AuthCheck
@@ -62,9 +61,9 @@ public class FileController {
     }
 
     @AuthCheck
-    @RequestMapping(value = "/mergeFile/{MD5}", method = RequestMethod.POST)
-    public JsonResult mergeFile(@PathVariable String MD5, @JwtTokenParser("email") String email) {
-        return ResultUtils.success(fileService.mergeFile(email, MD5));
+    @RequestMapping(value = "/mergeFile/{MD5}/{uuid}", method = RequestMethod.POST)
+    public JsonResult mergeFile(@PathVariable String MD5, @PathVariable String uuid, @JwtTokenParser("email") String email) {
+        return ResultUtils.success(fileService.mergeFile(email, MD5, uuid));
     }
 
     @AuthCheck

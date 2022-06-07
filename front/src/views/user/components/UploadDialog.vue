@@ -102,14 +102,9 @@ import { genFileId, UploadFile } from "element-plus";
 import type { UploadInstance, UploadRawFile } from "element-plus";
 import { notice } from "@/utils/notice";
 import JSZip from "jszip";
-import { getFileSize } from '@/utils/common'
-import {
-  createFileChunk,
-  getFileMd5,
-  handlePostFiles,
-  checkStatus,
-} from "@/utils/file";
-import { getNoUpload, mergeFile } from "@/api/request";
+import { uuid } from "@/utils/common";
+
+import { useStore } from "@/store";
 
 interface Tree {
   label: string;
@@ -125,7 +120,9 @@ export default defineComponent({
       type: String,
     },
   },
-  setup(props) {
+  emits: ['commitFile'],
+  setup(props, context) {
+    const store = useStore();
     const options = ref([
       { label: "地形", value: "地形" },
       { label: "水文", value: "水文" },
@@ -236,39 +233,24 @@ export default defineComponent({
       } else if (uploadFile.value.length === 0) {
         notice("warning", "警告", "请加载上传数据");
       } else {
-        getFileMd5(uploadFile.value[0].raw as File, async (md5: string) => {
-          const fileChunk = createFileChunk(uploadFile.value[0].raw as File);
-          
-          const chunkList = await getNoUpload({
-            MD5: md5,
-            total: fileChunk.length,
-            meta: {
-              name: uploadFile.value[0].name,
-              total: fileChunk.length,
-              level: props.level as number,
-              parentId: props.parentId as string,
-              meta: "",
-              size: getFileSize((uploadFile.value[0].size) as number)
-            },
+        uploadFile.value.forEach((item) => {
+          store.commit("ADD_WAIT_ITEM", {
+            id: uuid(),
+            name: item.name,
+            state: -2,
+            file: item.raw as File,
           });
-          if (chunkList != null && (chunkList as any).code === 0) {
-            await handlePostFiles(chunkList.data, fileChunk, md5);
-            if (chunkList.data.length === 0) {
-              const key = await mergeFile(md5);
-              if (key != null && (key as any).code === 0) {
-                checkStatus(key.data);
-              } else {
-                notice("error", "失败", "文件合并时出错，请重新上传");
-              }
-            }
-          } else {
-            notice(
-              "warning",
-              "警告",
-              "上传初始化失败，请检查文件及相关描述是否出错"
-            );
-          }
         });
+
+        if (!store.state.other.uploadFlag) {
+          store.dispatch("uploadFiles", {
+            level: props.level as number,
+            parentId: props.parentId as string,
+          });
+        }
+        context.emit('commitFile')
+        store.commit("SET_UPLOAD_DOT_FLAG", true)
+        
       }
     };
 

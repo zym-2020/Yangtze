@@ -10,7 +10,13 @@
     </select>
 
     <select id="findByParentId" resultType="java.util.HashMap">
-        select * from files where parent_id = #{parentId};
+        select * from files where
+        <if test="parentId != '-1'">
+            parent_id = #{parentId};
+        </if>
+        <if test="parentId == '-1'">
+            parent_id = '-1' and uploader = #{email};
+        </if>
     </select>
 
     <update id="rename">

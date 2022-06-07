@@ -290,9 +290,12 @@ export default defineComponent({
                 name: form.name,
                 description: form.description,
                 originAddress: form.origin.address,
+                originName: form.origin.name,
                 visualSource: "",
                 visualType: "",
+                visualName: '',
                 structuredSource: "",
+                structuredName: '',
                 tags: form.tagList,
               },
             };

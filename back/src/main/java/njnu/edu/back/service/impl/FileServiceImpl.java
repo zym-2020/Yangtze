@@ -7,7 +7,9 @@ import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.common.utils.LocalUploadUtil;
 import njnu.edu.back.dao.FileMapper;
 import njnu.edu.back.dao.ShareFileMapper;
+import njnu.edu.back.dao.UploadRecordMapper;
 import njnu.edu.back.pojo.File;
+import njnu.edu.back.pojo.UploadRecord;
 import njnu.edu.back.pojo.dto.AddFileDTO;
 import njnu.edu.back.service.FileService;
 import njnu.edu.back.service.RedisService;
@@ -42,13 +44,18 @@ public class FileServiceImpl implements FileService {
 
     @Autowired
     RedisService redisService;
+
+    @Autowired
+    UploadRecordMapper uploadRecordMapper;
     
 
     @Override
-    public void addFile(AddFileDTO addFileDTO, String email) {
+    public String addFile(AddFileDTO addFileDTO, String email) {
         addFileDTO.setUploader(email);
-        addFileDTO.setId(UUID.randomUUID().toString());
+        String uuid = UUID.randomUUID().toString();
+        addFileDTO.setId(uuid);
         fileMapper.addFile(addFileDTO);
+        return uuid;
     }
 
     @Override
@@ -57,8 +64,8 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public List<Map<String, Object>> findByParentId(String parentId) {
-        return fileMapper.findByParentId(parentId);
+    public List<Map<String, Object>> findByParentId(String parentId, String email) {
+        return fileMapper.findByParentId(parentId, email);
     }
 
     @Override
@@ -77,7 +84,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public String mergeFile(String email, String MD5) {
+    public String mergeFile(String email, String MD5, String uid) {
         String uuid = UUID.randomUUID().toString();
         JSONObject metaData = (JSONObject) redisService.get(MD5);
         if(metaData == null) {
@@ -104,8 +111,10 @@ public class FileServiceImpl implements FileService {
                     redisService.set(key, 1, 24*60*3l);
                     AddFileDTO addFileDTO = new AddFileDTO(uuid, name, to, uuid + "." + suffix, level, parentId, email, meta, false, size);
                     fileMapper.addFile(addFileDTO);
+                    uploadRecordMapper.addUploadRecord(new UploadRecord(uid, name, email, 1, null));
                 } else {
                     redisService.set(key, -1, 24*60*3l);
+                    uploadRecordMapper.addUploadRecord(new UploadRecord(uid, name, email, -1, null));
                 }
                 LocalUploadUtil.DeleteFolder(from);
             }

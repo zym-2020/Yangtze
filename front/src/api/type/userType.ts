@@ -105,3 +105,9 @@ export interface GetNoUploadJsonData {
         size?: string
     }
 }
+
+export interface AddRecordJsonData {
+    id?: string
+    fileName: string
+    state: number
+}

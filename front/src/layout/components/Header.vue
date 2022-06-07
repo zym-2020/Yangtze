@@ -12,16 +12,22 @@
               <a :href="port.href">{{ port.text }}</a>
             </li>
             <li v-if="login">
-              <el-dropdown trigger="click" @command="userNav">
+              <el-dropdown
+                trigger="click"
+                @command="userNav"
+                style="margin-right: 10px"
+              >
                 <div class="avatar">
-                  <el-avatar
-                    :src="
-                      avatarUrl === ''
-                        ? 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
-                        : 'http://localhost:8002' + avatarUrl
-                    "
-                    :size="40"
-                  />
+                  <el-badge :is-dot="dotFlag">
+                    <el-avatar
+                      :src="
+                        avatarUrl === ''
+                          ? 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
+                          : 'http://localhost:8002' + avatarUrl
+                      "
+                      :size="40"
+                    />
+                  </el-badge>
                 </div>
                 <template #dropdown>
                   <el-dropdown-menu>
@@ -29,7 +35,10 @@
                     <el-dropdown-item v-if="adminFlag" command="2"
                       >admin界面</el-dropdown-item
                     >
-                    <el-dropdown-item command="3">退出</el-dropdown-item>
+                    
+                    <el-dropdown-item command="3">上传记录</el-dropdown-item>
+                    <el-dropdown-item command="4">消息</el-dropdown-item>
+                    <el-dropdown-item command="5">退出</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -42,14 +51,16 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import router from "@/router";
 import { useStore } from "@/store";
 import { getToken } from "@/utils/auth";
 
 export default defineComponent({
-  setup() {
+  emits: ["openUploadList"],
+  setup(_, context) {
     const store = useStore();
+
     const login = computed(() => {
       if (getToken() === null) {
         return false;
@@ -69,14 +80,20 @@ export default defineComponent({
       });
       return flag;
     });
+    const dotFlag = computed(() => {
+      return store.state.other.uploadDotFlag;
+    });
 
     const userNav = (param: string) => {
       if (param === "1") {
         router.push({ path: "/user/space" });
       } else if (param === "2") {
         router.push({ path: "/user/admin" });
-      } else if (param === "3") {
+      } else if (param === "5") {
         store.dispatch("logout", undefined);
+      } else if (param === "3") {
+        store.commit("SET_UPLOAD_DOT_FLAG", false);
+        context.emit("openUploadList");
       }
     };
 
@@ -95,6 +112,7 @@ export default defineComponent({
     const toHome = () => {
       router.push({ path: "/" });
     };
+
     return {
       ports,
       toHome,
@@ -102,6 +120,7 @@ export default defineComponent({
       adminFlag,
       login,
       avatarUrl,
+      dotFlag,
     };
   },
 });

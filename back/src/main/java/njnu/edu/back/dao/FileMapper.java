@@ -21,7 +21,7 @@ public interface FileMapper {
 
     List<Map<String, Object>> findByLevel(@Param("level") int level, @Param("email") String email);
 
-    List<Map<String, Object>> findByParentId(@Param("parentId")String parentId);
+    List<Map<String, Object>> findByParentId(@Param("parentId")String parentId, @Param("email") String email);
 
     void rename(@Param("id") String id, @Param("name") String name);
 

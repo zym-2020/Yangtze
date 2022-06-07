@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "13304154",
+      "name": "zip",
+      "font_class": "zip",
+      "unicode": "e6be",
+      "unicode_decimal": 59070
+    },
+    {
       "icon_id": "28650242",
       "name": "投诉举报",
       "font_class": "tousujubao",

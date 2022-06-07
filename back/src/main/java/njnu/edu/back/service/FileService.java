@@ -17,17 +17,17 @@ import java.util.Map;
  */
 
 public interface FileService {
-    void addFile(AddFileDTO addFileDTO, String email);
+    String addFile(AddFileDTO addFileDTO, String email);
 
     List<Map<String, Object>> findByLevel(int level, String email);
 
-    List<Map<String, Object>> findByParentId(String parentId);
+    List<Map<String, Object>> findByParentId(String parentId, String email);
 
     List<String> getNoUpload(String MD5, String email, int total, JSONObject jsonObject);
 
     void uploadFile(MultipartFile multipartFile, String MD5, String email, String name);
 
-    String mergeFile(String email, String MD5);
+    String mergeFile(String email, String MD5, String uuid);
 
     int checkMergeState(String key);
 
