@@ -9,7 +9,7 @@
         <result column="data_cache" property="dataCache"/>
         <result column="message_request" property="messageRequest"/>
         <result column="reply" property="reply"/>
-        <result column="message_id" property="messageId"/>
+        <result column="file_id" property="fileId"/>
         <result column="message_sender" property="messageSender"/>
         <result column="message_receiver" property="messageReceiver"/>
         <result column="message_response" property="messageResponse"/>
@@ -19,9 +19,9 @@
     </resultMap>
     <insert id="addMessage" parameterType="njnu.edu.back.pojo.dto.AddMessageDTO">
         insert into message
-        values (#{dataName}, now(), #{dataExamineTime}, #{dataCache}, #{messageRequest}, #{reply}, #{messageId}::uuid,
+        values (#{id}::uuid,#{dataName}, now(), #{dataExamineTime}, #{dataCache}, #{messageRequest}, #{reply}, #{fileId},
                 #{messageSender}, #{messageReceiver},
-                #{messageResponse}, #{messageType}, #{id});
+                #{messageResponse}, #{messageType});
     </insert>
 
 
@@ -62,7 +62,7 @@
         select *
         from message
         where data_upload_time is not null
-          and message_id::text = #{property}
+          and file_id = #{property}
         order by data_upload_time desc limit 1;
     </select>
 </mapper>

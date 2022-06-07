@@ -135,8 +135,8 @@ export default defineComponent({
     const examineStatus = computed(() => {
       return (props.fileInfo as any).reply;
     });
-    const messageId = computed(() => {
-      return (props.fileInfo as any).messageId;
+    const fileId = computed(() => {
+      return (props.fileInfo as any).fileId;
     });
     const titlemessage = computed(() => {
       if (messageType.value == "success") return "恭喜您，上传资源已审核通过";
@@ -178,20 +178,21 @@ export default defineComponent({
     const createMessage = async () => {
       const uid = uuid();
       const data = await addMessage({
+        id: "84f7cc67-fbce-4837-9204-12929a1fdac5",
         dataName: "1234",
         dataUploadTime: "",
         dataExamineTime: "2012-02-25",
         dataCache: "hdfg",
         messageRequest: "fff",
         reply: true,
-        messageId: "84f7cc67-fbce-4837-9204-12929a1fdac5",
+        fileId: "84f7cc67-fbce-4837-9204-12929a1fdac5",
         messageSender: "admin",
         messageReceiver: "ddd",
         messageResponse: "examine",
         messageType: "upload",
-        id: "ddsada",
+        
       });
-      const tempData = await QueryByTime(messageId.value);
+      const tempData = await QueryByTime(fileId.value);
       if (tempData != null) {
         if ((tempData as any).code === 0) {
           fileTemp.value = tempData.data.list;
@@ -222,7 +223,7 @@ export default defineComponent({
       examineStatus,
       examineStatusCheck,
       explainMessage,
-      messageId,
+      fileId,
       createMessage,
     };
   },

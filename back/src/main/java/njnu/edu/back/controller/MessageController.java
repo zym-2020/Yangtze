@@ -27,7 +27,7 @@ public class MessageController {
 
     @RequestMapping(value = "/addMessage", method = RequestMethod.POST)
     public JsonResult addMessage(@RequestBody AddMessageDTO addMessageDTO) {
-        messageService.addMessage(addMessageDTO, addMessageDTO.getMessageId());
+        messageService.addMessage(addMessageDTO, addMessageDTO.getFileId());
         return ResultUtils.success();
 
     }

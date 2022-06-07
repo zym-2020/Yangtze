@@ -70,6 +70,12 @@ export interface SetUserInfoWithoutAvatarJsonData {
     occupation: string
     department: string
 }
+export interface SetUserInfoWithoutAvatarJsonData {
+    name: string
+    contactEmail: string
+    occupation: string
+    department: string
+}
 
 export interface FuzzyQueryClassifyJsonData {
     size: number
@@ -112,6 +118,7 @@ export interface AddRecordJsonData {
     state: number
 }
 export interface AddMessageJsonData {
+    id: string
     dataName: string
     messageType: string
     dataUploadTime: string
@@ -119,11 +126,11 @@ export interface AddMessageJsonData {
     dataCache: string,
     messageRequest: string,
     reply: boolean,
-    messageId: string,
+    fileId: string,
     messageSender: string,
     messageReceiver: string,
     messageResponse: string,
-    id: string
+    
 }
 // export interface AddShareFileJsonData {
 //     meta: {

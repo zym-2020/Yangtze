@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AddMessageDTO {
 
+        String id;
         String dataName;
         String messageType;
         String dataUploadTime;
@@ -15,10 +16,10 @@ public class AddMessageDTO {
         String dataCache;
         String MessageRequest;
         String reply;
-        String messageId;
+        String fileId;
         String messageSender;
         String messageReceiver;
         String messageResponse;
-        String id;
+
 
 }
