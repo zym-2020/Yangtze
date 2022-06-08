@@ -115,6 +115,7 @@ import { findByLevel, addFile, findByParentId, rename } from "@/api/request";
 import { dateFormat, uuid } from "@/utils/common";
 import { notice } from "@/utils/notice";
 import NProgress from "nprogress";
+import { UploadFiles, UploadFile } from "element-plus";
 
 NProgress.configure({ showSpinner: false });
 export default defineComponent({
@@ -309,6 +310,7 @@ export default defineComponent({
       }
       NProgress.done();
     };
+
 
     onMounted(async () => {
       const tableList = await findByLevel(level.value);

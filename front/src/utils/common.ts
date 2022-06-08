@@ -4,7 +4,6 @@ import mapBoxGl, { AnySourceData } from "mapbox-gl";
 import jsSHA from 'jssha';
 import Identicon from 'identicon.js';
 
-const store = useStore()
 
 interface O {
   'M+': number
@@ -129,6 +128,8 @@ interface Children {
   nodeType?: string
 }
 export const computedResource = (result: Children[]) => {
+  const store = useStore()
+
   store.state.resource.layerDataList.forEach((item) => {
     result[0].children[0].children.push({
       label: item.name,
@@ -304,6 +305,8 @@ export const computedResource = (result: Children[]) => {
 }
 
 export const mergeResource = () => {
+  const store = useStore()
+
   const arr: Resource[] = JSON.parse(JSON.stringify(store.state.resource.layerDataList))
   store.state.resource.analyse.anyArea.analysisResultList.forEach(item => {
     arr.push(item)

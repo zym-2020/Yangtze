@@ -77,24 +77,24 @@ export default defineComponent({
       maxzoom: 15,
       minzoom: 5,
     };
-    // const rasterDEM: AnySourceData = {
-    //   type: "raster",
-    //   tiles: [
-    //     "http://localhost:8002/raster/getRaster/ac430874-0fdd-4303-a3ad-d4c30448dbf0/{x}/{y}/{z}",
-    //   ],
-    //   // bounds: [120.127027, 31.161315, 121.994353, 32.023517],
-    //   maxzoom: 12,
-    // };
     const rasterDEM: AnySourceData = {
-      type: "raster-dem",
+      type: "raster",
       tiles: [
-        "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png",
+        "http://localhost:8002/raster/getRaster/ac430874-0fdd-4303-a3ad-d4c30448dbf0/{x}/{y}/{z}",
       ],
-      minzoom: 0,
-      maxzoom: 15,
-      tileSize: 256,
-      encoding: "terrarium",
+      // bounds: [120.127027, 31.161315, 121.994353, 32.023517],
+      maxzoom: 12,
     };
+    // const rasterDEM: AnySourceData = {
+    //   type: "raster-dem",
+    //   tiles: [
+    //     "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png",
+    //   ],
+    //   minzoom: 0,
+    //   maxzoom: 15,
+    //   tileSize: 256,
+    //   encoding: "terrarium",
+    // };
 
     const map = ref<mapBoxGl.Map>();
     const initMap = () => {
@@ -127,19 +127,16 @@ export default defineComponent({
                 "raster-opacity": 0.7,
               },
             },
-            // {
-            //   id: "rasterDEM",
-            //   type: "raster",
-            //   source: "rasterDEM",
-            // },
             {
               id: "rasterDEM",
-              type: "hillshade",
+              type: "raster",
               source: "rasterDEM",
-              // paint: {
-              //   "hillshade-shadow-color" : "red"
-              // }
-            }
+            },
+            // {
+            //   id: "rasterDEM",
+            //   type: "hillshade",
+            //   source: "rasterDEM",
+            // }
           ],
         },
 
