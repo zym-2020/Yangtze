@@ -1,6 +1,7 @@
 package njnu.edu.back.service;
 
 import cn.hutool.json.JSONObject;
+import com.alibaba.fastjson.JSONArray;
 import njnu.edu.back.pojo.dto.AddFileDTO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,9 +34,15 @@ public interface FileService {
 
     void rename(String id, String name);
 
-    void deleteFile(String id);
+    void deleteFilesOrFolders(JSONObject jsonObject);
 
     void getAvatar(String pictureName, HttpServletResponse response);
 
-    void deleteFolder(String id);
+    void unPack(String filePath, String parentId, int level, String email);
+
+    List<Map<String, Object>> getFolderTree(String email);
+
+    void updateParentIdAndLevel(JSONObject jsonObject);
+
+    void compressFile(JSONObject jsonObject, String email);
 }

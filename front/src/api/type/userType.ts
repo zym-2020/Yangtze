@@ -125,6 +125,30 @@ export interface AddMessageJsonData {
     messageResponse: string,
     id: string
 }
+
+export interface UnPackJsonData {
+    id: string
+    parentId: string
+    level: number
+}
+
+export interface UpdateParentIdAndLevelJsonData {
+    parentId: string
+    levelFrom: number
+    levelTo: number
+    files: string[]
+    folders: string[]
+}
+
+export interface CompressFileJsonData {
+    files: string[]
+    folders: string[]
+}
+
+export interface DeleteFilesOrFolders {
+    files : string[]
+    folders: string[]
+}
 // export interface AddShareFileJsonData {
 //     meta: {
 //         provider: string

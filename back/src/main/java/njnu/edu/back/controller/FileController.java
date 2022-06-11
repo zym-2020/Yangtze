@@ -80,9 +80,9 @@ public class FileController {
     }
 
     @AuthCheck
-    @RequestMapping(value = "/deleteFile/{id}", method = RequestMethod.DELETE)
-    public JsonResult deleteFile(@PathVariable String id) {
-        fileService.deleteFile(id);
+    @RequestMapping(value = "/deleteFilesOrFolders", method = RequestMethod.DELETE)
+    public JsonResult deleteFilesOrFolders(@RequestBody JSONObject jsonObject) {
+        fileService.deleteFilesOrFolders(jsonObject);
         return ResultUtils.success();
     }
 
@@ -93,9 +93,33 @@ public class FileController {
     }
 
     @AuthCheck
-    @RequestMapping(value = "/deleteFolder/{id}", method = RequestMethod.DELETE)
-    public JsonResult deleteFolder(@PathVariable String id) {
-        fileService.deleteFolder(id);
+    @RequestMapping(value = "/unPack", method = RequestMethod.POST)
+    public JsonResult unPack(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
+        String id = jsonObject.getStr("id");
+        String parentId = jsonObject.getStr("parentId");
+        int level = jsonObject.getInt("level");
+        fileService.unPack(id, parentId, level, email);
+        return ResultUtils.success();
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/getTree", method = RequestMethod.GET)
+    public JsonResult getTree(@JwtTokenParser("email") String email) {
+        return ResultUtils.success(fileService.getFolderTree(email));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/updateParentIdAndLevel", method = RequestMethod.POST)
+    public JsonResult updateParentIdAndLevel(@RequestBody JSONObject jsonObject) {
+
+        fileService.updateParentIdAndLevel(jsonObject);
+        return ResultUtils.success();
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/compressFile", method = RequestMethod.POST)
+    public JsonResult compressFile(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
+        fileService.compressFile(jsonObject, email);
         return ResultUtils.success();
     }
 }

@@ -27,6 +27,7 @@
       :default-sort="{ prop: 'name', order: 'ascending' }"
       @row-contextmenu="contextMenuClick"
       @cell-dblclick="dblclick"
+      @selection-change="handleChange"
       highlight-current-row
       class="table"
     >
@@ -96,12 +97,22 @@
       ></upload-dialog>
     </el-dialog>
 
+    <el-dialog v-model="moveFlag" width="500px" :show-close="false">
+      <move-dialog
+        :moveItemList="moveItemList"
+        @moveResult="moveResult"
+      ></move-dialog>
+    </el-dialog>
+
     <user-folder-context-menu
       class="user-folder-context-menu"
       v-show="folderFlag"
       :contextMenuInstance="contextMenuInstance"
+      :selectList="selectTables"
       @delSuccess="delSuccess"
       @rename="contextRename"
+      @unPack="contextUnpack"
+      @move="move"
     ></user-folder-context-menu>
   </div>
 </template>
@@ -112,10 +123,10 @@ import UserFolderContextMenu from "@/components/contextMenu/UserFolderContextMen
 import UploadDialog from "./UploadDialog.vue";
 import FolderDialog from "./FolderDialog.vue";
 import { findByLevel, addFile, findByParentId, rename } from "@/api/request";
-import { dateFormat, uuid } from "@/utils/common";
+import { dateFormat } from "@/utils/common";
 import { notice } from "@/utils/notice";
+import MoveDialog from "./MoveDialog.vue";
 import NProgress from "nprogress";
-import { UploadFiles, UploadFile } from "element-plus";
 
 NProgress.configure({ showSpinner: false });
 export default defineComponent({
@@ -123,9 +134,11 @@ export default defineComponent({
     UserFolderContextMenu,
     UploadDialog,
     FolderDialog,
+    MoveDialog,
   },
   setup() {
     const folderFlag = ref(false);
+    const moveFlag = ref(false);
     const renameId = ref("");
     const tableData = ref<any[]>([]);
     const path = ref<{ name: string; parentId: string; id: string }[]>([]);
@@ -133,6 +146,8 @@ export default defineComponent({
     const dialogCreateFolder = ref(false);
     const level = ref(0);
     const contextMenuInstance = ref({});
+    const moveItemList = ref<any[]>([]);
+    const selectTables = ref<any[]>([]);
     const renameValue = ref("");
     let oldName = "";
 
@@ -232,6 +247,11 @@ export default defineComponent({
       return dateFormat(time, "yyyy-MM-dd");
     };
 
+    const handleChange = (selection: any) => {
+      console.log(selection);
+      selectTables.value = selection;
+    };
+
     const createFolder = async (val: string) => {
       const data = await addFile({
         name: val,
@@ -259,13 +279,16 @@ export default defineComponent({
       }
     };
 
-    const delSuccess = () => {
+    const delSuccess = (val: any[]) => {
       tableData.value.forEach((item, index) => {
-        if (item.id === (contextMenuInstance.value as any).id) {
-          tableData.value.splice(index, 1);
+        for (let i = 0; i < val.length; i++) {
+          if (item.id === val[i]) {
+            tableData.value.splice(index, 1);
+          }
         }
       });
     };
+
     const contextRename = () => {
       renameId.value = (contextMenuInstance.value as any).id;
       renameValue.value = (contextMenuInstance.value as any).name;
@@ -311,6 +334,25 @@ export default defineComponent({
       NProgress.done();
     };
 
+    const contextUnpack = async () => {
+      await flushed();
+    };
+
+    const move = () => {
+      if (selectTables.value.length > 0) {
+        moveItemList.value = selectTables.value;
+      } else {
+        moveItemList.value.push(contextMenuInstance.value);
+      }
+      moveFlag.value = true;
+    };
+
+    const moveResult = async (val: string) => {
+      if (val === "success") {
+        await flushed();
+      }
+      moveFlag.value = false;
+    };
 
     onMounted(async () => {
       const tableList = await findByLevel(level.value);
@@ -340,6 +382,13 @@ export default defineComponent({
       enterHandle,
       getIcon,
       flushed,
+      contextUnpack,
+      move,
+      moveFlag,
+      moveResult,
+      handleChange,
+      moveItemList,
+      selectTables,
     };
   },
 });

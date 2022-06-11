@@ -1,6 +1,8 @@
 import { get, post, del, patch } from './axios'
-import { RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData, AddFileJsonData, RenameJsonData, 
-    SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData, GetNoUploadJsonData, AddRecordJsonData, AddMessageJsonData } from './type/userType'
+import {
+    RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData, AddFileJsonData, RenameJsonData, UnPackJsonData, UpdateParentIdAndLevelJsonData, CompressFileJsonData,
+    SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData, GetNoUploadJsonData, AddRecordJsonData, AddMessageJsonData, DeleteFilesOrFolders
+} from './type/userType'
 import { ResourceState } from '@/store/resourse/resourceState'
 
 
@@ -128,12 +130,24 @@ export async function rename(jsonData: RenameJsonData) {
     return await patch(`/file/rename`, jsonData)
 }
 
-export async function deleteFile(id: string) {
-    return await del(`/file/deleteFile/${id}`)
+export async function deleteFilesOrFolders(jsonData: DeleteFilesOrFolders) {
+    return await del(`/file/deleteFilesOrFolders`, jsonData)
 }
 
-export async function deleteFolder(id: string) {
-    return await del(`/file/deleteFolder/${id}`)
+export async function unPack(jsonData: UnPackJsonData) {
+    return await post(`/file/unPack`, jsonData)
+}
+
+export async function getTree() {
+    return await get(`/file/getTree`)
+}
+
+export async function updateParentIdAndLevel(jsonData: UpdateParentIdAndLevelJsonData) {
+    return await post(`/file/updateParentIdAndLevel`, jsonData)
+}
+
+export async function compressFile(jsonData: CompressFileJsonData) {
+    return await post(`/file/compressFile`, jsonData)
 }
 
 //========================share_file相关接口=================================
@@ -210,7 +224,7 @@ export async function getDownloadURL(id: string) {
 //========================downloadHistory相关接口=================================
 export async function pageQueryDownloadHistory(size: number, page: number, id: string) {
     return await get(`/downloadHistory/pageQuery/${id}/${size}/${page}`)
-}   
+}
 
 //========================browseHistory相关接口=================================
 export async function getDataGroup(dataId: string, number: number) {

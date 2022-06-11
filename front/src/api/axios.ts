@@ -3,6 +3,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { setToken, getToken } from '@/utils/auth';
 import { useStore } from '@/store';
 import { notice } from '@/utils/notice';
+import console from 'console';
 
 const store = useStore()
 const requestList = new Set()
@@ -23,7 +24,7 @@ axiosInstance.interceptors.response.use(
             setToken(response.data.refreshToken)
         }
         setTimeout(() => {
-            requestList.delete(response.config.url + JSON.stringify(response.config.data))
+            requestList.delete(response.config.url + response.config.data)
         }, 600) //请求间隔600ms
         return response.data
     },
@@ -33,8 +34,7 @@ axiosInstance.interceptors.response.use(
             return null
         } else {
             notice('error', '错误', '请求错误')
-            console.log(err)
-            requestList.delete(err.config.url + JSON.stringify(err.config.data))
+            requestList.delete(err.config.url + err.config.data)
             return err.data
         }
         

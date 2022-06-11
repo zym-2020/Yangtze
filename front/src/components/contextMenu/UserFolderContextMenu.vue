@@ -8,15 +8,17 @@
     <div class="context" v-if="!instance.folder" @click="releaseClick">
       共享此文件
     </div>
-    <div class="context" v-if="!instance.folder">解压</div>
-
-    <div class="context">属性</div>
+    <div class="context" v-if="!instance.folder" @click="unPackClick">
+      解压（暂只支持.zip文件解压）
+    </div>
+    <div class="context" @click="move">移动</div>
+    <div class="context" @click="compressFile">添加到压缩文件</div>
   </div>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, onMounted } from "vue";
-import { deleteFile, deleteFolder, getDownloadURL } from "@/api/request";
+import { deleteFilesOrFolders, getDownloadURL, unPack } from "@/api/request";
 import { notice } from "@/utils/notice";
 import { ElMessageBox } from "element-plus";
 import { useStore } from "@/store";
@@ -27,8 +29,11 @@ export default defineComponent({
     contextMenuInstance: {
       type: Object,
     },
+    selectList: {
+      type: Array,
+    },
   },
-  emits: ["delSuccess", "rename"],
+  emits: ["delSuccess", "rename", "unPack", "move"],
   setup(props, context) {
     const store = useStore();
     const instance = computed(() => {
@@ -39,37 +44,103 @@ export default defineComponent({
       context.emit("rename");
     };
 
+    const fileList = computed(() => {
+      const list: any[] = [];
+      props.selectList?.forEach((item: any) => {
+        if (!item.folder) {
+          list.push(item.id);
+        }
+      });
+      return list;
+    });
+
+    const folderList = computed(() => {
+      const list: any[] = [];
+      props.selectList?.forEach((item: any) => {
+        if (item.folder) {
+          list.push(item.id);
+        }
+      });
+      return list;
+    });
+
     const deleteClick = async () => {
-      if (!(props.contextMenuInstance as any).folder) {
-        const data = await deleteFile((props.contextMenuInstance as any).id);
-        if (data != null) {
-          if ((data as any).code === 0) {
-            notice("success", "成功", "删除成功!");
-            context.emit("delSuccess");
-          } else {
-            notice("error", "失败", "删除失败!");
+      if (props.selectList?.length === 0) {
+        if ((props.contextMenuInstance as any).folder) {
+          const folders: string[] = [];
+          folders.push((props.contextMenuInstance as any).id);
+          ElMessageBox.confirm("确定删除文件夹及文件夹以下内容", "警告", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning",
+          })
+            .then(async () => {
+              const data = await deleteFilesOrFolders({
+                files: [],
+                folders: folders,
+              });
+              if (data != null) {
+                if ((data as any).code === 0) {
+                  notice("success", "成功", "删除成功!");
+                  context.emit("delSuccess", folders);
+                } else {
+                  notice("error", "失败", "删除失败!");
+                }
+              }
+            })
+            .catch(() => {});
+        } else {
+          const files: string[] = [];
+          files.push((props.contextMenuInstance as any).id);
+          const data = await deleteFilesOrFolders({
+            files: files,
+            folders: [],
+          });
+          if (data != null) {
+            if ((data as any).code === 0) {
+              notice("success", "成功", "删除成功!");
+              context.emit("delSuccess", files);
+            } else {
+              notice("error", "失败", "删除失败!");
+            }
           }
         }
       } else {
-        ElMessageBox.confirm("确定删除文件夹及文件夹以下内容", "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
-        })
-          .then(async () => {
-            const data = await deleteFolder(
-              (props.contextMenuInstance as any).id
-            );
-            if (data != null) {
-              if ((data as any).code === 0) {
-                notice("success", "成功", "删除成功!");
-                context.emit("delSuccess");
-              } else {
-                notice("error", "失败", "删除失败!");
-              }
-            }
+        if (folderList.value.length > 0) {
+          ElMessageBox.confirm("所选列表包含文件夹，确定删除文件夹及文件夹以下内容", "警告", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning",
           })
-          .catch(() => {});
+            .then(async () => {
+              const data = await deleteFilesOrFolders({
+                files: fileList.value,
+                folders: folderList.value,
+              });
+              if (data != null) {
+                if ((data as any).code === 0) {
+                  notice("success", "成功", "删除成功!");
+                  context.emit("delSuccess", fileList.value.concat(folderList.value));
+                } else {
+                  notice("error", "失败", "删除失败!");
+                }
+              }
+            })
+            .catch(() => {});
+        } else {
+          const data = await deleteFilesOrFolders({
+            files: fileList.value,
+            folders: folderList.value,
+          });
+          if (data != null) {
+            if ((data as any).code === 0) {
+              notice("success", "成功", "删除成功!");
+              context.emit("delSuccess", fileList.value.concat(folderList.value));
+            } else {
+              notice("error", "失败", "删除失败!");
+            }
+          }
+        }
       }
     };
 
@@ -96,12 +167,35 @@ export default defineComponent({
       });
     };
 
+    const unPackClick = async () => {
+      console.log(props.contextMenuInstance);
+      const data = await unPack({
+        id: (props.contextMenuInstance as any).id,
+        parentId: (props.contextMenuInstance as any).parent_id,
+        level: (props.contextMenuInstance as any).level,
+      });
+      if (data != null) {
+        if ((data as any).code === 0) {
+          context.emit("unPack");
+        }
+      }
+    };
+
+    const move = () => {
+      context.emit("move");
+    };
+
+    const compressFile = () => {};
+
     return {
       instance,
       renameClick,
       deleteClick,
       downloadClick,
       releaseClick,
+      unPackClick,
+      move,
+      compressFile,
     };
   },
 });
