@@ -12,13 +12,18 @@
       解压（暂只支持.zip文件解压）
     </div>
     <div class="context" @click="move">移动</div>
-    <div class="context" @click="compressFile">添加到压缩文件</div>
+    <div class="context" @click="compress">添加到压缩文件</div>
   </div>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, onMounted } from "vue";
-import { deleteFilesOrFolders, getDownloadURL, unPack } from "@/api/request";
+import {
+  deleteFilesOrFolders,
+  getDownloadURL,
+  unPack,
+  compressFile,
+} from "@/api/request";
 import { notice } from "@/utils/notice";
 import { ElMessageBox } from "element-plus";
 import { useStore } from "@/store";
@@ -45,7 +50,7 @@ export default defineComponent({
     };
 
     const fileList = computed(() => {
-      const list: any[] = [];
+      const list: string[] = [];
       props.selectList?.forEach((item: any) => {
         if (!item.folder) {
           list.push(item.id);
@@ -55,13 +60,21 @@ export default defineComponent({
     });
 
     const folderList = computed(() => {
-      const list: any[] = [];
+      const list: string[] = [];
       props.selectList?.forEach((item: any) => {
         if (item.folder) {
           list.push(item.id);
         }
       });
       return list;
+    });
+
+    const compressName = computed(() => {
+      if (props.selectList?.length == 0) {
+        return (props.contextMenuInstance as any).name + ".zip";
+      } else {
+        return (props.contextMenuInstance as any).parentName + ".zip";
+      }
     });
 
     const deleteClick = async () => {
@@ -107,11 +120,15 @@ export default defineComponent({
         }
       } else {
         if (folderList.value.length > 0) {
-          ElMessageBox.confirm("所选列表包含文件夹，确定删除文件夹及文件夹以下内容", "警告", {
-            confirmButtonText: "确定",
-            cancelButtonText: "取消",
-            type: "warning",
-          })
+          ElMessageBox.confirm(
+            "所选列表包含文件夹，确定删除文件夹及文件夹以下内容",
+            "警告",
+            {
+              confirmButtonText: "确定",
+              cancelButtonText: "取消",
+              type: "warning",
+            }
+          )
             .then(async () => {
               const data = await deleteFilesOrFolders({
                 files: fileList.value,
@@ -120,7 +137,10 @@ export default defineComponent({
               if (data != null) {
                 if ((data as any).code === 0) {
                   notice("success", "成功", "删除成功!");
-                  context.emit("delSuccess", fileList.value.concat(folderList.value));
+                  context.emit(
+                    "delSuccess",
+                    fileList.value.concat(folderList.value)
+                  );
                 } else {
                   notice("error", "失败", "删除失败!");
                 }
@@ -135,7 +155,10 @@ export default defineComponent({
           if (data != null) {
             if ((data as any).code === 0) {
               notice("success", "成功", "删除成功!");
-              context.emit("delSuccess", fileList.value.concat(folderList.value));
+              context.emit(
+                "delSuccess",
+                fileList.value.concat(folderList.value)
+              );
             } else {
               notice("error", "失败", "删除失败!");
             }
@@ -185,7 +208,31 @@ export default defineComponent({
       context.emit("move");
     };
 
-    const compressFile = () => {};
+    const compress = async () => {
+      const jsonData: { files: string[]; folders: string[]; level: number; parentId: string; compressName: string } = {
+        files: [],
+        folders: [],
+        level: (props.contextMenuInstance as any).level,
+        parentId: (props.contextMenuInstance as any).parent_id,
+        compressName: compressName.value
+      };
+      if (props.selectList?.length === 0) {
+        if ((props.contextMenuInstance as any).folder) {
+          jsonData.folders.push((props.contextMenuInstance as any).id);
+        } else {
+          jsonData.files.push((props.contextMenuInstance as any).id);
+        }
+      } else {
+        jsonData.files = fileList.value
+        jsonData.folders = folderList.value
+      }
+      const data = await compressFile(jsonData)
+      if(data != null) {
+        if((data as any).code === 0) {
+          notice("success", "成功", "压缩成功")
+        }
+      }
+    };
 
     return {
       instance,
@@ -195,7 +242,7 @@ export default defineComponent({
       releaseClick,
       unPackClick,
       move,
-      compressFile,
+      compress,
     };
   },
 });

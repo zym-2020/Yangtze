@@ -2,7 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="njnu.edu.back.dao.FileMapper">
     <insert id="addFile" parameterType="njnu.edu.back.pojo.dto.AddFileDTO">
-        insert into files values(#{id}::uuid, #{name}, #{address}, #{fileName}, #{level}, #{parentId}, now(), #{uploader}, #{meta}, #{folder}, #{size});
+        <if test="id != null">
+            insert into files values(#{id}::uuid, #{name}, #{address}, #{fileName}, #{level}, #{parentId}, now(), #{uploader}, #{meta}, #{folder}, #{size});
+        </if>
+        <if test="id == null">
+            insert into files values(default, #{name}, #{address}, #{fileName}, #{level}, #{parentId}, now(), #{uploader}, #{meta}, #{folder}, #{size});
+        </if>
     </insert>
 
     <select id="findByLevel" resultType="java.util.HashMap">

@@ -145,7 +145,7 @@ export default defineComponent({
     const dialogUpload = ref(false);
     const dialogCreateFolder = ref(false);
     const level = ref(0);
-    const contextMenuInstance = ref({});
+    const contextMenuInstance = ref<any>({});
     const moveItemList = ref<any[]>([]);
     const selectTables = ref<any[]>([]);
     const renameValue = ref("");
@@ -155,7 +155,14 @@ export default defineComponent({
       event.preventDefault();
       folderFlag.value = false;
       folderFlag.value = true;
+
       contextMenuInstance.value = row;
+      if(path.value.length > 0) {
+        contextMenuInstance.value.parentName = path.value[path.value.length - 1].name
+      } else {
+        contextMenuInstance.value.parentName = 'user'
+      }
+
       const menu: any = document.querySelector(".user-folder-context-menu");
       const table = document.querySelector(".el-tabs__content") as HTMLElement;
       if (

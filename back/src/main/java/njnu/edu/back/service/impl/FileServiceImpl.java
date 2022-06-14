@@ -5,6 +5,7 @@ import cn.hutool.json.JSONObject;
 import lombok.SneakyThrows;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
+import njnu.edu.back.common.utils.CommonUtils;
 import njnu.edu.back.common.utils.LocalUploadUtil;
 import njnu.edu.back.common.utils.ZipOperate;
 import njnu.edu.back.dao.FileMapper;
@@ -336,7 +337,11 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public void compressFile(JSONObject jsonObject, String email) {
-        String destination = basedir + email + "\\upload";
+        String uuid = UUID.randomUUID().toString();
+        String compressName = jsonObject.getStr("compressName");
+        String parentId = jsonObject.getStr("parentId");
+        int level = jsonObject.getInt("level");
+        String destination = basedir + email + "\\upload\\" + uuid + ".zip";
         List<String> fileList = (List<String>) jsonObject.get("files");
         List<String> folderList = (List<String>) jsonObject.get("folders");
         List<Map<String, Object>> fileMaps = null;
@@ -353,5 +358,12 @@ public class FileServiceImpl implements FileService {
         if(folderMaps != null) {
             ZipOperate.compressFile(destination, folderMaps);
         }
+        java.io.File file = new java.io.File(destination);
+        if(file.exists()) {
+            fileMapper.addFile(new AddFileDTO(null, compressName, destination, uuid + ".zip", level, parentId, email, "", false, LocalUploadUtil.getFileSize(file.length())));
+        } else {
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
+
     }
 }

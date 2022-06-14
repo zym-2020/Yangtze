@@ -5,12 +5,14 @@ import net.lingala.zip4j.io.inputstream.ZipInputStream;
 import net.lingala.zip4j.model.FileHeader;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.model.enums.CompressionMethod;
+import net.lingala.zip4j.progress.ProgressMonitor;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+import javax.swing.*;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -92,16 +94,33 @@ public class ZipOperate {
 
     public static void compressFile(String destination, List<Map<String, Object>> fileList) {
         ZipFile zipFile = new ZipFile(destination);
+        ProgressMonitor progressMonitor = zipFile.getProgressMonitor();
+//        zipFile.setRunInThread(true);
         try {
-            ZipParameters zipParameters = new ZipParameters();
+            List<File> files = new ArrayList<>();
+            Map<String, String> maps = new HashMap<>();
             for(Map<String, Object> map : fileList) {
-//                String fullPath = (String) map.get("path");
-//                String[] pathArray = fullPath.split("/");
-//                String name = pathArray[pathArray.length - 1];
-//                zipParameters.setRootFolderNameInZip(fullPath.substring(0, fullPath.length() - name.length()));
-                zipParameters.setFileNameInZip((String) map.get("path"));
-                zipFile.addFile(new File((String) map.get("address")), zipParameters);
+                String address = (String) map.get("address");
+                String name = address.split("\\\\")[address.split("\\\\").length - 1];
+                files.add(new File(address));
+                maps.put(name, (String) map.get("path"));
             }
+            zipFile.addFiles(files);
+            zipFile.renameFiles(maps);
+//            while (!progressMonitor.getState().equals(ProgressMonitor.State.READY)) {
+//                System.out.println("Percentage done: " + progressMonitor.getPercentDone());
+//                System.out.println("Current file: " + progressMonitor.getFileName());
+//                System.out.println("Current task: " + progressMonitor.getCurrentTask());
+//
+//                Thread.sleep(100);
+//            }
+//            if (progressMonitor.getResult().equals(ProgressMonitor.Result.SUCCESS)) {
+//                System.out.println("Successfully added folder to zip");
+//            } else if (progressMonitor.getResult().equals(ProgressMonitor.Result.ERROR)) {
+//                System.out.println("Error occurred. Error message: " + progressMonitor.getException().getMessage());
+//            } else if (progressMonitor.getResult().equals(ProgressMonitor.Result.CANCELLED)) {
+//                System.out.println("Task cancelled");
+//            }
         } catch (Exception e) {
             e.printStackTrace();
             throw new MyException(ResultEnum.DEFAULT_EXCEPTION);

@@ -141,6 +141,9 @@ export interface UpdateParentIdAndLevelJsonData {
 }
 
 export interface CompressFileJsonData {
+    compressName: string
+    parentId: string
+    level: number
     files: string[]
     folders: string[]
 }
