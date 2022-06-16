@@ -316,10 +316,13 @@ export default defineComponent({
     });
 
     watch(store.state.resource.selectedLayer, (newVal) => {
-      if (newVal.flag) {
-        map.value?.setLayoutProperty(newVal.id, "visibility", "none");
-      } else {
-        map.value?.setLayoutProperty(newVal.id, "visibility", "visible");
+      console.log("select", newVal);
+      if (newVal.id != undefined && newVal.id != "" && newVal.id != null) {
+        if (newVal.flag) {
+          map.value?.setLayoutProperty(newVal.id, "visibility", "none");
+        } else {
+          map.value?.setLayoutProperty(newVal.id, "visibility", "visible");
+        }
       }
     });
 
