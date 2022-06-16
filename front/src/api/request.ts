@@ -1,10 +1,11 @@
 import { get, post, del, patch } from './axios'
 import {
     RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData, AddFileJsonData, RenameJsonData, UnPackJsonData, UpdateParentIdAndLevelJsonData, CompressFileJsonData,
-    SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData, GetNoUploadJsonData, AddRecordJsonData, AddMessageJsonData, DeleteFilesOrFolders
+    SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData, GetNoUploadJsonData, AddRecordJsonData, AddMessageJsonData, DeleteFilesOrFolders, GetProjectsJsonData
 } from './type/userType'
-import { ResourceState } from '@/store/resourse/resourceState'
+import { Resource, Analyse } from '@/store/resourse/resourceState'
 
+import axios from 'axios'
 
 //========================User相关接口=================================
 export async function login(jsonData: LoginJsonData) {
@@ -51,7 +52,7 @@ export async function getResult(projectId: string) {
     return await get(`/project/getResult/${projectId}`)
 }
 
-export async function setResult(jsonData: ResourceState, id: string) {
+export async function setResult(jsonData: {layerDataList: Resource[], analyse: Analyse}, id: string) {
     return await patch(`/project/setResult/${id}`, jsonData)
 }
 
@@ -75,8 +76,8 @@ export async function getSectionContrastValue(projectName: string, sectionName: 
     return await get(`/project/getSectionContrastValue/${projectName}/${sectionName}`)
 }
 
-export async function getProjects(size: number, page: number) {
-    return await get(`/project/getProjects/${size}/${page}`)
+export async function getProjects(jsonData: GetProjectsJsonData) {
+    return await post(`/project/getProjects`, jsonData)
 }
 
 export async function findProjectById(projectId: string) {
@@ -266,4 +267,22 @@ export async function addMessage(jsonData: AddMessageJsonData) {
 
 export async function QueryByTime(property: string) {
     return await get(`/admin/message/QueryByTime/${property}`)
+}
+
+//========================analyticDataSet相关接口=================================
+export async function findDataByType(type: string) {
+    return await get(`/analyticDataSet/findDataByType/${type}`)
+}
+
+
+//========================船讯网相关接口=================================
+export async function getAreaShip(key: string, scode: string, xy: string) {
+    return axios.get("http://api.shipxy.com/apicall/GetAreaShip", {
+        params: {
+            k: key,
+            enc: 1,
+            scode: scode,
+            xy: xy
+        }
+    })
 }

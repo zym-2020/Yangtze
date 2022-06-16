@@ -37,7 +37,7 @@ public interface ProjectService {
 
     Map<String, List<Double>> getSectionContrastValue(String email, String projectName, String sectionName);
 
-    JSONObject pageQuery(int size, int page);
+    JSONObject pageQuery(int size, int page, String keyWord);
 
     Map<String, Object> findProjectById(String projectId);
 

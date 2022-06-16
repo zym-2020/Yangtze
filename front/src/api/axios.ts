@@ -3,7 +3,6 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { setToken, getToken } from '@/utils/auth';
 import { useStore } from '@/store';
 import { notice } from '@/utils/notice';
-import console from 'console';
 
 const store = useStore()
 const requestList = new Set()

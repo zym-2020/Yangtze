@@ -4,7 +4,9 @@
       <template #search>
         <div class="search">
           <el-input v-model="search" placeholder="搜索" :autofocus="true" />
-          <el-button class="btn" type="primary" plain>搜索</el-button>
+          <el-button class="btn" type="primary" plain @click="searchClick"
+            >搜索</el-button
+          >
           <el-button class="btn" type="info" plain @click="createFlag = true"
             >创建项目</el-button
           >
@@ -31,7 +33,9 @@
         layout="prev, pager, next"
         :total="total"
         @current-change="currentChange"
+        :current-page="currentPage"
         :page-size="12"
+        :background="true"
       >
       </el-pagination>
     </div>
@@ -60,21 +64,50 @@ export default defineComponent({
     const search = ref("");
     const total = ref(0);
     const createFlag = ref(false);
+    const keyWord = ref("");
+    const currentPage = ref(1);
 
     onMounted(async () => {
-      const projectList = await getProjects(12, 0);
+      const projectList = await getProjects({
+        size: 12,
+        page: 0,
+        keyWord: keyWord.value,
+      });
       if (projectList != null) {
         projects.value = (projectList.data as any).list;
         total.value = (projectList.data as any).total;
       }
     });
 
+    const searchClick = async () => {
+      keyWord.value = search.value;
+      const data = await getProjects({
+        size: 12,
+        page: 0,
+        keyWord: keyWord.value,
+      });
+      
+      if (data != null) {
+        if ((data as any).code === 0) {
+          projects.value = (data.data as any).list;
+          total.value = (data.data as any).total;
+          currentPage.value = 1
+        }
+      }
+    };
+
     const currentChange = async (page: number) => {
-      const projectList = await getProjects(12, page - 1);
+      currentPage.value = page
+      const projectList = await getProjects({
+        size: 12,
+        page: page - 1,
+        keyWord: keyWord.value,
+      });
       if (projectList != null) {
         projects.value = (projectList.data as any).list;
         total.value = (projectList.data as any).total;
       }
+      search.value = keyWord.value;
     };
 
     const createProject = (val: any) => {
@@ -112,6 +145,8 @@ export default defineComponent({
       total,
       currentChange,
       createProject,
+      searchClick,
+      currentPage,
     };
   },
 });

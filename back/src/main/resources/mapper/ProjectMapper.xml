@@ -19,11 +19,11 @@
     </update>
 
     <select id="getResultByEmailAndProjectName" resultType="java.lang.String">
-        select result from projects where creator = #{email} and project_Name = #{projectName};
+        select result from projects where creator = #{email} and project_name = #{projectName};
     </select>
 
     <select id="pageQuery" resultType="java.util.HashMap">
-        select projects.*, users.name from projects, users where projects.creator=users.email order by projects.create_time desc limit #{size} offset #{start};
+        select projects.*, users.name from projects, users where projects.creator=users.email and project_name like #{keyWord} order by projects.create_time desc limit #{size} offset #{start};
     </select>
 
     <select id="findProjectById" resultType="java.util.HashMap">
@@ -31,7 +31,7 @@
     </select>
 
     <select id="countAll" resultType="java.lang.Integer">
-        select count(*) from projects;
+        select count(*) from projects where project_name like #{keyWord};
     </select>
 
 </mapper>

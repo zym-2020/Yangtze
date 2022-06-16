@@ -16,86 +16,95 @@
               @click="clickType(1)"
             >
               <svg style="width: 60px; height: 60px">
-                <use xlink:href="#icon-shiliangshujuji"></use>
+                <use xlink:href="#icon-zhageyingxiang"></use>
               </svg>
-              <div>矢量数据</div>
+              <div>河床数据</div>
             </div>
             <div
               :class="flag === 2 ? 'type active' : 'type'"
               @click="clickType(2)"
             >
               <svg style="width: 60px; height: 60px">
-                <use xlink:href="#icon-zhageyingxiang"></use>
+                <use xlink:href="#icon-shiliangshujuji"></use>
               </svg>
-              <div>栅格数据</div>
+              <div>水文数据</div>
+            </div>
+            <div
+              :class="flag === 3 ? 'type active' : 'type'"
+              @click="clickType(3)"
+            >
+              <svg style="width: 60px; height: 60px">
+                <use xlink:href="#icon-yaogancehui"></use>
+              </svg>
+              <div>影像数据</div>
             </div>
           </div>
         </el-col>
         <el-col :span="9">
           <div class="right" v-if="flag === 1">
-            <el-empty description="暂无数据" v-if="vector.total === 0" />
+            <el-empty description="暂无数据" v-if="riverBedData.length === 0" />
             <div v-else>
               <div
-                v-for="(item, index) in vector.list"
+                v-for="(item, index) in riverBedData"
                 :key="index"
                 class="data"
-                @dblclick="dblclick(item, 'vector')"
-              >
-                <svg style="width: 20px; height: 20px">
-                  <use xlink:href="#icon-vector"></use>
-                </svg>
-                <span>{{ item.name }}</span>
-              </div>
-              <el-pagination
-                small
-                layout="prev, pager, next"
-                :total="vector.total"
-                :pager-count="5"
-                :page-size="vector.pageSize"
-                :current-page="vector.currentPage"
-                @current-change="vector.currentChange"
-              />
-            </div>
-          </div>
-          <div class="right" v-if="flag === 2">
-            <el-empty description="暂无数据" v-if="raster.total === 0" />
-            <div v-else>
-              <div
-                v-for="(item, index) in raster.list"
-                :key="index"
-                class="data"
-                @dblclick="dblclick(item, 'raster')"
+                @dblclick="dblclick(item)"
               >
                 <svg style="width: 20px; height: 20px">
                   <use xlink:href="#icon-raster"></use>
                 </svg>
                 <span>{{ item.name }}</span>
               </div>
-              <el-pagination
-                small
-                layout="prev, pager, next"
-                :total="raster.total"
-                :pager-count="5"
-                :page-size="raster.pageSize"
-                :current-page="raster.currentPage"
-                @current-change="raster.currentChange"
-              />
+            </div>
+          </div>
+          <div class="right" v-if="flag === 2">
+            <el-empty
+              description="暂无数据"
+              v-if="hydrologyData.length === 0"
+            />
+            <div v-else>
+              <div
+                v-for="(item, index) in hydrologyData"
+                :key="index"
+                class="data"
+                @dblclick="dblclick(item)"
+              >
+                <svg style="width: 20px; height: 20px">
+                  <use xlink:href="#icon-vector"></use>
+                </svg>
+                <span>{{ item.name }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="right" v-if="flag === 3">
+            <el-empty
+              description="暂无数据"
+              v-if="satelliteData.length === 0"
+            />
+            <div v-else>
+              <div
+                v-for="(item, index) in satelliteData"
+                :key="index"
+                class="data"
+                @dblclick="dblclick(item)"
+              >
+                <svg style="width: 20px; height: 20px; margin-left: 5px">
+                  <use xlink:href="#icon-tiff"></use>
+                </svg>
+                <span>{{ item.name }}</span>
+              </div>
             </div>
           </div>
         </el-col>
         <el-col :span="9">
           <div class="selected">
             <el-scrollbar height="400px">
-              <div
-                v-for="(item, index) in result.list"
-                :key="index"
-                class="result"
-              >
-                <svg style="width: 20px; height: 20px">
-                  <use :xlink:href="'#icon-' + item.type"></use>
+              <div v-for="(item, index) in result" :key="index" class="result">
+                <svg style="width: 20px; height: 20px; margin-left: 5px;">
+                  <use :xlink:href="getIcon(item.type)"></use>
                 </svg>
                 <span>{{ item.name }}</span>
-                <div class="del" @dblclick="delDbclick">
+                <div class="del" @dblclick="delDbclick(index)">
                   <el-icon :size="20" color="#DD001B">
                     <delete />
                   </el-icon>
@@ -115,86 +124,80 @@
 </template>
 
 <script lang="ts">
-interface PageResult {
-  id?: string;
-  name: string;
-  type: string;
-  meta?: string;
-  time?: string;
-  show?: boolean;
-  tableName?: string;
-  vectorType?: string;
-}
-import { computed, defineComponent, onBeforeMount, reactive, ref } from "vue";
-import { vectorPageQuery, rasterPageQuery } from "@/api/request";
+import { computed, defineComponent, onMounted, ref } from "vue";
+import { findDataByType } from "@/api/request";
 import { useStore } from "@/store";
 import router from "@/router";
 export default defineComponent({
   emits: ["returnData"],
-  setup(_, context) {
+  props: {
+    layers: {
+      type: Array
+    }
+  },
+  setup(props, context) {
     const store = useStore();
     const flag = ref(1);
     const input = ref("");
-    const clickType = (num: number) => {
-      flag.value = num;
-    };
+    const riverBedData = ref<any[]>([]);
+    const hydrologyData = ref<any[]>([]);
+    const satelliteData = ref<any[]>([])
+    const result = ref<any[]>([]);
     const projectId = computed(() => {
       return router.currentRoute.value.params.id;
     });
-    const dblclick = (item: PageResult, type: string) => {
+
+    const dblclick = (item: any) => {
       let hasResult = false;
-      console.log(item.name, item.id);
-      result.list.forEach((e) => {
-        if (e.type === item.type && e.id === item.id) hasResult = true;
+      console.log(item);
+      result.value.forEach((e) => {
+        if (item.id === e.id) {
+          hasResult = true;
+        }
       });
       if (!hasResult) {
-        if (item.type === "vector") {
-          item.show = true;
-        }
-        result.list.push(item);
-        result.list[result.list.length - 1].type = type;
+        result.value.push(item);
       }
     };
+
     const delDbclick = (index: number) => {
-      result.list.splice(index, 1);
+      result.value.splice(index, 1);
     };
 
-    const vector = reactive({
-      total: 0,
-      currentPage: 1,
-      pageSize: 14,
-      list: ref<Array<PageResult>>([]),
-      currentChange: async (page: number) => {
-        const data = await vectorPageQuery(vector.pageSize, page);
-        if (data != null) {
-          vector.total = (data.data as any).total;
-          vector.list = (data.data as any).list;
-        }
-      },
-    });
+    const clickType = (num: number) => {
+      flag.value = num;
+    };
 
-    const raster = reactive({
-      total: 0,
-      currentPage: 1,
-      pageSize: 14,
-      list: ref<Array<PageResult>>([]),
-      currentChange: async (page: number) => {
-        const data = await rasterPageQuery(raster.pageSize, page);
-        if (data != null) {
-          raster.total = (data.data as any).total;
-          raster.list = (data.data as any).list;
-        }
-      },
-    });
-
-    const result = reactive({
-      list: ref<Array<PageResult>>([]),
-    });
+    const getIcon = (type: string) => {
+      if (type === "riverBed") {
+        return "#icon-raster";
+      } else if (type === "hydrology") {
+        return "#icon-vector";
+      } else if (type === 'satellite') {
+        return "#icon-tiff"
+      }
+    };
 
     const commit = async () => {
+      const layerDataList: any[] = [];
+      result.value.forEach((item) => {
+        layerDataList.push({
+          id: item.id,
+          name: item.name,
+          type: item.type,
+          show: item.has_tiles,
+        });
+      });
+      const tempString: string[] = []
+      props.layers?.forEach((item: any) => {
+        tempString.push(item.id)
+      })
+      store.commit("SET_TEMP_LAYERS", tempString)
+      console.log("tempString", tempString)
+      console.log("layers", props.layers)
       await store.dispatch("setResource", {
         projectJsonBean: {
-          layerDataList: result.list,
+          layerDataList: layerDataList,
           analyse: store.state.resource.analyse,
         },
         id: projectId.value as string,
@@ -202,36 +205,35 @@ export default defineComponent({
       context.emit("returnData");
     };
 
-    onBeforeMount(async () => {
+    onMounted(async () => {
       store.state.resource.layerDataList.forEach((item) => {
-        result.list.push({
+        result.value.push({
           name: item.name,
           id: item.id,
           type: item.type,
-          show: item.show,
+          has_tiles: item.show,
         });
       });
-      let temp1 = await vectorPageQuery(
-        vector.pageSize,
-        vector.currentPage - 1
-      );
-      if (temp1 != null) {
-        vector.total = (temp1.data as any).total;
-        vector.list = (temp1.data as any).list;
-        vector.list.forEach((item) => {
-          item.type = "vector";
-        });
+
+      const data1 = await findDataByType("riverBed");
+      if (data1 != null) {
+        if ((data1 as any).code === 0) {
+          console.log(data1);
+          riverBedData.value = data1.data;
+        }
       }
-      let temp2 = await rasterPageQuery(
-        raster.pageSize,
-        raster.currentPage - 1
-      );
-      if (temp2 != null) {
-        raster.list = (temp2.data as any).list;
-        raster.total = (temp2.data as any).total;
-        raster.list.forEach((item) => {
-          item.type = "raster";
-        });
+      const data2 = await findDataByType("hydrology");
+      if (data2 != null) {
+        if ((data2 as any).code === 0) {
+          console.log(data2);
+          hydrologyData.value = data2.data;
+        }
+      }
+      const data3 = await findDataByType('satellite') 
+      if (data3 != null) {
+        if((data3 as any).code === 0) {
+          satelliteData.value = data3.data
+        }
       }
     });
 
@@ -239,12 +241,14 @@ export default defineComponent({
       flag,
       input,
       clickType,
-      vector,
-      raster,
       result,
       dblclick,
       delDbclick,
       commit,
+      riverBedData,
+      hydrologyData,
+      satelliteData,
+      getIcon,
     };
   },
 });

@@ -13,7 +13,7 @@
     >
       <template #default="{ node }">
         <span class="custom-tree-node">
-          <svg style="width: 20px; height: 20px" @click="open">
+          <svg style="width: 20px; height: 20px">
             <use xlink:href="#icon-wenjianjia"></use>
           </svg>
           <div class="text">{{ node.label }}</div>

@@ -1,3 +1,4 @@
+import internal from "stream"
 
 export interface LoginJsonData {
     email: string,
@@ -151,6 +152,12 @@ export interface CompressFileJsonData {
 export interface DeleteFilesOrFolders {
     files : string[]
     folders: string[]
+}
+
+export interface GetProjectsJsonData {
+    size: number
+    page: number
+    keyWord: string
 }
 // export interface AddShareFileJsonData {
 //     meta: {

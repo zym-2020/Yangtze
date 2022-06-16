@@ -22,6 +22,7 @@ public class Resource {
     String name;
 
     String type;         //raster || vector || geoJson
+
     boolean show;
     String tableName;   //针对shape
     String vectorType;   //针对shape

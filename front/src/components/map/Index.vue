@@ -18,14 +18,6 @@
       </div>
       <div class="body">|</div>
     </div>
-    <!-- <tools class="drag tools" v-drag></tools>
-    <data-select class="drag data-select" v-if="dataSelectFlag"></data-select> -->
-    <!-- <router-view
-      class="drag router-view"
-      v-analyseDrag
-      @riverBed="riverBed"
-      :map="map"
-    /> -->
   </div>
 </template>
 
@@ -35,8 +27,8 @@ import mapBoxGl, { AnySourceData } from "mapbox-gl";
 
 import DataSelect from "../riverbed/components/DataSelect.vue";
 import { useStore } from "@/store";
-import { Resource, Analyse } from "@/store/resourse/resourceState";
-import { mergeResource, watchAnalyse } from "@/utils/common";
+import { Resource } from "@/store/resourse/resourceState";
+import { mergeResource, computedLayers } from "@/utils/common";
 import router from "@/router";
 export default defineComponent({
   components: {
@@ -48,11 +40,9 @@ export default defineComponent({
     const active = ref(1);
     const store = useStore();
     const dataSelectFlag = ref(false);
-    const layerDataList = computed(() => {
-      return store.state.resource.layerDataList;
-    });
-    const analyse = computed(() => {
-      return JSON.parse(JSON.stringify(store.state.resource.analyse));
+
+    const layers = computed(() => {
+      return computedLayers();
     });
     const tdtVec: AnySourceData = {
       type: "raster",
@@ -68,33 +58,6 @@ export default defineComponent({
       ],
       tileSize: 256,
     };
-    const tif: AnySourceData = {
-      type: "raster",
-      tiles: [
-        "http://localhost:8002/raster/getRaster/9a2f70d7-b2a2-4f75-8322-4ab00e16a6b1/{x}/{y}/{z}",
-      ],
-      // bounds: [119.482547, 31.758138, 121.878795, 32.384769],
-      maxzoom: 15,
-      minzoom: 5,
-    };
-    const rasterDEM: AnySourceData = {
-      type: "raster",
-      tiles: [
-        "http://localhost:8002/raster/getRaster/ac430874-0fdd-4303-a3ad-d4c30448dbf0/{x}/{y}/{z}",
-      ],
-      // bounds: [120.127027, 31.161315, 121.994353, 32.023517],
-      maxzoom: 12,
-    };
-    // const rasterDEM: AnySourceData = {
-    //   type: "raster-dem",
-    //   tiles: [
-    //     "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png",
-    //   ],
-    //   minzoom: 0,
-    //   maxzoom: 15,
-    //   tileSize: 256,
-    //   encoding: "terrarium",
-    // };
 
     const map = ref<mapBoxGl.Map>();
     const initMap = () => {
@@ -105,8 +68,6 @@ export default defineComponent({
           sources: {
             tdtVec: tdtVec,
             txt: txt,
-            tif: tif,
-            rasterDEM: rasterDEM,
           },
           layers: [
             {
@@ -119,24 +80,6 @@ export default defineComponent({
               type: "raster",
               source: "txt",
             },
-            {
-              id: "tif",
-              type: "raster",
-              source: "tif",
-              paint: {
-                "raster-opacity": 0.7,
-              },
-            },
-            {
-              id: "rasterDEM",
-              type: "raster",
-              source: "rasterDEM",
-            },
-            // {
-            //   id: "rasterDEM",
-            //   type: "hillshade",
-            //   source: "rasterDEM",
-            // }
           ],
         },
 
@@ -150,29 +93,40 @@ export default defineComponent({
           "top-right"
         );
         flag.value = true;
-        // map.value?.setTerrain({ 'source': 'rasterDEM', 'exaggeration': 5 });
       });
     };
+
     const changeActive = (num: number) => {
       active.value = num;
     };
 
     const addLayer = (resource: Resource): void => {
-      if (
-        resource.type === "raster" &&
-        resource.id != undefined &&
-        resource.id != null
-      ) {
-        map.value?.addSource(resource.type + resource.id, {
-          type: resource.type,
+      if (resource.type === "satellite") {
+        map.value?.addSource(resource.id as string, {
+          type: "raster",
           tiles: [
-            `http://localhost:8002/raster/getRaster/${resource.id}/{x}/{y}/{z}`,
+            `http://localhost:8002/analyticDataSet/getRaster/${resource.id}/{x}/{y}/{z}`,
           ],
         });
         map.value?.addLayer({
-          id: resource.type + resource.id,
-          type: resource.type,
-          source: resource.type,
+          id: resource.id as string,
+          type: "raster",
+          source: resource.id,
+          paint: {
+            "raster-opacity": 0.7,
+          },
+        });
+      } else if (resource.type === "riverBed") {
+        map.value?.addSource(resource.id as string, {
+          type: "raster-dem",
+          tiles: [
+            `http://localhost:8002/analyticDataSet/getRaster/${resource.id}/{x}/{y}/{z}`,
+          ],
+        });
+        map.value?.addLayer({
+          id: resource.id as string,
+          type: "hillshade",
+          source: resource.id,
         });
       } else if (
         resource.type === "vector" &&
@@ -180,17 +134,17 @@ export default defineComponent({
         resource.tableName != null &&
         resource.vectorType != undefined
       ) {
-        map.value?.addSource(resource.type + resource.id, {
+        map.value?.addSource(resource.id as string, {
           type: resource.type,
           tiles: [
             `http://localhost:8002/vector/${resource.tableName}/{x}/{y}/{z}`,
           ],
         });
         map.value?.addLayer({
-          id: resource.type + resource.id,
+          id: resource.id as string,
           type: resource.vectorType as "fill" | "circle" | "line",
           "source-layer": resource.tableName,
-          source: resource.type + resource.id,
+          source: resource.id as string,
         });
       } else if (
         resource.type === "geoJson" &&
@@ -222,7 +176,7 @@ export default defineComponent({
             };
             break;
         }
-        map.value?.addSource(resource.type + resource.id, {
+        map.value?.addSource(resource.id as string, {
           type: "geojson",
           data: {
             type: "Feature",
@@ -240,20 +194,88 @@ export default defineComponent({
           },
         });
         map.value?.addLayer({
-          id: resource.type + resource.id,
+          id: resource.id as string,
           type: type as "fill" | "circle" | "line",
-          source: resource.type + resource.id,
+          source: resource.id as string,
           paint: paint,
+        });
+      } else if (
+        resource.type === "raster" &&
+        resource.id != undefined &&
+        resource.id != null
+      ) {
+        map.value?.addSource(resource.id as string, {
+          type: resource.type,
+          tiles: [
+            `http://localhost:8002/raster/getRaster/${resource.id}/{x}/{y}/{z}`,
+          ],
+        });
+        map.value?.addLayer({
+          id: resource.id as string,
+          type: resource.type,
+          source: resource.id as string,
         });
       }
     };
 
-    const delLayer = (type: string, id: string, show: boolean) => {
-      if (show && map.value?.getLayer(type + id)) {
-        (map.value as mapBoxGl.Map).removeLayer(type + id);
-        map.value?.removeSource(type + id);
+    const delLayer = (id: string, show: boolean) => {
+      if (show && map.value?.getLayer(id)) {
+        (map.value as mapBoxGl.Map).removeLayer(id);
+        map.value?.removeSource(id);
       }
     };
+
+    watch(layers, (newVal: any[], oldVal: any[]) => {
+      const add: Resource[] = newVal.filter((item) => {
+        let flag = true;
+        for (let i = 0; i < oldVal.length; i++) {
+          if (item.id === oldVal[i].id) {
+            flag = false;
+            break;
+          }
+        }
+        if (flag) return item;
+      });
+      const del: Resource[] = oldVal.filter((item) => {
+        let flag = true;
+        for (let i = 0; i < newVal.length; i++) {
+          if (item.id === newVal[i].id) {
+            flag = false;
+            break;
+          }
+        }
+        if (flag) return item;
+      });
+      console.log(add);
+      add.forEach((item, index) => {
+        if (
+          (map.value as mapBoxGl.Map).getLayer(
+            add[add.length - 1 - index].id as string
+          ) === undefined
+        ) {
+          if (flag.value) {
+            addLayer(add[add.length - 1 - index]);
+          } else {
+            map.value?.on("load", () => {
+              addLayer(add[add.length - 1 - index]);
+            });
+          }
+        }
+      });
+      del.forEach((item) => {
+        if (
+          (map.value as mapBoxGl.Map).getLayer(item.id as string) != undefined
+        ) {
+          if (flag.value) {
+            delLayer(item.id as string, true);
+          } else {
+            map.value?.on("load", () => {
+              delLayer(item.id as string, true);
+            });
+          }
+        }
+      });
+    });
 
     watch(
       () => router.currentRoute.value.path,
@@ -265,71 +287,40 @@ export default defineComponent({
       }
     );
 
-    watch(analyse, (newVal: Analyse, oldVal: Analyse) => {
-      watchAnalyse(
-        map.value as mapBoxGl.Map,
-        newVal,
-        oldVal,
-        addLayer,
-        delLayer,
-        flag.value
-      );
-    });
-
-    watch(layerDataList, (newVal: Resource[], oldVal: Resource[]) => {
-      const add: Resource[] = newVal.filter((item) => {
-        let flag = true;
-        for (let i = 0; i < oldVal.length; i++) {
-          if (
-            item.id?.toString() === oldVal[i].id?.toString() &&
-            item.type === oldVal[i].type
-          ) {
-            flag = false;
-            break;
+    watch(store.state.resource.layerSort, (newVal) => {
+      console.log("newVal", newVal);
+      if (newVal.type === "before" || newVal.type === "after") {
+        newVal.layers.forEach((item, index) => {
+          if (index < newVal.layers.length - 1) {
+            map.value?.moveLayer(newVal.layers[index + 1], item);
           }
-        }
-        if (flag) return item;
-      });
-      const del: Resource[] = oldVal.filter((item) => {
-        let flag = true;
-        for (let i = 0; i < newVal.length; i++) {
-          if (
-            item.id?.toString() === newVal[i].id?.toString() &&
-            item.type === newVal[i].type
-          ) {
-            flag = false;
-            break;
-          }
-        }
-        if (flag) return item;
-      });
-
-      add.forEach((item) => {
-        console.log("map.layer");
-        if (
-          item.show &&
-          (map.value as mapBoxGl.Map).getLayer(item.type + item.id) ===
-            undefined
-        ) {
-          if (flag.value) {
-            addLayer(item);
-          } else {
-            (map.value as mapBoxGl.Map).on("load", () => {
-              addLayer(item);
-            });
-          }
-        }
-      });
-      console.log("map.del", del);
-      del.forEach((item) => {
+        });
+      } else if (newVal.type === "" && newVal.layers.length === 0) {
+        console.log(layers.value, flag.value);
         if (flag.value) {
-          delLayer(item.type, item.id as string, item.show as boolean);
+          layers.value.forEach((item, index) => {
+            if (index < layers.value.length - 1) {
+              map.value?.moveLayer(layers.value[index + 1].id, item.id);
+            }
+          });
         } else {
-          (map.value as mapBoxGl.Map).on("load", () => {
-            delLayer(item.type, item.id as string, item.show as boolean);
+          layers.value.forEach((item, index) => {
+            if (index < layers.value.length - 1) {
+              map.value?.on("load", () => {
+                map.value?.moveLayer(layers.value[index + 1].id, item.id);
+              });
+            }
           });
         }
-      });
+      }
+    });
+
+    watch(store.state.resource.selectedLayer, (newVal) => {
+      if (newVal.flag) {
+        map.value?.setLayoutProperty(newVal.id, "visibility", "none");
+      } else {
+        map.value?.setLayoutProperty(newVal.id, "visibility", "visible");
+      }
     });
 
     const riverBed = (val: number) => {
@@ -350,25 +341,24 @@ export default defineComponent({
     onMounted(async () => {
       initMap();
 
-      const arr = mergeResource();
-      console.log("arr", arr);
-      if (arr.length > 0) {
-        arr.forEach((item) => {
-          if (
-            item.show &&
-            (map.value as mapBoxGl.Map).getLayer(
-              item.type + item.id?.toString()
-            ) === undefined
-          )
-            if (flag.value) {
-              addLayer(item);
-            } else {
-              (map.value as mapBoxGl.Map).once("load", () => {
-                addLayer(item);
-              });
-            }
-        });
-      }
+      // const arr = mergeResource();
+      // if (arr.length > 0) {
+      //   arr.forEach((item) => {
+      //     if (
+      //       item.show &&
+      //       (map.value as mapBoxGl.Map).getLayer(
+      //         item.id as string
+      //       ) === undefined
+      //     )
+      //       if (flag.value) {
+      //         addLayer(item);
+      //       } else {
+      //         (map.value as mapBoxGl.Map).once("load", () => {
+      //           addLayer(item);
+      //         });
+      //       }
+      //   });
+      // }
     });
 
     return {

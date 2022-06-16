@@ -6,6 +6,48 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "11940457",
+      "name": "图层",
+      "font_class": "tuceng",
+      "unicode": "e77d",
+      "unicode_decimal": 59261
+    },
+    {
+      "icon_id": "12600928",
+      "name": "tiff",
+      "font_class": "tiff",
+      "unicode": "e662",
+      "unicode_decimal": 58978
+    },
+    {
+      "icon_id": "17581396",
+      "name": "遥感测绘",
+      "font_class": "yaogancehui",
+      "unicode": "ec3b",
+      "unicode_decimal": 60475
+    },
+    {
+      "icon_id": "9956690",
+      "name": "多年模拟结果",
+      "font_class": "duonianmonijieguo",
+      "unicode": "e629",
+      "unicode_decimal": 58921
+    },
+    {
+      "icon_id": "21828282",
+      "name": "图层管理",
+      "font_class": "tucengguanli",
+      "unicode": "e69d",
+      "unicode_decimal": 59037
+    },
+    {
+      "icon_id": "2170872",
+      "name": "项目",
+      "font_class": "xiangmu",
+      "unicode": "e707",
+      "unicode_decimal": 59143
+    },
+    {
       "icon_id": "13304154",
       "name": "zip",
       "font_class": "zip",
