@@ -1,6 +1,6 @@
 <template>
   <el-container class="">
-    <el-header width="200px">
+    <el-header width="100%">
       <el-menu
         :default-active="activeIndex2"
         class="el-menu-demo"
@@ -22,15 +22,17 @@
           <el-sub-menu index="2-4">
             <template #title>上传结果</template>
             <el-menu-item index="2-4-1">上传成功</el-menu-item>
-            <el-menu-item index="2-4-2" @click="showuploadfail"
+            <el-menu-item index="2-4-2" 
               >上传失败</el-menu-item
             >
-            <el-menu-item index="3" @click="showdownloadfail"
+            <el-menu-item index="3" 
               >下载结果</el-menu-item
             >
           </el-sub-menu>
         </el-sub-menu>
-        <el-menu-item index="4" disabled>用户通知</el-menu-item>
+        <el-menu-item index="4" @click="showHistoryMessage"
+          >历史通知</el-menu-item
+        >
         <!-- <el-menu-item index="5"></el-menu-item> -->
       </el-menu>
     </el-header>
@@ -38,19 +40,9 @@
     <el-main>
       <el-scrollbar>
         <div v-for="(item, index) in fileList" :key="index">
-          <msuess :fileInfo="item"> </msuess>
+          <msuess :fileInfo="item" :showDe="true"> </msuess>
         </div>
-        <!-- <mfail v-show="showfailinfo"></mfail>
-        <mexamine v-show="showexamine"></mexamine>
-        <muploadfail v-show="showuploadfailinfo"></muploadfail>
-        <mdownloadfail v-show="showdownloadfailinfo"></mdownloadfail> -->
         <mweclome v-show="showweclome"></mweclome>
-
-        <!-- <el-table :data="tableData" max-height="3000" >
-            <el-table-column prop="date" label="Date" width="200" />
-            <el-table-column prop="name" label="Name" width="200" />
-            <el-table-column prop="address" label="Address" />
-          </el-table> -->
       </el-scrollbar>
     </el-main>
   </el-container>
@@ -59,7 +51,6 @@
 <script lang="ts">
 import { Menu as IconMenu, Message, Setting } from "@element-plus/icons-vue";
 import { defineComponent, onMounted, ref, reactive, computed } from "vue";
-import { imgBase64 } from "@/utils/common";
 import { pageQuerys } from "@/api/request";
 import msuess from "@/views/user/views/MsuessManage.vue";
 import mfail from "@/views/user/views/MfailManage.vue";
@@ -67,7 +58,7 @@ import mexamine from "@/views/user/views/MexamineManage.vue";
 import muploadfail from "@/views/user/views/MuploadfailManage.vue";
 import mweclome from "@/views/user/views/MweclomeManage.vue";
 import mdownloadfail from "@/views/user/views/MdownloadfailManage.vue";
-import { QueryByType } from "@/api/request";
+import { QueryByType, QueryAllHistoryMessage } from "@/api/request";
 import NProgress from "nprogress";
 export default defineComponent({
   components: {
@@ -79,9 +70,6 @@ export default defineComponent({
     mdownloadfail,
   },
   setup() {
-    //let nowTime=ref('');
-    const n4 = ref(1);
-    const n3 = ref(1);
     const activeIndex = ref("1");
     const activeIndex2 = ref("1");
     let showsuess = ref(false);
@@ -137,15 +125,8 @@ export default defineComponent({
         showweclome.value = false;
       }
     };
-    function showuploadfail() {
-      showsuess.value = false;
-      showexamine.value = false;
-      showfailinfo.value = false;
-      showuploadfailinfo.value = true;
-      showweclome.value = false;
-      showdownloadfailinfo.value = false;
-    }
     const showweclomes = async () => {
+      showweclome.value = true;
       const data = await QueryByType("hhhhhh");
       if (data != null) {
         if ((data as any).code === 0) {
@@ -153,28 +134,29 @@ export default defineComponent({
         }
       }
     };
-    const showall = async () => {
-      const data = await pageQuerys("data_upload_time", false, 0, 10);
+    const showHistoryMessage = async () => {
+      showweclome.value = false;
+      const data = await QueryAllHistoryMessage();
       if (data != null) {
         if ((data as any).code === 0) {
           fileList.value = data.data.list;
         }
       }
     };
-    function showdownloadfail() {
-      showsuess.value = false;
-      showexamine.value = false;
-      showfailinfo.value = false;
-      showuploadfailinfo.value = false;
-      showweclome.value = false;
-      showdownloadfailinfo.value = true;
-    }
+
+    const showall = async () => {
+      const data = await pageQuerys("data_upload_time", false, 0, 100);
+      if (data != null) {
+        if ((data as any).code === 0) {
+          fileList.value = data.data.list;
+        }
+      }
+    };
+
     return {
       setInterval,
       handleOpen,
       handleClose,
-      n4,
-      n3,
       activeIndex,
       activeIndex2,
       handleSelect,
@@ -188,10 +170,9 @@ export default defineComponent({
       showyes,
       showfail,
       showexamines,
-      showuploadfail,
-      showdownloadfail,
       showweclomes,
       showall,
+      showHistoryMessage,
     };
   },
 });

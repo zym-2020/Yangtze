@@ -133,6 +133,7 @@ export default defineComponent({
     const level = ref(0);
     const contextMenuInstance = ref({});
     const renameValue = ref("");
+
     let oldName = "";
 
     const contextMenuClick = (row: any, column: any, event: any) => {
@@ -233,6 +234,7 @@ export default defineComponent({
 
     const createFolder = async (val: string) => {
       const data = await addFile({
+        id: "",
         name: val,
         address: "",
         fileName: "",

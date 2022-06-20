@@ -191,16 +191,26 @@ export async function offlineById(id: string) {
     return await patch(`/share/offlineById/${id}`)
 }
 
+export async function examineById(id: string) {
+    return await patch(`/share/examineById/${id}`)
+}
+
+export async function onlineById(id: string) {
+    return await patch(`/share/onlineById/${id}`)
+}
+
 export async function deleteShareFileAsMember(id: string, page: number, size: number) {
     return await del(`/share/deleteShareFileAsMember/${id}/${page}/${size}`)
 }
 
+export async function getShareFileById(id: string) {
+    return await patch(`/share/getShareFileById/${id}`)
+}
 //========================fileMeta相关接口=================================
 
 export async function getFileMetaAndUserInfo(id: string, email: string) {
     return await get(`/fileMeta/getFileMetaAndUserInfo/${id}/${email}`)
 }
-
 
 //========================download相关接口=================================
 export async function getDownloadURL(id: string) {
@@ -252,4 +262,36 @@ export async function addMessage(jsonData: AddMessageJsonData) {
 
 export async function QueryByTime(property: string) {
     return await get(`/admin/message/QueryByTime/${property}`)
+}
+
+export async function QueryByUserEmail() {
+    return await get(`/admin/message/QueryByUserEmail`)
+}
+
+export async function QueryByUserType(property:string) {
+    return await get(`/admin/message/QueryByUserType/${property}`)
+}
+
+export async function offlineMessage(property:string,dataUploadTime:string) {
+    return await get(`/admin/message/offlineMessage/${property}/${dataUploadTime}`)
+}
+
+export async function offlineUserMessage(property:string,dataUploadTime:string) {
+    return await get(`/admin/message/offlineUserMessage/${property}/${dataUploadTime}`)
+}
+
+export async function QueryHistoryMessage() {
+    return await get(`/admin/message/QueryHistoryMessage`)
+}
+
+export async function QueryAllHistoryMessage() {
+    return await get(`/admin/message/QueryAllHistoryMessage`)
+}
+
+export async function showMessageDetails(property:string) {
+    return await get(`/admin/message/showMessageDetails/${property}`)
+}
+
+export async function responseMessage(response:string,id:string) {
+    return await get(`/admin/message/responseMessage/${response}/${id}`)
 }

@@ -25,6 +25,7 @@ import java.util.Date;
     String messageSender;
     String messageReceiver;
     String messageResponse;
+    String replyUser;
 
 
     }

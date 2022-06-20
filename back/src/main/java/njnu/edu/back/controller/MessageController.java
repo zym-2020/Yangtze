@@ -26,8 +26,8 @@ public class MessageController {
     DownloadService downloadService;
 
     @RequestMapping(value = "/addMessage", method = RequestMethod.POST)
-    public JsonResult addMessage(@RequestBody AddMessageDTO addMessageDTO) {
-        messageService.addMessage(addMessageDTO, addMessageDTO.getFileId());
+    public JsonResult addMessage(@RequestBody AddMessageDTO addMessageDTO,@JwtTokenParser("email") String email) {
+        messageService.addMessage(addMessageDTO, addMessageDTO.getFileId(),email);
         return ResultUtils.success();
 
     }
@@ -62,4 +62,56 @@ public class MessageController {
     public JsonResult QueryByTime(@PathVariable String property) {
         return ResultUtils.success(messageService.QueryByTime(property));
     }
+
+    @AuthCheck
+    @RequestMapping(value = "/QueryByUserEmail", method = RequestMethod.GET)
+    public JsonResult QueryByUserEmail(@JwtTokenParser("email") String email) {
+        return ResultUtils.success(messageService.QueryByUserEmail(email));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/QueryByUserType/{property}", method = RequestMethod.GET)
+    public JsonResult QueryByUserType(@PathVariable String property ,@JwtTokenParser("email") String email) {
+        return ResultUtils.success(messageService.QueryByUserType(property,email));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/offlineMessage/{property}/{dataUploadTime}", method = RequestMethod.GET)
+    public JsonResult offlineMessage(@PathVariable String property ,@PathVariable String dataUploadTime ,@JwtTokenParser("email") String email){
+        messageService.offlineMessage(property,dataUploadTime,email);
+        return ResultUtils.success();
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/offlineUserMessage/{property}/{dataUploadTime}", method = RequestMethod.GET)
+    public JsonResult offlineUserMessage(@PathVariable String property ,@PathVariable String dataUploadTime ,@JwtTokenParser("email") String email){
+        messageService.offlineUserMessage(property,dataUploadTime,email);
+        return ResultUtils.success();
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/QueryHistoryMessage", method = RequestMethod.GET)
+    public JsonResult QueryHistoryMessage(@JwtTokenParser("email") String email) {
+        return ResultUtils.success(messageService.QueryHistoryMessage(email));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/QueryAllHistoryMessage", method = RequestMethod.GET)
+    public JsonResult QueryAllHistoryMessage() {
+        return ResultUtils.success(messageService.QueryAllHistoryMessage());
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/showMessageDetails/{property}", method = RequestMethod.GET)
+    public JsonResult showMessageDetails(@PathVariable String property) {
+        return ResultUtils.success(messageService.showMessageDetails(property));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/responseMessage/{response}/{id}", method = RequestMethod.GET)
+    public JsonResult responseMessage(@PathVariable String response ,@PathVariable String id ){
+        messageService.responseMessage(response,id);
+        return ResultUtils.success();
+    }
+
 }

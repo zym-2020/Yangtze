@@ -130,6 +130,7 @@ export interface AddMessageJsonData {
     messageSender: string,
     messageReceiver: string,
     messageResponse: string,
+    replyUser: boolean
     
 }
 // export interface AddShareFileJsonData {

@@ -143,7 +143,7 @@
             </div>
             <div class="btn">
               <el-button size="small" @click="commit">提交</el-button>
-              <el-button @click="editFlag = flase" size="small">取消</el-button>
+              <el-button @click="editFlag = false" size="small">取消</el-button>
             </div>
           </div>
         </div>
@@ -160,7 +160,7 @@
             <el-tab-pane label="共享条目" name="share">
               <user-share-file></user-share-file>
             </el-tab-pane>
-            <el-tab-pane label="消息" name="message">
+            <el-tab-pane label="消息" name="message" >
               <user-message></user-message>
             </el-tab-pane>
           </el-tabs>

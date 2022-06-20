@@ -17,16 +17,21 @@ public class MessageServiceImpl implements MessageService {
 
     @Autowired
     MessageMapper messageMapper;
-    @Autowired
-    UploadService uploadService;
-    @Autowired
-    DownloadService downloadService;
 
     @Override
-    public void addMessage(AddMessageDTO addMessageDTO, String id) {
+    public void addMessage(AddMessageDTO addMessageDTO, String id,String email) {
         addMessageDTO.setFileId(id);
+        addMessageDTO.setMessageReceiver(email);
         addMessageDTO.setId(UUID.randomUUID().toString());
         messageMapper.addMessage(addMessageDTO);
+    }
+
+    @Override
+    public void addResponseMessage(AddMessageDTO addMessageDTO, String id,String email) {
+        addMessageDTO.setFileId(id);
+        addMessageDTO.setMessageReceiver(email);
+        addMessageDTO.setId(UUID.randomUUID().toString());
+        messageMapper.addResponseMessage(addMessageDTO);
     }
 
     @Override
@@ -67,6 +72,55 @@ public class MessageServiceImpl implements MessageService {
         Map<String, Object> result = new HashMap<>();
         result.put("list", messageMapper.QueryByTime(property));
         return result;
+    }
+
+    @Override
+    public Map<String, Object> QueryByUserEmail(String email) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", messageMapper.QueryByUserEmail(email));
+        return result;
+    }
+
+    @Override
+    public Map<String, Object> QueryByUserType(String property,String email) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", messageMapper.QueryByUserType(property,email));
+        return result;
+    }
+
+    @Override
+    public void offlineMessage(String property,String dataUploadTime,String email){
+        messageMapper.offlineMessage(property,email,dataUploadTime);
+    }
+
+    @Override
+    public void offlineUserMessage(String property,String dataUploadTime,String email){
+        messageMapper.offlineUserMessage(property,email,dataUploadTime);
+    }
+
+    @Override
+    public Map<String, Object> QueryHistoryMessage(String email) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", messageMapper.QueryHistoryMessage(email));
+        return result;
+    }
+
+    @Override
+    public Map<String, Object> QueryAllHistoryMessage() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", messageMapper.QueryAllHistoryMessage());
+        return result;
+    }
+
+    @Override
+    public Map<String, Object> showMessageDetails(String property) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", messageMapper.showMessageDetails(property));
+        return result;
+    }
+    @Override
+    public void responseMessage(String response,String id){
+        messageMapper.responseMessage(response,id);
     }
 }
 

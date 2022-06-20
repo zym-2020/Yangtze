@@ -20,6 +20,7 @@ public class AddMessageDTO {
         String messageSender;
         String messageReceiver;
         String messageResponse;
+        String replyUser;
 
 
 }

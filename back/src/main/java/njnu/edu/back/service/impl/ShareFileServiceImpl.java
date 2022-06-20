@@ -2,6 +2,7 @@ package njnu.edu.back.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import njnu.edu.back.common.exception.MyException;
+import njnu.edu.back.common.result.JsonResult;
 import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.common.utils.LocalUploadUtil;
 import njnu.edu.back.dao.BrowseHistoryMapper;
@@ -45,14 +46,18 @@ public class ShareFileServiceImpl implements ShareFileService {
     String basedir;
 
     @Override
-    public void addShareFile(JSONObject jsonObject, String email, MultipartFile file) {
+    public Map<String, Object> addShareFile(JSONObject jsonObject, String email, MultipartFile file) {
+        Map<String, Object> result = new HashMap<>();
         FileMeta fileMeta = jsonObject.getObject("meta", FileMeta.class);
         ShareFile shareFile = jsonObject.getObject("fileInfo", ShareFile.class);
         String meta = fileMetaMapper.addFileMeta(fileMeta);
+        String uuidDea = UUID.randomUUID().toString();
+        shareFile.setId(uuidDea);
         shareFile.setMeta(meta);
         shareFile.setCreator(email);
         shareFile.setDownload(0);
         shareFile.setWatch(0);
+        result.put("list", uuidDea);
         if(!file.isEmpty()) {
             String uuid = UUID.randomUUID().toString();
             String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
@@ -63,6 +68,10 @@ public class ShareFileServiceImpl implements ShareFileService {
         }
         shareFile.setStatus(0);
         shareFileMapper.addShareFile(shareFile);
+
+
+
+        return result;
     }
 
     @Override
@@ -182,8 +191,27 @@ public class ShareFileServiceImpl implements ShareFileService {
     }
 
     @Override
+    public void examineById(String id) {
+        shareFileMapper.examineById(id);
+    }
+
+    @Override
+    public void onlineById(String id) {
+        shareFileMapper.onlineById(id);
+    }
+
+
+    @Override
     public List<ShareFile> deleteShareFileAsMember(String id, int size, int page, String email) {
 
         return shareFileMapper.deleteShareFileAsMember(id, size, page * size, email);
     }
+
+    @Override
+    public Map<String, Object> getShareFileById(String id) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", shareFileMapper.getShareFileById(id));
+        return result;
+    }
+    
 }
