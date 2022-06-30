@@ -124,9 +124,13 @@ export default defineComponent({
   setup(props, context) {
     const store = useStore();
     const options = ref([
-      { label: "地形", value: "地形" },
-      { label: "水文", value: "水文" },
-      { label: "潮汐", value: "潮汐" },
+      { label: "基础数据", value: "基础数据" },
+      { label: "整合数据", value: "整合数据" },
+      { label: "可视化数据", value: "可视化数据" },
+      { label: "数学模型", value: "数学模型" },
+      { label: "物理模型", value: "物理模型" },
+      { label: "辅助数据", value: "辅助数据" },
+      { label: "影像资料", value: "影像资料" },
     ]);
     const typeValue = ref("");
     const boolValue = ref("");

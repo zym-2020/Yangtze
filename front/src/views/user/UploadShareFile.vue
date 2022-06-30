@@ -320,24 +320,11 @@ export default defineComponent({
               if ((data as any).code === 0) {
                 notice("success", "成功", "请等待管理员审核通过！");
                 const fileID = data.data.list.value;
-                // const fileID = computed(() => {
-                //   return (fileList as any).value;
-                // });
-
                 const dataCacheById = await getShareFileById(fileID.value);
-
                 tempCache.value = dataCacheById.data.list;
-
                 const jsonDataById = computed(() => {
                   return JSON.stringify(tempCache.value as any);
-                });
-
-                // console.log(tempCache.value);  proxy对象
-                // console.log(jsonDataById.value); proxy的value
-
-                const jsonCache = JSON.stringify(jsonData.fileInfo);
-
-                
+                });            
                 const tempData = await addMessage({
                   id: "",
                   dataName: form.name,
@@ -354,7 +341,6 @@ export default defineComponent({
                   replyUser: false,
                 });
                 await examineById(fileID.value);
-
                 init();
               } else {
                 notice("error", "错误", "数据公布错误!");

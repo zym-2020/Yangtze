@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="njnu.edu.back.dao.ShipMapper">
+    <resultMap id="ShipResultMap" type="njnu.edu.back.pojo.Ship">
+        <result column="mmsi" property="mmsi"/>
+        <result column="weight" property="weight"/>
+        <result column="height" property="height"/>
+        <result column="Speed" property="speed"/>
+        <result column="Draught" property="Draught"/>
+        <result column="last_report" property="lastReport"/>
+        <result column="Deadweight" property="DeadWeight"/>
+
+    </resultMap>
+<!--    <insert id="addShipBinary" parameterType="njnu.edu.back.pojo.ShipBinary">-->
+<!--        insert into ship_binary values(#{mmsi}, #{time}, #{zoom}, #{shipBinary});-->
+<!--    </insert>-->
+    <select id="QueryByMsi" resultMap="ShipResultMap">
+        select * from  ship  where  mmsi = cast(#{mmsi} as text);
+    </select>
+
+</mapper>

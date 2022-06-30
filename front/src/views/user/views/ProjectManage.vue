@@ -1,13 +1,6 @@
 <template>
     <div>项目管理</div>
-                  <el-tooltip
-content="Bottom center"   class="el-popper"
-      >
-       <!-- class="el-popper" -->
-          <el-button type="primary" >
-            已知晓通知</el-button
-          >
-         </el-tooltip>
+
 </template>
 
 <script lang="ts">

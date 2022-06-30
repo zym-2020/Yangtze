@@ -80,18 +80,20 @@ export default defineComponent({
     let showdownloadfailinfo = ref(false);
     const fileList = ref<any[]>([]);
     const handleSelect = (key: string, keyPath: string[]) => {
-      console.log(key, keyPath);
+      //console.log(key, keyPath);
     };
     const handleOpen = (key: string, keyPath: string[]) => {
-      console.log(key, keyPath);
+      //console.log(key, keyPath);
     };
     const handleClose = (key: string, keyPath: string[]) => {
-      console.log(key, keyPath);
+      //console.log(key, keyPath);
     };
     const showyes = async () => {
       NProgress.start();
       const property = ref("success");
       const data = await QueryByType(property.value);
+      
+      //console.log("!!!", data)
       if (data != null) {
         if ((data as any).code === 0) {
           fileList.value = data.data.list;
@@ -104,6 +106,7 @@ export default defineComponent({
       NProgress.start();
       const property = ref("fail");
       const data = await QueryByType(property.value);
+      //console.log(data)
       if (data != null) {
         if ((data as any).code === 0) {
           fileList.value = data.data.list;
@@ -145,6 +148,7 @@ export default defineComponent({
     };
 
     const showall = async () => {
+       showweclome.value = false;
       const data = await pageQuerys("data_upload_time", false, 0, 100);
       if (data != null) {
         if ((data as any).code === 0) {

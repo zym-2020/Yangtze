@@ -2,6 +2,8 @@ import { get, post, del, patch } from './axios'
 import { RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData, AddFileJsonData, RenameJsonData, 
     SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData, GetNoUploadJsonData, AddRecordJsonData,  AddMessageJsonData } from './type/userType'
 import { ResourceState } from '@/store/resourse/resourceState'
+import { arrayBuffer } from 'stream/consumers'
+import axios from 'axios'
 
 
 //========================User相关接口=================================
@@ -245,7 +247,7 @@ export async function pageQuerys(property: string, flag: boolean, page: number, 
 }
 
 export async function QueryByType(property: string) {
-    return await get(`/admin/message/QueryByType/${property}`)
+    return await get(`/admin/message/QueryByType/${property}`,{responseType:'arraybuffer'})
 }
 
 export async function QueryByUser(property: string, type: string) {
@@ -295,3 +297,48 @@ export async function showMessageDetails(property:string) {
 export async function responseMessage(response:string,id:string) {
     return await get(`/admin/message/responseMessage/${response}/${id}`)
 }
+
+export async function CountReply() {
+    return await get(`/admin/message/CountReply`)
+}
+
+export async function CountUserReply() {
+    return await get(`/admin/message/CountUserReply`)
+}
+
+// export async function responseTest(response:string) {
+    
+//     axios.get("http://localhost:8080/Yangtze/admin/message/responseMessage/122", { responseType: 'arraybuffer'}).then((res) => {
+        
+//         const dataView = new DataView(res.data)
+//         console.log("223",res.data)
+//         console.log("123", dataView.byteLength, dataView.getInt32(4))
+//         return dataView
+//     })
+// }
+
+export async function responseBinary(response:String) {
+    
+    axios.get("http://localhost:8080/Yangtze/admin/message/responseBinary/122", { responseType: 'arraybuffer'}).then((res) => {
+        
+        const dataView = new DataView(res.data)
+        console.log("223",res.data)
+        console.log("123", dataView.byteLength, dataView.getInt32(4))
+        return dataView
+    })
+}
+
+export async function getShipBinary(response:String) {
+    
+    axios.get("http://localhost:8003/ship/getShipBinary", { responseType: 'arraybuffer'}).then((res) => {
+        
+        const dataView = new DataView(res.data)
+        console.log("223",res.data)
+        console.log("123", dataView.byteLength, dataView.getInt32(4))
+        return dataView
+    })
+}
+
+// export async function queryByMsi(mmsi:number) {
+//     return await get(`/admin/message/QueryByMsi/${mmsi}`)
+// }

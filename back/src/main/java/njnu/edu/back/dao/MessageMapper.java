@@ -44,4 +44,8 @@ public interface MessageMapper {
 
     void responseMessage (@Param("response") String response,@Param("id") String id);
 
+    Integer CountReply();
+
+    Integer CountUserReply();
+
 }

@@ -117,4 +117,12 @@
     <update id="responseMessage">
         update message set message_response = #{response} , data_examine_time=now() where id::text = #{id} ;
     </update>
+
+    <select id="countReply" resultType="java.lang.Integer">
+        select count(*)  from message where reply=false ;
+    </select>
+
+    <select id="countUserReply" resultType="java.lang.Integer">
+        select count(*)  from message where replyUser=false and messahe_receiver=#{email} ;
+    </select>
 </mapper>

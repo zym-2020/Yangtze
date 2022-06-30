@@ -6,6 +6,7 @@ export interface OtherState {
     uploadedList: {id: string, name: string, state: number}[]
     uploadFlag: boolean
     uploadDotFlag: boolean
+    messageBadge: boolean
 }
 
 export const state: OtherState = {
@@ -15,5 +16,6 @@ export const state: OtherState = {
     waitList: [],
     uploadedList: [],
     uploadFlag: false,
-    uploadDotFlag: false
+    uploadDotFlag: false,
+    messageBadge: false,
 }

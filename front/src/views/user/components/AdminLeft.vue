@@ -18,20 +18,28 @@
         <el-icon><Menu /></el-icon>
         <span>项目管理</span>
       </el-menu-item>
-      <el-menu-item index="4">
-        <el-icon><ChatLineRound /></el-icon>
-        <span>消息</span>
+      
+      <el-badge :is-dot="realBadge" class="item" >
+      <el-menu-item index="4"  @click="changeShowBadge">
+        <el-icon><ChatLineRound /></el-icon> 
+        消息
       </el-menu-item>
+      </el-badge>
     </el-menu>
   </div>
 </template>
 
 
 <script lang="ts">
-import { computed, defineComponent, onMounted } from "vue";
+import { computed, defineComponent, onMounted,ref } from "vue";
+import {useStore} from "@/store"
 import router from "@/router";
+import { useStyle } from "naive-ui/es/_mixins";
+import {CountReply,CountUserReply}  from "@/api/request";
 export default defineComponent({
   setup() {
+    const store =useStore()
+    const showBadge=ref(true)
     const selectIndex = computed(() => {
       switch (router.currentRoute.value.path) {
         case "/user/admin/resource":
@@ -44,6 +52,9 @@ export default defineComponent({
           return "4";
       }
     });
+    const realBadge =async () => {
+      return await CountReply();
+      }
     const selectHandle = (index: string) => {
       switch (index) {
         case "1":
@@ -60,10 +71,17 @@ export default defineComponent({
           break;
       }
     };
+    function changeShowBadge(){
+      store.commit("SET_MESSAGE_BADGE",true)
+    }
 
     return {
+      store,
+      showBadge,
       selectHandle,
-      selectIndex
+      selectIndex,
+      changeShowBadge,
+      realBadge,
     };
   },
 });
@@ -77,5 +95,8 @@ export default defineComponent({
   .el-menu {
     height: 100%;
   }
+}
+.item {
+  width:98%
 }
 </style>

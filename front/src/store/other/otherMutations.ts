@@ -24,6 +24,8 @@ export type Mutations<S = OtherState> = {
     SET_UPLOAD_FLAG(state: S, flag: boolean): void
 
     SET_UPLOAD_DOT_FLAG(state: S, flag: boolean): void
+
+    SET_MESSAGE_BADGE(state: S, messageBadge: boolean):void
 }
 
 export const otherMutations: MutationTree<OtherState> & Mutations = {
@@ -90,5 +92,9 @@ export const otherMutations: MutationTree<OtherState> & Mutations = {
 
     SET_UPLOAD_DOT_FLAG(state: OtherState, flag: boolean) {
         state.uploadDotFlag = flag
+    },
+
+    SET_MESSAGE_BADGE(state: OtherState, messageBadge: boolean){
+        state.messageBadge = messageBadge
     }
 }

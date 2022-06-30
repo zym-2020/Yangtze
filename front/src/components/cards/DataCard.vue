@@ -55,10 +55,12 @@ export default defineComponent({
       return imgBase64(name.value);
     });
     const description = computed(() => {
-      return (props.fileInfo as any).description;
+      if((props.fileInfo as any).description){return (props.fileInfo as any).description;}
+      else{return "该条目暂无简介"}
+      
     });
     const updateTime = computed(() => {
-      return dateFormat((props.fileInfo as any).updateTime, "yyyy-MM-dd");
+      return dateFormat((props.fileInfo as any).updateTime, "yyyy年MM月dd日hh时");
     });
     const watch = computed(() => {
       return (props.fileInfo as any).watch;
