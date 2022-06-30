@@ -24,7 +24,9 @@
             "
           >
             <div v-for="(item, index) in uploadList" :key="index" class="data">
-              <div class="cover"></div>
+              <el-tooltip :content="item.name" placement="left" effect="light">
+                <div class="cover"></div>
+              </el-tooltip>
               <div class="content">
                 <div class="icon">
                   <svg
@@ -40,6 +42,7 @@
                 </div>
                 <div class="progress">
                   <div class="name">{{ item.name }}</div>
+
                   <el-progress
                     :percentage="getPercentage(item)"
                     :status="getStatus(item)"
@@ -59,7 +62,9 @@
             </div>
 
             <div v-for="(item, index) in waitList" :key="index" class="data">
-              <div class="cover"></div>
+              <el-tooltip :content="item.name" placement="left" effect="light">
+                <div class="cover"></div>
+              </el-tooltip>
               <div class="content">
                 <div class="icon">
                   <svg
@@ -100,7 +105,10 @@
               :key="index"
               class="data"
             >
-              <div class="cover"></div>
+              <el-tooltip :content="item.name" placement="left" effect="light">
+                <div class="cover"></div>
+              </el-tooltip>
+
               <div class="content">
                 <div class="icon">
                   <svg
@@ -306,6 +314,13 @@ export default defineComponent({
             margin-top: 10px;
             font-size: 14px;
             width: 180px;
+            .name {
+              width: 120px;
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+              -o-text-overflow: ellipsis;
+            }
           }
           .operate {
             .el-icon {

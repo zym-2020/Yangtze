@@ -311,10 +311,10 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public JSONObject pageQuery(int size, int page) {
+    public JSONObject pageQuery(int size, int page, String keyWord) {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("total", projectMapper.countAll());
-        jsonObject.put("list", projectMapper.pageQuery(size, page * size));
+        jsonObject.put("total", projectMapper.countAll("%" + keyWord + "%"));
+        jsonObject.put("list", projectMapper.pageQuery(size, page * size, "%" + keyWord + "%"));
         return jsonObject;
     }
 

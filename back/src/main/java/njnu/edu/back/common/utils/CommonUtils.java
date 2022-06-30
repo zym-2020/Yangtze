@@ -44,4 +44,43 @@ public class CommonUtils {
         date = calendar.getTime();
         return sdf.format(date);
     }
+
+    /**
+    * @Description:GBK编码转utf-8
+    * @Author: Yiming
+    * @Date: 2022/6/10
+    */
+    public static String changeCharSet(String str) {
+        try {
+            if(str != null) {
+                return new String(getUTF8BytesFromGBKString(str), "UTF-8");
+            }
+            return str;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(-1, "错误的编码格式");
+        }
+    }
+
+    private static byte[] getUTF8BytesFromGBKString(String gbkStr) {
+        int n = gbkStr.length();
+        byte[] utfBytes = new byte[3 * n];
+        int k = 0;
+        for (int i = 0; i < n; i++) {
+            int m = gbkStr.charAt(i);
+            if (m < 128 && m >= 0) {
+                utfBytes[k++] = (byte) m;
+                continue;
+            }
+            utfBytes[k++] = (byte) (0xe0 | (m >> 12));
+            utfBytes[k++] = (byte) (0x80 | ((m >> 6) & 0x3f));
+            utfBytes[k++] = (byte) (0x80 | (m & 0x3f));
+        }
+        if (k < utfBytes.length) {
+            byte[] tmp = new byte[k];
+            System.arraycopy(utfBytes, 0, tmp, 0, k);
+            return tmp;
+        }
+        return utfBytes;
+    }
 }

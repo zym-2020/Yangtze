@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -126,7 +127,7 @@ public class LocalUploadUtil {
         }
     }
 
-    public static boolean DeleteFolder(String path) {
+    public static boolean deleteFolder(String path) {
         File file = new File(path);
         if(!file.exists()) {
             return false;
@@ -219,6 +220,25 @@ public class LocalUploadUtil {
         new File(basePath + email + "/projects").mkdirs();
         new File(basePath + email + "/temp").mkdirs();
         new File(basePath + email + "/upload").mkdirs();
+    }
+
+    public static String getFileSize(long number) {
+        String msg = "";
+        DecimalFormat decimalFormat= new  DecimalFormat( "0.00" );
+        if (number < 1048576) {
+            msg = decimalFormat.format((double) number / 1024) + " KB";
+        } else if (number == 1048576) {
+            msg = "1 MB";
+        } else if (number > 1048576 && number < 1073741824) {
+            msg = decimalFormat.format((double) number / (1024 * 1024)) + " MB";
+        } else if (number > 1048576 && number == 1073741824) {
+            msg = "1 GB";
+        } else if (number > 1073741824 && number < 1099511627776l) {
+            msg = decimalFormat.format((double) number / (1024 * 1024 * 1024)) + " GB";
+        } else {
+            msg = "文件超过1 TB";
+        }
+        return msg;
     }
 
 }

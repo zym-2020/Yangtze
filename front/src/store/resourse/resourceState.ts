@@ -36,6 +36,12 @@ export interface Analyse {
 export interface ResourceState {
     layerDataList: Resource[]
     analyse: Analyse
+    layerSort: { type: string; layers: string[]}
+    tempLayer: string[]
+    selectedLayer: {
+        id: string
+        flag: boolean
+    }
 }
 
 
@@ -55,4 +61,10 @@ export const state: ResourceState = {
         volume: { classifyCount: 0, classify: '河道容积计算', analysisResultList: [] },
         anyArea: { classifyCount: 0, classify: '任意区域冲淤', analysisResultList: [] }
     },
+    layerSort: {type: "", layers: []},
+    tempLayer: [],
+    selectedLayer: {
+        id: '',
+        flag: false
+    }
 }

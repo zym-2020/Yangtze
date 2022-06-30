@@ -1,116 +1,53 @@
 <template>
   <div class="upload-main">
     <div class="main">
-      <el-row :gutter="10">
-        <el-col :span="9">
-          <div class="left">
-            <div class="left-list">
-              数据类型：
-              <el-select
-                v-model="typeValue"
-                placeholder="请选择类型"
-                size="small"
-              >
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </div>
-            <div class="left-list">
-              是否解析压缩包？
-              <el-select
-                v-model="boolValue"
-                placeholder="是否解析压缩包?"
-                size="small"
-              >
-                <el-option label="是" value="true" />
-                <el-option label="否" value="false" />
-              </el-select>
-            </div>
-            <div class="left-list">
-              <el-upload
-                action="#"
-                ref="upload"
-                :limit="1"
-                :auto-upload="false"
-                :on-exceed="handleExceed"
-                :on-change="handelChange"
-                :on-remove="handelRemove"
-              >
-                <template #trigger>
-                  <el-button type="primary" size="small">select file</el-button>
-                </template>
-              </el-upload>
-            </div>
-            <div class="left-list">
-              元数据描述:
-              <el-input
-                v-model="textarea"
-                :rows="6"
-                type="textarea"
-                resize="none"
-                placeholder="请输入元数据"
-                style="margin-top: 5px"
-              />
+      <div class="file-list">
+        <el-scrollbar>
+          <el-empty description="暂无数据" v-if="uploadFileList.length === 0" />
+          <div v-else>
+            <div v-for="(item, index) in uploadFileList" :key="index" class="file-item">
+              <div class="name">{{ item.name }}</div>
+              <div class="over">
+                <el-icon @click="close(index)"><CloseBold /></el-icon>
+              </div>
             </div>
           </div>
-        </el-col>
-        <el-col :span="15">
-          <div class="right">
-            <el-scrollbar height="340px">
-              <el-empty description="暂无数据" v-if="treeData.length <= 0" />
-              <el-tree :data="treeData" :props="defaultProps" v-else>
-                <template #default="{ node, data }">
-                  <span class="custom-tree-node">
-                    <svg style="width: 17px; height: 17px">
-                      <use
-                        :xlink:href="
-                          data.type === 'folder'
-                            ? '#icon-wenjianjia'
-                            : '#icon-wenjian'
-                        "
-                      ></use>
-                    </svg>
-                    {{ node.label }}
-                  </span>
-                </template>
-              </el-tree>
-            </el-scrollbar>
-          </div>
-        </el-col>
-      </el-row>
-      <div class="btn">
-        <el-button
-          type="warning"
-          size="small"
-          @click="preview"
-          :disabled="boolValue === 'true' ? false : true"
-          >预览</el-button
-        >
-        <el-button type="primary" size="small" @click="commit">确定</el-button>
+        </el-scrollbar>
+      </div>
+      <div class="bottom">
+        <div class="btn">
+          <el-upload
+            action="#"
+            ref="upload"
+            :multiple="true"
+            :auto-upload="false"
+            :show-file-list="false"
+            :on-change="handelChange"
+          >
+            <template #trigger>
+              <el-button type="warning" size="small">选择文件</el-button>
+            </template>
+          </el-upload>
+          <el-button
+            type="primary"
+            size="small"
+            @click="commit"
+            style="margin-left: 10px"
+            >确定</el-button
+          >
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
-import { genFileId, UploadFile } from "element-plus";
-import type { UploadInstance, UploadRawFile } from "element-plus";
-import { notice } from "@/utils/notice";
-import JSZip from "jszip";
+import { defineComponent, ref } from "vue";
+import { UploadFile } from "element-plus";
 import { uuid } from "@/utils/common";
 
 import { useStore } from "@/store";
 
-interface Tree {
-  label: string;
-  children: Tree[];
-  type: string;
-}
 export default defineComponent({
   props: {
     level: {
@@ -120,158 +57,46 @@ export default defineComponent({
       type: String,
     },
   },
-  emits: ['commitFile'],
+  emits: ["commitFile"],
   setup(props, context) {
     const store = useStore();
-    const options = ref([
-      { label: "基础数据", value: "基础数据" },
-      { label: "整合数据", value: "整合数据" },
-      { label: "可视化数据", value: "可视化数据" },
-      { label: "数学模型", value: "数学模型" },
-      { label: "物理模型", value: "物理模型" },
-      { label: "辅助数据", value: "辅助数据" },
-      { label: "影像资料", value: "影像资料" },
-    ]);
-    const typeValue = ref("");
-    const boolValue = ref("");
-    const boolZipClick = ref(false);
-    const textarea = ref("");
-    const upload = ref<UploadInstance>();
-    const uploadFile = ref<UploadFile[]>([]);
-    const treeData = ref<Tree[]>([]);
-    const defaultProps = {
-      children: "children",
-      label: "label",
-    };
-
-    const handleExceed = (files: File[]) => {
-      upload.value?.clearFiles();
-      const file = files[0] as UploadRawFile;
-      file.uid = genFileId();
-      upload.value?.handleStart(file);
-    };
+    const uploadFileList = ref<UploadFile[]>([]);
 
     const handelChange = (file: UploadFile) => {
       if (file.status === "ready") {
-        uploadFile.value[0] = file;
+        uploadFileList.value.push(file);
       }
     };
 
-    const handelRemove = () => {
-      uploadFile.value = [];
-    };
-
-    const preview = () => {
-      treeData.value = [];
-      if (uploadFile.value.length > 0) {
-        if (!boolZipClick.value) {
-          const zip = new JSZip();
-          const nameArr = uploadFile.value[0]?.name.split(".");
-          const suffix = nameArr[nameArr.length - 1];
-          if (suffix === "zip") {
-            console.log(uploadFile.value[0]?.raw);
-            if (
-              (uploadFile.value[0]?.raw?.size as number) <
-              1024 * 1024 * 1024 * 2
-            ) {
-              boolZipClick.value = true;
-              zip
-                .loadAsync(uploadFile.value[0]?.raw as any)
-                .then((res) => {
-                  console.log(2);
-                  classify(res);
-                })
-                .then(() => {
-                  console.log(1);
-                  boolZipClick.value = false;
-                });
-            } else {
-              notice("warning", "警告", "仅支持小于2G的数据浏览");
-            }
-          } else {
-            notice("error", "错误", "请上传zip数据");
-          }
-        } else {
-          notice("warning", "警告", "计算中，请勿重复点击");
-        }
-      } else {
-        notice("warning", "警告", "请先加载数据");
-      }
-    };
-
-    const classify = (zip: JSZip) => {
-      zip.forEach((item) => {
-        const temp = item.split("/");
-        classifyArr(treeData.value, temp);
-      });
-    };
-
-    const classifyArr = (tree: Tree[], arr: string[]) => {
-      for (let i = 0; i < arr.length; i++) {
-        if (arr[i] != "") {
-          let flag = true;
-          for (let j = 0; j < tree.length; j++) {
-            if (tree[j].label === arr[i]) {
-              tree = tree[j].children;
-              flag = false;
-              break;
-            }
-          }
-          if (flag) {
-            let type = "file";
-            if (i < arr.length - 1) {
-              type = "folder";
-            }
-            tree.push({ label: arr[i], children: [], type: type });
-            tree = tree[tree.length - 1].children;
-          }
-        }
-      }
-    };
+    const close = (index: number) => {
+      uploadFileList.value.splice(index, 1)
+    }
 
     const commit = () => {
-      if (typeValue.value === "") {
-        notice("warning", "警告", "请选择数据类型");
-      } else if (boolValue.value === "") {
-        notice("warning", "警告", "请选择是否解析压缩包？");
-      } else if (uploadFile.value.length === 0) {
-        notice("warning", "警告", "请加载上传数据");
-      } else {
-        uploadFile.value.forEach((item) => {
-          store.commit("ADD_WAIT_ITEM", {
-            id: uuid(),
-            name: item.name,
-            state: -2,
-            file: item.raw as File,
-          });
+      uploadFileList.value.forEach((item) => {
+        store.commit("ADD_WAIT_ITEM", {
+          id: uuid(),
+          name: item.name,
+          state: -2,
+          file: item.raw as File,
         });
+      });
 
-        if (!store.state.other.uploadFlag) {
-          store.dispatch("uploadFiles", {
-            level: props.level as number,
-            parentId: props.parentId as string,
-          });
-        }
-        context.emit('commitFile')
-        store.commit("SET_UPLOAD_DOT_FLAG", true)
-        
+      if (!store.state.other.uploadFlag) {
+        store.dispatch("uploadFiles", {
+          level: props.level as number,
+          parentId: props.parentId as string,
+        });
       }
+      context.emit("commitFile");
+      store.commit("SET_UPLOAD_DOT_FLAG", true);
     };
 
     return {
-      options,
-      typeValue,
-      boolValue,
-      textarea,
       commit,
-      handleExceed,
-      handelRemove,
-      upload,
       handelChange,
-      preview,
-      treeData,
-      defaultProps,
-      boolZipClick,
+      uploadFileList,
+      close
     };
   },
 });
@@ -284,34 +109,51 @@ export default defineComponent({
   padding: 20px 10px 10px 10px;
   background: #a6bed7;
   .main {
-    height: 100%;
-    width: 100%;
+    height: 390px;
     background: #f0f0f0;
-    .left {
-      margin-left: 10px;
-      margin-top: 10px;
-      height: 340px;
-      .left-list {
-        margin-bottom: 10px;
-        .el-select {
-          margin-top: 5px;
+    padding-top: 10px;
+    .file-list {
+      height: 350px;
+      margin: 0 20px;
+      background: white;
+      border: 1px solid;
+      .file-item {
+        height: 25px;
+        line-height: 25px;
+        position: relative;
+        .name {
+          margin: 0 10px;
+        }
+        .over {
+          position: absolute;
+          opacity: 0;
+          top: 0;
+          height: 25px;
           width: 100%;
+          background: #7F7F7F;
+          cursor: pointer;
+          .el-icon {
+            float: right;
+            font-size: 17px;
+            margin-top: 4px;
+            margin-right: 4px;
+            color: black;
+          }
+          &:hover {
+            opacity: 0.2;
+          }
+          
         }
       }
     }
-    .right {
-      margin-right: 10px;
-      background: white;
-      margin-top: 10px;
-      border: solid 1px;
-      height: 340px;
-      .custom-tree-node {
-        height: 20px;
+    .bottom {
+      margin-top: 5px;
+      display: flex;
+      justify-content: space-around;
+      .btn {
+        display: flex;
+        justify-content: space-around;
       }
-    }
-    .btn {
-      text-align: center;
-      margin-top: 10px;
     }
   }
 }

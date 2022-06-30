@@ -2,7 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="njnu.edu.back.dao.FileMapper">
     <insert id="addFile" parameterType="njnu.edu.back.pojo.dto.AddFileDTO">
-        insert into files values(#{id}::uuid, #{name}, #{address}, #{fileName}, #{level}, #{parentId}, now(), #{uploader}, #{meta}, #{folder}, #{size});
+        <if test="id != null">
+            insert into files values(#{id}::uuid, #{name}, #{address}, #{fileName}, #{level}, #{parentId}, now(), #{uploader}, #{meta}, #{folder}, #{size});
+        </if>
+        <if test="id == null">
+            insert into files values(default, #{name}, #{address}, #{fileName}, #{level}, #{parentId}, now(), #{uploader}, #{meta}, #{folder}, #{size});
+        </if>
     </insert>
 
     <select id="findByLevel" resultType="java.util.HashMap">
@@ -23,13 +28,19 @@
         update files set name = #{name} where id::text = #{id};
     </update>
 
-    <delete id="delete">
-        delete from files where id::text = #{id};
+    <delete id="batchDelete">
+        delete from files
+        <foreach collection="list" item="item" open="where id::text in (" close=")" separator=",">
+            #{item}
+        </foreach>
     </delete>
 
-    <delete id="deleteFolder">
+    <delete id="batchDeleteFolder">
         with recursive temp_files as (
-            select * from files where id::text = #{id}
+            select * from files
+            <foreach collection="list" item="item" open="where id::text in (" close=")" separator=",">
+                #{item}
+            </foreach>
             union
             select f.* from files f
             inner join temp_files on temp_files.id::text = f.parent_id
@@ -38,7 +49,10 @@
 
     <select id="recursionFindFiles" resultType="java.util.HashMap">
         with recursive temp_files as (
-            select * from files where id::text = #{id}
+            select * from files
+            <foreach collection="list" item="item" open="where id::text in (" close=")" separator=",">
+                #{item}
+            </foreach>
             union
             select f.* from files f
             inner join temp_files on temp_files.id::text = f.parent_id
@@ -50,6 +64,62 @@
     </select>
 
     <select id="findDeleteById" resultType="java.util.HashMap">
-        select * from files where id::text = #{id} and address not in (select origin_address from share_files);
+        select * from files
+        <foreach collection="list" item="item" open="where id::text in (" close=")" separator=",">
+            #{item}
+        </foreach>
+        and
+        address not in (select origin_address from share_files)
+    </select>
+
+    <insert id="batchInsert">
+        insert into files values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id}::uuid, #{item.name}, #{item.address}, #{item.fileName}, #{item.level}, #{item.parentId}, now(), #{item.uploader}, #{item.meta}, #{item.folder}, #{item.size})
+        </foreach>
+    </insert>
+
+    <select id="selectFolder" resultType="java.util.HashMap">
+        select * from files where uploader = #{email} and folder = true order by level asc;
+    </select>
+
+    <update id="updateFolderParentIdAndLevel">
+        with recursive temp_files as (
+            select * from files
+            <foreach collection="list" item="item" open="where id::text in (" close=")" separator=",">
+                #{item}
+            </foreach>
+            union
+            select f.* from files f
+            inner join temp_files on temp_files.id::text = f.parent_id
+            )
+            update files set level = level + #{levelDifference} where id in (select id from temp_files);
+        update files set parent_id = #{parentId} where id::text = #{id};
+    </update>
+
+    <update id="updateFileParentIdAndLevel">
+        update files set parent_id = #{parentId}, level = level + #{levelDifference}
+        <foreach collection="list" item="item" open="where id::text in (" close=")" separator=",">
+            #{item}
+        </foreach>
+    </update>
+
+    <select id="selectFolderPath" resultType="java.util.HashMap">
+        with recursive temp_files as (
+            select *, name as path from files
+            <foreach collection="list" item="item" open="where id::text in (" close=")" separator=",">
+                #{item}
+            </foreach>
+            union
+            select f.*, temp_files.name || '\' || f.name from files f
+            inner join temp_files on temp_files.id::text = f.parent_id
+        ) select path, address from temp_files where folder = false;
+    </select>
+
+    <select id="selectFilePath" resultType="java.util.HashMap">
+        select name as path, address from files
+        <foreach collection="list" item="item" open="where id::text in (" close=")" separator=",">
+            #{item}
+        </foreach>
     </select>
 </mapper>

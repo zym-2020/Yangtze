@@ -40,7 +40,6 @@ export default defineComponent({
     const uploadPageFlag = ref(false);
 
     const openUploadList = () => {
-      console.log(1);
       uploadPageFlag.value = false;
       uploadPageFlag.value = true;
     };

@@ -6,7 +6,12 @@ export type Mutations<S = ResourceState> = {
     ADD_BASE_DATA(state: S, resource: Resource): void
     SET_ANALYSE(state: S, analyse: Analyse): void
     ADD_ANALYSE(state: S, AnalyseResource: { classify: string; resource: Resource }): void
-    INIT(sTATE: S): void
+    INIT(state: S): void
+    SET_LAYER_SORT(state: S, jsonParam: { type: string, layers: string[]}): void
+    SET_TEMP_LAYERS(state: S, layers: string[]): void
+    ADD_TEMP_LAYER(state: S, layer: string): void
+    DEL_TEPM_LAYER(state: S, index: number): void
+    SET_SELECTED_LAYER(state: S, jsonParam: {id: string; flag: boolean}): void
 }
 
 export const resourceMutations: MutationTree<ResourceState> & Mutations = {
@@ -87,5 +92,27 @@ export const resourceMutations: MutationTree<ResourceState> & Mutations = {
             volume: { classifyCount: 0, classify: '河道容积计算', analysisResultList: [] },
             anyArea: { classifyCount: 0, classify: '任意区域冲淤', analysisResultList: [] }
         }))
+        state.layerSort.type = ""
+        state.layerSort.layers = []
+        state.tempLayer = []
+        state.selectedLayer.id = ""
+        state.selectedLayer.flag = false
+    },
+    SET_LAYER_SORT(state: ResourceState, jsonParam: { type: string, layers: string[]}) {
+        state.layerSort.type = jsonParam.type
+        state.layerSort.layers = jsonParam.layers
+    },
+    SET_TEMP_LAYERS(state: ResourceState, layers: string[]) {
+        state.tempLayer = layers
+    },
+    ADD_TEMP_LAYER(state: ResourceState, layer: string) {
+        state.tempLayer.unshift(layer)
+    },
+    DEL_TEPM_LAYER(state: ResourceState, index: number) {
+        state.tempLayer.splice(index, 1)
+    },
+    SET_SELECTED_LAYER(state: ResourceState, jsonParam: {id: string; flag: boolean}) {
+        state.selectedLayer.id = jsonParam.id
+        state.selectedLayer.flag = jsonParam.flag
     }
 }
