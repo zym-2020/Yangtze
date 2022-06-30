@@ -8,7 +8,7 @@
             <div class="title">
               <strong>类别</strong>
             </div>
-            <data-collapse @selectList="getSelectList"></data-collapse>
+            <data-collapse @selectList="getSelectList" ></data-collapse>
           </div>
         </div>
         <div class="right">

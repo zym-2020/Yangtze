@@ -35,7 +35,7 @@ export default defineComponent({
     const route = computed(() => {
       return router.currentRoute.value;
     });
-
+  
     return {
       route,
     };

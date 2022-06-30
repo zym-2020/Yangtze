@@ -184,13 +184,19 @@ import {
   shallowRef,
   onBeforeUnmount,
   onMounted,
+  computed,
 } from "vue";
 import "@wangeditor/editor/dist/css/style.css"; // 引入 css
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
 import { IDomEditor } from "@wangeditor/editor";
 import PageHeader from "@/components/page/PageHeader.vue";
 import ResourceDialog from "@/components/dialog/ResourceDialog.vue";
-import { addShareFile } from "@/api/request";
+import {
+  addShareFile,
+  addMessage,
+  examineById,
+  getShareFileById,
+} from "@/api/request";
 import { notice } from "@/utils/notice";
 import type { FormInstance } from "element-plus";
 import AvatarUpload from "@/components/upload/AvatarUpload.vue";
@@ -209,6 +215,8 @@ export default defineComponent({
     const resourceType = ref("");
     const editorRef = shallowRef<IDomEditor>();
     const toolbarConfig = {};
+    const fileList = ref<any[]>([]);
+    const tempCache = ref<any[]>([]);
     const editorConfig = {
       scroll: true,
       autoFocus: true,
@@ -293,9 +301,9 @@ export default defineComponent({
                 originName: form.origin.name,
                 visualSource: "",
                 visualType: "",
-                visualName: '',
+                visualName: "",
                 structuredSource: "",
-                structuredName: '',
+                structuredName: "",
                 tags: form.tagList,
               },
             };
@@ -311,8 +319,29 @@ export default defineComponent({
             if (data != null) {
               if ((data as any).code === 0) {
                 notice("success", "成功", "请等待管理员审核通过！");
-
-                // init();
+                const fileID = data.data.list.value;
+                const dataCacheById = await getShareFileById(fileID.value);
+                tempCache.value = dataCacheById.data.list;
+                const jsonDataById = computed(() => {
+                  return JSON.stringify(tempCache.value as any);
+                });            
+                const tempData = await addMessage({
+                  id: "",
+                  dataName: form.name,
+                  dataUploadTime: "",
+                  dataExamineTime: "2012-02-25",
+                  dataCache: jsonDataById.value,
+                  messageRequest: "fff",
+                  reply: false,
+                  fileId: fileID.value,
+                  messageSender: "fgz",
+                  messageReceiver: " ",
+                  messageResponse: "examine",
+                  messageType: "upload",
+                  replyUser: false,
+                });
+                await examineById(fileID.value);
+                init();
               } else {
                 notice("error", "错误", "数据公布错误!");
               }

@@ -22,4 +22,6 @@ public class JsonResult<T> {
     private T data;
 
     private String refreshToken;
+
+
 }

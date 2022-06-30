@@ -8,6 +8,7 @@
               <div v-if="item.status === 1" class="online">
                 <el-tag type="success">Online</el-tag>
               </div>
+
               <div v-else class="offline">
                 <el-tag type="info">Offline</el-tag>
               </div>
@@ -33,7 +34,7 @@
                         >
                         <el-dropdown-item
                           v-if="item.status === -1"
-                          @click="operate(3, item, index)"
+                          @click="operate(3, item)"
                           >上线</el-dropdown-item
                         >
                         <el-dropdown-item @click="operate(4, item)"
@@ -74,6 +75,7 @@ import { notice } from "@/utils/notice";
 import DataCard from "@/components/cards/DataCard.vue";
 import { ElMessageBox } from "element-plus";
 import router from "@/router";
+import { addMessage, QueryByTime, examineById } from "@/api/request";
 export default defineComponent({
   components: { DataCard },
   setup() {
@@ -113,6 +115,34 @@ export default defineComponent({
           })
           .catch(() => {});
       } else if (number === 3) {
+        ElMessageBox.confirm(
+          "您确定上线条目吗？上线后需要管理员审核通过后发布至资源门户，同时请关注消息界面中的通知",
+          "警告",
+          {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning",
+          }
+        ).then(async () => {
+          const jsonCache = JSON.stringify(info);
+          const data = await addMessage({
+            id: "",
+            dataName: info.name,
+            dataUploadTime: "",
+            dataExamineTime: "2012-02-25",
+            dataCache: jsonCache,
+            messageRequest: "fff",
+            reply: false,
+            fileId: info.id,
+            messageSender: "fgz",
+            messageReceiver: " ",
+            messageResponse: "examine",
+            messageType: "online",
+            replyUser:false,
+          });
+          console.log(info.id)
+          await examineById(info.id);
+        });
       } else if (number === 4) {
         ElMessageBox.confirm("您确定要删除该条目吗？", "警告", {
           confirmButtonText: "确定",

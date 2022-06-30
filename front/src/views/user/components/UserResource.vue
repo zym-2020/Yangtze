@@ -149,6 +149,7 @@ export default defineComponent({
     const moveItemList = ref<any[]>([]);
     const selectTables = ref<any[]>([]);
     const renameValue = ref("");
+
     let oldName = "";
 
     const contextMenuClick = (row: any, column: any, event: any) => {
@@ -261,6 +262,7 @@ export default defineComponent({
 
     const createFolder = async (val: string) => {
       const data = await addFile({
+        id: "",
         name: val,
         address: "",
         fileName: "",

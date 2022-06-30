@@ -23,7 +23,7 @@
         <result column="column" property="column"/>
     </resultMap>
     <insert id="addShareFile" parameterType="njnu.edu.back.pojo.ShareFile">
-        insert into share_files values(default, #{name}, #{description}, #{originAddress}, #{visualSource}, #{visualType}, #{structuredSource}, #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}, #{creator}, now(), #{meta}, #{download}, #{watch}, now(), #{avatar}, #{originName}, #{structuredName}, #{visualName}, #{status});
+        insert into share_files values(#{id}::uuid, #{name}, #{description}, #{originAddress}, #{visualSource}, #{visualType}, #{structuredSource}, #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}, #{creator}, now(), #{meta}, #{download}, #{watch}, now(), #{avatar}, #{originName}, #{structuredName}, #{visualName}, #{status});
     </insert>
 
     <select id="pageQueryByAdminDESC" resultType="java.util.HashMap">
@@ -144,6 +144,14 @@
 
     <update id="offlineById">
         update share_files set status = -1 where id::text = #{id};
+    </update>
+
+    <update id="examineById">
+        update share_files set status = 0 where id::text = #{id};
+    </update>
+
+    <update id="onlineById">
+        update share_files set status = 1 where id::text = #{id};
     </update>
 
     <select id="deleteShareFileAsMember" resultMap="ShareFileResultMap">

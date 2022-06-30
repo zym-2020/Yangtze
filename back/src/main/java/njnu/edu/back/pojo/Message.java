@@ -12,21 +12,8 @@ import java.util.Date;
     @AllArgsConstructor
     @NoArgsConstructor
     public class Message {
-//    String email;
-//    String id;
-//    String dataUploaderId;
-//    String dataDownloaderId;
-//    String dataExaminer;
-//    String datatype;
-//    String dataUploadTime;
-//    String dataDownloadTime;
-//    String dataExamineTime;
-//    String messageType;
-//    String roles;
-//    String dataName;
-//    String[] tags;
 
-
+    String id;
     String dataName;
     String messageType;
     String dataUploadTime;
@@ -34,11 +21,12 @@ import java.util.Date;
     String dataCache;
     String messageRequest;
     String reply;
-    String messageId;
+    String fileId;
     String messageSender;
     String messageReceiver;
     String messageResponse;
-    String id;
+    String replyUser;
+
 
     }
 

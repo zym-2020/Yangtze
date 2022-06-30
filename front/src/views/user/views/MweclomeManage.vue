@@ -15,15 +15,15 @@
       <h1 class="h1intro">
         所以您需要做的第一件事可以是上传您自己的数据，抑或是在数据共享平台下载数据。
       </h1>
-      <div style="width: 900px; margin-left: 350px">
-        <el-carousel indicator-position="outside" type="card">
+      <!-- <div style="width: 900px; margin-left: 350px">
+        <el-carousel indicator-position="outside" type="card" >
           <el-carousel-item v-for="url in urls" :key="url">
             <div class="demo-image__lazy">
               <el-image :src="url" lazy />
             </div>
           </el-carousel-item>
         </el-carousel>
-      </div>
+      </div> -->
 
       <h1 class="h1intro">如果您是新用户，那么下面提供一些使用该平台的建议</h1>
       <ul>

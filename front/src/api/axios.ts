@@ -62,7 +62,7 @@ export const get = (url: string, params?: any) => {
     return axiosInstance({
         url: url,
         params: params,
-        method: 'get',
+        method: 'get'
     })
 }
 

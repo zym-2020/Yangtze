@@ -1,9 +1,16 @@
 import { get, post, del, patch } from './axios'
+
+import { RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData, AddFileJsonData, RenameJsonData, 
+    SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData, GetNoUploadJsonData, AddRecordJsonData,  AddMessageJsonData } from './type/userType'
+import { ResourceState } from '@/store/resourse/resourceState'
+import { arrayBuffer } from 'stream/consumers'
+import axios from 'axios'
 import {
     RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData, AddFileJsonData, RenameJsonData, UnPackJsonData, UpdateParentIdAndLevelJsonData, CompressFileJsonData,
     SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData, GetNoUploadJsonData, AddRecordJsonData, AddMessageJsonData, DeleteFilesOrFolders, GetProjectsJsonData
 } from './type/userType'
 import { Resource, Analyse } from '@/store/resourse/resourceState'
+
 
 import axios from 'axios'
 
@@ -206,16 +213,26 @@ export async function offlineById(id: string) {
     return await patch(`/share/offlineById/${id}`)
 }
 
+export async function examineById(id: string) {
+    return await patch(`/share/examineById/${id}`)
+}
+
+export async function onlineById(id: string) {
+    return await patch(`/share/onlineById/${id}`)
+}
+
 export async function deleteShareFileAsMember(id: string, page: number, size: number) {
     return await del(`/share/deleteShareFileAsMember/${id}/${page}/${size}`)
 }
 
+export async function getShareFileById(id: string) {
+    return await patch(`/share/getShareFileById/${id}`)
+}
 //========================fileMeta相关接口=================================
 
 export async function getFileMetaAndUserInfo(id: string, email: string) {
     return await get(`/fileMeta/getFileMetaAndUserInfo/${id}/${email}`)
 }
-
 
 //========================download相关接口=================================
 export async function getDownloadURL(id: string) {
@@ -250,7 +267,7 @@ export async function pageQuerys(property: string, flag: boolean, page: number, 
 }
 
 export async function QueryByType(property: string) {
-    return await get(`/admin/message/QueryByType/${property}`)
+    return await get(`/admin/message/QueryByType/${property}`,{responseType:'arraybuffer'})
 }
 
 export async function QueryByUser(property: string, type: string) {
@@ -269,6 +286,84 @@ export async function QueryByTime(property: string) {
     return await get(`/admin/message/QueryByTime/${property}`)
 }
 
+
+export async function QueryByUserEmail() {
+    return await get(`/admin/message/QueryByUserEmail`)
+}
+
+export async function QueryByUserType(property:string) {
+    return await get(`/admin/message/QueryByUserType/${property}`)
+}
+
+export async function offlineMessage(property:string,dataUploadTime:string) {
+    return await get(`/admin/message/offlineMessage/${property}/${dataUploadTime}`)
+}
+
+export async function offlineUserMessage(property:string,dataUploadTime:string) {
+    return await get(`/admin/message/offlineUserMessage/${property}/${dataUploadTime}`)
+}
+
+export async function QueryHistoryMessage() {
+    return await get(`/admin/message/QueryHistoryMessage`)
+}
+
+export async function QueryAllHistoryMessage() {
+    return await get(`/admin/message/QueryAllHistoryMessage`)
+}
+
+export async function showMessageDetails(property:string) {
+    return await get(`/admin/message/showMessageDetails/${property}`)
+}
+
+export async function responseMessage(response:string,id:string) {
+    return await get(`/admin/message/responseMessage/${response}/${id}`)
+}
+
+export async function CountReply() {
+    return await get(`/admin/message/CountReply`)
+}
+
+export async function CountUserReply() {
+    return await get(`/admin/message/CountUserReply`)
+}
+
+// export async function responseTest(response:string) {
+    
+//     axios.get("http://localhost:8080/Yangtze/admin/message/responseMessage/122", { responseType: 'arraybuffer'}).then((res) => {
+        
+//         const dataView = new DataView(res.data)
+//         console.log("223",res.data)
+//         console.log("123", dataView.byteLength, dataView.getInt32(4))
+//         return dataView
+//     })
+// }
+
+export async function responseBinary(response:String) {
+    
+    axios.get("http://localhost:8080/Yangtze/admin/message/responseBinary/122", { responseType: 'arraybuffer'}).then((res) => {
+        
+        const dataView = new DataView(res.data)
+        console.log("223",res.data)
+        console.log("123", dataView.byteLength, dataView.getInt32(4))
+        return dataView
+    })
+}
+
+export async function getShipBinary(response:String) {
+    
+    axios.get("http://localhost:8003/ship/getShipBinary", { responseType: 'arraybuffer'}).then((res) => {
+        
+        const dataView = new DataView(res.data)
+        console.log("223",res.data)
+        console.log("123", dataView.byteLength, dataView.getInt32(4))
+        return dataView
+    })
+}
+
+// export async function queryByMsi(mmsi:number) {
+//     return await get(`/admin/message/QueryByMsi/${mmsi}`)
+// }
+
 //========================analyticDataSet相关接口=================================
 export async function findDataByType(type: string) {
     return await get(`/analyticDataSet/findDataByType/${type}`)
@@ -286,3 +381,4 @@ export async function getAreaShip(key: string, scode: string, xy: string) {
         }
     })
 }
+

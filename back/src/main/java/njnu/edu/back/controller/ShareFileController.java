@@ -35,8 +35,7 @@ public class ShareFileController {
     @RequestMapping(value = "/addShareFile", method = RequestMethod.POST)
     public JsonResult addShareFile(@RequestParam String jsonString, @RequestParam MultipartFile file, @JwtTokenParser("email") String email) {
         JSONObject jsonObject = JSON.parseObject(jsonString);
-        shareFileService.addShareFile(jsonObject, email, file);
-        return ResultUtils.success();
+        return ResultUtils.success(shareFileService.addShareFile(jsonObject, email, file));
     }
 
 
@@ -161,9 +160,28 @@ public class ShareFileController {
     }
 
     @AuthCheck
+    @RequestMapping(value = "/examineById/{id}", method = RequestMethod.PATCH)
+    public JsonResult examineById(@PathVariable String id) {
+        shareFileService.examineById(id);
+        return ResultUtils.success();
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/onlineById/{id}", method = RequestMethod.PATCH)
+    public JsonResult onlineById(@PathVariable String id) {
+        shareFileService.onlineById(id);
+        return ResultUtils.success();
+    }
+
+    @AuthCheck
     @RequestMapping(value = "/deleteShareFileAsMember/{id}/{page}/{size}", method = RequestMethod.DELETE)
     public JsonResult deleteShareFileAsMember(@PathVariable String id, @PathVariable int page, @PathVariable int size, @JwtTokenParser("email") String email) {
         return ResultUtils.success(shareFileService.deleteShareFileAsMember(id, size, page, email));
     }
 
+    @AuthCheck
+    @RequestMapping(value = "/getShareFileById/{id}", method = RequestMethod.PATCH)
+    public JsonResult getShareFileById(@PathVariable String id) {
+        return ResultUtils.success(shareFileService.getShareFileById(id));
+    }
 }

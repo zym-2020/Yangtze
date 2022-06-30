@@ -12,6 +12,9 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import { drag, analyseDrag } from '@/directives/drag'
 import { inputFocus } from '@/directives/focus'
+//import Vuesax from 'vuesax'
+//import 'vuesax/dist/vuesax.css'
+
 
 const app = createApp(App)
 Object.keys(Icons).forEach(key => {
@@ -23,5 +26,6 @@ app.directive("inputFocus", inputFocus)
 
 
 app.use(ElementPlus)
+//app.use(Vuesax)
 app.use(store).use(router).mount('#app')
 

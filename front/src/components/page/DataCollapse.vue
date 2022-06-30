@@ -1,12 +1,14 @@
 <template>
   <div>
-    <el-collapse @change="handleChange">
+    <el-collapse @change="handleChange" v-model="activeNames">
       <el-collapse-item
         v-for="(item, index) in categoryList"
         :key="index"
         :title="item.title"
         :name="index"
+        active
       >
+      <p style="text-align :center;font-weight: bold">{{desciription[index]}}</p>
         <div v-for="(dataItem, index) in item.data" :key="index">
         <!-- :label="dataItem.name + '（' + dataItem.count + '）'"  -->
           <el-checkbox
@@ -15,34 +17,66 @@
             @change="change(dataItem)"
           />
         </div>
+        <hr style="border-color: #d8d8d8" />
       </el-collapse-item>
+      
     </el-collapse>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, reactive } from "vue";
 export default defineComponent({
   emits: ["selectList"],
   setup(props, context) {
+    const activeNames=reactive([0,1,2,3,4])
+    const desciription =reactive(['地形数据、水文数据、工程数据'])
     const categoryList = ref([
       {
-        title: "水文参数数据",
+        title: "基础数据、整合数据、可视化数据",
         data: [
           {
-            name: "潮位",
+            name: "栅格ASC文件",
             count: 5,
           },
           {
-            name: "大断面",
+            name: "栅格TXT文件",
             count: 7,
           },
+          {
+            name: "栅格文件",
+            count: 7,
+          },
+          {
+            name: "矢量文件",
+            count: 7,
+          },
+          {
+            name: "等高线",
+            count: 7,
+          },
+          {
+            name: "等深线",
+            count: 7,
+          },
+          {
+            name: "潮位",
+            count: 7,
+          },
+          {
+            name: "大断面结果",
+            count: 7,
+          }, 
           {
             name: "含沙量",
             count: 7,
-          },
+          },          
           {
             name: "流量",
+            count: 7,
+          },
+          {
+            name: "输沙率",
             count: 7,
           },
           {
@@ -57,199 +91,95 @@ export default defineComponent({
             name: "悬移质",
             count: 7,
           },
-        ],
-      },
-      {
-        title: "水文数据",
-        data: [
-          {
-            name: "深泓线",
-
-            count: 7,
-          },
-          {
-            name: "沙滩",
-            count: 7,
-          },
-          {
-            name: "浓度场",
-            count: 7,
-          },
-          {
-            name: "流场",
-            count: 7,
-          },
           {
             name: "冲淤",
             count: 7,
           },
-        ],
-      },
-      {
-        title: "物理模型数据",
-        data: [
           {
-            name: "模型照片",
-            count: 5,
-          },
-          {
-            name: "试验照片",
+            name: "深泓线",
             count: 7,
           },
           {
-            name: "等高线",
+            name: "风速",
             count: 7,
           },
           {
-            name: "长江BMP图像",
-            count: 7,
-          },
-        ],
-      },
-      {
-        title: "物理模型数据",
-        data: [
-          {
-            name: "模型照片",
-            count: 5,
-          },
-          {
-            name: "试验照片",
+            name: "风向",
             count: 7,
           },
           {
-            name: "等高线",
+            name: "DWG工程文件",
             count: 7,
           },
           {
-            name: "长江BMP图像",
+            name: "TXT工程文件",
             count: 7,
           },
         ],
       },
       {
-        title: "基础数据",
+        title: "数学模型",
         data: [
           {
-            name: "水文参数数据",
+            name: "流场",
+
+            count: 7,
+          },
+        ],
+      },
+      {
+        title: "物理模型",
+        data: [
+          {
+            name: "地图数据",
             count: 5,
           },
           {
-            name: "三维点数据",
+            name: "浓度场数据",
             count: 7,
-          },
-          {
-            name: "流场数据",
-            count: 7,
-          },
-          {
-            name: "工程数据",
-            count: 7,
-          },
-          {
-            name: "数模数据",
-            count: 7,
-          },
-          {
-            name: "物模数据",
-            count: 7,
-          },
-          {
-            name: "影像数据",
-            count: 7,
-          },
+          }
         ],
       },
       {
         title: "辅助数据",
         data: [
           {
-            name: "潮位站",
+            name: "Pdf",
             count: 5,
           },
           {
-            name: "长江流域遥感影像",
+            name: "Excel",
             count: 7,
           },
-          {
-            name: "等高线",
-            count: 7,
-          },
-          {
-            name: "长江BMP图像",
-            count: 7,
-          },
-        ],
-      },
-      {
-        title: "工程实施数据",
-        data: [
-          {
-            name: "工程前数据",
-            count: 5,
-          },
-          {
-            name: "工程后数据",
-            count: 7,
-          },
-        ],
-      },
-      {
-        title: "处理数据",
-        data: [
-          {
-            name: "原始数据",
-            count: 5,
-          },
-          {
-            name: "整合数据",
-            count: 7,
-          },
-        ],
-      },
-      {
-        title: "辅助数据",
-        data: [
           {
             name: "PPT",
-            count: 6,
+            count: 7,
           },
           {
-            name: "PDF",
-            count: 1,
-          },
-          {
-            name: "DOC",
-            count: 1,
-          },
-          {
-            name: "XLS",
-            count: 1,
+            name: "Word",
+            count: 7,
           },
         ],
       },
       {
-        title: "数据库数据",
+        title: "影像资料",
         data: [
           {
-            name: "水文Access数据库",
-            count: 3,
-          },
-        ],
-      },
-      {
-        title: "资源类型",
-        data: [
-          {
-            name: "excel",
-            count: 1,
+            name: "遥感影像",
+            count: 5,
           },
           {
-            name: "pdf",
-            count: 1,
+            name: "照片",
+            count: 7,
           },
+          {
+            name: "视频",
+            count: 7,
+          },
+          
         ],
       },
+     
     ]);
 
     const selectList = ref<any[]>([]);
@@ -271,6 +201,8 @@ export default defineComponent({
     };
 
     return {
+      activeNames,
+      desciription,
       handleChange,
       categoryList,
       change,
