@@ -10,6 +10,7 @@ import njnu.edu.back.common.utils.AnalyseUtil;
 import njnu.edu.back.dao.AnalyticDataSetMapper;
 import njnu.edu.back.pojo.Project;
 import njnu.edu.back.pojo.support.Layer;
+import njnu.edu.back.pojo.support.NameCount;
 import njnu.edu.back.repository.ProjectRepository;
 import njnu.edu.back.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,7 @@ public class ProjectServiceImpl implements ProjectService {
         project.setLayers(new ArrayList<>());
         project.setSortLayers(new ArrayList<>());
         project.setAvatar("");
+        project.setNameCount(new NameCount(0));
         Project result = projectRepository.save(project);
         String projectId = result.getId();
         File file = new File(baseDir + email + "\\projects\\" + email + "\\" + projectId);
@@ -94,7 +96,7 @@ public class ProjectServiceImpl implements ProjectService {
             }
         }
         JSONObject jsonObject = JSON.parseObject(jsonString);
-        Project project = new Project(null, jsonObject.getString("projectName"), jsonObject.getString("creator"), jsonObject.getString("description"), new Date(), new ArrayList<>(), new ArrayList<>(), jsonObject.getString("creatorName"), uuid + "." + suffix);
+        Project project = new Project(null, jsonObject.getString("projectName"), jsonObject.getString("creator"), jsonObject.getString("description"), new Date(), new ArrayList<>(), new ArrayList<>(), jsonObject.getString("creatorName"), uuid + "." + suffix, new NameCount(0));
         Project result = projectRepository.save(project);
         String projectId = result.getId();
         File f = new File(baseDir + email + "\\projects\\" + email + "\\" + projectId);
@@ -139,6 +141,8 @@ public class ProjectServiceImpl implements ProjectService {
         }
         Project project = optionalProject.get();
         layer.setState(0);
+        layer.setName("断面形态_" + project.getNameCount().getSection());
+        project.getNameCount().setSection(project.getNameCount().getSection() + 1);
         project.getLayers().add(layer);
         project.getSortLayers().add(layer.getId());
         projectRepository.save(project);

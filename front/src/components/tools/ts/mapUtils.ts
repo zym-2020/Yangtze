@@ -18,7 +18,6 @@ export const sectionUtil = (map: mapBoxGl.Map | undefined, draw: MapboxDraw, pro
         const uid = uuid()
         const layer = {
             id: uid,
-            name: '断面形态',
             type: 'section',
             selectDemId: demId,
             selectDemName: demName,

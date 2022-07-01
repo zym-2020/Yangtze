@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import njnu.edu.back.pojo.support.Layer;
+import njnu.edu.back.pojo.support.NameCount;
 import org.springframework.data.annotation.Id;
 
 import java.util.Date;
@@ -37,4 +38,5 @@ public class Project {
     List<String> sortLayers;
     String creatorName;
     String avatar;
+    NameCount nameCount;
 }

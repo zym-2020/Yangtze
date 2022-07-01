@@ -182,7 +182,7 @@ export interface GetProjectsJsonData {
 export interface Layer {
     id: string
     type: string
-    name: string
+    name?: string
     tableName?: string
     vectorType?: string
     geoJson?: {
