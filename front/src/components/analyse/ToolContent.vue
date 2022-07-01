@@ -16,9 +16,10 @@
               <div>断面形态</div>
             </template>
             <div>
-              <el-button type="primary" size="small">
+              <el-button type="primary" size="small" @click="sectionByDIYClick">
                 任意断面
               </el-button>
+              <el-button type="success" size="small">文本输入</el-button>
             </div>
           </el-collapse-item>
           <el-collapse-item title="Feedback" name="2">
@@ -65,14 +66,19 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 export default defineComponent({
-  emits: ["close"],
+  emits: ["close", "sectionByDIYClick"],
   setup(_, context) {
     const closeClick = () => {
       context.emit("close");
     };
 
+    const sectionByDIYClick = () => {
+      context.emit("sectionByDIYClick");
+    };
+
     return {
       closeClick,
+      sectionByDIYClick,
     };
   },
 });

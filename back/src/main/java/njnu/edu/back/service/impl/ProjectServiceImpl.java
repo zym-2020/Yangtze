@@ -3,8 +3,11 @@ package njnu.edu.back.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import lombok.SneakyThrows;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
+import njnu.edu.back.common.utils.AnalyseUtil;
+import njnu.edu.back.dao.AnalyticDataSetMapper;
 import njnu.edu.back.pojo.Project;
 import njnu.edu.back.pojo.support.Layer;
 import njnu.edu.back.repository.ProjectRepository;
@@ -37,19 +40,25 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     ProjectRepository projectRepository;
 
+    @Autowired
+    AnalyticDataSetMapper analyticDataSetMapper;
+
 
     @Override
-    public Project addProject(Project project) {
+    public Project addProject(Project project, String email) {
         project.setCreateTime(new Date());
         project.setLayers(new ArrayList<>());
         project.setSortLayers(new ArrayList<>());
         project.setAvatar("");
         Project result = projectRepository.save(project);
+        String projectId = result.getId();
+        File file = new File(baseDir + email + "\\projects\\" + email + "\\" + projectId);
+        file.mkdirs();
         return result;
     }
 
     @Override
-    public Project addProject(String jsonString, MultipartFile file) {
+    public Project addProject(String jsonString, MultipartFile file, String email) {
         String uuid = UUID.randomUUID().toString();
         String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
         InputStream in = null;
@@ -86,7 +95,11 @@ public class ProjectServiceImpl implements ProjectService {
         }
         JSONObject jsonObject = JSON.parseObject(jsonString);
         Project project = new Project(null, jsonObject.getString("projectName"), jsonObject.getString("creator"), jsonObject.getString("description"), new Date(), new ArrayList<>(), new ArrayList<>(), jsonObject.getString("creatorName"), uuid + "." + suffix);
-        return projectRepository.save(project);
+        Project result = projectRepository.save(project);
+        String projectId = result.getId();
+        File f = new File(baseDir + email + "\\projects\\" + email + "\\" + projectId);
+        f.mkdirs();
+        return result;
     }
 
     @Override
@@ -116,6 +129,47 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         return projectRepository.save(project);
+    }
+
+    @Override
+    public void addSection(Layer layer, String projectId, String email) {
+        Optional<Project> optionalProject = projectRepository.findById(projectId);
+        if(!optionalProject.isPresent()) {
+            throw new MyException(ResultEnum.NO_OBJECT);
+        }
+        Project project = optionalProject.get();
+        layer.setState(0);
+        project.getLayers().add(layer);
+        project.getSortLayers().add(layer.getId());
+        projectRepository.save(project);
+        new Thread() {
+            @Override
+            @SneakyThrows
+            public void run() {
+                String demId = layer.getSelectDemId();
+                Map<String, Object> map = analyticDataSetMapper.findById(demId);
+                String address = (String) map.get("address");
+                String dataName = (String) map.get("name");
+                String lon1 = ((JSONArray) layer.getGeoJson().getJSONArray("coordinates").get(0)).getString(0);
+                String lat1 = ((JSONArray) layer.getGeoJson().getJSONArray("coordinates").get(0)).getString(1);
+                String lon2 = ((JSONArray) layer.getGeoJson().getJSONArray("coordinates").get(1)).getString(0);
+                String lat2 = ((JSONArray) layer.getGeoJson().getJSONArray("coordinates").get(1)).getString(1);
+                String resultPath = baseDir + email + "\\projects\\" + projectId + "\\" + layer.getId() + ".txt";
+                Process process = AnalyseUtil.saveSectionValue(address + "\\" + dataName, lon1, lat1, lon2, lat2, resultPath);
+                int code = process.waitFor();
+                for (Layer l : project.getLayers()) {
+                    if(l.getId().equals(layer.getId())) {
+                        if(code == 0) {
+                            l.setState(1);
+                        } else {
+                            l.setState(-1);
+                        }
+                        projectRepository.save(project);
+                    }
+                }
+
+            }
+        }.start();
     }
 
     @Override

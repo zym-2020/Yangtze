@@ -29,4 +29,5 @@ public class Layer {
     String selectDemName;       //dem name针对断面形态
     List<String> selectDemIds;      //针对断面比较
     List<String> selectDemNames;    //针对断面比较
+    Integer state;
 }

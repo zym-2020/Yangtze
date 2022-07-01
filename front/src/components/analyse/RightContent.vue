@@ -276,6 +276,12 @@ export default defineComponent({
       context.emit("toolClick");
     };
 
+    const addLayer = (layer: any) => {
+      layer.show = true;
+      treeData.value[0].children.push(layer);
+      sortLayers.value.push(layer.id);
+    };
+
     watch(
       () => {
         return router.currentRoute.value.path;
@@ -311,6 +317,7 @@ export default defineComponent({
       change,
       dataView,
       toolClick,
+      addLayer,
     };
   },
 });

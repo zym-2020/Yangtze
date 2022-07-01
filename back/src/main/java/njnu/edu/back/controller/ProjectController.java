@@ -31,13 +31,13 @@ public class ProjectController {
     ProjectService projectService;
 
     @RequestMapping(value = "/addProjectWithoutAvatar", method = RequestMethod.POST)
-    public JsonResult addProject(@RequestBody Project project) {
-        return ResultUtils.success(projectService.addProject(project));
+    public JsonResult addProject(@RequestBody Project project, @JwtTokenParser("email") String email) {
+        return ResultUtils.success(projectService.addProject(project, email));
     }
 
     @RequestMapping(value = "/addProjectWithAvatar", method = RequestMethod.POST)
-    public JsonResult addProject(@RequestParam String jsonString, @RequestParam MultipartFile file) {
-        return ResultUtils.success(projectService.addProject(jsonString, file));
+    public JsonResult addProject(@RequestParam String jsonString, @RequestParam MultipartFile file, @JwtTokenParser("email") String email) {
+        return ResultUtils.success(projectService.addProject(jsonString, file, email));
     }
 
     @RequestMapping(value = "/addLayer/{projectId}", method = RequestMethod.PATCH)
@@ -49,6 +49,12 @@ public class ProjectController {
     @RequestMapping(value = "/addLayers/{projectId}", method = RequestMethod.PATCH)
     public JsonResult addLayers(@RequestBody List<Layer> layers, @PathVariable String projectId) {
         return ResultUtils.success(projectService.addLayers(layers, projectId));
+    }
+
+    @RequestMapping(value = "/addSection/{projectId}", method = RequestMethod.POST)
+    public JsonResult addSection(@RequestBody Layer layer, @PathVariable String projectId, @JwtTokenParser("email") String email) {
+        projectService.addSection(layer, projectId, email);
+        return ResultUtils.success();
     }
 
     @RequestMapping(value = "/getProjectInfo/{projectId}", method = RequestMethod.GET)

@@ -23,6 +23,7 @@
       </div>
       <div class="content">
         <right-content
+          ref="rightLayer"
           @setVisible="setVisible"
           @setLayers="setLayers"
           @toolClick="toolClick"
@@ -30,25 +31,40 @@
       </div>
     </div>
     <div class="tools" v-if="toolFlag">
-      <tool-content @close="closeClick"></tool-content>
+      <tool-content
+        @close="closeClick"
+        @sectionByDIYClick="sectionByDIYClick"
+      ></tool-content>
+    </div>
+    <div class="data-select-tool" v-if="dataSelectFlag">
+      <data-select-tool
+        :demLayers="demLayers"
+        @dataSelectClose="dataSelectClose"
+        @dataSelectChange="dataSelectChange"
+      ></data-select-tool>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, watch } from "vue";
+import { computed, defineComponent, onMounted, ref, watch } from "vue";
 import mapBoxGl, { AnySourceData } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import RightContent from "@/components/analyse/RightContent.vue";
 import TopContent from "@/components/analyse/TopContent.vue";
 import ToolContent from "@/components/analyse/ToolContent.vue";
+import DataSelectTool from "@/components/analyse/DataSelectTool.vue";
 import router from "@/router";
+import { notice } from "@/utils/notice";
+import MapboxDraw from "@mapbox/mapbox-gl-draw";
+import { sectionUtil } from "@/components/tools/ts/mapUtils";
 
 export default defineComponent({
-  components: { RightContent, TopContent, ToolContent },
+  components: { RightContent, TopContent, ToolContent, DataSelectTool },
   setup() {
     const container = ref<HTMLElement>();
     const right = ref<HTMLElement>();
+    const rightLayer = ref()
     const rightFlag = ref(false);
     const top = ref<HTMLElement>();
     const topFlag = ref(false);
@@ -57,6 +73,31 @@ export default defineComponent({
     const layers = ref<any[]>([]);
     const sortLayers = ref<string[]>([]);
     const toolFlag = ref(false);
+    const dataSelectFlag = ref(false);
+    const currentDem = ref({
+      id: "",
+      name: "",
+    });
+
+    const draw = new MapboxDraw({
+      controls: {
+        combine_features: false,
+        uncombine_features: false,
+        trash: false,
+        point: false,
+        polygon: false,
+      },
+    });
+
+    const demLayers = computed(() => {
+      const temp: any[] = [];
+      layers.value.forEach((item) => {
+        if (item.type === "riverBed") {
+          temp.push(item);
+        }
+      });
+      return temp;
+    });
 
     const tdtVec: AnySourceData = {
       type: "raster",
@@ -72,6 +113,7 @@ export default defineComponent({
       ],
       tileSize: 256,
     };
+
     const initMap = () => {
       map.value = new mapBoxGl.Map({
         container: container.value as HTMLElement,
@@ -171,6 +213,26 @@ export default defineComponent({
             type: "hillshade",
             source: layer.id,
           });
+        } else if (layer.type == "section") {
+          map.value.addSource(layer.id, {
+            type: "geojson",
+            data: {
+              type: "Feature",
+              geometry: {
+                type: "LineString",
+                coordinates: layer.geoJson.coordinates,
+              },
+              properties: {},
+            },
+          });
+          map.value.addLayer({
+            id: layer.id,
+            type: "line",
+            source: layer.id,
+            paint: {
+              "line-color": "red"
+            }
+          });
         }
       }
     };
@@ -205,11 +267,67 @@ export default defineComponent({
 
     const toolClick = () => {
       toolFlag.value = !toolFlag.value;
+      if (!toolFlag.value) {
+        dataSelectFlag.value = false;
+      }
     };
 
     const closeClick = () => {
-      toolFlag.value = false
-    }
+      toolFlag.value = false;
+      dataSelectFlag.value = false;
+      map.value?.removeControl(draw);
+      map.value?.setPaintProperty(
+        currentDem.value.id,
+        "hillshade-shadow-color",
+        "#000000"
+      );
+      currentDem.value.id = "";
+      currentDem.value.name = "";
+    };
+
+    const sectionByDIYClick = () => {
+      if (demLayers.value.length > 0) {
+        dataSelectFlag.value = true;
+      } else {
+        notice("warning", "警告", "请检查是否添加了基础河床数据");
+      }
+    };
+
+    const dataSelectClose = () => {
+      dataSelectFlag.value = false;
+      map.value?.removeControl(draw);
+      map.value?.setPaintProperty(
+        currentDem.value.id,
+        "hillshade-shadow-color",
+        "#000000"
+      );
+      currentDem.value.id = "";
+      currentDem.value.name = "";
+    };
+
+    const addSection = (layer: any) => {
+      addLayer(layer);
+      console.log(rightLayer.value)
+      rightLayer.value.addLayer(layer)
+    };
+
+    const dataSelectChange = (val: { id: string; name: string }) => {
+      console.log(val);
+      map.value?.setPaintProperty(val.id, "hillshade-shadow-color", "#CDE67B");
+      if (currentDem.value.id === "") {
+        map.value?.addControl(draw, "top-left");
+        sectionUtil(
+          map.value,
+          draw,
+          router.currentRoute.value.params.id as string,
+          val.id,
+          val.name,
+          addSection
+        );
+      }
+      currentDem.value.id = val.id;
+      currentDem.value.name = val.name;
+    };
 
     watch(
       () => {
@@ -217,6 +335,10 @@ export default defineComponent({
       },
       () => {
         if (router.currentRoute.value.name === "project") {
+          currentDem.value.id = "";
+          currentDem.value.name = "";
+          map.value?.removeControl(draw);
+          dataSelectFlag.value = false;
           removeAllLayers(sortLayers.value);
           layers.value = (
             router.currentRoute.value.params.projectInfo as any
@@ -270,7 +392,13 @@ export default defineComponent({
       setLayers,
       toolFlag,
       toolClick,
-      closeClick
+      closeClick,
+      dataSelectFlag,
+      demLayers,
+      sectionByDIYClick,
+      dataSelectClose,
+      dataSelectChange,
+      rightLayer
     };
   },
 });
@@ -312,7 +440,7 @@ export default defineComponent({
   overflow: hidden;
   .container {
     height: 100%;
-    /deep/ .mapboxgl-control-container {
+    /deep/ .mapboxgl-ctrl-bottom-left {
       display: none !important;
     }
   }
@@ -363,6 +491,15 @@ export default defineComponent({
     z-index: 99;
     top: 60px;
     left: 30px;
+    -webkit-animation: scale-up-hor-left 0.4s
+      cubic-bezier(0.39, 0.575, 0.565, 1) both;
+    animation: scale-up-hor-left 0.4s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+  }
+  .data-select-tool {
+    position: absolute;
+    z-index: 99;
+    top: 80px;
+    left: 350px;
     -webkit-animation: scale-up-hor-left 0.4s
       cubic-bezier(0.39, 0.575, 0.565, 1) both;
     animation: scale-up-hor-left 0.4s cubic-bezier(0.39, 0.575, 0.565, 1) both;

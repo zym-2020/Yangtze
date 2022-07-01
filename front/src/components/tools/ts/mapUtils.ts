@@ -2,48 +2,35 @@ import mapBoxGl from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { useStore } from "@/store";
 import { uuid } from '@/utils/common'
-import { section, saveSectionContrastValue } from '@/api/request'
+import { addSection, saveSectionContrastValue } from '@/api/request'
 
-export const sectionUtil = (map: mapBoxGl.Map | undefined, draw: MapboxDraw, projectId: string) => {
-    const store = useStore()
-    const json = JSON.parse(store.state.other.editState.state)
+export const sectionUtil = (map: mapBoxGl.Map | undefined, draw: MapboxDraw, projectId: string, demId: string, demName: string, callback: (layer: any) => void) => {
+
     if (map?.loaded()) {
-        map.addControl(draw, "top-right");
+        map.addControl(draw, "top-left");
     } else {
         map?.on("load", () => {
-            map.addControl(draw, "top-right");
+            map.addControl(draw, "top-left");
         });
     }
     map?.on('draw.create', async () => {
         const coordinates = (draw.getAll().features[0].geometry as any).coordinates
-        console.log(store.state.other.dataSelect.id)
-        const layerDataList = JSON.parse(JSON.stringify(store.state.resource.layerDataList))
-        const analyse = JSON.parse(JSON.stringify(store.state.resource.analyse))
         const uid = uuid()
-        analyse.section.analysisResultList.push({
+        const layer = {
             id: uid,
-            type: 'geoJson',
-            show: true,
-            name: '断面形态_' + analyse.section.classifyCount.toString(),
+            name: '断面形态',
+            type: 'section',
+            selectDemId: demId,
+            selectDemName: demName,
             geoJson: {
-                type: 'LineString',
-                coordinates: coordinates
-            },
-            selectDemId: json.id,
-            selectDemName: json.name
-        })
-        analyse.section.classifyCount++
-        await store.dispatch("setResource", { projectJsonBean: { layerDataList: layerDataList, analyse: analyse }, id: projectId })
+                coordinates: coordinates as any[],
+                type: 'LineString'
+            }
+        }
+
+        callback(layer)
         draw.deleteAll()
-        await section({
-            id: uid,
-            DEMId: json.id,
-            lat1: coordinates[0][1] as number,
-            lon1: coordinates[0][0] as number,
-            lat2: coordinates[1][1] as number,
-            lon2: coordinates[1][0] as number,
-            projectId: projectId
-        })
+        await addSection(layer, projectId)
     })
 }
 
@@ -78,7 +65,7 @@ export const sectionContrastUtil = (map: mapBoxGl.Map | undefined, draw: MapboxD
             selectDemNames: selectDemNames,
         })
         analyse.sectionContrast.classifyCount++
-        await store.dispatch("setResource", {projectJsonBean: {layerDataList: layerDataList, analyse: analyse}, id: projectId})
+        await store.dispatch("setResource", { projectJsonBean: { layerDataList: layerDataList, analyse: analyse }, id: projectId })
         draw.deleteAll()
         await saveSectionContrastValue({
             id: uid,

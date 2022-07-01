@@ -178,3 +178,19 @@ export interface GetProjectsJsonData {
 //         tags: string[]
 //     }
 // }
+
+export interface Layer {
+    id: string
+    type: string
+    name: string
+    tableName?: string
+    vectorType?: string
+    geoJson?: {
+        coordinates: any[],
+        type: string
+    }
+    selectDemId?: string
+    selectDemName?: string
+    selectDemIds?: string[]
+    selectDemNames?: string[]
+}

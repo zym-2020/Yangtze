@@ -46,13 +46,15 @@ public interface ProjectService {
 //    Map<String, Object> findProjectById(String projectId);
 
 
-    Project addProject(Project project);
+    Project addProject(Project project, String email);
 
-    Project addProject(String jsonString, MultipartFile file);
+    Project addProject(String jsonString, MultipartFile file, String email);
 
     void addLayer(Layer layer, String projectId);
 
     Project addLayers(List<Layer> layers, String projectId);
+
+    void addSection(Layer layer, String projectId, String email);
 
     Project getProjectInfo(String projectId);
 

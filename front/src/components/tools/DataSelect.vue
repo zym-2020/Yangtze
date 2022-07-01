@@ -85,11 +85,7 @@ export default defineComponent({
       });
       if (flag.value === false) {
         flag.value = true;
-        sectionUtil(
-          props.map,
-          draw,
-          router.currentRoute.value.params.id as string
-        );
+
       }
     };
 

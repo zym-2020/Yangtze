@@ -1,7 +1,7 @@
 import { get, post, del, patch } from './axios'
 import {
     RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData, AddFileJsonData, RenameJsonData, UnPackJsonData, UpdateParentIdAndLevelJsonData, CompressFileJsonData,
-    SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData, GetNoUploadJsonData, AddRecordJsonData, AddMessageJsonData, DeleteFilesOrFolders, GetProjectsJsonData
+    SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData, GetNoUploadJsonData, AddRecordJsonData, AddMessageJsonData, DeleteFilesOrFolders, GetProjectsJsonData, Layer
 } from './type/userType'
 import { Resource, Analyse } from '@/store/resourse/resourceState'
 
@@ -74,8 +74,12 @@ export async function addLayers(jsonData: { id: string, name: string, type: stri
 }
 
 
-export async function section(jsonData: SectionJsonData) {
-    return await post(`/project/section`, jsonData)
+// export async function section(jsonData: SectionJsonData) {
+//     return await post(`/project/section`, jsonData)
+// }
+////
+export async function addSection(layer: Layer, projectId: string) {
+    return await post(`/project/addSection/${projectId}`, layer)
 }
 
 export async function getSectionValue(id: string, projectId: string) {
