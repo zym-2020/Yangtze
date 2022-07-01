@@ -36,52 +36,78 @@ export async function setUserInfoWithoutAvatar(jsonData: SetUserInfoWithoutAvata
 
 
 //========================Project相关接口=================================
-export async function addProject(formData: FormData) {
-    return await post(`/project/addProject`, formData)
-}
+// export async function addProject(formData: FormData) {
+//     return await post(`/project/addProject`, formData)
+// }
 
+// export async function addProjectWithoutAvatar(jsonData: ProjectJsonData) {
+//     return await post(`/project/addProjectWithoutAvatar`, jsonData)
+// }
+
+////
 export async function addProjectWithoutAvatar(jsonData: ProjectJsonData) {
     return await post(`/project/addProjectWithoutAvatar`, jsonData)
 }
-
-export async function getProjectsByEmail() {
-    return await get(`/project/getProjectsByEmail`)
+////
+export async function addProjectWithAvatar(formData: FormData) {
+    return await post(`/project/addProjectWithAvatar`, formData)
 }
 
-export async function getResult(projectId: string) {
-    return await get(`/project/getResult/${projectId}`)
+// export async function getProjectsByEmail() {
+//     return await get(`/project/getProjectsByEmail`)
+// }
+////
+export async function getProjectsByEmail(email: string) {
+    return await get(`/project/getProjectsByEmail/${email}`)
 }
 
-export async function setResult(jsonData: {layerDataList: Resource[], analyse: Analyse}, id: string) {
-    return await patch(`/project/setResult/${id}`, jsonData)
+// export async function getResult(projectId: string) {
+//     return await get(`/project/getResult/${projectId}`)
+// }
+
+// export async function setResult(jsonData: { layerDataList: Resource[], analyse: Analyse }, id: string) {
+//     return await patch(`/project/setResult/${id}`, jsonData)
+// }
+////
+export async function addLayers(jsonData: { id: string, name: string, type: string }[], projectId: string) {
+    return await patch(`/project/addLayers/${projectId}`, jsonData)
 }
+
 
 export async function section(jsonData: SectionJsonData) {
     return await post(`/project/section`, jsonData)
 }
 
-export async function getSectionValue(projectName: string, sectionName: string, DEMName: string, DEMId: string) {
-    return await get(`/project/getSectionValue/${projectName}/${sectionName}/${DEMName}/${DEMId}`)
+export async function getSectionValue(id: string, projectId: string) {
+    return await get(`/project/getSectionValue/${projectId}/${id}`)
 }
 
-export async function delSection(projectName: string, sectionName: string, DEMName: string) {
-    return await del(`/project/delSection/${projectName}/${sectionName}/${DEMName}`)
+export async function delSection(projectId: string, sectionId: string) {
+    return await del(`/project/delSection/${projectId}/${sectionId}`)
 }
 
 export async function saveSectionContrastValue(jsonData: SectionContrastJsonData) {
     return await post(`/project/saveSectionContrastValue`, jsonData)
 }
 
-export async function getSectionContrastValue(projectName: string, sectionName: string) {
-    return await get(`/project/getSectionContrastValue/${projectName}/${sectionName}`)
+export async function getSectionContrastValue(projectId: string, sectionId: string) {
+    return await get(`/project/getSectionContrastValue/${projectId}/${sectionId}`)
 }
 
-export async function getProjects(jsonData: GetProjectsJsonData) {
-    return await post(`/project/getProjects`, jsonData)
+// export async function getProjects(jsonData: GetProjectsJsonData) {
+//     return await post(`/project/getProjects`, jsonData)
+// }
+////
+export async function getAll(jsonData: { page: number, size: number, keyWord: string }) {
+    return await post(`/project/getAll`, jsonData)
 }
 
-export async function findProjectById(projectId: string) {
-    return await get(`/project/findProjectById/${projectId}`)
+// export async function findProjectById(projectId: string) {
+//     return await get(`/project/findProjectById/${projectId}`)
+// }
+////
+export async function getProjectInfo(projectId: string) {
+    return await get(`/project/getProjectInfo/${projectId}`)
 }
 
 //========================vectorRelationship相关接口=================================
@@ -284,5 +310,15 @@ export async function getAreaShip(key: string, scode: string, xy: string) {
             scode: scode,
             xy: xy
         }
+    })
+}
+
+export async function getShip() {
+    axios.get("http://localhost:8002/ship/getShip", {
+        responseType: 'arraybuffer'
+    }).then(res => {
+        console.log(res)
+        const d = new DataView(res.data)
+        console.log(d.getInt32(0))
     })
 }

@@ -2,8 +2,8 @@
   <div class="project-card">
     <el-card class="card" shadow="hover">
       <template #header>
-        <div class="card-header" :title="projectInfo.project_name">
-          <strong>{{ projectInfo.project_name }}</strong>
+        <div class="card-header" :title="projectInfo.projectName">
+          <strong>{{ projectInfo.projectName }}</strong>
         </div>
       </template>
       <div class="des" title="哈哈哈">
@@ -17,22 +17,22 @@
           v-if="
             projectInfo.avatar === '' || projectInfo.avatar === null
           "
-          >{{ projectInfo.project_name }}</el-avatar
+          >{{ projectInfo.projectName }}</el-avatar
         >
-        <img :src="'http://localhost:8002' + projectInfo.avatar" alt="" width="248" height="180" v-else />
+        <img :src="'http://localhost:8002/file/avatar/' + projectInfo.avatar" alt="" width="248" height="180" v-else />
       </div>
       <div class="foot">
-        <div class="time" :title="getDate(projectInfo.create_time)">
+        <div class="time" :title="getDate(projectInfo.createTime)">
           <svg style="width: 20px; height: 20px; margin-top: 5px">
             <use xlink:href="#icon-shijian"></use>
           </svg>
-          <strong class="text">{{ getDate(projectInfo.create_time) }}</strong>
+          <strong class="text">{{ getDate(projectInfo.createTime) }}</strong>
         </div>
-        <div class="user" :title="projectInfo.name">
+        <div class="user" :title="projectInfo.creatorName">
           <svg style="width: 20px; height: 20px; margin-top: 5px">
             <use xlink:href="#icon-nickname"></use>
           </svg>
-          <strong class="text">{{ projectInfo.name }}</strong>
+          <strong class="text">{{ projectInfo.creatorName }}</strong>
         </div>
       </div>
     </el-card>

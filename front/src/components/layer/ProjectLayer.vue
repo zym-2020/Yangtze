@@ -62,7 +62,9 @@
             </template>
           </el-tree>
           <div v-if="viewFlag === 'layerManage'">
-            <div v-if="layers[0].children.length > 0" class="tool"><strong style="margin-left: 20px">勾选隐藏图层!</strong></div>
+            <div v-if="layers[0].children.length > 0" class="tool">
+              <strong style="margin-left: 20px">勾选隐藏图层!</strong>
+            </div>
             <el-empty
               description="暂无数据"
               v-if="layers[0].children.length === 0"
@@ -91,7 +93,6 @@
       class="section-context-menu"
       :contextData="contextData"
       @sendSectionValue="sendSectionValue"
-      :projectName="projectName"
     ></section-context-menu>
     <section-contrast-context-menu
       v-show="sectionContrastContextMenuFlag"
@@ -291,16 +292,16 @@ export default defineComponent({
 
     const sortLayer = (draggingNode: any, dropNode: any, type: string) => {
       console.log(draggingNode, dropNode, type);
-      const strs: string[] = []
-      layers.value[0].children.forEach(item => {
-        strs.push(item.id as string)
-      })
-      store.commit("SET_LAYER_SORT", {type: type, layers: strs});
+      const strs: string[] = [];
+      layers.value[0].children.forEach((item) => {
+        strs.push(item.id as string);
+      });
+      store.commit("SET_LAYER_SORT", { type: type, layers: strs });
     };
 
     const handleCheckChange = (data: any, checked: boolean) => {
-      if(data.children.length === 0) {
-        store.commit("SET_SELECTED_LAYER", {id: data.id, flag: checked})
+      if (data.children.length === 0) {
+        store.commit("SET_SELECTED_LAYER", { id: data.id, flag: checked });
       }
     };
 
@@ -474,9 +475,9 @@ export default defineComponent({
         }
         .tool {
           height: 20px;
-          color: #D7AB4C;
+          color: #d7ab4c;
           font-size: 12px;
-          background: #F0F0F0;
+          background: #f0f0f0;
           line-height: 20px;
         }
         .layer {

@@ -15,7 +15,8 @@ export interface RegisterJsonData {
 export interface ProjectJsonData {
     projectName: string,
     description: string,
-    result: string
+    creator: string,
+    creatorName: string
 }
 
 
@@ -31,22 +32,23 @@ export interface NewShapeJsonData {
 }
 
 export interface SectionJsonData {
+    id: string
     DEMId: string,
     lat1: number,
     lon1: number,
     lat2: number,
     lon2: number,
-    sectionName: string,
-    projectName: string
+    projectId: string
 }
 
 export interface SectionContrastJsonData {
+    id: string
     lat1: number,
     lon1: number,
     lat2: number,
     lon2: number,
-    sectionName: string,
-    projectName: string
+    demIds: string[]
+    projectId: string
 }
 
 export interface AddFileJsonData {

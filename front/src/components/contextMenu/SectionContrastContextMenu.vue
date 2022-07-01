@@ -10,22 +10,19 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { getSectionContrastValue } from "@/api/request";
-
+import router from '@/router'
 export default defineComponent({
   props: {
     sectionContrastContextData: {
       type: Object,
-    },
-    projectName: {
-      type: String
     }
   },
   emits: ['sendSectionContrastValue'],
   setup(props, context) {
     const contrastClick = async () => {
       const data = await getSectionContrastValue(
-        props.projectName as string,
-        (props.sectionContrastContextData as any).label
+        router.currentRoute.value.params.id as string,
+        (props.sectionContrastContextData as any).id
       );
       if (data != null) {
         context.emit('sendSectionContrastValue', data)

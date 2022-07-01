@@ -3,8 +3,7 @@ package njnu.edu.back;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import njnu.edu.back.common.auth.AuthCheck;
-import njnu.edu.back.common.utils.CommonUtils;
-import njnu.edu.back.common.utils.ZipOperate;
+import njnu.edu.back.common.utils.*;
 import njnu.edu.back.service.FileService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +23,10 @@ class BackApplicationTests {
 
     @Test
     void contextLoads() {
-        List<Map<String, Object>> fileList = new ArrayList<>();
-        Map<String, Object> temp1 = new HashMap<>();
-        Map<String, Object> temp2 = new HashMap<>();
-        temp1.put("path", "test/test.xml ");
-        temp1.put("address", "D:\\zhuomian\\test.xml");
-        fileList.add(temp1);
-        ZipOperate.compressFile("D:\\zhuomian\\test.zip", fileList);
+        String[] str = new String[] {"-144187208","19335499","-144149073","19354795"};
+        byte[] test = RemoteRequest.getShips(str, "15", "0", "78385.16133947353", "1");
+        List<Map<String, Object>> maps = TranslateShipResponseUtil.translate(str, "15", "0", "78385.16133947353", "1");
+        System.out.println(maps.size());
 
     }
 

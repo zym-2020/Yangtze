@@ -4,9 +4,15 @@
     <div class="body">
       <div class="tools">
         <el-scrollbar>
-          <el-tree :data="analyzeList" :props="defaultProps" node-key="id" :default-expanded-keys="treeExpandData">
+          <el-tree
+            :data="analyzeList"
+            :props="defaultProps"
+            node-key="id"
+            :default-expanded-keys="treeExpandData"
+            :highlight-current="true"
+          >
             <template #default="{ node, data }">
-              <span class="custom-tree-node">
+              <span class="custom-tree-node" @dblclick="dblclickHandle(data)">
                 <div class="img">
                   <img :src="data.icon" alt="" width="18" height="18" />
                 </div>
@@ -27,202 +33,54 @@ interface Tree {
   children?: Tree[];
   icon?: string;
 }
-import { defineComponent, ref } from "vue";
+import { computed, defineComponent, ref } from "vue";
+import { treeData } from "./ts/leftToolTreeData";
+import { useStore } from "@/store";
+import { notice } from "@/utils/notice";
 export default defineComponent({
   setup() {
     const defaultProps = {
       children: "children",
       label: "label",
     };
+    const store = useStore();
     const treeExpandData = ref(["1", "2"]);
-    const analyzeList = ref<Tree[]>([
-      {
-        id: "1",
-        label: "河床演变",
-        icon: "/river_bed_img/3DAnalystCreateSteepestPath32.png",
-        children: [
-          {
-            id: "1-1",
-            label: "断面形态",
-            icon: "/river_bed_img/TinEditingTinLineAdd32.png",
-            children: [
-              {
-                id: "1-1-1",
-                label: "任意断面",
-                icon: "/river_bed_img/ElementLine16.png",
-              },
-              {
-                id: "1-1-2",
-                label: "输入断面",
-                icon: "/river_bed_img/EditingCreateCOGOAttributes16.png",
-              },
-            ],
-          },
-          {
-            id: "1-2",
-            label: "断面比较",
-            icon: "/river_bed_img/3DAnalystInterpolateLine32.png",
-            children: [
-              {
-                id: "1-2-1",
-                label: "任意断面",
-                icon: "/river_bed_img/ElementLine16.png",
-              },
-              {
-                id: "1-2-2",
-                label: "输入断面",
-                icon: "/river_bed_img/EditingCreateCOGOAttributes16.png",
-              },
-            ],
-          },
-          {
-            id: "1-3",
-            label: "汊道断面对比",
-            icon: "/river_bed_img/MapSendBehind32.png",
-            children: [
-              {
-                id: "1-3-1",
-                label: "选择固定断面",
-                icon: "/river_bed_img/CadastralPRImage3_16.png",
-              },
-              {
-                id: "1-3-2",
-                label: "查看对比图",
-                icon: "/river_bed_img/3DAnalystInterpolateProfileGraphCreate16.png",
-              },
-            ],
-          },
-          {
-            id: "1-4",
-            label: "断面面积冲淤",
-            icon: "/river_bed_img/LayerServiceMap32.png",
-            children: [
-              {
-                id: "1-4-1",
-                label: "任意断面",
-                icon: "/river_bed_img/ElementLine16.png",
-              },
-              {
-                id: "1-4-2",
-                label: "输入断面",
-                icon: "/river_bed_img/EditingCreateCOGOAttributes16.png",
-              },
-            ],
-          },
-          {
-            id: "1-5",
-            label: "任意区域冲淤",
-            icon: "/river_bed_img/3DAnalystInterpolatePolygon32.png",
-            children: [
-              {
-                id: "1-5-1",
-                label: "任意矩形",
-                icon: "/river_bed_img/EditingRectangleTool16.png",
-              },
-              {
-                id: "1-5-2",
-                label: "任意圆形",
-                icon: "/river_bed_img/EditingCircleTool16.png",
-              },
-              {
-                id: "1-5-3",
-                label: "任意多边形",
-                icon: "/river_bed_img/EditingPolygonTool16.png",
-              },
-              {
-                id: "1-5-6",
-                label: "来自文本",
-                icon: "/river_bed_img/EditingSketchPropertiesWindowShow16.png",
-              },
-            ],
-          },
-          {
-            id: "1-6",
-            label: "特定高程冲淤",
-            icon: "/river_bed_img/RasterImageAnalysisPanSharpen32.png",
-            children: [],
-          },
-          {
-            id: "1-7",
-            label: "冲淤等深线",
-            icon: "/river_bed_img/RasterImageAnalysisOrthoRectify32.png",
-            children: [],
-          },
-          {
-            id: "1-8",
-            label: "河道容积计算",
-            icon: "/river_bed_img/MapPackageMPKFile32.png",
-            children: [
-              {
-                id: "1-8-1",
-                label: "任意矩形",
-                icon: "/river_bed_img/EditingRectangleTool16.png",
-              },
-              {
-                id: "1-8-2",
-                label: "任意圆形",
-                icon: "/river_bed_img/EditingCircleTool16.png",
-              },
-              {
-                id: "1-8-3",
-                label: "任意多边形",
-                icon: "/river_bed_img/EditingPolygonTool16.png",
-              },
-              {
-                id: "1-8-4",
-                label: "来自文本",
-                icon: "/river_bed_img/EditingSketchPropertiesWindowShow16.png",
-              },
-            ],
-          },
-          {
-            id: "1-9",
-            label: "河床坡度提取",
-            icon: "/river_bed_img/Surface32.png",
-            children: [],
-          },
-          {
-            id: "1-10",
-            label: "深泓线比较",
-            icon: "/river_bed_img/SpatialAnalystContourTool32.png",
-            children: [],
-          },
-          {
-            id: "1-11",
-            label: "等深线对比",
-            icon: "/river_bed_img/CadastralCreateLineString32.png",
-            children: [
-              {
-                id: "1-11-1",
-                label: "等深线对比",
-                icon: "/river_bed_img/ElementLine16.png",
-              },
-              {
-                id: "1-11-2",
-                label: "等高线对比",
-                icon: "/river_bed_img/EditingCreateCOGOAttributes16.png",
-              },
-            ],
-          },
-          {
-            id: "1-12",
-            label: "边界分析",
-            icon: "/river_bed_img/3DAnalystCreateSteepestPath32.png",
-            children: [],
-          },
-        ],
-      },
-      {
-        id: "2",
-        label: "水文分析",
-        icon: "/river_bed_img/3DAnalystCreateSteepestPath32.png",
-        children: [],
-      },
-    ]);
+    const analyzeList = ref<Tree[]>(treeData);
+
+    const sectionDataExist = computed(() => {
+      for (let i = 0; i < store.state.resource.layerDataList.length; i++) {
+        if (store.state.resource.layerDataList[i].type === "riverBed") {
+          return true;
+        }
+      }
+      return false;
+    });
+
+    const dblclickHandle = (data: any) => {
+      console.log(data)
+      if (data.children === undefined || data.children.length === 0) {
+        if (data.id === "1-1-1") {
+          if (sectionDataExist.value) {
+            console.log(store.state.other.editState)
+            store.commit("SET_EDIT_STATE", {
+              type: "section",
+              flag: true,
+              state: "",
+            });
+          } else {
+            notice("warning", "警告", "请先添加河床数据源！");
+          }
+        } else if (data.id === '1-2-1') {
+          
+        }
+      }
+    };
+
     return {
       analyzeList,
       defaultProps,
-      treeExpandData
+      treeExpandData,
+      dblclickHandle,
     };
   },
 });

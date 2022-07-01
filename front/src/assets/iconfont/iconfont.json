@@ -6,6 +6,55 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "6864153",
+      "name": "攻击分析图谱.攻击行为趋势分析",
+      "font_class": "gongjifenxitupugongjihangweiqushifenxi",
+      "unicode": "e618",
+      "unicode_decimal": 58904
+    },
+    {
+      "icon_id": "4867114",
+      "name": "展开",
+      "font_class": "zhankai",
+      "unicode": "e65f",
+      "unicode_decimal": 58975
+    },
+    {
+      "icon_id": "9564450",
+      "name": "HTSCIT_展开",
+      "font_class": "zhankai1",
+      "unicode": "e646",
+      "unicode_decimal": 58950
+    },
+    {
+      "icon_id": "2970872",
+      "name": "工具箱",
+      "font_class": "gongjuxiang",
+      "unicode": "e825",
+      "unicode_decimal": 59429
+    },
+    {
+      "icon_id": "10330637",
+      "name": "hide",
+      "font_class": "hide",
+      "unicode": "e65b",
+      "unicode_decimal": 58971
+    },
+    {
+      "icon_id": "10330645",
+      "name": "view",
+      "font_class": "view1",
+      "unicode": "e65d",
+      "unicode_decimal": 58973
+    },
+    {
+      "icon_id": "6425584",
+      "name": "切换公司",
+      "font_class": "qiehuangongsi",
+      "unicode": "e61d",
+      "unicode_decimal": 58909
+    },
+    {
       "icon_id": "11940457",
       "name": "图层",
       "font_class": "tuceng",

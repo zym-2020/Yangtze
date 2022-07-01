@@ -1,9 +1,13 @@
 package njnu.edu.back.service;
 
+
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import njnu.edu.back.pojo.Project;
 import njnu.edu.back.pojo.dto.AddProject;
+import njnu.edu.back.pojo.support.Layer;
 import njnu.edu.back.pojo.support.projectJson.ProjectJsonBean;
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -17,28 +21,42 @@ import java.util.Map;
  * @Description:
  */
 public interface ProjectService {
-    Map<String, Object> addProject(AddProject addProject, String email, MultipartFile multipartFile);
+//    Map<String, Object> addProject(AddProject addProject, String email, MultipartFile multipartFile);
+//
+//    Map<String, Object> addProjectWithoutAvatar(AddProject addProject, String email);
+//
+//    String getResultById(String id);
+//
+//    List<Map<String, Object>> getProjectsByEmail(String email);
+//
+//    int setResult(ProjectJsonBean result, String id);
+//
+//    void saveSectionValue(String id, String DEMId, Double lat1, Double lon1, Double lat2, Double lon2, String email, String projectId);
+//
+//    List<Double> getSectionValue(String id, String email, String projectId);
+//
+//    void delSection(String email, String projectId, String sectionId);
+//
+//    void saveSectionContrastValue(String id, Double lat1, Double lon1, Double lat2, Double lon2, List<String> demIds, String email, String projectId);
+//
+//    Map<String, List<Double>> getSectionContrastValue(String email, String projectId, String sectionId);
+//
+//    JSONObject pageQuery(int size, int page, String keyWord);
+//
+//    Map<String, Object> findProjectById(String projectId);
 
-    Map<String, Object> addProjectWithoutAvatar(AddProject addProject, String email);
 
-    String getResultById(String id);
+    Project addProject(Project project);
 
-    List<Map<String, Object>> getProjectsByEmail(String email);
+    Project addProject(String jsonString, MultipartFile file);
 
-    int setResult(ProjectJsonBean result, String id);
+    void addLayer(Layer layer, String projectId);
 
-    void saveSectionValue(String DEMId, Double lat1, Double lon1, Double lat2, Double lon2, String sectionName, String email, String projectName);
+    Project addLayers(List<Layer> layers, String projectId);
 
-    List<Double> getSectionValue(String email, String projectName, String sectionName, String DEMName, String DEMId);
+    Project getProjectInfo(String projectId);
 
-    void delSection(String email, String projectName, String sectionName, String DEMName);
+    Page<Project> getAll(int page, int size, String keyWord);
 
-    void saveSectionContrastValue(Double lat1, Double lon1, Double lat2, Double lon2, String sectionName, String email, String projectName);
-
-    Map<String, List<Double>> getSectionContrastValue(String email, String projectName, String sectionName);
-
-    JSONObject pageQuery(int size, int page, String keyWord);
-
-    Map<String, Object> findProjectById(String projectId);
-
+    List<Project> getProjectsByEmail(String email);
 }

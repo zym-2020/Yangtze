@@ -1,6 +1,9 @@
 <template>
   <div class="map">
-    <div ref="container" class="container"></div>
+    <div ref="container" class="container">
+      <data-select v-drag class="dragHead" v-if="dataSelectFlag" :map="map"></data-select>
+    </div>
+    
     <div class="controller">
       <div class="head">
         <div
@@ -24,8 +27,7 @@
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref, watch } from "vue";
 import mapBoxGl, { AnySourceData } from "mapbox-gl";
-
-import DataSelect from "../riverbed/components/DataSelect.vue";
+import DataSelect from "../tools/DataSelect.vue";
 import { useStore } from "@/store";
 import { Resource } from "@/store/resourse/resourceState";
 import { mergeResource, computedLayers } from "@/utils/common";
@@ -40,6 +42,10 @@ export default defineComponent({
     const active = ref(1);
     const store = useStore();
     const dataSelectFlag = ref(false);
+
+    const editState = computed(() => {
+      return JSON.parse(JSON.stringify(store.state.other.editState))
+    })
 
     const layers = computed(() => {
       return computedLayers();
@@ -58,6 +64,10 @@ export default defineComponent({
       ],
       tileSize: 256,
     };
+    // const terrarium: AnySourceData = {
+    //   type: "raster-dem",
+    //   tiles: ["https://s3.amazonaws.com/elevation-tiles-prod/v2/terrarium/{z}/{x}/{y}.png"]
+    // }
 
     const map = ref<mapBoxGl.Map>();
     const initMap = () => {
@@ -68,6 +78,7 @@ export default defineComponent({
           sources: {
             tdtVec: tdtVec,
             txt: txt,
+            // terrarium: terrarium
           },
           layers: [
             {
@@ -80,6 +91,11 @@ export default defineComponent({
               type: "raster",
               source: "txt",
             },
+            // {
+            //   id: "terrarium",
+            //   type: "hillshade",
+            //   source: "terrarium"
+            // }
           ],
         },
 
@@ -326,6 +342,18 @@ export default defineComponent({
       }
     });
 
+    watch(editState, (newVal, oldVal) => {
+      if(newVal.flag && !oldVal.flag) {
+        if(newVal.type === 'section') {
+          dataSelectFlag.value = true
+        }
+      } else if(!newVal.flag && oldVal.flag) {
+        dataSelectFlag.value = false
+      }
+    })
+
+
+
     const riverBed = (val: number) => {
       if (val === 0) {
         dataSelectFlag.value = false;
@@ -371,7 +399,7 @@ export default defineComponent({
       changeActive,
       riverBed,
       dataSelectFlag,
-      map,
+      map
     };
   },
 });
@@ -388,6 +416,12 @@ export default defineComponent({
     /deep/ .mapboxgl-ctrl-logo {
       display: none !important;
     }
+    .dragHead {
+      position: absolute;
+      z-index: 99;
+      top: 5px;
+      left: 5px;
+    }
   }
   .controller {
     height: 200px;
@@ -395,6 +429,7 @@ export default defineComponent({
       height: 40px;
       display: flex;
       line-height: 40px;
+      transition: all 1s;
       .output {
         margin: 0 20px;
         cursor: pointer;
@@ -410,22 +445,6 @@ export default defineComponent({
     .body {
       margin: 5px 20px 0px;
     }
-  }
-  .drag {
-    position: absolute;
-    z-index: 99;
-  }
-  .tools {
-    left: calc(100% - 180px);
-    top: 3px;
-  }
-  .data-select {
-    left: 5px;
-    top: calc(800px - 60px);
-  }
-  .router-view {
-    top: 3px;
-    left: 5px;
   }
 }
 </style>

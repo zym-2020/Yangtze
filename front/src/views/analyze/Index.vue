@@ -21,7 +21,7 @@
             <project-card
               class="card"
               :projectInfo="item"
-              @click="toProject(item)"
+              @click="toProject({ id: item.id, projectInfo: item })"
             ></project-card>
           </div>
         </el-col>
@@ -48,7 +48,7 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
-import { getProjects } from "@/api/request";
+import { getAll } from "@/api/request";
 import ProjectCard from "@/components/cards/ProjectCard.vue";
 import router from "@/router";
 import CreateProject from "@/components/tools/CreateProject.vue";
@@ -68,44 +68,44 @@ export default defineComponent({
     const currentPage = ref(1);
 
     onMounted(async () => {
-      const projectList = await getProjects({
+      const projectList = await getAll({
         size: 12,
         page: 0,
         keyWord: keyWord.value,
       });
       if (projectList != null) {
-        projects.value = (projectList.data as any).list;
-        total.value = (projectList.data as any).total;
+        projects.value = (projectList.data as any).content;
+        total.value = (projectList.data as any).totalElements;
       }
     });
 
     const searchClick = async () => {
       keyWord.value = search.value;
-      const data = await getProjects({
+      const data = await getAll({
         size: 12,
         page: 0,
         keyWord: keyWord.value,
       });
-      
+
       if (data != null) {
         if ((data as any).code === 0) {
-          projects.value = (data.data as any).list;
-          total.value = (data.data as any).total;
-          currentPage.value = 1
+          projects.value = (data.data as any).content;
+          total.value = (data.data as any).totalElements;
+          currentPage.value = 1;
         }
       }
     };
 
     const currentChange = async (page: number) => {
-      currentPage.value = page
-      const projectList = await getProjects({
+      currentPage.value = page;
+      const projectList = await getAll({
         size: 12,
         page: page - 1,
         keyWord: keyWord.value,
       });
       if (projectList != null) {
-        projects.value = (projectList.data as any).list;
-        total.value = (projectList.data as any).total;
+        projects.value = (projectList.data as any).content;
+        total.value = (projectList.data as any).totalElements;
       }
       search.value = keyWord.value;
     };
@@ -116,23 +116,17 @@ export default defineComponent({
         name: "project",
         params: {
           id: val.id,
-          name: val.project_name,
-          result: val.result,
+          projectInfo: JSON.stringify(val)
         },
       });
     };
 
-    const toProject = (project: {
-      id: string;
-      project_name: string;
-      result: string;
-    }) => {
+    const toProject = (project: { id: string; projectInfo: any }) => {
       router.push({
         name: "project",
         params: {
           id: project.id,
-          name: project.project_name,
-          result: project.result,
+          projectInfo: JSON.stringify(project.projectInfo),
         },
       });
     };

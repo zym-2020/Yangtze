@@ -43,26 +43,27 @@ import { computed, defineComponent, onMounted, ref } from "vue";
 import { getProjectsByEmail } from "@/api/request";
 import router from "@/router";
 import { notice } from "@/utils/notice";
-import { useStore } from '@/store'
+import { useStore } from "@/store";
 
 interface Project {
   id: string;
   projectName: string;
-  des: string;
-  result: string;
+  description: string;
 }
 
 export default defineComponent({
   emits: ["selectProjectId"],
   setup(_, context) {
-    const store = useStore()
+    const store = useStore();
     const radio = ref("");
     const projectList = ref<Project[]>([]);
 
     const getProject = async () => {
-      let data = await getProjectsByEmail();
+      let data = await getProjectsByEmail(store.state.user.email);
       if (data != null) {
-        projectList.value = data.data;
+        if ((data as any).code === 0) {
+          projectList.value = data.data;
+        }
       }
     };
 
@@ -72,7 +73,7 @@ export default defineComponent({
       } else {
         for (let i = 0; i < projectList.value.length; i++) {
           if (radio.value === projectList.value[i].id) {
-            return projectList.value[i].des;
+            return projectList.value[i].description;
           }
         }
       }
@@ -82,7 +83,6 @@ export default defineComponent({
       if (radio.value === "") {
         notice("warning", "警告", "请先选择要加载的工程！");
       } else {
-        store.commit("SET_TEMP_LAYERS", [])
         router.replace({ path: radio.value });
         context.emit("selectProjectId");
       }

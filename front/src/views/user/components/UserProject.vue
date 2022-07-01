@@ -22,7 +22,7 @@
                 <div class="head" :title="item.projectName">
                   {{ item.projectName }}
                 </div>
-                <div class="des">{{ item.des }}</div>
+                <div class="des">{{ item.description }}</div>
               </div>
             </div>
           </el-col>
@@ -36,14 +36,16 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import { getProjectsByEmail } from "@/api/request";
+import { useStore } from '@/store'
 import router from "@/router";
 export default defineComponent({
   setup() {
     const data = ref([]);
-
+    const store = useStore()
     const getProjectList = async () => {
-      const projectList = await getProjectsByEmail();
+      const projectList = await getProjectsByEmail(store.state.user.email);
       if (projectList != null) {
+        console.log(projectList)
         data.value = projectList.data;
       }
     };

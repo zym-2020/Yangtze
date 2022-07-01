@@ -10,18 +10,15 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import { getSectionValue, delSection } from "@/api/request";
-// import { getCurrentProjectName, getCurrentProjectId } from "@/utils/project";
 import { useStore } from "@/store";
-import { Analyse } from "@/store/resourse/resourceState"
+import { Analyse } from "@/store/resourse/resourceState";
 import router from "@/router";
+import { notice } from "@/utils/notice";
 export default defineComponent({
   props: {
     contextData: {
       type: Object,
     },
-    projectName: {
-      type: String
-    }
   },
   emits: ["sendSectionValue"],
   setup(props, context) {
@@ -29,30 +26,39 @@ export default defineComponent({
     const showSection = async () => {
       console.log(props.contextData);
       const sectionValue = await getSectionValue(
-        props.projectName as string,
-        (props.contextData as any).label,
-        (props.contextData as any).selectDemName,
-        (props.contextData as any).selectDemId
+        (props.contextData as any).id,
+        router.currentRoute.value.params.id as string
       );
       if (sectionValue != null) {
         context.emit("sendSectionValue", sectionValue);
       }
     };
     const deleteSection = async () => {
-        const analyse: Analyse = JSON.parse(JSON.stringify(store.state.resource.analyse))
-        analyse.section.analysisResultList.forEach((item, index) => {
-            if(item.id === (props.contextData as any).id) {
-                analyse.section.analysisResultList.splice(index, 1)
-            }
-        })
-        const layerDataList = store.state.resource.layerDataList
-        await store.dispatch("setResource", {projectJsonBean: {layerDataList: layerDataList, analyse: analyse}, id: router.currentRoute.value.params.id as string})
-        await delSection(props.projectName as string, (props.contextData as any).label, (props.contextData as any).selectDemName)
-    }
+      const analyse: Analyse = JSON.parse(
+        JSON.stringify(store.state.resource.analyse)
+      );
+      analyse.section.analysisResultList.forEach((item, index) => {
+        if (item.id === (props.contextData as any).id) {
+          analyse.section.analysisResultList.splice(index, 1);
+        }
+      });
+      const layerDataList = store.state.resource.layerDataList;
+      const data = await store.dispatch("setResource", {
+        projectJsonBean: { layerDataList: layerDataList, analyse: analyse },
+        id: router.currentRoute.value.params.id as string,
+      });
+      if (data === 0) {
+        notice("success", "成功", "删除成功");
+      }
+      await delSection(
+        router.currentRoute.value.params.id as string,
+        (props.contextData as any).id
+      );
+    };
 
     return {
       showSection,
-      deleteSection
+      deleteSection,
     };
   },
 });
