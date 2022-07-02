@@ -34,6 +34,7 @@
       <tool-content
         @close="closeClick"
         @sectionByDIYClick="sectionByDIYClick"
+        @sectionCompareByDIYClick="sectionCompareByDIYClick"
       ></tool-content>
     </div>
     <div class="data-select-tool" v-if="dataSelectFlag">
@@ -42,6 +43,13 @@
         @dataSelectClose="dataSelectClose"
         @dataSelectChange="dataSelectChange"
       ></data-select-tool>
+    </div>
+    <div class="data-multi-select" v-if="dataMultiSelectFlag">
+      <data-multi-select
+        @dataMultiSelectClose="dataMultiSelectClose"
+        :demLayers="demLayers"
+        @dataMultiSelectChange="dataMultiSelectChange"
+      ></data-multi-select>
     </div>
   </div>
 </template>
@@ -57,15 +65,27 @@ import DataSelectTool from "@/components/analyse/DataSelectTool.vue";
 import router from "@/router";
 import { notice } from "@/utils/notice";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
-import { sectionUtil } from "@/components/tools/ts/mapUtils";
+import { uuid } from "@/utils/common";
+import DataMultiSelect from "@/components/analyse/DataMultiSelect.vue";
+import {
+  addSection,
+  checkLayerState,
+} from "@/api/request";
 
 export default defineComponent({
-  components: { RightContent, TopContent, ToolContent, DataSelectTool },
+  components: {
+    RightContent,
+    TopContent,
+    ToolContent,
+    DataSelectTool,
+    DataMultiSelect,
+  },
   setup() {
     const container = ref<HTMLElement>();
     const right = ref<HTMLElement>();
-    const rightLayer = ref()
+    const rightLayer = ref();
     const rightFlag = ref(false);
+    const nameCount = ref<any>((router.currentRoute.value.params.projectInfo as any).nameCount)
     const top = ref<HTMLElement>();
     const topFlag = ref(false);
     const flag = ref(false);
@@ -74,10 +94,13 @@ export default defineComponent({
     const sortLayers = ref<string[]>([]);
     const toolFlag = ref(false);
     const dataSelectFlag = ref(false);
+    const dataMultiSelectFlag = ref(false);
+
     const currentDem = ref({
       id: "",
       name: "",
     });
+    const currentDems = ref<{ id: string; name: string }[]>([]);
 
     const draw = new MapboxDraw({
       controls: {
@@ -230,8 +253,8 @@ export default defineComponent({
             type: "line",
             source: layer.id,
             paint: {
-              "line-color": "red"
-            }
+              "line-color": "red",
+            },
           });
         }
       }
@@ -244,6 +267,13 @@ export default defineComponent({
           map.value.removeSource(item);
         }
       });
+    };
+
+    const removeControl = () => {
+      console.log(currentDems.value.length);
+      if (currentDem.value.id != "" || currentDems.value.length > 0) {
+        map.value?.removeControl(draw);
+      }
     };
 
     const setVisible = (val: any) => {
@@ -266,68 +296,161 @@ export default defineComponent({
     };
 
     const toolClick = () => {
-      toolFlag.value = !toolFlag.value;
-      if (!toolFlag.value) {
-        dataSelectFlag.value = false;
-      }
+      toolFlag.value = true;
     };
 
     const closeClick = () => {
       toolFlag.value = false;
       dataSelectFlag.value = false;
-      map.value?.removeControl(draw);
-      map.value?.setPaintProperty(
-        currentDem.value.id,
-        "hillshade-shadow-color",
-        "#000000"
-      );
+      if (currentDem.value.id != "") {
+        map.value?.setPaintProperty(
+          currentDem.value.id,
+          "hillshade-shadow-color",
+          "#000000"
+        );
+      }
+      removeControl();
       currentDem.value.id = "";
       currentDem.value.name = "";
     };
 
     const sectionByDIYClick = () => {
-      if (demLayers.value.length > 0) {
-        dataSelectFlag.value = true;
-      } else {
-        notice("warning", "警告", "请检查是否添加了基础河床数据");
+      if (!dataSelectFlag.value) {
+        dataMultiSelectClose();
+        removeControl();
+        if (demLayers.value.length > 0) {
+          dataSelectFlag.value = true;
+        } else {
+          notice("warning", "警告", "请检查是否添加了基础河床数据");
+        }
       }
     };
 
     const dataSelectClose = () => {
+      removeControl();
       dataSelectFlag.value = false;
-      map.value?.removeControl(draw);
-      map.value?.setPaintProperty(
-        currentDem.value.id,
-        "hillshade-shadow-color",
-        "#000000"
-      );
+      if (currentDem.value.id != "") {
+        map.value?.setPaintProperty(
+          currentDem.value.id,
+          "hillshade-shadow-color",
+          "#000000"
+        );
+      }
+
       currentDem.value.id = "";
       currentDem.value.name = "";
     };
 
-    const addSection = (layer: any) => {
-      addLayer(layer);
-      console.log(rightLayer.value)
-      rightLayer.value.addLayer(layer)
-    };
-
     const dataSelectChange = (val: { id: string; name: string }) => {
-      console.log(val);
-      map.value?.setPaintProperty(val.id, "hillshade-shadow-color", "#CDE67B");
       if (currentDem.value.id === "") {
         map.value?.addControl(draw, "top-left");
-        sectionUtil(
-          map.value,
-          draw,
-          router.currentRoute.value.params.id as string,
-          val.id,
-          val.name,
-          addSection
+        if (map.value?.loaded()) {
+          map.value.addControl(draw, "top-left");
+        } else {
+          map.value?.on("load", () => {
+            map.value?.addControl(draw, "top-left");
+          });
+        }
+      } else {
+        map.value?.setPaintProperty(
+          currentDem.value.id,
+          "hillshade-shadow-color",
+          "#000000"
         );
+        map.value?.off("draw.create", drawSection);
       }
+      map.value?.setPaintProperty(val.id, "hillshade-shadow-color", "#CDE67B");
+      map.value?.on("draw.create", drawSection);
       currentDem.value.id = val.id;
       currentDem.value.name = val.name;
     };
+
+    const getName = (type: string) => {
+      let name = ""
+      if(type === 'section') {
+        name = "断面形态_" + nameCount.value.section
+        nameCount.value.section = nameCount.value.section + 1
+      }
+      return name
+    }
+    const addLayerSection = (layer: any) => {
+      addLayer(layer);
+      layer.show = true
+      layer.name = getName(layer.type)
+      rightLayer.value.addLayer(layer);
+    };
+
+    const sectionCompareByDIYClick = () => {
+      if (!dataMultiSelectFlag.value) {
+        dataSelectClose();
+        removeControl();
+        if (demLayers.value.length >= 2) {
+          dataMultiSelectFlag.value = true;
+          demLayers.value.forEach((item) => {
+            currentDems.value.push({
+              id: item.id,
+              name: item.name,
+            });
+          });
+          map.value?.addControl(draw, "top-left");
+          map.value?.off("draw.create", drawSection);
+        } else {
+          notice("warning", "警告", "至少添加两个dem图层数据!");
+        }
+      }
+    };
+
+    const dataMultiSelectClose = () => {
+      dataMultiSelectFlag.value = false;
+      removeControl();
+      currentDems.value = [];
+    };
+
+    const dataMultiSelectChange = (val: any[]) => {
+      currentDems.value = val;
+    };
+
+    const drawSection = async () => {
+      const coordinates = (draw.getAll().features[0].geometry as any)
+        .coordinates;
+      const uid = uuid();
+      const layer = {
+        id: uid,
+        type: "section",
+        selectDemId: currentDem.value.id,
+        selectDemName: currentDem.value.name,
+        geoJson: {
+          coordinates: coordinates as any[],
+          type: "LineString",
+        },
+      };
+
+      draw.deleteAll();
+      addLayerSection(layer);
+      await addSection(layer, router.currentRoute.value.params.id as string);
+      async function handle() {
+        const data = await checkLayerState(
+          router.currentRoute.value.params.id as string,
+          uid
+        );
+        if (data != null) {
+          if ((data as any).code === 0) {
+            if (data.data === 1) {
+              rightLayer.value.showResult(layer)
+            } else if (data.data === 0) {
+              setTimeout(async () => {
+                await handle();
+              }, 1000);
+            } else if (data.data === -1) {
+              notice("error", "错误", "断面生成错误");
+            }
+          }
+        }
+      }
+      await handle()
+    };
+
+    const drawSectionCompare = async () => {};
 
     watch(
       () => {
@@ -337,8 +460,10 @@ export default defineComponent({
         if (router.currentRoute.value.name === "project") {
           currentDem.value.id = "";
           currentDem.value.name = "";
-          map.value?.removeControl(draw);
+          currentDems.value = [];
+          removeControl();
           dataSelectFlag.value = false;
+          dataMultiSelectFlag.value = false;
           removeAllLayers(sortLayers.value);
           layers.value = (
             router.currentRoute.value.params.projectInfo as any
@@ -398,7 +523,11 @@ export default defineComponent({
       sectionByDIYClick,
       dataSelectClose,
       dataSelectChange,
-      rightLayer
+      rightLayer,
+      sectionCompareByDIYClick,
+      dataMultiSelectFlag,
+      dataMultiSelectClose,
+      dataMultiSelectChange,
     };
   },
 });
@@ -486,23 +615,26 @@ export default defineComponent({
       background: rgba($color: #000000, $alpha: 0.5);
     }
   }
-  .tools {
+  .tools,
+  .data-select-tool,
+  .data-multi-select {
     position: absolute;
     z-index: 99;
-    top: 60px;
-    left: 30px;
     -webkit-animation: scale-up-hor-left 0.4s
       cubic-bezier(0.39, 0.575, 0.565, 1) both;
     animation: scale-up-hor-left 0.4s cubic-bezier(0.39, 0.575, 0.565, 1) both;
   }
+  .tools {
+    top: 60px;
+    left: 30px;
+  }
   .data-select-tool {
-    position: absolute;
-    z-index: 99;
     top: 80px;
     left: 350px;
-    -webkit-animation: scale-up-hor-left 0.4s
-      cubic-bezier(0.39, 0.575, 0.565, 1) both;
-    animation: scale-up-hor-left 0.4s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+  }
+  .data-multi-select {
+    top: 80px;
+    left: 350px;
   }
 }
 </style>

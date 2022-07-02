@@ -31,7 +31,7 @@ import { computed, defineComponent, onMounted, reactive, ref } from "vue";
 import { useStore } from "@/store";
 import mapBoxGl from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
-import { sectionUtil } from "./ts/mapUtils";
+
 import router from "@/router";
 export default defineComponent({
   props: {

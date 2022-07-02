@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import njnu.edu.back.pojo.Project;
 import njnu.edu.back.pojo.dto.AddProject;
 import njnu.edu.back.pojo.support.Layer;
-import njnu.edu.back.pojo.support.projectJson.ProjectJsonBean;
+
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -56,9 +56,13 @@ public interface ProjectService {
 
     void addSection(Layer layer, String projectId, String email);
 
+    List<String> getSectionValue(String sectionId, String projectId, String email);
+
     Project getProjectInfo(String projectId);
 
     Page<Project> getAll(int page, int size, String keyWord);
 
     List<Project> getProjectsByEmail(String email);
+
+    int checkState(String projectId, String layerId);
 }

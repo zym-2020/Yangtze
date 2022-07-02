@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "5715218",
+      "name": "比较图",
+      "font_class": "bijiaotu",
+      "unicode": "e672",
+      "unicode_decimal": 58994
+    },
+    {
       "icon_id": "6864153",
       "name": "攻击分析图谱.攻击行为趋势分析",
       "font_class": "gongjifenxitupugongjihangweiqushifenxi",

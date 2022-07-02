@@ -4,34 +4,9 @@ import { useStore } from "@/store";
 import { uuid } from '@/utils/common'
 import { addSection, saveSectionContrastValue } from '@/api/request'
 
-export const sectionUtil = (map: mapBoxGl.Map | undefined, draw: MapboxDraw, projectId: string, demId: string, demName: string, callback: (layer: any) => void) => {
 
-    if (map?.loaded()) {
-        map.addControl(draw, "top-left");
-    } else {
-        map?.on("load", () => {
-            map.addControl(draw, "top-left");
-        });
-    }
-    map?.on('draw.create', async () => {
-        const coordinates = (draw.getAll().features[0].geometry as any).coordinates
-        const uid = uuid()
-        const layer = {
-            id: uid,
-            type: 'section',
-            selectDemId: demId,
-            selectDemName: demName,
-            geoJson: {
-                coordinates: coordinates as any[],
-                type: 'LineString'
-            }
-        }
 
-        callback(layer)
-        draw.deleteAll()
-        await addSection(layer, projectId)
-    })
-}
+
 
 export const sectionContrastUtil = (map: mapBoxGl.Map | undefined, draw: MapboxDraw, projectId: string) => {
     const store = useStore()

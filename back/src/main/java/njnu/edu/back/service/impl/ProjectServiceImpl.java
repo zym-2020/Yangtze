@@ -19,9 +19,7 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.util.*;
 
 
@@ -177,6 +175,58 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    public List<String> getSectionValue(String sectionId, String projectId, String email) {
+
+        String path = baseDir + email + "\\projects\\" + projectId + "\\" + sectionId + ".txt";
+        File file = new File(path);
+        if(!file.exists()) {
+            Optional<Project> optionalProject = projectRepository.findById(projectId);
+            if(!optionalProject.isPresent()) {
+                throw new MyException(ResultEnum.NO_OBJECT);
+            }
+            Project project = optionalProject.get();
+            List<Layer> layers = project.getLayers();
+            for(Layer layer : layers) {
+                if(layer.getId().equals(sectionId)) {
+                    if(layer.getState() == 0) {
+                        throw new MyException(-99, "正在计算中");
+                    } else {
+                        layer.setState(-1);
+                        projectRepository.save(project);
+                        break;
+                    }
+                }
+            }
+            throw new MyException(ResultEnum.NO_OBJECT);
+        }
+        BufferedReader bufferedReader = null;
+        try {
+            bufferedReader = new BufferedReader(new FileReader(file));
+            List<String> result = new ArrayList<>();
+            String temp = bufferedReader.readLine();
+            while(temp != null) {
+                result.add(temp);
+                temp = bufferedReader.readLine();
+            }
+            bufferedReader.close();
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        } finally {
+            try {
+                if(bufferedReader != null) {
+                    bufferedReader.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+            }
+        }
+
+    }
+
+    @Override
     public Project getProjectInfo(String projectId) {
         Optional<Project> optionalProject = projectRepository.findById(projectId);
         if(!optionalProject.isPresent()) {
@@ -208,6 +258,22 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<Project> getProjectsByEmail(String email) {
         return projectRepository.findAllByCreator(email);
+    }
+
+    @Override
+    public int checkState(String projectId, String layerId) {
+        Optional<Project> optionalProject = projectRepository.findById(projectId);
+        if(!optionalProject.isPresent()) {
+            throw new MyException(ResultEnum.USER_PASSWORD_NOT_MATCH);
+        }
+        Project project = optionalProject.get();
+        List<Layer> layers = project.getLayers();
+        for(Layer layer : layers) {
+            if(layer.getId().equals(layerId)) {
+                return layer.getState();
+            }
+        }
+        throw new MyException(ResultEnum.NO_OBJECT);
     }
 
     //    @Autowired

@@ -23,13 +23,21 @@
             </div>
           </el-collapse-item>
           <el-collapse-item title="Feedback" name="2">
+            <template #title>
+              <svg style="width: 20px; height: 20px; margin-right: 10px">
+                <use xlink:href="#icon-bijiaotu"></use>
+              </svg>
+              <div>断面比较</div>
+            </template>
             <div>
-              Operation feedback: enable the users to clearly perceive their
-              operations by style updates and interactive effects;
-            </div>
-            <div>
-              Visual feedback: reflect current state by updating or rearranging
-              elements of the page.
+              <el-button
+                type="primary"
+                size="small"
+                @click="sectionCompareByDIYClick"
+              >
+                任意断面
+              </el-button>
+              <el-button type="success" size="small">文本输入</el-button>
             </div>
           </el-collapse-item>
           <el-collapse-item title="Efficiency" name="3">
@@ -66,7 +74,7 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 export default defineComponent({
-  emits: ["close", "sectionByDIYClick"],
+  emits: ["close", "sectionByDIYClick", "sectionCompareByDIYClick"],
   setup(_, context) {
     const closeClick = () => {
       context.emit("close");
@@ -76,9 +84,14 @@ export default defineComponent({
       context.emit("sectionByDIYClick");
     };
 
+    const sectionCompareByDIYClick = () => {
+      context.emit("sectionCompareByDIYClick");
+    };
+
     return {
       closeClick,
       sectionByDIYClick,
+      sectionCompareByDIYClick
     };
   },
 });

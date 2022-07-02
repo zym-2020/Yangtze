@@ -34,26 +34,7 @@ export default defineComponent({
       }
     };
     const deleteSection = async () => {
-      const analyse: Analyse = JSON.parse(
-        JSON.stringify(store.state.resource.analyse)
-      );
-      analyse.section.analysisResultList.forEach((item, index) => {
-        if (item.id === (props.contextData as any).id) {
-          analyse.section.analysisResultList.splice(index, 1);
-        }
-      });
-      const layerDataList = store.state.resource.layerDataList;
-      const data = await store.dispatch("setResource", {
-        projectJsonBean: { layerDataList: layerDataList, analyse: analyse },
-        id: router.currentRoute.value.params.id as string,
-      });
-      if (data === 0) {
-        notice("success", "成功", "删除成功");
-      }
-      await delSection(
-        router.currentRoute.value.params.id as string,
-        (props.contextData as any).id
-      );
+      
     };
 
     return {

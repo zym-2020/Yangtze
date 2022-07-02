@@ -82,8 +82,12 @@ export async function addSection(layer: Layer, projectId: string) {
     return await post(`/project/addSection/${projectId}`, layer)
 }
 
-export async function getSectionValue(id: string, projectId: string) {
-    return await get(`/project/getSectionValue/${projectId}/${id}`)
+// export async function getSectionValue(id: string, projectId: string) {
+//     return await get(`/project/getSectionValue/${projectId}/${id}`)
+// }
+////
+export async function getSectionValue(projectId: string, sectionId: string) {
+    return await get(`/project/getSectionValue/${projectId}/${sectionId}`)
 }
 
 export async function delSection(projectId: string, sectionId: string) {
@@ -112,6 +116,11 @@ export async function getAll(jsonData: { page: number, size: number, keyWord: st
 ////
 export async function getProjectInfo(projectId: string) {
     return await get(`/project/getProjectInfo/${projectId}`)
+}
+
+////
+export async function checkLayerState(projectId: string, sectionId: string) {
+    return await get(`/project/checkState/${projectId}/${sectionId}`)
 }
 
 //========================vectorRelationship相关接口=================================

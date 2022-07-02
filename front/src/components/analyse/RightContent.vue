@@ -121,6 +121,13 @@
     <el-dialog v-model="manageFlag" width="600px" :show-close="false">
       <project-manage v-if="manageFlag" @selectProjectId="selectProjectId" />
     </el-dialog>
+
+    <el-dialog v-model="sectionShow" width="700px" :modal="false">
+      <section-show
+        :sectionValue="sectionValue"
+        v-if="sectionShow"
+      ></section-show>
+    </el-dialog>
   </div>
 </template>
 
@@ -140,20 +147,37 @@ interface Tree {
   show?: boolean;
 }
 
-import { computed, defineComponent, onMounted, ref, watch } from "vue";
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  ref,
+  watch,
+  reactive,
+} from "vue";
 import CreateProject from "@/components/tools/CreateProject.vue";
 import AddData from "@/components/tools/AddData.vue";
 import ProjectManage from "@/components/tools/ProjectManage.vue";
 import router from "@/router";
 import { computedDataView } from "@/components/tools/ts/leftToolTreeData";
+import SectionShow from "@/components/projectDialog/SectionShow.vue";
+import { getSectionValue } from "@/api/request";
 export default defineComponent({
   emits: ["setVisible", "setLayers", "toolClick"],
-  components: { CreateProject, AddData, ProjectManage },
+  components: { CreateProject, AddData, ProjectManage, SectionShow },
   setup(_, context) {
     const createFlag = ref(false);
     const addFlag = ref(false);
     const manageFlag = ref(false);
     const view = ref(true);
+    const sectionShow = ref(false);
+    const sectionValue = reactive({
+      name: "",
+      id: "",
+      value: [],
+      selectDemId: "",
+      selectDemName: "",
+    });
 
     const defaultProps = {
       children: "children",
@@ -277,9 +301,27 @@ export default defineComponent({
     };
 
     const addLayer = (layer: any) => {
-      layer.show = true;
       treeData.value[0].children.push(layer);
       sortLayers.value.push(layer.id);
+    };
+
+    const showResult = async (layer: any) => {
+      if (layer.type === "section") {
+        const data = await getSectionValue(
+          router.currentRoute.value.params.id as string,
+          layer.id
+        );
+        if (data != null) {
+          if ((data as any).code === 0) {
+            sectionValue.name = layer.name;
+            sectionValue.id = layer.id;
+            sectionValue.selectDemId = layer.selectDemId;
+            sectionValue.selectDemName = layer.selectDemName;
+            sectionValue.value = data.data;
+            sectionShow.value = true
+          }
+        }
+      }
     };
 
     watch(
@@ -318,6 +360,9 @@ export default defineComponent({
       dataView,
       toolClick,
       addLayer,
+      sectionShow,
+      sectionValue,
+      showResult
     };
   },
 });

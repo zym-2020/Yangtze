@@ -9,7 +9,7 @@ import njnu.edu.back.common.result.ResultUtils;
 import njnu.edu.back.pojo.Project;
 import njnu.edu.back.pojo.dto.AddProject;
 import njnu.edu.back.pojo.support.Layer;
-import njnu.edu.back.pojo.support.projectJson.ProjectJsonBean;
+
 import njnu.edu.back.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -57,6 +57,11 @@ public class ProjectController {
         return ResultUtils.success();
     }
 
+    @RequestMapping(value = "/getSectionValue/{projectId}/{sectionId}", method = RequestMethod.GET)
+    public JsonResult getSectionValue(@PathVariable String projectId, @PathVariable String sectionId, @JwtTokenParser("email") String email) {
+        return ResultUtils.success(projectService.getSectionValue(sectionId, projectId, email));
+    }
+
     @RequestMapping(value = "/getProjectInfo/{projectId}", method = RequestMethod.GET)
     public JsonResult getProjectInfo(@PathVariable String projectId) {
         return ResultUtils.success(projectService.getProjectInfo(projectId));
@@ -75,6 +80,10 @@ public class ProjectController {
         return ResultUtils.success(projectService.getProjectsByEmail(email));
     }
 
+    @RequestMapping(value = "/checkState/{projectId}/{sectionId}", method = RequestMethod.GET)
+    public JsonResult checkState(@PathVariable String projectId, @PathVariable String sectionId) {
+        return ResultUtils.success(projectService.checkState(projectId, sectionId));
+    }
 
 
 
