@@ -65,4 +65,6 @@ public interface ProjectService {
     List<Project> getProjectsByEmail(String email);
 
     int checkState(String projectId, String layerId);
+
+    void delLayer(String projectId, String layerId, String email);
 }

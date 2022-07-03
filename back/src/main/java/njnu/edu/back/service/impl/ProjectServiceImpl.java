@@ -176,7 +176,6 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public List<String> getSectionValue(String sectionId, String projectId, String email) {
-
         String path = baseDir + email + "\\projects\\" + projectId + "\\" + sectionId + ".txt";
         File file = new File(path);
         if(!file.exists()) {
@@ -205,7 +204,12 @@ public class ProjectServiceImpl implements ProjectService {
             List<String> result = new ArrayList<>();
             String temp = bufferedReader.readLine();
             while(temp != null) {
-                result.add(temp);
+                if(temp.contains("+")) {
+                    result.add("0");
+                } else {
+                    result.add(temp);
+                }
+
                 temp = bufferedReader.readLine();
             }
             bufferedReader.close();
@@ -274,6 +278,34 @@ public class ProjectServiceImpl implements ProjectService {
             }
         }
         throw new MyException(ResultEnum.NO_OBJECT);
+    }
+
+    @Override
+    public void delLayer(String projectId, String layerId, String email) {
+        Optional<Project> optionalProject = projectRepository.findById(projectId);
+        if(!optionalProject.isPresent()) {
+            throw new MyException(ResultEnum.NO_OBJECT);
+        }
+        Project project = optionalProject.get();
+        List<Layer> layers = project.getLayers();
+        int index = -1;
+        for (int i = 0; i < layers.size(); i++) {
+            if(layers.get(i).getId().equals(layerId)) {
+                index = i;
+                break;
+            }
+        }
+        String type = layers.get(index).getType();
+        project.getSortLayers().remove(layerId);
+        layers.remove(index);
+        projectRepository.save(project);
+        if(!(type.equals("riverBed") || type.equals("satellite"))) {
+            String path = baseDir + email + "\\projects\\" + projectId + "\\" + layerId + ".txt";
+            File file = new File(path);
+            if(file.exists()) {
+                file.delete();
+            }
+        }
     }
 
     //    @Autowired

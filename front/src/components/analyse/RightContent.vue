@@ -40,6 +40,7 @@
             draggable
             :allow-drop="allowDrop"
             @node-drop="sortLayer"
+            @node-contextmenu="layerContextClick"
             v-if="treeData[0].children.length > 0"
           >
             <template #default="{ node, data }">
@@ -122,6 +123,14 @@
       <project-manage v-if="manageFlag" @selectProjectId="selectProjectId" />
     </el-dialog>
 
+    <layer-context-menu
+      class="layer-context-menu"
+      v-show="layerContextMenuFlag"
+      :contextItem="contextItem"
+      @delLayer="delContextLayer"
+      @showChirt="showResult"
+    ></layer-context-menu>
+
     <el-dialog v-model="sectionShow" width="700px" :modal="false">
       <section-show
         :sectionValue="sectionValue"
@@ -161,16 +170,26 @@ import ProjectManage from "@/components/tools/ProjectManage.vue";
 import router from "@/router";
 import { computedDataView } from "@/components/tools/ts/leftToolTreeData";
 import SectionShow from "@/components/projectDialog/SectionShow.vue";
-import { getSectionValue } from "@/api/request";
+import { getSectionValue, delLayer } from "@/api/request";
+import LayerContextMenu from "@/components/contextMenu/LayerContextMenu.vue";
+import { notice } from "@/utils/notice";
 export default defineComponent({
-  emits: ["setVisible", "setLayers", "toolClick"],
-  components: { CreateProject, AddData, ProjectManage, SectionShow },
+  emits: ["setVisible", "setLayers", "toolClick", "deleteLayer"],
+  components: {
+    CreateProject,
+    AddData,
+    ProjectManage,
+    SectionShow,
+    LayerContextMenu,
+  },
   setup(_, context) {
     const createFlag = ref(false);
     const addFlag = ref(false);
     const manageFlag = ref(false);
     const view = ref(true);
     const sectionShow = ref(false);
+    const layerContextMenuFlag = ref(false);
+    const contextItem = ref<any>(null);
     const sectionValue = reactive({
       name: "",
       id: "",
@@ -293,7 +312,6 @@ export default defineComponent({
 
     const change = () => {
       view.value = !view.value;
-      console.log(dataView.value);
     };
 
     const toolClick = () => {
@@ -304,6 +322,32 @@ export default defineComponent({
       treeData.value[0].children.push(layer);
       sortLayers.value.push(layer.id);
     };
+
+    const delContextLayer = async (val: string) => {
+      const data = await delLayer(
+        router.currentRoute.value.params.id as string,
+        val
+      );
+      if (data != null) {
+        if ((data as any).code === 0) {
+          let index = -1;
+          for (let i = 0; i < treeData.value[0].children.length; i++) {
+            if (treeData.value[0].children[i].id === val) {
+              index = i;
+              console.log("index", index);
+            }
+          }
+          console.log(index);
+          if (index != -1) {
+            treeData.value[0].children.splice(index, 1);
+            console.log(treeData.value);
+          }
+          notice("success", "成功", "删除成功");
+          context.emit("deleteLayer", val);
+        }
+      }
+    };
+
 
     const showResult = async (layer: any) => {
       if (layer.type === "section") {
@@ -318,9 +362,27 @@ export default defineComponent({
             sectionValue.selectDemId = layer.selectDemId;
             sectionValue.selectDemName = layer.selectDemName;
             sectionValue.value = data.data;
-            sectionShow.value = true
+            sectionShow.value = true;
           }
         }
+      }
+    };
+
+    const layerContextClick = (event: any, data: any) => {
+      layerContextMenuFlag.value = false;
+      if (data.type != "project") {
+        contextItem.value = data;
+        layerContextMenuFlag.value = true;
+        const menu: any = document.querySelector(".layer-context-menu");
+        const content = document.querySelector(".right") as HTMLElement;
+        menu.style.left = event.clientX - content.offsetLeft - 20 + "px";
+        menu.style.top = event.clientY - content.offsetTop - 60 + "px";
+        console.log(event);
+        function closeMenu() {
+          layerContextMenuFlag.value = false;
+          document.removeEventListener("click", closeMenu);
+        }
+        document.addEventListener("click", closeMenu);
       }
     };
 
@@ -362,7 +424,11 @@ export default defineComponent({
       addLayer,
       sectionShow,
       sectionValue,
-      showResult
+      showResult,
+      layerContextClick,
+      layerContextMenuFlag,
+      contextItem,
+      delContextLayer,
     };
   },
 });
@@ -371,6 +437,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .right-content {
   height: 100%;
+  position: relative;
   .title {
     padding: 0 10px;
     color: white;
@@ -480,6 +547,10 @@ export default defineComponent({
     .el-dialog__body {
       padding: 0;
     }
+  }
+  .layer-context-menu {
+    position: absolute;
+    z-index: 100;
   }
 }
 </style>

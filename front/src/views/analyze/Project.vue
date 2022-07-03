@@ -27,6 +27,7 @@
           @setVisible="setVisible"
           @setLayers="setLayers"
           @toolClick="toolClick"
+          @deleteLayer="deleteLayer"
         ></right-content>
       </div>
     </div>
@@ -67,10 +68,7 @@ import { notice } from "@/utils/notice";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { uuid } from "@/utils/common";
 import DataMultiSelect from "@/components/analyse/DataMultiSelect.vue";
-import {
-  addSection,
-  checkLayerState,
-} from "@/api/request";
+import { addSection, checkLayerState } from "@/api/request";
 
 export default defineComponent({
   components: {
@@ -85,7 +83,9 @@ export default defineComponent({
     const right = ref<HTMLElement>();
     const rightLayer = ref();
     const rightFlag = ref(false);
-    const nameCount = ref<any>((router.currentRoute.value.params.projectInfo as any).nameCount)
+    const nameCount = ref<any>(
+      (router.currentRoute.value.params.projectInfo as any).nameCount
+    );
     const top = ref<HTMLElement>();
     const topFlag = ref(false);
     const flag = ref(false);
@@ -260,6 +260,13 @@ export default defineComponent({
       }
     };
 
+    const deleteLayer = (val: string) => {
+      if (map.value?.getLayer(val) != undefined) {
+        map.value.removeLayer(val);
+        map.value.removeSource(val);
+      }
+    };
+
     const removeAllLayers = (oldSortList: string[]) => {
       oldSortList.forEach((item) => {
         if (map.value != undefined) {
@@ -270,8 +277,7 @@ export default defineComponent({
     };
 
     const removeControl = () => {
-      console.log(currentDems.value.length);
-      if (currentDem.value.id != "" || currentDems.value.length > 0) {
+      if (map.value?.hasControl(draw)) {
         map.value?.removeControl(draw);
       }
     };
@@ -300,18 +306,9 @@ export default defineComponent({
     };
 
     const closeClick = () => {
+      dataSelectClose();
+      dataMultiSelectClose();
       toolFlag.value = false;
-      dataSelectFlag.value = false;
-      if (currentDem.value.id != "") {
-        map.value?.setPaintProperty(
-          currentDem.value.id,
-          "hillshade-shadow-color",
-          "#000000"
-        );
-      }
-      removeControl();
-      currentDem.value.id = "";
-      currentDem.value.name = "";
     };
 
     const sectionByDIYClick = () => {
@@ -366,17 +363,17 @@ export default defineComponent({
     };
 
     const getName = (type: string) => {
-      let name = ""
-      if(type === 'section') {
-        name = "断面形态_" + nameCount.value.section
-        nameCount.value.section = nameCount.value.section + 1
+      let name = "";
+      if (type === "section") {
+        name = "断面形态_" + nameCount.value.section;
+        nameCount.value.section = nameCount.value.section + 1;
       }
-      return name
-    }
+      return name;
+    };
     const addLayerSection = (layer: any) => {
       addLayer(layer);
-      layer.show = true
-      layer.name = getName(layer.type)
+      layer.show = true;
+      layer.name = getName(layer.type);
       rightLayer.value.addLayer(layer);
     };
 
@@ -436,7 +433,7 @@ export default defineComponent({
         if (data != null) {
           if ((data as any).code === 0) {
             if (data.data === 1) {
-              rightLayer.value.showResult(layer)
+              rightLayer.value.showResult(layer);
             } else if (data.data === 0) {
               setTimeout(async () => {
                 await handle();
@@ -447,7 +444,7 @@ export default defineComponent({
           }
         }
       }
-      await handle()
+      await handle();
     };
 
     const drawSectionCompare = async () => {};
@@ -528,6 +525,7 @@ export default defineComponent({
       dataMultiSelectFlag,
       dataMultiSelectClose,
       dataMultiSelectChange,
+      deleteLayer,
     };
   },
 });

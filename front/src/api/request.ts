@@ -90,8 +90,12 @@ export async function getSectionValue(projectId: string, sectionId: string) {
     return await get(`/project/getSectionValue/${projectId}/${sectionId}`)
 }
 
-export async function delSection(projectId: string, sectionId: string) {
-    return await del(`/project/delSection/${projectId}/${sectionId}`)
+// export async function delSection(projectId: string, sectionId: string) {
+//     return await del(`/project/delSection/${projectId}/${sectionId}`)
+// }
+////
+export async function delLayer(projectId: string, layerId: string) {
+    return await del(`/project/delLayer/${projectId}/${layerId}`)
 }
 
 export async function saveSectionContrastValue(jsonData: SectionContrastJsonData) {

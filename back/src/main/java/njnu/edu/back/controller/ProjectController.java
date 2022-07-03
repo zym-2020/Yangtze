@@ -85,6 +85,11 @@ public class ProjectController {
         return ResultUtils.success(projectService.checkState(projectId, sectionId));
     }
 
+    @RequestMapping(value = "/delLayer/{projectId}/{layerId}", method = RequestMethod.DELETE)
+    public JsonResult delLayer(@PathVariable String projectId, @PathVariable String layerId, @JwtTokenParser("email") String email) {
+        projectService.delLayer(projectId, layerId, email);
+        return ResultUtils.success();
+    }
 
 
 //    @Autowired

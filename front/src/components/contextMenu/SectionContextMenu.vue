@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="main">
-      <div class="list" @click="showSection">断面图</div>
+      <div class="list" @click="showSection" disabled>断面图</div>
       <div class="list" @click="deleteSection">删除</div>
     </div>
   </div>
@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
-import { getSectionValue, delSection } from "@/api/request";
+import { getSectionValue } from "@/api/request";
 import { useStore } from "@/store";
 import { Analyse } from "@/store/resourse/resourceState";
 import router from "@/router";
