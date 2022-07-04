@@ -62,6 +62,17 @@ public class ProjectController {
         return ResultUtils.success(projectService.getSectionValue(sectionId, projectId, email));
     }
 
+    @RequestMapping(value = "/addSectionContrast/{projectId}", method = RequestMethod.POST)
+    public JsonResult addSectionContrast(@RequestBody Layer layer, @PathVariable String projectId, @JwtTokenParser("email") String email) {
+        projectService.addSectionContrast(layer, projectId, email);
+        return ResultUtils.success();
+    }
+
+    @RequestMapping(value = "/getSectionContrast/{projectId}/{layerId}", method = RequestMethod.GET)
+    public JsonResult getSectionContrast(@PathVariable String projectId, @PathVariable String layerId, @JwtTokenParser("email") String email) {
+        return ResultUtils.success(projectService.getSectionContrastValue(layerId, projectId, email));
+    }
+
     @RequestMapping(value = "/getProjectInfo/{projectId}", method = RequestMethod.GET)
     public JsonResult getProjectInfo(@PathVariable String projectId) {
         return ResultUtils.success(projectService.getProjectInfo(projectId));

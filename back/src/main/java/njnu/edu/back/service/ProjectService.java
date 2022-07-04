@@ -58,6 +58,10 @@ public interface ProjectService {
 
     List<String> getSectionValue(String sectionId, String projectId, String email);
 
+    void addSectionContrast(Layer layer, String projectId, String email);
+
+    List<Map<String, Object>> getSectionContrastValue(String layerId, String projectId, String email);
+
     Project getProjectInfo(String projectId);
 
     Page<Project> getAll(int page, int size, String keyWord);

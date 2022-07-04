@@ -150,14 +150,11 @@ public class ProjectServiceImpl implements ProjectService {
             public void run() {
                 String demId = layer.getSelectDemId();
                 Map<String, Object> map = analyticDataSetMapper.findById(demId);
+                String tempPath = baseDir + "other\\temp\\" + layer.getId() + ".txt";
                 String address = (String) map.get("address");
                 String dataName = (String) map.get("name");
-                String lon1 = ((JSONArray) layer.getGeoJson().getJSONArray("coordinates").get(0)).getString(0);
-                String lat1 = ((JSONArray) layer.getGeoJson().getJSONArray("coordinates").get(0)).getString(1);
-                String lon2 = ((JSONArray) layer.getGeoJson().getJSONArray("coordinates").get(1)).getString(0);
-                String lat2 = ((JSONArray) layer.getGeoJson().getJSONArray("coordinates").get(1)).getString(1);
                 String resultPath = baseDir + email + "\\projects\\" + projectId + "\\" + layer.getId() + ".txt";
-                Process process = AnalyseUtil.saveSectionValue(address + "\\" + dataName, lon1, lat1, lon2, lat2, resultPath);
+                Process process = AnalyseUtil.saveSectionValue(tempPath,address + "\\" + dataName, layer.getGeoJson().getJSONArray("coordinates"), resultPath);
                 int code = process.waitFor();
                 for (Layer l : project.getLayers()) {
                     if(l.getId().equals(layer.getId())) {
@@ -169,7 +166,10 @@ public class ProjectServiceImpl implements ProjectService {
                         projectRepository.save(project);
                     }
                 }
-
+                File file = new File(tempPath);
+                if(file.exists()) {
+                    file.delete();
+                }
             }
         }.start();
     }
@@ -214,6 +214,112 @@ public class ProjectServiceImpl implements ProjectService {
             }
             bufferedReader.close();
             return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        } finally {
+            try {
+                if(bufferedReader != null) {
+                    bufferedReader.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+            }
+        }
+
+    }
+
+    @Override
+    public void addSectionContrast(Layer layer, String projectId, String email) {
+        Optional<Project> optionalProject = projectRepository.findById(projectId);
+        if(!optionalProject.isPresent()) {
+            throw new MyException(ResultEnum.NO_OBJECT);
+        }
+        Project project = optionalProject.get();
+        layer.setState(0);
+        layer.setName("断面比较_" + project.getNameCount().getSectionContrast());
+        project.getNameCount().setSectionContrast(project.getNameCount().getSectionContrast() + 1);
+        project.getLayers().add(layer);
+        project.getSortLayers().add(layer.getId());
+        projectRepository.save(project);
+        new Thread() {
+            @Override
+            @SneakyThrows
+            public void run() {
+                List<String> demIds = layer.getSelectDemIds();
+                List<String> rasterPaths = new ArrayList<>();
+                for(String demId : demIds) {
+                    Map<String, Object> map = analyticDataSetMapper.findById(demId);
+                    String address = (String) map.get("address");
+                    String dataName = (String) map.get("name");
+                    rasterPaths.add(address + "\\" + dataName);
+                }
+                String tempPath = baseDir + "other\\temp\\" + layer.getId() + ".txt";
+                String resultPath = baseDir + email + "\\projects\\" + projectId + "\\" + layer.getId() + ".txt";
+                Process process = AnalyseUtil.saveSectionContrast(tempPath, rasterPaths, layer.getGeoJson().getJSONArray("coordinates"), resultPath);
+                int code = process.waitFor();
+                for (Layer l : project.getLayers()) {
+                    if(l.getId().equals(layer.getId())) {
+                        if(code == 0) {
+                            l.setState(1);
+                        } else {
+                            l.setState(-1);
+                        }
+                        projectRepository.save(project);
+                    }
+                }
+                File file = new File(tempPath);
+                if(file.exists()) {
+                    file.delete();
+                }
+            }
+        }.start();
+    }
+
+    @Override
+    public List<Map<String, Object>> getSectionContrastValue(String layerId, String projectId, String email) {
+        String path = baseDir + email + "\\projects\\" + projectId + "\\" + layerId + ".txt";
+        File file = new File(path);
+        if(!file.exists()) {
+            Optional<Project> optionalProject = projectRepository.findById(projectId);
+            if(!optionalProject.isPresent()) {
+                throw new MyException(ResultEnum.NO_OBJECT);
+            }
+            Project project = optionalProject.get();
+            List<Layer> layers = project.getLayers();
+            for(Layer layer : layers) {
+                if(layer.getId().equals(layerId)) {
+                    if(layer.getState() == 0) {
+                        throw new MyException(-99, "正在计算中");
+                    } else {
+                        layer.setState(-1);
+                        projectRepository.save(project);
+                        break;
+                    }
+                }
+            }
+            throw new MyException(ResultEnum.NO_OBJECT);
+        }
+        BufferedReader bufferedReader = null;
+        try {
+            bufferedReader = new BufferedReader(new FileReader(file));
+            List<Map<String, Object>> maps = new ArrayList<>();
+            int number = Integer.parseInt(bufferedReader.readLine());
+            for(int i = 0; i < number; i++) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("id", bufferedReader.readLine());
+                List<String> tempList = new ArrayList<>();
+                String temp = "";
+                while((temp = bufferedReader.readLine()) != null && temp != "\n") {
+                    tempList.add(temp);
+                }
+                map.put("list", tempList);
+                maps.add(map);
+            }
+
+            bufferedReader.close();
+            return maps;
         } catch (Exception e) {
             e.printStackTrace();
             throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
