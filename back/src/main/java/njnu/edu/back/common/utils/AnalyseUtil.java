@@ -69,7 +69,7 @@ public class AnalyseUtil {
             for(String str : rasterPath) {
                 out.write(str + "\n");
             }
-            out.write(resultPath);
+            out.write(resultPath + "\n");
             out.write(jsonArray.size() + "\n");
             for(int i = 0; i < jsonArray.size(); i++) {
                 out.write(jsonArray.getObject(i, JSONArray.class).getString(0) + "," + jsonArray.getObject(i, JSONArray.class).getString(1) + "\n");

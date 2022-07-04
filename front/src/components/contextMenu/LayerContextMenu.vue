@@ -3,6 +3,9 @@
     <div class="context-item border-item" @click="showChirt('section')">
       断面形态
     </div>
+    <div class="context-item border-item" @click="showChirt('sectionContrast')">
+      断面比较
+    </div>
     <div class="context-item" @click="delClick">删除图层</div>
   </div>
 </template>
@@ -18,12 +21,18 @@ export default defineComponent({
   emits: ["delLayer", "showChirt"],
   setup(props, context) {
     const showChirt = (type: string) => {
-      if ((props.contextItem as any).type === "section") {
-        context.emit("showChirt", {
-          id: (props.contextItem as any).id,
-          type: type,
-        });
-      }
+      // if ((props.contextItem as any).type === "section") {
+      //   context.emit("showChirt", {
+      //     id: (props.contextItem as any).id,
+      //     type: type,
+      //   });
+      // } else if ((props.contextItem as any).type === "sectionContrast") {
+      //   context.emit("showChirt", {
+      //     id: (props.contextItem as any).id,
+      //     type: type,
+      //   });
+      // }
+      context.emit("showChirt", {type: type, layer: props.contextItem});
     };
     const delClick = () => {
       context.emit("delLayer", (props.contextItem as any).id);

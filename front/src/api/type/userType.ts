@@ -152,7 +152,7 @@ export interface CompressFileJsonData {
 }
 
 export interface DeleteFilesOrFolders {
-    files : string[]
+    files: string[]
     folders: string[]
 }
 
@@ -189,8 +189,9 @@ export interface Layer {
         coordinates: any[],
         type: string
     }
-    selectDemId?: string
-    selectDemName?: string
-    selectDemIds?: string[]
-    selectDemNames?: string[]
+    sections?: {
+        id: string;
+        sectionId: string
+        state: number
+    }[]
 }

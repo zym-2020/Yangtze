@@ -35,22 +35,7 @@
       <tool-content
         @close="closeClick"
         @sectionByDIYClick="sectionByDIYClick"
-        @sectionCompareByDIYClick="sectionCompareByDIYClick"
       ></tool-content>
-    </div>
-    <div class="data-select-tool" v-if="dataSelectFlag">
-      <data-select-tool
-        :demLayers="demLayers"
-        @dataSelectClose="dataSelectClose"
-        @dataSelectChange="dataSelectChange"
-      ></data-select-tool>
-    </div>
-    <div class="data-multi-select" v-if="dataMultiSelectFlag">
-      <data-multi-select
-        @dataMultiSelectClose="dataMultiSelectClose"
-        :demLayers="demLayers"
-        @dataMultiSelectChange="dataMultiSelectChange"
-      ></data-multi-select>
     </div>
   </div>
 </template>
@@ -62,21 +47,17 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import RightContent from "@/components/analyse/RightContent.vue";
 import TopContent from "@/components/analyse/TopContent.vue";
 import ToolContent from "@/components/analyse/ToolContent.vue";
-import DataSelectTool from "@/components/analyse/DataSelectTool.vue";
 import router from "@/router";
 import { notice } from "@/utils/notice";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { uuid } from "@/utils/common";
-import DataMultiSelect from "@/components/analyse/DataMultiSelect.vue";
-import { addSection, checkLayerState } from "@/api/request";
+import { addSection, checkLayerState, addSectionContrast } from "@/api/request";
 
 export default defineComponent({
   components: {
     RightContent,
     TopContent,
     ToolContent,
-    DataSelectTool,
-    DataMultiSelect,
   },
   setup() {
     const container = ref<HTMLElement>();
@@ -93,14 +74,7 @@ export default defineComponent({
     const layers = ref<any[]>([]);
     const sortLayers = ref<string[]>([]);
     const toolFlag = ref(false);
-    const dataSelectFlag = ref(false);
-    const dataMultiSelectFlag = ref(false);
-
-    const currentDem = ref({
-      id: "",
-      name: "",
-    });
-    const currentDems = ref<{ id: string; name: string }[]>([]);
+    const sectionDIYflag = ref(false);
 
     const draw = new MapboxDraw({
       controls: {
@@ -236,7 +210,10 @@ export default defineComponent({
             type: "hillshade",
             source: layer.id,
           });
-        } else if (layer.type == "section") {
+        } else if (
+          layer.type === "section" ||
+          layer.type === "sectionContrast"
+        ) {
           map.value.addSource(layer.id, {
             type: "geojson",
             data: {
@@ -264,6 +241,11 @@ export default defineComponent({
       if (map.value?.getLayer(val) != undefined) {
         map.value.removeLayer(val);
         map.value.removeSource(val);
+        for (let i = 0; i < sortLayers.value.length; i++) {
+          if (sortLayers.value[i] === val) {
+            sortLayers.value.splice(i, 1);
+          }
+        }
       }
     };
 
@@ -306,60 +288,25 @@ export default defineComponent({
     };
 
     const closeClick = () => {
-      dataSelectClose();
-      dataMultiSelectClose();
+      sectionDIYClose();
       toolFlag.value = false;
     };
 
     const sectionByDIYClick = () => {
-      if (!dataSelectFlag.value) {
-        dataMultiSelectClose();
-        removeControl();
+      if (!sectionDIYflag.value) {
         if (demLayers.value.length > 0) {
-          dataSelectFlag.value = true;
+          map.value?.addControl(draw, "top-left");
+          map.value?.on("draw.create", drawSection);
         } else {
           notice("warning", "警告", "请检查是否添加了基础河床数据");
         }
       }
     };
 
-    const dataSelectClose = () => {
+    const sectionDIYClose = () => {
       removeControl();
-      dataSelectFlag.value = false;
-      if (currentDem.value.id != "") {
-        map.value?.setPaintProperty(
-          currentDem.value.id,
-          "hillshade-shadow-color",
-          "#000000"
-        );
-      }
-
-      currentDem.value.id = "";
-      currentDem.value.name = "";
-    };
-
-    const dataSelectChange = (val: { id: string; name: string }) => {
-      if (currentDem.value.id === "") {
-        map.value?.addControl(draw, "top-left");
-        if (map.value?.loaded()) {
-          map.value.addControl(draw, "top-left");
-        } else {
-          map.value?.on("load", () => {
-            map.value?.addControl(draw, "top-left");
-          });
-        }
-      } else {
-        map.value?.setPaintProperty(
-          currentDem.value.id,
-          "hillshade-shadow-color",
-          "#000000"
-        );
-        map.value?.off("draw.create", drawSection);
-      }
-      map.value?.setPaintProperty(val.id, "hillshade-shadow-color", "#CDE67B");
-      map.value?.on("draw.create", drawSection);
-      currentDem.value.id = val.id;
-      currentDem.value.name = val.name;
+      sectionDIYflag.value = false;
+      map.value?.off("draw.create", drawSection);
     };
 
     const getName = (type: string) => {
@@ -367,44 +314,17 @@ export default defineComponent({
       if (type === "section") {
         name = "断面形态_" + nameCount.value.section;
         nameCount.value.section = nameCount.value.section + 1;
+      } else if (type === "sectionContrast") {
+        name = "断面比较_" + nameCount.value.sectionContrast;
+        nameCount.value.sectionContrast = nameCount.value.sectionContrast + 1;
       }
       return name;
     };
-    const addLayerSection = (layer: any) => {
+    const drawLayer = (layer: any) => {
       addLayer(layer);
       layer.show = true;
       layer.name = getName(layer.type);
       rightLayer.value.addLayer(layer);
-    };
-
-    const sectionCompareByDIYClick = () => {
-      if (!dataMultiSelectFlag.value) {
-        dataSelectClose();
-        removeControl();
-        if (demLayers.value.length >= 2) {
-          dataMultiSelectFlag.value = true;
-          demLayers.value.forEach((item) => {
-            currentDems.value.push({
-              id: item.id,
-              name: item.name,
-            });
-          });
-          map.value?.addControl(draw, "top-left");
-          map.value?.off("draw.create", drawSection);
-        } else {
-          notice("warning", "警告", "至少添加两个dem图层数据!");
-        }
-      }
-    };
-
-    const dataMultiSelectClose = () => {
-      dataMultiSelectFlag.value = false;
-      removeControl();
-      currentDems.value = [];
-    };
-
-    const dataMultiSelectChange = (val: any[]) => {
-      currentDems.value = val;
     };
 
     const drawSection = async () => {
@@ -414,8 +334,7 @@ export default defineComponent({
       const layer = {
         id: uid,
         type: "section",
-        selectDemId: currentDem.value.id,
-        selectDemName: currentDem.value.name,
+
         geoJson: {
           coordinates: coordinates as any[],
           type: "LineString",
@@ -423,9 +342,12 @@ export default defineComponent({
       };
 
       draw.deleteAll();
-      addLayerSection(layer);
-      await addSection(layer, router.currentRoute.value.params.id as string);
-      async function handle() {
+      drawLayer(layer);
+      const res = await addSection(
+        layer,
+        router.currentRoute.value.params.id as string
+      );
+      async function handle(params: any) {
         const data = await checkLayerState(
           router.currentRoute.value.params.id as string,
           uid
@@ -433,21 +355,20 @@ export default defineComponent({
         if (data != null) {
           if ((data as any).code === 0) {
             if (data.data === 1) {
-              rightLayer.value.showResult(layer);
+              rightLayer.value.updateLayer(params);
+              rightLayer.value.showResult({ layer: params, type: "section" });
             } else if (data.data === 0) {
               setTimeout(async () => {
-                await handle();
+                await handle(params);
               }, 1000);
-            } else if (data.data === -1) {
-              notice("error", "错误", "断面生成错误");
             }
           }
         }
       }
-      await handle();
+      if (res != null && (res as any).code === 0) {
+        await handle(res.data);
+      }
     };
-
-    const drawSectionCompare = async () => {};
 
     watch(
       () => {
@@ -455,12 +376,9 @@ export default defineComponent({
       },
       () => {
         if (router.currentRoute.value.name === "project") {
-          currentDem.value.id = "";
-          currentDem.value.name = "";
-          currentDems.value = [];
           removeControl();
-          dataSelectFlag.value = false;
-          dataMultiSelectFlag.value = false;
+          sectionDIYflag.value = false;
+
           removeAllLayers(sortLayers.value);
           layers.value = (
             router.currentRoute.value.params.projectInfo as any
@@ -515,16 +433,11 @@ export default defineComponent({
       toolFlag,
       toolClick,
       closeClick,
-      dataSelectFlag,
+      sectionDIYflag,
       demLayers,
       sectionByDIYClick,
-      dataSelectClose,
-      dataSelectChange,
+      sectionDIYClose,
       rightLayer,
-      sectionCompareByDIYClick,
-      dataMultiSelectFlag,
-      dataMultiSelectClose,
-      dataMultiSelectChange,
       deleteLayer,
     };
   },

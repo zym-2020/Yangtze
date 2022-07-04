@@ -137,6 +137,13 @@
         v-if="sectionShow"
       ></section-show>
     </el-dialog>
+
+    <el-dialog v-model="sectionContrastShow" width="700px" :modal="false">
+      <section-contrast-show
+        v-if="sectionContrastShow"
+        :sectionContrastValue="sectionContrastValue"
+      ></section-contrast-show>
+    </el-dialog>
   </div>
 </template>
 
@@ -147,13 +154,15 @@ interface Tree {
   id: string;
   type: string;
   geoJson?: any;
-  selectDemId?: string;
-  selectDemIds?: string[];
-  selectDemName?: string;
-  selectDemNames?: string[];
+
   tableName?: string;
   vectorType?: string;
   show?: boolean;
+  sections?: {
+    id: string;
+    sectionId: string;
+    state: number;
+  }[];
 }
 
 import {
@@ -170,9 +179,10 @@ import ProjectManage from "@/components/tools/ProjectManage.vue";
 import router from "@/router";
 import { computedDataView } from "@/components/tools/ts/leftToolTreeData";
 import SectionShow from "@/components/projectDialog/SectionShow.vue";
-import { getSectionValue, delLayer } from "@/api/request";
+import { getSectionValue, delLayer, getSectionContrast } from "@/api/request";
 import LayerContextMenu from "@/components/contextMenu/LayerContextMenu.vue";
 import { notice } from "@/utils/notice";
+import sectionContrastShow from "@/components/projectDialog/SectionContrastShow.vue";
 export default defineComponent({
   emits: ["setVisible", "setLayers", "toolClick", "deleteLayer"],
   components: {
@@ -181,6 +191,7 @@ export default defineComponent({
     ProjectManage,
     SectionShow,
     LayerContextMenu,
+    sectionContrastShow,
   },
   setup(_, context) {
     const createFlag = ref(false);
@@ -188,14 +199,17 @@ export default defineComponent({
     const manageFlag = ref(false);
     const view = ref(true);
     const sectionShow = ref(false);
+    const sectionContrastShow = ref(false);
     const layerContextMenuFlag = ref(false);
     const contextItem = ref<any>(null);
     const sectionValue = reactive({
-      name: "",
-      id: "",
       value: [],
-      selectDemId: "",
-      selectDemName: "",
+      demLayers: [],
+    });
+    const sectionContrastValue = reactive({
+      demNames: [],
+      demIds: [],
+      data: [],
     });
 
     const defaultProps = {
@@ -348,25 +362,62 @@ export default defineComponent({
       }
     };
 
+    const updateLayer = (layer: any) => {
+      for (let i = 0; i < treeData.value[0].children.length; i++) {
+        if (treeData.value[0].children[i].id === layer.id) {
+          console.log("layer", layer);
+          layer.sections.forEach((item: any) => {
+            item.state = 1
+          })
+          treeData.value[0].children[i].sections = layer.sections;
+          console.log("treeData", treeData.value[i]);
+        }
+      }
+    };
 
-    const showResult = async (layer: any) => {
-      if (layer.type === "section") {
+    const showResult = async (params: {layer: any, type: string}) => {
+      if (params.type === "section") {
+        const valueIds: any[] = [];
+        console.log('section', params.layer)
+        params.layer.sections.forEach((item: any) => {
+          if (item.state === 1) {
+            valueIds.push(item.id);
+          }
+        });
         const data = await getSectionValue(
           router.currentRoute.value.params.id as string,
-          layer.id
+          params.layer.id,
+          valueIds
         );
         if (data != null) {
           if ((data as any).code === 0) {
-            sectionValue.name = layer.name;
-            sectionValue.id = layer.id;
-            sectionValue.selectDemId = layer.selectDemId;
-            sectionValue.selectDemName = layer.selectDemName;
+            const demLayers: any[] = [];
+            treeData.value[0].children.forEach((item) => {
+              if (item.type === "riverBed") {
+                demLayers.push(item);
+              }
+            });
             sectionValue.value = data.data;
+            sectionValue.demLayers = demLayers as any;
             sectionShow.value = true;
+          }
+        }
+      } else if (params.type === "sectionContrast") {
+        const data = await getSectionContrast(
+          router.currentRoute.value.params.id as string,
+          params.layer.id
+        );
+        if (data != null) {
+          if ((data as any).code === 0) {
+            sectionContrastValue.demNames = params.layer.selectDemNames;
+            sectionContrastValue.demIds = params.layer.selectDemIds;
+            sectionContrastValue.data = data.data;
+            sectionContrastShow.value = true;
           }
         }
       }
     };
+
 
     const layerContextClick = (event: any, data: any) => {
       layerContextMenuFlag.value = false;
@@ -425,10 +476,13 @@ export default defineComponent({
       sectionShow,
       sectionValue,
       showResult,
+      updateLayer,
       layerContextClick,
       layerContextMenuFlag,
       contextItem,
       delContextLayer,
+      sectionContrastShow,
+      sectionContrastValue,
     };
   },
 });

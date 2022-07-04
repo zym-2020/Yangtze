@@ -27,7 +27,7 @@
               <svg style="width: 20px; height: 20px; margin-right: 10px">
                 <use xlink:href="#icon-bijiaotu"></use>
               </svg>
-              <div>断面比较</div>
+              <div>区域形态</div>
             </template>
             <div>
               <el-button
@@ -35,7 +35,7 @@
                 size="small"
                 @click="sectionCompareByDIYClick"
               >
-                任意断面
+                任意区域
               </el-button>
               <el-button type="success" size="small">文本输入</el-button>
             </div>

@@ -86,8 +86,8 @@ export async function addSection(layer: Layer, projectId: string) {
 //     return await get(`/project/getSectionValue/${projectId}/${id}`)
 // }
 ////
-export async function getSectionValue(projectId: string, sectionId: string) {
-    return await get(`/project/getSectionValue/${projectId}/${sectionId}`)
+export async function getSectionValue(projectId: string, sectionId: string, valueIds: string[]) {
+    return await post(`/project/getSectionValue/${projectId}/${sectionId}`, valueIds)
 }
 
 // export async function delSection(projectId: string, sectionId: string) {
@@ -98,12 +98,21 @@ export async function delLayer(projectId: string, layerId: string) {
     return await del(`/project/delLayer/${projectId}/${layerId}`)
 }
 
-export async function saveSectionContrastValue(jsonData: SectionContrastJsonData) {
-    return await post(`/project/saveSectionContrastValue`, jsonData)
+// export async function saveSectionContrastValue(jsonData: SectionContrastJsonData) {
+//     return await post(`/project/saveSectionContrastValue`, jsonData)
+// }
+
+// export async function getSectionContrastValue(projectId: string, sectionId: string) {
+//     return await get(`/project/getSectionContrastValue/${projectId}/${sectionId}`)
+// }
+////
+export async function addSectionContrast(projectId: string, layer: Layer) {
+    return await post(`/project/addSectionContrast/${projectId}`, layer)
 }
 
-export async function getSectionContrastValue(projectId: string, sectionId: string) {
-    return await get(`/project/getSectionContrastValue/${projectId}/${sectionId}`)
+////
+export async function getSectionContrast(projectId: string, layerId: string) {
+    return await get(`/project/getSectionContrast/${projectId}/${layerId}`)
 }
 
 // export async function getProjects(jsonData: GetProjectsJsonData) {

@@ -4,7 +4,7 @@
       多图层选择<el-icon @click="dataMultiSelectClose"><Close /></el-icon>
     </div>
     <div class="body">
-      <el-checkbox-group v-model="checkList" @change="changeClick">
+      <el-checkbox-group v-model="checkList" @change="changeClick" :min="2">
         <el-checkbox
           :label="item.name"
           v-for="(item, index) in demLayers"

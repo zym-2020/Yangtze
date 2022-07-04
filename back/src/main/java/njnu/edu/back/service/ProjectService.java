@@ -54,13 +54,13 @@ public interface ProjectService {
 
     Project addLayers(List<Layer> layers, String projectId);
 
-    void addSection(Layer layer, String projectId, String email);
+    Layer addSection(Layer layer, String projectId, String email);
 
-    List<String> getSectionValue(String sectionId, String projectId, String email);
+    List<Map<String, Object>> getSectionValue(String sectionId, String projectId, String email, List<String> valueIds);
 
     void addSectionContrast(Layer layer, String projectId, String email);
 
-    List<Map<String, Object>> getSectionContrastValue(String layerId, String projectId, String email);
+    List<List<String>> getSectionContrastValue(String layerId, String projectId, String email);
 
     Project getProjectInfo(String projectId);
 

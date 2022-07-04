@@ -53,13 +53,13 @@ public class ProjectController {
 
     @RequestMapping(value = "/addSection/{projectId}", method = RequestMethod.POST)
     public JsonResult addSection(@RequestBody Layer layer, @PathVariable String projectId, @JwtTokenParser("email") String email) {
-        projectService.addSection(layer, projectId, email);
-        return ResultUtils.success();
+
+        return ResultUtils.success(projectService.addSection(layer, projectId, email));
     }
 
-    @RequestMapping(value = "/getSectionValue/{projectId}/{sectionId}", method = RequestMethod.GET)
-    public JsonResult getSectionValue(@PathVariable String projectId, @PathVariable String sectionId, @JwtTokenParser("email") String email) {
-        return ResultUtils.success(projectService.getSectionValue(sectionId, projectId, email));
+    @RequestMapping(value = "/getSectionValue/{projectId}/{sectionId}", method = RequestMethod.POST)
+    public JsonResult getSectionValue(@PathVariable String projectId, @PathVariable String sectionId, @JwtTokenParser("email") String email, @RequestBody List<String> valueIds) {
+        return ResultUtils.success(projectService.getSectionValue(sectionId, projectId, email, valueIds));
     }
 
     @RequestMapping(value = "/addSectionContrast/{projectId}", method = RequestMethod.POST)

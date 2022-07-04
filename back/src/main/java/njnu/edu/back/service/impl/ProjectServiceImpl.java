@@ -11,6 +11,7 @@ import njnu.edu.back.dao.AnalyticDataSetMapper;
 import njnu.edu.back.pojo.Project;
 import njnu.edu.back.pojo.support.Layer;
 import njnu.edu.back.pojo.support.NameCount;
+import njnu.edu.back.pojo.support.Section;
 import njnu.edu.back.repository.ProjectRepository;
 import njnu.edu.back.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -132,208 +133,230 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void addSection(Layer layer, String projectId, String email) {
+    public Layer addSection(Layer layer, String projectId, String email) {
         Optional<Project> optionalProject = projectRepository.findById(projectId);
         if(!optionalProject.isPresent()) {
             throw new MyException(ResultEnum.NO_OBJECT);
         }
         Project project = optionalProject.get();
-        layer.setState(0);
+        List<Map<String, Object>> dems = analyticDataSetMapper.findDataByType("riverBed");
         layer.setName("断面形态_" + project.getNameCount().getSection());
+        List<Section> sections = new ArrayList<>();
+        for(Map<String, Object> map : dems) {
+            sections.add(new Section(UUID.randomUUID().toString(), map.get("id").toString(), 0));
+        }
+        layer.setSections(sections);
         project.getNameCount().setSection(project.getNameCount().getSection() + 1);
         project.getLayers().add(layer);
         project.getSortLayers().add(layer.getId());
         projectRepository.save(project);
-        new Thread() {
-            @Override
-            @SneakyThrows
-            public void run() {
-                String demId = layer.getSelectDemId();
-                Map<String, Object> map = analyticDataSetMapper.findById(demId);
-                String tempPath = baseDir + "other\\temp\\" + layer.getId() + ".txt";
-                String address = (String) map.get("address");
-                String dataName = (String) map.get("name");
-                String resultPath = baseDir + email + "\\projects\\" + projectId + "\\" + layer.getId() + ".txt";
-                Process process = AnalyseUtil.saveSectionValue(tempPath,address + "\\" + dataName, layer.getGeoJson().getJSONArray("coordinates"), resultPath);
-                int code = process.waitFor();
-                for (Layer l : project.getLayers()) {
-                    if(l.getId().equals(layer.getId())) {
-                        if(code == 0) {
-                            l.setState(1);
-                        } else {
-                            l.setState(-1);
+
+        for (int i = 0; i < dems.size(); i++) {
+            Map<String, Object> map = dems.get(i);
+            int finalI = i;
+            new Thread() {
+                @Override
+                @SneakyThrows
+                public void run() {
+                    String address = (String) map.get("address");
+                    String dataName = (String) map.get("name");
+                    String id = sections.get(finalI).getId();
+                    String tempPath = baseDir + "other\\temp\\" + id + ".txt";
+                    String resultPath = baseDir + email + "\\projects\\" + projectId + "\\" + id + ".txt";
+                    Process process = AnalyseUtil.saveSectionValue(tempPath,address + "\\" + dataName, layer.getGeoJson().getJSONArray("coordinates"), resultPath);
+                    int code = process.waitFor();
+                    for (Layer l: project.getLayers()) {
+                        if(l.getId().equals(layer.getId())) {
+                            if(code == 0) {
+                                l.getSections().get(finalI).setState(1);
+                            } else {
+                                l.getSections().get(finalI).setState(-1);;
+                            }
                         }
-                        projectRepository.save(project);
                     }
+                    File file = new File(tempPath);
+                    if(file.exists()) {
+                        file.delete();
+                    }
+                    projectRepository.save(project);
                 }
-                File file = new File(tempPath);
-                if(file.exists()) {
-                    file.delete();
-                }
-            }
-        }.start();
+            }.start();
+        }
+
+        return layer;
     }
 
     @Override
-    public List<String> getSectionValue(String sectionId, String projectId, String email) {
-        String path = baseDir + email + "\\projects\\" + projectId + "\\" + sectionId + ".txt";
-        File file = new File(path);
-        if(!file.exists()) {
-            Optional<Project> optionalProject = projectRepository.findById(projectId);
-            if(!optionalProject.isPresent()) {
-                throw new MyException(ResultEnum.NO_OBJECT);
-            }
-            Project project = optionalProject.get();
-            List<Layer> layers = project.getLayers();
-            for(Layer layer : layers) {
-                if(layer.getId().equals(sectionId)) {
-                    if(layer.getState() == 0) {
-                        throw new MyException(-99, "正在计算中");
-                    } else {
-                        layer.setState(-1);
-                        projectRepository.save(project);
-                        break;
+    public List<Map<String, Object>> getSectionValue(String sectionId, String projectId, String email, List<String> valueIds) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        for(String str : valueIds) {
+            File file = new File(baseDir + email + "\\projects\\" + projectId + "\\" + str + ".txt");
+            if(!file.exists()) {
+                Optional<Project> optionalProject = projectRepository.findById(projectId);
+                if(!optionalProject.isPresent()) {
+                    throw new MyException(ResultEnum.NO_OBJECT);
+                }
+                Project project = optionalProject.get();
+                List<Layer> layers = project.getLayers();
+                for (Layer layer : layers) {
+                    if(layer.getId().equals(sectionId)) {
+                        List<Section> sections = layer.getSections();
+                        for(Section section : sections) {
+                            if(section.getSectionId().equals(sectionId)) {
+                                if(section.getState() == 0) {
+                                    throw new MyException(-99, "断面计算中");
+                                } else {
+                                    section.setState(-1);
+                                    projectRepository.save(project);
+                                    throw new MyException(ResultEnum.NO_OBJECT);
+                                }
+                            }
+                        }
                     }
                 }
             }
-            throw new MyException(ResultEnum.NO_OBJECT);
-        }
-        BufferedReader bufferedReader = null;
-        try {
-            bufferedReader = new BufferedReader(new FileReader(file));
-            List<String> result = new ArrayList<>();
-            String temp = bufferedReader.readLine();
-            while(temp != null) {
-                if(temp.contains("+")) {
-                    result.add("0");
-                } else {
-                    result.add(temp);
-                }
-
-                temp = bufferedReader.readLine();
-            }
-            bufferedReader.close();
-            return result;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
-        } finally {
+            BufferedReader bufferedReader = null;
+            Map map = new HashMap();
+            map.put("dem", str);
+            List<String> list = new ArrayList<>();
             try {
-                if(bufferedReader != null) {
-                    bufferedReader.close();
+                bufferedReader = new BufferedReader(new FileReader(file));
+                String temp = bufferedReader.readLine();
+                while(temp != null) {
+                    if(temp.contains("+")) {
+                        list.add("0");
+                    } else {
+                        list.add(temp);
+                    }
+                    temp = bufferedReader.readLine();
                 }
+                map.put("list", list);
+                result.add(map);
+                bufferedReader.close();
+
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+            } finally {
+                try {
+                    if(bufferedReader != null) {
+                        bufferedReader.close();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+                }
             }
         }
-
+        return result;
     }
 
     @Override
     public void addSectionContrast(Layer layer, String projectId, String email) {
-        Optional<Project> optionalProject = projectRepository.findById(projectId);
-        if(!optionalProject.isPresent()) {
-            throw new MyException(ResultEnum.NO_OBJECT);
-        }
-        Project project = optionalProject.get();
-        layer.setState(0);
-        layer.setName("断面比较_" + project.getNameCount().getSectionContrast());
-        project.getNameCount().setSectionContrast(project.getNameCount().getSectionContrast() + 1);
-        project.getLayers().add(layer);
-        project.getSortLayers().add(layer.getId());
-        projectRepository.save(project);
-        new Thread() {
-            @Override
-            @SneakyThrows
-            public void run() {
-                List<String> demIds = layer.getSelectDemIds();
-                List<String> rasterPaths = new ArrayList<>();
-                for(String demId : demIds) {
-                    Map<String, Object> map = analyticDataSetMapper.findById(demId);
-                    String address = (String) map.get("address");
-                    String dataName = (String) map.get("name");
-                    rasterPaths.add(address + "\\" + dataName);
-                }
-                String tempPath = baseDir + "other\\temp\\" + layer.getId() + ".txt";
-                String resultPath = baseDir + email + "\\projects\\" + projectId + "\\" + layer.getId() + ".txt";
-                Process process = AnalyseUtil.saveSectionContrast(tempPath, rasterPaths, layer.getGeoJson().getJSONArray("coordinates"), resultPath);
-                int code = process.waitFor();
-                for (Layer l : project.getLayers()) {
-                    if(l.getId().equals(layer.getId())) {
-                        if(code == 0) {
-                            l.setState(1);
-                        } else {
-                            l.setState(-1);
-                        }
-                        projectRepository.save(project);
-                    }
-                }
-                File file = new File(tempPath);
-                if(file.exists()) {
-                    file.delete();
-                }
-            }
-        }.start();
+//        Optional<Project> optionalProject = projectRepository.findById(projectId);
+//        if(!optionalProject.isPresent()) {
+//            throw new MyException(ResultEnum.NO_OBJECT);
+//        }
+//        Project project = optionalProject.get();
+//        layer.setState(0);
+//        layer.setName("断面比较_" + project.getNameCount().getSectionContrast());
+//        project.getNameCount().setSectionContrast(project.getNameCount().getSectionContrast() + 1);
+//        project.getLayers().add(layer);
+//        project.getSortLayers().add(layer.getId());
+//        projectRepository.save(project);
+//        new Thread() {
+//            @Override
+//            @SneakyThrows
+//            public void run() {
+//                List<String> demIds = layer.getSelectDemIds();
+//                List<String> rasterPaths = new ArrayList<>();
+//                for(String demId : demIds) {
+//                    Map<String, Object> map = analyticDataSetMapper.findById(demId);
+//                    String address = (String) map.get("address");
+//                    String dataName = (String) map.get("name");
+//                    rasterPaths.add(address + "\\" + dataName);
+//                }
+//                String tempPath = baseDir + "other\\temp\\" + layer.getId() + ".txt";
+//                String resultPath = baseDir + email + "\\projects\\" + projectId + "\\" + layer.getId() + ".txt";
+//                Process process = AnalyseUtil.saveSectionContrast(tempPath, rasterPaths, layer.getGeoJson().getJSONArray("coordinates"), resultPath);
+//                int code = process.waitFor();
+//                for (Layer l : project.getLayers()) {
+//                    if(l.getId().equals(layer.getId())) {
+//                        if(code == 0) {
+//                            l.setState(1);
+//                        } else {
+//                            l.setState(-1);
+//                        }
+//                        projectRepository.save(project);
+//                    }
+//                }
+//                File file = new File(tempPath);
+//                if(file.exists()) {
+//                    file.delete();
+//                }
+//            }
+//        }.start();
     }
 
     @Override
-    public List<Map<String, Object>> getSectionContrastValue(String layerId, String projectId, String email) {
-        String path = baseDir + email + "\\projects\\" + projectId + "\\" + layerId + ".txt";
-        File file = new File(path);
-        if(!file.exists()) {
-            Optional<Project> optionalProject = projectRepository.findById(projectId);
-            if(!optionalProject.isPresent()) {
-                throw new MyException(ResultEnum.NO_OBJECT);
-            }
-            Project project = optionalProject.get();
-            List<Layer> layers = project.getLayers();
-            for(Layer layer : layers) {
-                if(layer.getId().equals(layerId)) {
-                    if(layer.getState() == 0) {
-                        throw new MyException(-99, "正在计算中");
-                    } else {
-                        layer.setState(-1);
-                        projectRepository.save(project);
-                        break;
-                    }
-                }
-            }
-            throw new MyException(ResultEnum.NO_OBJECT);
-        }
-        BufferedReader bufferedReader = null;
-        try {
-            bufferedReader = new BufferedReader(new FileReader(file));
-            List<Map<String, Object>> maps = new ArrayList<>();
-            int number = Integer.parseInt(bufferedReader.readLine());
-            for(int i = 0; i < number; i++) {
-                Map<String, Object> map = new HashMap<>();
-                map.put("id", bufferedReader.readLine());
-                List<String> tempList = new ArrayList<>();
-                String temp = "";
-                while((temp = bufferedReader.readLine()) != null && temp != "\n") {
-                    tempList.add(temp);
-                }
-                map.put("list", tempList);
-                maps.add(map);
-            }
-
-            bufferedReader.close();
-            return maps;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
-        } finally {
-            try {
-                if(bufferedReader != null) {
-                    bufferedReader.close();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
-            }
-        }
-
+    public List<List<String>> getSectionContrastValue(String layerId, String projectId, String email) {
+//        String path = baseDir + email + "\\projects\\" + projectId + "\\" + layerId + ".txt";
+//        File file = new File(path);
+//        if(!file.exists()) {
+//            Optional<Project> optionalProject = projectRepository.findById(projectId);
+//            if(!optionalProject.isPresent()) {
+//                throw new MyException(ResultEnum.NO_OBJECT);
+//            }
+//            Project project = optionalProject.get();
+//            List<Layer> layers = project.getLayers();
+//            for(Layer layer : layers) {
+//                if(layer.getId().equals(layerId)) {
+//                    if(layer.getState() == 0) {
+//                        throw new MyException(-99, "正在计算中");
+//                    } else {
+//                        layer.setState(-1);
+//                        projectRepository.save(project);
+//                        break;
+//                    }
+//                }
+//            }
+//            throw new MyException(ResultEnum.NO_OBJECT);
+//        }
+//        BufferedReader bufferedReader = null;
+//        try {
+//            bufferedReader = new BufferedReader(new FileReader(file));
+//            List<List<String>> lists = new ArrayList<>();
+//            int number = Integer.parseInt(bufferedReader.readLine());
+//            for(int i = 0; i < number; i++) {
+//                List<String> tempList = new ArrayList<>();
+//                String temp = "";
+//                while((temp = bufferedReader.readLine()) != null && !temp.equals("")) {
+//                    if(temp.contains("+")) {
+//                        tempList.add("0");
+//                    } else {
+//                        tempList.add(temp);
+//                    }
+//
+//                }
+//                lists.add(tempList);
+//            }
+//
+//            bufferedReader.close();
+//            return lists;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+//        } finally {
+//            try {
+//                if(bufferedReader != null) {
+//                    bufferedReader.close();
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+//            }
+//        }
+        return null;
     }
 
     @Override
@@ -380,7 +403,13 @@ public class ProjectServiceImpl implements ProjectService {
         List<Layer> layers = project.getLayers();
         for(Layer layer : layers) {
             if(layer.getId().equals(layerId)) {
-                return layer.getState();
+                List<Section> sections = layer.getSections();
+                for (Section section : sections) {
+                    if (section.getState() == 0) {
+                        return 0;
+                    }
+                }
+                return 1;
             }
         }
         throw new MyException(ResultEnum.NO_OBJECT);
@@ -401,16 +430,20 @@ public class ProjectServiceImpl implements ProjectService {
                 break;
             }
         }
+        List<Section> sections = layers.get(index).getSections();
         String type = layers.get(index).getType();
         project.getSortLayers().remove(layerId);
         layers.remove(index);
         projectRepository.save(project);
-        if(!(type.equals("riverBed") || type.equals("satellite"))) {
-            String path = baseDir + email + "\\projects\\" + projectId + "\\" + layerId + ".txt";
-            File file = new File(path);
-            if(file.exists()) {
-                file.delete();
+        if(type.equals("section")) {
+            for(Section section: sections) {
+                String path = baseDir + email + "\\projects\\" + projectId + "\\" + section.getId() + ".txt";
+                File file = new File(path);
+                if(file.exists()) {
+                    file.delete();
+                }
             }
+
         }
     }
 

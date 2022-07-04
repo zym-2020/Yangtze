@@ -17,9 +17,27 @@ export default defineComponent({
   setup(props) {
     const chart = ref<HTMLElement>();
     let myChart: echarts.ECharts;
+
+    const getSeries = () => {
+      const result: any[] = [];
+      (props.sectionContrastValue as any).data.forEach((item: any[]) => {
+        result.push({
+          type: "line",
+          data: item,
+          smooth: true,
+        });
+      });
+      return result;
+    };
     const init = () => {
       const xData: string[] = [];
-      for (let i = 0; i < 272; i++) {
+      let max = -1;
+      (props.sectionContrastValue as any).data.forEach((item: any[]) => {
+        if (item.length > max) {
+          max = item.length;
+        }
+      });
+      for (let i = 0; i < max; i++) {
         xData.push((i * 40).toString());
       }
       const option: echarts.EChartsOption = {
@@ -42,23 +60,24 @@ export default defineComponent({
           type: "value",
           name: "断面高程值",
         },
-        series: [
-          {
-            type: "line",
-            data: (props.sectionContrastValue as any).value["199801_dem"],
-            smooth: true,
-          },
-          {
-            type: "line",
-            data: (props.sectionContrastValue as any).value["200408_dem"],
-            smooth: true,
-          },
-          {
-            type: "line",
-            data: (props.sectionContrastValue as any).value["200602_dem"],
-            smooth: true,
-          },
-        ],
+        series: getSeries(),
+        // series: [
+        //   {
+        //     type: "line",
+        //     data: (props.sectionContrastValue as any).value["199801_dem"],
+        //     smooth: true,
+        //   },
+        //   {
+        //     type: "line",
+        //     data: (props.sectionContrastValue as any).value["200408_dem"],
+        //     smooth: true,
+        //   },
+        //   {
+        //     type: "line",
+        //     data: (props.sectionContrastValue as any).value["200602_dem"],
+        //     smooth: true,
+        //   },
+        // ],
       };
       myChart = echarts.init(chart.value as HTMLElement, undefined, {
         height: 300,
