@@ -18,4 +18,6 @@ public interface AnalyticDataSetMapper {
     List<Map<String, Object>> findDataByType(@Param("type") String type);
 
     Map<String, Object> findById(@Param("id") String id);
+
+    String findIdByBenchmarkAndReference(@Param("benchmark") String benchmark, @Param("reference") String reference);
 }

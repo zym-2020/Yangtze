@@ -23,4 +23,6 @@ public class AnalyticDataSet {
     String description;
     String type;
     Date uploadTime;
+    String benchmark;
+    String reference;
 }

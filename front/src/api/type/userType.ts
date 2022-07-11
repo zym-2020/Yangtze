@@ -161,23 +161,7 @@ export interface GetProjectsJsonData {
     page: number
     keyWord: string
 }
-// export interface AddShareFileJsonData {
-//     meta: {
-//         provider: string
-//         time: string
-//         range: string
-//         detail: string
-//     }
-//     fileInfo: {
-//         name: string
-//         description: string
-//         originAddress: string
-//         visualSource: string
-//         visualType: string
-//         structuredSource: string
-//         tags: string[]
-//     }
-// }
+
 
 export interface Layer {
     id: string
@@ -194,4 +178,12 @@ export interface Layer {
         sectionId: string
         state: number
     }[]
+    demSlopeId?: string
+}
+
+export interface GetFlushIdJsonData {
+    projectId: string
+    benchmark: string
+    reference: string
+    name: string
 }

@@ -6,6 +6,34 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "3851144",
+      "name": "面积图",
+      "font_class": "icon",
+      "unicode": "e804",
+      "unicode_decimal": 59396
+    },
+    {
+      "icon_id": "5667211",
+      "name": "fsux_图表_等高线图",
+      "font_class": "fsux_tubiao_denggaoxiantu",
+      "unicode": "e602",
+      "unicode_decimal": 58882
+    },
+    {
+      "icon_id": "5678869",
+      "name": "fsux_图表_主题河流图",
+      "font_class": "fsux_tubiao_zhutiheliutu",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "17581913",
+      "name": "坡度坡向分析",
+      "font_class": "podupoxiangfenxi",
+      "unicode": "ec81",
+      "unicode_decimal": 60545
+    },
+    {
       "icon_id": "5715218",
       "name": "比较图",
       "font_class": "bijiaotu",

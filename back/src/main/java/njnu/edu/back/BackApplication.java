@@ -7,7 +7,7 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 
 @SpringBootApplication
 @ServletComponentScan
-@MapperScan("njnu.edu.back.dao")
+//@MapperScan("njnu.edu.back.dao")
 public class BackApplication {
 
     public static void main(String[] args) {

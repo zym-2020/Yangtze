@@ -144,6 +144,20 @@
         :sectionContrastValue="sectionContrastValue"
       ></section-contrast-show>
     </el-dialog>
+
+    <el-dialog v-model="areaElevationShow" width="700px" :modal="false">
+      <area-elevation-show
+        v-if="areaElevationShow"
+        :areaElevationValue="areaElevationValue"
+      ></area-elevation-show>
+    </el-dialog>
+
+    <el-dialog v-model="flushFiltShow" width="700px" :modal="false">
+      <flush-filt-show
+        v-if="flushFiltShow"
+        :flushFiltValue="flushFiltValue"
+      ></flush-filt-show>
+    </el-dialog>
   </div>
 </template>
 
@@ -179,10 +193,12 @@ import ProjectManage from "@/components/tools/ProjectManage.vue";
 import router from "@/router";
 import { computedDataView } from "@/components/tools/ts/leftToolTreeData";
 import SectionShow from "@/components/projectDialog/SectionShow.vue";
-import { getSectionValue, delLayer, getSectionContrast } from "@/api/request";
+import { getSectionValue, delLayer } from "@/api/request";
 import LayerContextMenu from "@/components/contextMenu/LayerContextMenu.vue";
 import { notice } from "@/utils/notice";
 import sectionContrastShow from "@/components/projectDialog/SectionContrastShow.vue";
+import areaElevationShow from "@/components/projectDialog/AreaElevationShow.vue";
+import flushFiltShow from "@/components/projectDialog/FlushFiltShow.vue";
 export default defineComponent({
   emits: ["setVisible", "setLayers", "toolClick", "deleteLayer"],
   components: {
@@ -192,6 +208,8 @@ export default defineComponent({
     SectionShow,
     LayerContextMenu,
     sectionContrastShow,
+    areaElevationShow,
+    flushFiltShow,
   },
   setup(_, context) {
     const createFlag = ref(false);
@@ -202,14 +220,24 @@ export default defineComponent({
     const sectionContrastShow = ref(false);
     const layerContextMenuFlag = ref(false);
     const contextItem = ref<any>(null);
+    const areaElevationShow = ref(false);
+    const flushFiltShow = ref(false);
+
     const sectionValue = reactive({
       value: [],
       demLayers: [],
     });
     const sectionContrastValue = reactive({
-      demNames: [],
-      demIds: [],
+      dems: [] as any[],
       data: [],
+    });
+    const areaElevationValue = reactive({
+      data: [],
+      dems: [],
+    });
+    const flushFiltValue = reactive({
+      data: [],
+      dems: [],
     });
 
     const defaultProps = {
@@ -367,57 +395,70 @@ export default defineComponent({
         if (treeData.value[0].children[i].id === layer.id) {
           console.log("layer", layer);
           layer.sections.forEach((item: any) => {
-            item.state = 1
-          })
+            item.state = 1;
+          });
           treeData.value[0].children[i].sections = layer.sections;
           console.log("treeData", treeData.value[i]);
         }
       }
     };
 
-    const showResult = async (params: {layer: any, type: string}) => {
+    const showResult = async (params: { layer: any; type: string }) => {
+      const valueIds: any[] = [];
+      const dems: any[] = [];
+      params.layer.sections.forEach((item: any) => {
+        if (item.state === 1) {
+          valueIds.push(item.id);
+          treeData.value[0].children.forEach((layer) => {
+            if (layer.id === item.sectionId) {
+              dems.push({
+                demId: layer.id,
+                valueId: item.id,
+                name: layer.name,
+              });
+            }
+          });
+        }
+      });
+      const data = await getSectionValue(
+        router.currentRoute.value.params.id as string,
+        params.layer.id,
+        valueIds
+      );
       if (params.type === "section") {
-        const valueIds: any[] = [];
-        console.log('section', params.layer)
-        params.layer.sections.forEach((item: any) => {
-          if (item.state === 1) {
-            valueIds.push(item.id);
-          }
-        });
-        const data = await getSectionValue(
-          router.currentRoute.value.params.id as string,
-          params.layer.id,
-          valueIds
-        );
         if (data != null) {
           if ((data as any).code === 0) {
-            const demLayers: any[] = [];
-            treeData.value[0].children.forEach((item) => {
-              if (item.type === "riverBed") {
-                demLayers.push(item);
-              }
-            });
             sectionValue.value = data.data;
-            sectionValue.demLayers = demLayers as any;
+            sectionValue.demLayers = dems as any;
             sectionShow.value = true;
           }
         }
       } else if (params.type === "sectionContrast") {
-        const data = await getSectionContrast(
-          router.currentRoute.value.params.id as string,
-          params.layer.id
-        );
         if (data != null) {
           if ((data as any).code === 0) {
-            sectionContrastValue.demNames = params.layer.selectDemNames;
-            sectionContrastValue.demIds = params.layer.selectDemIds;
+            sectionContrastValue.dems = dems;
             sectionContrastValue.data = data.data;
             sectionContrastShow.value = true;
           }
         }
+      } else if (params.type === "area-elevation") {
+        if (data != null) {
+          if ((data as any).code === 0) {
+            areaElevationValue.data = data.data;
+            areaElevationValue.dems = dems as any;
+            areaElevationShow.value = true;
+          }
+        }
+      } else if (params.type === "flush-silt") {
+        if (data != null) {
+          if ((data as any).code === 0) {
+            flushFiltValue.data = data.data
+            flushFiltValue.dems = dems as any
+            flushFiltShow.value = true
+          }
+        }
       }
     };
-
 
     const layerContextClick = (event: any, data: any) => {
       layerContextMenuFlag.value = false;
@@ -483,6 +524,10 @@ export default defineComponent({
       delContextLayer,
       sectionContrastShow,
       sectionContrastValue,
+      areaElevationValue,
+      areaElevationShow,
+      flushFiltShow,
+      flushFiltValue,
     };
   },
 });

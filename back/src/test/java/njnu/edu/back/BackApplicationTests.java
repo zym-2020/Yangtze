@@ -5,6 +5,7 @@ import cn.hutool.json.JSONObject;
 import njnu.edu.back.common.auth.AuthCheck;
 import njnu.edu.back.common.utils.*;
 import njnu.edu.back.service.FileService;
+import njnu.edu.back.service.ProjectService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,15 +20,21 @@ import java.util.Map;
 class BackApplicationTests {
 
     @Autowired
-    FileService fileService;
+    ProjectService projectService;
 
     @Test
     void contextLoads() {
-        String[] str = new String[] {"-144187208","19335499","-144149073","19354795"};
-        byte[] test = RemoteRequest.getShips(str, "15", "0", "78385.16133947353", "1");
-        List<Map<String, Object>> maps = TranslateShipResponseUtil.translate(str, "15", "0", "78385.16133947353", "1");
-        System.out.println(maps.size());
-
+        projectService.computeContour("62ba63044bf8161735590782", "82ca348b-b825-4d80-9b69-300b3562c3e3", "123@qq.com", "10", "test");
+//        String exePath = "D:\\App\\postgresql\\bin\\";
+//        String shpPath = "E:\\Minio\\data\\test\\123@qq.com\\projects\\62ba63044bf8161735590782";
+//        String shpName = "test";
+//        Process process = AnalyseUtil.uploadShpToDataBase(exePath, shpPath, shpName);
+//        try {
+//            int code = process.waitFor();
+//            System.out.println(code);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
 }

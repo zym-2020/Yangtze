@@ -33,9 +33,16 @@
     </div>
     <div class="tools" v-if="toolFlag">
       <tool-content
+        :demLayers="demLayers"
         @close="closeClick"
         @sectionByDIYClick="sectionByDIYClick"
+        @slopeClick="slopeClick"
+        @flushSilt="flushSilt"
+        @contourClick="contourClick"
       ></tool-content>
+    </div>
+    <div class="legend" v-if="slopeFlag">
+      <Legend />
     </div>
   </div>
 </template>
@@ -51,13 +58,20 @@ import router from "@/router";
 import { notice } from "@/utils/notice";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { uuid } from "@/utils/common";
-import { addSection, checkLayerState, addSectionContrast } from "@/api/request";
+import Legend from "@/components/tools/Legend.vue";
+import {
+  addLayers,
+  addSection,
+  checkLayerState,
+  getFlushId,
+} from "@/api/request";
 
 export default defineComponent({
   components: {
     RightContent,
     TopContent,
     ToolContent,
+    Legend,
   },
   setup() {
     const container = ref<HTMLElement>();
@@ -96,6 +110,15 @@ export default defineComponent({
       return temp;
     });
 
+    const slopeFlag = computed(() => {
+      for (let i = 0; i < layers.value.length; i++) {
+        if (layers.value[i].type === "slope") {
+          return true;
+        }
+      }
+      return false;
+    });
+
     const tdtVec: AnySourceData = {
       type: "raster",
       tiles: [
@@ -114,6 +137,8 @@ export default defineComponent({
     const initMap = () => {
       map.value = new mapBoxGl.Map({
         container: container.value as HTMLElement,
+        accessToken:
+          "pk.eyJ1Ijoiam9obm55dCIsImEiOiJja2xxNXplNjYwNnhzMm5uYTJtdHVlbTByIn0.f1GfZbFLWjiEayI6hb_Qvg",
         style: {
           version: 8,
           sources: {
@@ -133,7 +158,6 @@ export default defineComponent({
             },
           ],
         },
-
         attributionControl: false,
         center: [121.193496, 31.791046],
         zoom: 8,
@@ -182,15 +206,15 @@ export default defineComponent({
     };
 
     const addLayer = (layer: any) => {
-      if (map.value != undefined) {
+      if (flag.value) {
         if (layer.type === "satellite") {
-          map.value.addSource(layer.id, {
+          map.value?.addSource(layer.id, {
             type: "raster",
             tiles: [
               `http://localhost:8002/analyticDataSet/getRaster/${layer.id}/{x}/{y}/{z}`,
             ],
           });
-          map.value.addLayer({
+          map.value?.addLayer({
             id: layer.id,
             type: "raster",
             source: layer.id,
@@ -198,23 +222,22 @@ export default defineComponent({
               "raster-opacity": 0.7,
             },
           });
-        } else if (layer.type === "riverBed") {
-          map.value.addSource(layer.id, {
-            type: "raster-dem",
+        } else if (layer.type === "riverBed" || layer.type === "flush") {
+          map.value?.addSource(layer.id, {
+            // type: "raster-dem",
+            type: "raster",
             tiles: [
               `http://localhost:8002/analyticDataSet/getRaster/${layer.id}/{x}/{y}/{z}`,
             ],
           });
-          map.value.addLayer({
+          map.value?.addLayer({
             id: layer.id,
-            type: "hillshade",
+            // type: "hillshade",
+            type: "raster",
             source: layer.id,
           });
-        } else if (
-          layer.type === "section" ||
-          layer.type === "sectionContrast"
-        ) {
-          map.value.addSource(layer.id, {
+        } else if (layer.type === "section") {
+          map.value?.addSource(layer.id, {
             type: "geojson",
             data: {
               type: "Feature",
@@ -225,7 +248,7 @@ export default defineComponent({
               properties: {},
             },
           });
-          map.value.addLayer({
+          map.value?.addLayer({
             id: layer.id,
             type: "line",
             source: layer.id,
@@ -233,6 +256,31 @@ export default defineComponent({
               "line-color": "red",
             },
           });
+        } else if (layer.type === "slope") {
+          map.value?.addSource(layer.id, {
+            type: "raster",
+            tiles: [
+              `http://localhost:8002/analyticDataSet/getSlope/${layer.demSlopeId}/{x}/{y}/{z}`,
+            ],
+          });
+          map.value?.addLayer({
+            id: layer.id,
+            source: layer.id,
+            type: "raster",
+          });
+        } else if (layer.type === "contour") {
+          // map.value?.addSource(layer.id, {
+          //   type: "vector",
+          //   tiles: [
+          //     `http://localhost:8002/analyticDataSet/${layer.name}/{x}/{y}/{z}`
+          //   ]
+          // })
+          // map.value?.addLayer({
+          //   id: layer.id,
+          //   source: layer.id,
+          //   type: "line",
+          //   "source-layer": layer.name
+          // })
         }
       }
     };
@@ -297,6 +345,7 @@ export default defineComponent({
         if (demLayers.value.length > 0) {
           map.value?.addControl(draw, "top-left");
           map.value?.on("draw.create", drawSection);
+          sectionDIYflag.value = true;
         } else {
           notice("warning", "警告", "请检查是否添加了基础河床数据");
         }
@@ -370,6 +419,56 @@ export default defineComponent({
       }
     };
 
+    const slopeClick = async (val: any) => {
+      const json = [
+        {
+          id: uuid(),
+          type: "slope",
+          name: val.name + "河床坡度",
+          demSlopeId: val.id,
+          show: true,
+        },
+      ];
+      const data = await addLayers(
+        json,
+        router.currentRoute.value.params.id as string
+      );
+      if (data != null && (data as any).code === 0) {
+        addLayer(json[0]);
+        rightLayer.value.addLayer(json[0]);
+        console.log(layers.value, sortLayers.value);
+      }
+    };
+
+    const flushSilt = async (val: any) => {
+      const benchmark = val.benchmark.id;
+      const reference = val.reference.id;
+      const name = val.reference.name + "_" + val.benchmark.name;
+      if (benchmark != "" && reference != "") {
+        const data = await getFlushId({
+          projectId: router.currentRoute.value.params.id as string,
+          benchmark: benchmark,
+          reference: reference,
+          name: name,
+        });
+        if(data != null && (data as any).code === 0) {
+          const flushId = data.data
+          const layer = {
+            id: flushId,
+            name: name,
+            type: "flush",
+            show: true
+          }
+          addLayer(layer)
+          rightLayer.value.addLayer(layer)
+        }
+      }
+    };
+
+    const contourClick = (val: any) => {
+
+    }
+
     watch(
       () => {
         return router.currentRoute.value.path;
@@ -378,7 +477,6 @@ export default defineComponent({
         if (router.currentRoute.value.name === "project") {
           removeControl();
           sectionDIYflag.value = false;
-
           removeAllLayers(sortLayers.value);
           layers.value = (
             router.currentRoute.value.params.projectInfo as any
@@ -386,6 +484,7 @@ export default defineComponent({
           sortLayers.value = (
             router.currentRoute.value.params.projectInfo as any
           ).sortLayers;
+          console.log(layers.value, sortLayers.value, flag.value);
           if (flag.value) {
             addAllLayers(layers.value, sortLayers.value);
           } else {
@@ -398,8 +497,8 @@ export default defineComponent({
         }
       }
     );
+
     onMounted(async () => {
-      console.log(router.currentRoute.value.params);
       initMap();
       layers.value = (
         router.currentRoute.value.params.projectInfo as any
@@ -436,9 +535,13 @@ export default defineComponent({
       sectionDIYflag,
       demLayers,
       sectionByDIYClick,
+      slopeClick,
       sectionDIYClose,
       rightLayer,
       deleteLayer,
+      slopeFlag,
+      flushSilt,
+      contourClick
     };
   },
 });
@@ -546,6 +649,12 @@ export default defineComponent({
   .data-multi-select {
     top: 80px;
     left: 350px;
+  }
+  .legend {
+    position: absolute;
+    z-index: 99;
+    bottom: 0;
+    left: 0;
   }
 }
 </style>

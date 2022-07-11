@@ -6,12 +6,11 @@ import njnu.edu.back.common.result.ResultEnum;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 
 /**
  * Created with IntelliJ IDEA.
@@ -60,41 +59,68 @@ public class AnalyseUtil {
         return processBuilder.start();
     }
 
-    public static Process saveSectionContrast(String tempPath, List<String> rasterPath, JSONArray jsonArray, String resultPath) throws IOException {
-
-        BufferedWriter out = null;
+    public static Process createContour(String exePath, String interval, String rasterPath, String resultPath) {
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        List<String> commands = new ArrayList<>();
+        commands.add(exePath + "gdal_contour.exe");
+        commands.add("-b");
+        commands.add("1");
+        commands.add("-a");
+        commands.add("DEEP");
+        commands.add("-i");
+        commands.add(interval);
+        commands.add(rasterPath);
+        commands.add(resultPath);
+        processBuilder.command(commands);
         try {
-            out = new BufferedWriter(new FileWriter(tempPath));
-            out.write(rasterPath.size() + "\n");
-            for(String str : rasterPath) {
-                out.write(str + "\n");
-            }
-            out.write(resultPath + "\n");
-            out.write(jsonArray.size() + "\n");
-            for(int i = 0; i < jsonArray.size(); i++) {
-                out.write(jsonArray.getObject(i, JSONArray.class).getString(0) + "," + jsonArray.getObject(i, JSONArray.class).getString(1) + "\n");
-            }
-            out.close();
+            Process start = processBuilder.start();
+            return start;
         } catch (Exception e) {
             e.printStackTrace();
             throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
-            }
         }
+    }
 
+    public static Process uploadShpToDataBase(String exePath, String shpPath, String shpName) {
         ProcessBuilder processBuilder = new ProcessBuilder();
         List<String> commands = new ArrayList<>();
-        commands.add("python");
-        commands.add(pythonDir + "SectionContrast.py");
-        commands.add(tempPath);
+        commands.add("cmd.exe");
+        commands.add("/c");
+        commands.add(exePath + "shp2pgsql");
+        commands.add("-c");
+        commands.add(shpPath + "\\" + shpName + ".shp");
+        commands.add(shpName);
+        commands.add("|");
+        commands.add(exePath + "psql");
+        commands.add("-U");
+        commands.add("postgres");
+        commands.add("-d");
+        commands.add("shp_data");
+        processBuilder.environment().put("PGPASSWORD", "123");
         processBuilder.command(commands);
-        return processBuilder.start();
+        try {
+            Process process = processBuilder.start();
+//            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+//            String line;
+//            while ((line = bufferedReader.readLine()) != null) {
+//                System.out.println(line);
+//            }
+            return process;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
     }
+
+    private static void showOutput(final InputStream src, final PrintStream dest) {
+        new Thread(new Runnable() {
+            public void run() {
+                Scanner sc = new Scanner(src);
+                while (sc.hasNextLine()) {
+                    dest.println(sc.nextLine());
+                }
+            }
+        }).start();
+    }
+
 }

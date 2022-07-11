@@ -17,4 +17,9 @@ public interface AnalyticDataSetService {
     List<Map<String, Object>> findDataByType(String type);
 
     void getRaster(String id, String x, String y, String z, HttpServletResponse response);
+
+    void getSlope(String rasterId, String x, String y, String z, HttpServletResponse response);
+
+    Object getVectorTile(String tableName, int x, int y, int z);
+
 }

@@ -1,9 +1,8 @@
 import { get, post, del, patch } from './axios'
 import {
-    RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData, AddFileJsonData, RenameJsonData, UnPackJsonData, UpdateParentIdAndLevelJsonData, CompressFileJsonData,
+    RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, AddFileJsonData, RenameJsonData, UnPackJsonData, UpdateParentIdAndLevelJsonData, CompressFileJsonData, GetFlushIdJsonData,
     SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData, GetNoUploadJsonData, AddRecordJsonData, AddMessageJsonData, DeleteFilesOrFolders, GetProjectsJsonData, Layer
 } from './type/userType'
-import { Resource, Analyse } from '@/store/resourse/resourceState'
 
 import axios from 'axios'
 
@@ -36,104 +35,58 @@ export async function setUserInfoWithoutAvatar(jsonData: SetUserInfoWithoutAvata
 
 
 //========================Project相关接口=================================
-// export async function addProject(formData: FormData) {
-//     return await post(`/project/addProject`, formData)
-// }
 
-// export async function addProjectWithoutAvatar(jsonData: ProjectJsonData) {
-//     return await post(`/project/addProjectWithoutAvatar`, jsonData)
-// }
-
-////
 export async function addProjectWithoutAvatar(jsonData: ProjectJsonData) {
     return await post(`/project/addProjectWithoutAvatar`, jsonData)
 }
-////
+
 export async function addProjectWithAvatar(formData: FormData) {
     return await post(`/project/addProjectWithAvatar`, formData)
 }
 
-// export async function getProjectsByEmail() {
-//     return await get(`/project/getProjectsByEmail`)
-// }
-////
 export async function getProjectsByEmail(email: string) {
     return await get(`/project/getProjectsByEmail/${email}`)
 }
 
-// export async function getResult(projectId: string) {
-//     return await get(`/project/getResult/${projectId}`)
-// }
-
-// export async function setResult(jsonData: { layerDataList: Resource[], analyse: Analyse }, id: string) {
-//     return await patch(`/project/setResult/${id}`, jsonData)
-// }
-////
 export async function addLayers(jsonData: { id: string, name: string, type: string }[], projectId: string) {
     return await patch(`/project/addLayers/${projectId}`, jsonData)
 }
 
-
-// export async function section(jsonData: SectionJsonData) {
-//     return await post(`/project/section`, jsonData)
-// }
-////
 export async function addSection(layer: Layer, projectId: string) {
     return await post(`/project/addSection/${projectId}`, layer)
 }
 
-// export async function getSectionValue(id: string, projectId: string) {
-//     return await get(`/project/getSectionValue/${projectId}/${id}`)
-// }
-////
 export async function getSectionValue(projectId: string, sectionId: string, valueIds: string[]) {
     return await post(`/project/getSectionValue/${projectId}/${sectionId}`, valueIds)
 }
 
-// export async function delSection(projectId: string, sectionId: string) {
-//     return await del(`/project/delSection/${projectId}/${sectionId}`)
-// }
-////
 export async function delLayer(projectId: string, layerId: string) {
     return await del(`/project/delLayer/${projectId}/${layerId}`)
 }
 
-// export async function saveSectionContrastValue(jsonData: SectionContrastJsonData) {
-//     return await post(`/project/saveSectionContrastValue`, jsonData)
-// }
 
-// export async function getSectionContrastValue(projectId: string, sectionId: string) {
-//     return await get(`/project/getSectionContrastValue/${projectId}/${sectionId}`)
-// }
-////
 export async function addSectionContrast(projectId: string, layer: Layer) {
     return await post(`/project/addSectionContrast/${projectId}`, layer)
 }
 
-////
 export async function getSectionContrast(projectId: string, layerId: string) {
     return await get(`/project/getSectionContrast/${projectId}/${layerId}`)
 }
 
-// export async function getProjects(jsonData: GetProjectsJsonData) {
-//     return await post(`/project/getProjects`, jsonData)
-// }
-////
 export async function getAll(jsonData: { page: number, size: number, keyWord: string }) {
     return await post(`/project/getAll`, jsonData)
 }
 
-// export async function findProjectById(projectId: string) {
-//     return await get(`/project/findProjectById/${projectId}`)
-// }
-////
 export async function getProjectInfo(projectId: string) {
     return await get(`/project/getProjectInfo/${projectId}`)
 }
 
-////
 export async function checkLayerState(projectId: string, sectionId: string) {
     return await get(`/project/checkState/${projectId}/${sectionId}`)
+}
+
+export async function getFlushId(jsonData: GetFlushIdJsonData) {
+    return await post(`/project/getFlushId`, jsonData)
 }
 
 //========================vectorRelationship相关接口=================================

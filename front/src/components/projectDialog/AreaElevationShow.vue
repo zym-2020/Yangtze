@@ -9,23 +9,28 @@ import { defineComponent, onMounted, ref } from "vue";
 import * as echarts from "echarts";
 export default defineComponent({
   props: {
-    sectionContrastValue: {
+    areaElevationValue: {
       type: Object,
     },
   },
-
   setup(props) {
     const chart = ref<HTMLElement>();
     let myChart: echarts.ECharts;
 
     const getSeries = () => {
       const result: any[] = [];
-      (props.sectionContrastValue as any).dems.forEach((item: any) => {
-        (props.sectionContrastValue as any).data.forEach((d: any) => {
+      (props.areaElevationValue as any).dems.forEach((item: any) => {
+        (props.areaElevationValue as any).data.forEach((d: any) => {
           if (d.dem === item.valueId) {
+            const list: number[] = [];
+            let count = 0;
+            d.list.forEach((l: string) => {
+              list.push(Math.abs(parseFloat(l) * 40) + count);
+              count = Math.abs(parseFloat(l) * 40) + count;
+            });
             result.push({
               type: "line",
-              data: d.list,
+              data: list,
               smooth: true,
             });
           }
@@ -38,7 +43,7 @@ export default defineComponent({
     const init = () => {
       const xData: string[] = [];
       let max = -1;
-      (props.sectionContrastValue as any).data.forEach((item: any) => {
+      (props.areaElevationValue as any).data.forEach((item: any) => {
         if (item.list.length > max) {
           max = item.list.length;
         }
@@ -91,10 +96,12 @@ export default defineComponent({
       });
       myChart.setOption(option);
     };
+
     onMounted(() => {
-      console.log(props.sectionContrastValue)
+      console.log(props.areaElevationValue);
       init();
     });
+
     return {
       chart,
     };
@@ -102,9 +109,5 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-.chart {
-  height: 300px;
-  width: 600px;
-}
+<style lang="scss" scoped>
 </style>

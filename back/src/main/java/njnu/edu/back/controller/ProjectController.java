@@ -62,16 +62,6 @@ public class ProjectController {
         return ResultUtils.success(projectService.getSectionValue(sectionId, projectId, email, valueIds));
     }
 
-    @RequestMapping(value = "/addSectionContrast/{projectId}", method = RequestMethod.POST)
-    public JsonResult addSectionContrast(@RequestBody Layer layer, @PathVariable String projectId, @JwtTokenParser("email") String email) {
-        projectService.addSectionContrast(layer, projectId, email);
-        return ResultUtils.success();
-    }
-
-    @RequestMapping(value = "/getSectionContrast/{projectId}/{layerId}", method = RequestMethod.GET)
-    public JsonResult getSectionContrast(@PathVariable String projectId, @PathVariable String layerId, @JwtTokenParser("email") String email) {
-        return ResultUtils.success(projectService.getSectionContrastValue(layerId, projectId, email));
-    }
 
     @RequestMapping(value = "/getProjectInfo/{projectId}", method = RequestMethod.GET)
     public JsonResult getProjectInfo(@PathVariable String projectId) {
@@ -102,92 +92,31 @@ public class ProjectController {
         return ResultUtils.success();
     }
 
+    @RequestMapping(value = "/getFlushId", method = RequestMethod.POST)
+    public JsonResult getFlushId(@RequestBody JSONObject jsonObject) {
+        String projectId = jsonObject.getStr("projectId");
+        String benchmark = jsonObject.getStr("benchmark");
+        String reference = jsonObject.getStr("reference");
+        String name = jsonObject.getStr("name");
+        return ResultUtils.success(projectService.getFlushId(projectId, benchmark, reference, name));
+    }
 
-//    @Autowired
-//    ProjectService projectService;
-//
-//    @AuthCheck
-//    @RequestMapping(value = "/addProject", method = RequestMethod.POST)
-//    public JsonResult addProject(@RequestParam String projectName, @RequestParam String description, @RequestParam String result, @JwtTokenParser("email") String email, @RequestParam MultipartFile file) {
-//        AddProject addProject = new AddProject();
-//        addProject.setProjectName(projectName);
-//        addProject.setResult(result);
-//        addProject.setDescription(description);
-//        return ResultUtils.success(projectService.addProject(addProject, email, file));
-//    }
-//
-//    @AuthCheck
-//    @RequestMapping(value = "/addProjectWithoutAvatar", method = RequestMethod.POST)
-//    public JsonResult addProjectWithoutAvatar(@RequestBody AddProject addProject, @JwtTokenParser("email") String email) {
-//        return ResultUtils.success(projectService.addProjectWithoutAvatar(addProject, email));
-//    }
-//
-//
-//    @AuthCheck
-//    @RequestMapping(value = "/getResult/{id}", method = RequestMethod.GET)
-//    public JsonResult getResult(@PathVariable String id) {
-//        return ResultUtils.success(projectService.getResultById(id));
-//    }
-//
-//    @AuthCheck
-//    @RequestMapping(value = "/getProjectsByEmail", method = RequestMethod.GET)
-//    public JsonResult getProjectsByEmail(@JwtTokenParser("email") String email) {
-//        return ResultUtils.success(projectService.getProjectsByEmail(email));
-//    }
-//
-//    @AuthCheck
-//    @RequestMapping(value = "/setResult/{id}", method = RequestMethod.PATCH)
-//    public JsonResult setResult(@RequestBody ProjectJsonBean result, @PathVariable String id) {
-//        return ResultUtils.success(projectService.setResult(result, id));
-//    }
-//
-//    @AuthCheck
-//    @RequestMapping(value = "/section", method = RequestMethod.POST)
-//    public JsonResult sectionValue(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
-//        projectService.saveSectionValue(jsonObject.getStr("id"), jsonObject.getStr("DEMId"), jsonObject.getDouble("lat1"), jsonObject.getDouble("lon1"), jsonObject.getDouble("lat2"), jsonObject.getDouble("lon2"), email, jsonObject.getStr("projectId"));
-//        return ResultUtils.success();
-//    }
-//
-//    @AuthCheck
-//    @RequestMapping(value = "/getSectionValue/{projectId}/{id}", method = RequestMethod.GET)
-//    public JsonResult getSectionValue(@PathVariable("id") String id, @JwtTokenParser("email") String email, @PathVariable String projectId) {
-//        return ResultUtils.success(projectService.getSectionValue(id, email, projectId));
-//    }
-//
-//    @AuthCheck
-//    @RequestMapping(value = "/delSection/{projectId}/{sectionId}", method = RequestMethod.DELETE)
-//    public JsonResult delSection(@JwtTokenParser("email") String emial, @PathVariable String projectId, @PathVariable String sectionId) {
-//        projectService.delSection(emial, projectId, sectionId);
-//        return ResultUtils.success();
-//    }
-//
-//    @AuthCheck
-//    @RequestMapping(value = "/saveSectionContrastValue", method = RequestMethod.POST)
-//    public JsonResult saveSectionContrastValue(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
-//        projectService.saveSectionContrastValue(jsonObject.getStr("id"), jsonObject.getDouble("lat1"), jsonObject.getDouble("lon1"), jsonObject.getDouble("lat2"), jsonObject.getDouble("lon2"), jsonObject.getJSONArray("demIds").toList(String.class), email, jsonObject.getStr("projectId"));
-//        return ResultUtils.success();
-//    }
-//
-//    @AuthCheck
-//    @RequestMapping(value = "/getSectionContrastValue/{projectId}/{sectionId}")
-//    public JsonResult getSectionContrastValue(@PathVariable String projectId, @PathVariable String sectionId, @JwtTokenParser("email") String email) {
-//        return ResultUtils.success(projectService.getSectionContrastValue(email, projectId, sectionId));
-//    }
-//
-//    @AuthCheck
-//    @RequestMapping(value = "/getProjects", method = RequestMethod.POST)
-//    public JsonResult getProjects(@RequestBody JSONObject jsonObject) {
-//        int size = jsonObject.getInt("size");
-//        int page = jsonObject.getInt("page");
-//        String keyWord = jsonObject.getStr("keyWord");
-//        return ResultUtils.success(projectService.pageQuery(size, page, keyWord));
-//    }
-//
-//    @AuthCheck
-//    @RequestMapping(value = "/findProjectById/{projectId}", method = RequestMethod.GET)
-//    public JsonResult findProjectById(@PathVariable String projectId) {
-//        return ResultUtils.success(projectService.findProjectById(projectId));
-//    }
+    @RequestMapping(value = "/computeContour", method = RequestMethod.POST)
+    public JsonResult computeContour(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
+        String projectId = jsonObject.getStr("projectId");
+        String demId = jsonObject.getStr("demId");
+        String interval = jsonObject.getStr("interval");
+        String shpName = jsonObject.getStr("shpName");
+        return ResultUtils.success(projectService.computeContour(projectId, demId, email, interval, shpName));
+    }
+
+    @RequestMapping(value = "/checkContourState/{uid}", method = RequestMethod.GET)
+    public JsonResult checkContourState(@PathVariable String uid) {
+        return ResultUtils.success(projectService.checkContourState(uid));
+    }
+
+
+
 
 
 

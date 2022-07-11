@@ -21,30 +21,6 @@ import java.util.Map;
  * @Description:
  */
 public interface ProjectService {
-//    Map<String, Object> addProject(AddProject addProject, String email, MultipartFile multipartFile);
-//
-//    Map<String, Object> addProjectWithoutAvatar(AddProject addProject, String email);
-//
-//    String getResultById(String id);
-//
-//    List<Map<String, Object>> getProjectsByEmail(String email);
-//
-//    int setResult(ProjectJsonBean result, String id);
-//
-//    void saveSectionValue(String id, String DEMId, Double lat1, Double lon1, Double lat2, Double lon2, String email, String projectId);
-//
-//    List<Double> getSectionValue(String id, String email, String projectId);
-//
-//    void delSection(String email, String projectId, String sectionId);
-//
-//    void saveSectionContrastValue(String id, Double lat1, Double lon1, Double lat2, Double lon2, List<String> demIds, String email, String projectId);
-//
-//    Map<String, List<Double>> getSectionContrastValue(String email, String projectId, String sectionId);
-//
-//    JSONObject pageQuery(int size, int page, String keyWord);
-//
-//    Map<String, Object> findProjectById(String projectId);
-
 
     Project addProject(Project project, String email);
 
@@ -58,10 +34,6 @@ public interface ProjectService {
 
     List<Map<String, Object>> getSectionValue(String sectionId, String projectId, String email, List<String> valueIds);
 
-    void addSectionContrast(Layer layer, String projectId, String email);
-
-    List<List<String>> getSectionContrastValue(String layerId, String projectId, String email);
-
     Project getProjectInfo(String projectId);
 
     Page<Project> getAll(int page, int size, String keyWord);
@@ -71,4 +43,10 @@ public interface ProjectService {
     int checkState(String projectId, String layerId);
 
     void delLayer(String projectId, String layerId, String email);
+
+    String getFlushId(String projectId, String benchmark, String reference, String name);
+
+    String computeContour(String projectId, String demId, String email, String interval, String shpName);
+
+    int checkContourState(String uid);
 }

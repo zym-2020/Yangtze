@@ -8,4 +8,8 @@
     <select id="findById" resultType="java.util.HashMap">
         select * from analytic_data_set where id::text = #{id};
     </select>
+
+    <select id="findIdByBenchmarkAndReference" resultType="java.lang.String">
+        select id::text from analytic_data_set where benchmark = #{benchmark} and reference = #{reference};
+    </select>
 </mapper>

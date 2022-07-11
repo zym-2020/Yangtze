@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="njnu.edu.back.dao.VectorTile">
+<mapper namespace="njnu.edu.back.shpDao.VectorTile">
     <select id="selectTile" parameterType="njnu.edu.back.pojo.support.TileBox" resultType="Object">
         select st_asmvt(result, #{name}) tile
         from(

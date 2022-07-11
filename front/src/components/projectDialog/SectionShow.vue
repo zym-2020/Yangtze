@@ -2,7 +2,7 @@
   <div class="section-main">
     <div class="left">
       <el-radio-group v-model="value" @change="change">
-        <el-radio :label="item.id" v-for="(item, index) in dems" :key="index">{{
+        <el-radio :label="item.demId" v-for="(item, index) in dems" :key="index">{{
           item.name
         }}</el-radio>
       </el-radio-group>
@@ -36,7 +36,7 @@ export default defineComponent({
       const arr: any[] = [];
       (props.sectionValue as SectionValue).demLayers.forEach((item) => {
         arr.push({
-          id: item.id,
+          demId: item.demId,
           name: item.name,
         });
       });
@@ -94,7 +94,7 @@ export default defineComponent({
         i < (props.sectionValue as SectionValue).demLayers.length;
         i++
       ) {
-        if (val === (props.sectionValue as SectionValue).demLayers[i].id) {
+        if (val === (props.sectionValue as SectionValue).demLayers[i].demId) {
           index.value = i;
           break;
         }
@@ -107,7 +107,7 @@ export default defineComponent({
       console.log(props.sectionValue);
       value.value = (props.sectionValue as SectionValue).demLayers[
         index.value
-      ].id;
+      ].demId;
       init();
     });
 

@@ -18,6 +18,9 @@
         />
       </el-select>
     </div>
+    <div class="btn">
+      <el-button type="primary" size="small">计算</el-button>
+    </div>
   </div>
 </template>
 
@@ -25,7 +28,9 @@
 import { computed, defineComponent, onMounted, ref } from "vue";
 export default defineComponent({
   props: {
-    demLayers: Array,
+    demLayers: {
+      type: Array,
+    },
   },
   emits: ["dataSelectClose", "dataSelectChange"],
   setup(props, context) {
@@ -69,7 +74,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .data-select {
-  height: 80px;
+  height: 110px;
   width: 120px;
   background: rgba($color: #000000, $alpha: 0.5);
   border-radius: 6px;
@@ -90,6 +95,9 @@ export default defineComponent({
   }
   .select {
     padding: 10px 5px;
+  }
+  .btn {
+    text-align: center;
   }
 }
 </style>
