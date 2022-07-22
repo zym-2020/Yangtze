@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +39,18 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
 
     @Override
     public List<Map<String, Object>> findDataByType(String type) {
-        return analyticDataSetMapper.findDataByType(type);
+        List<String> types = new ArrayList<>();
+        if(type.equals("riverBed")) {
+            types.add("riverBed");
+            types.add("deepHorizonLine");
+            return analyticDataSetMapper.findDataByType(types);
+        } else if(type.equals("satellite")) {
+            types.add("satellite");
+            return analyticDataSetMapper.findDataByType(types);
+        } else {
+            types.add("hydrology");
+            return analyticDataSetMapper.findDataByType(types);
+        }
     }
 
     @Override

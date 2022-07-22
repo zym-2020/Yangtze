@@ -35,7 +35,6 @@ public class Project {
     String description;
     Date createTime;
     List<Layer> layers;
-    List<String> sortLayers;
     String creatorName;
     String avatar;
     NameCount nameCount;

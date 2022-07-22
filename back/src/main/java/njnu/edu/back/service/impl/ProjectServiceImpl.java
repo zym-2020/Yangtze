@@ -1,11 +1,13 @@
 package njnu.edu.back.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import lombok.SneakyThrows;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.common.utils.AnalyseUtil;
+import njnu.edu.back.common.utils.LocalUploadUtil;
 import njnu.edu.back.dao.AnalyticDataSetMapper;
 import njnu.edu.back.pojo.Project;
 import njnu.edu.back.pojo.support.Layer;
@@ -20,6 +22,8 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.*;
 
@@ -57,12 +61,11 @@ public class ProjectServiceImpl implements ProjectService {
     public Project addProject(Project project, String email) {
         project.setCreateTime(new Date());
         project.setLayers(new ArrayList<>());
-        project.setSortLayers(new ArrayList<>());
         project.setAvatar("");
         project.setNameCount(new NameCount(0));
         Project result = projectRepository.save(project);
         String projectId = result.getId();
-        File file = new File(baseDir + email + "\\projects\\" + email + "\\" + projectId);
+        File file = new File(baseDir + email + "\\projects\\" + projectId);
         file.mkdirs();
         return result;
     }
@@ -104,7 +107,7 @@ public class ProjectServiceImpl implements ProjectService {
             }
         }
         JSONObject jsonObject = JSON.parseObject(jsonString);
-        Project project = new Project(null, jsonObject.getString("projectName"), jsonObject.getString("creator"), jsonObject.getString("description"), new Date(), new ArrayList<>(), new ArrayList<>(), jsonObject.getString("creatorName"), uuid + "." + suffix, new NameCount(0));
+        Project project = new Project(null, jsonObject.getString("projectName"), jsonObject.getString("creator"), jsonObject.getString("description"), new Date(), new ArrayList<>(), jsonObject.getString("creatorName"), uuid + "." + suffix, new NameCount(0));
         Project result = projectRepository.save(project);
         String projectId = result.getId();
         File f = new File(baseDir + email + "\\projects\\" + email + "\\" + projectId);
@@ -120,7 +123,6 @@ public class ProjectServiceImpl implements ProjectService {
         }
         Project project = optionalProject.get();
         project.getLayers().add(layer);
-        project.getSortLayers().add(layer.getId());
         projectRepository.save(project);
     }
 
@@ -131,10 +133,8 @@ public class ProjectServiceImpl implements ProjectService {
             throw new MyException(ResultEnum.NO_OBJECT);
         }
         Project project = optionalProject.get();
-        List<String> sortLayers = project.getSortLayers();
         List<Layer> layerList = project.getLayers();
         for(Layer layer : layers) {
-            sortLayers.add(layer.getId());
             layerList.add(layer);
         }
 
@@ -148,7 +148,9 @@ public class ProjectServiceImpl implements ProjectService {
             throw new MyException(ResultEnum.NO_OBJECT);
         }
         Project project = optionalProject.get();
-        List<Map<String, Object>> dems = analyticDataSetMapper.findDataByType("riverBed");
+        List<String> types = new ArrayList<>();
+        types.add("riverBed");
+        List<Map<String, Object>> dems = analyticDataSetMapper.findDataByType(types);
         layer.setName("断面形态_" + project.getNameCount().getSection());
         List<Section> sections = new ArrayList<>();
         for(Map<String, Object> map : dems) {
@@ -157,7 +159,6 @@ public class ProjectServiceImpl implements ProjectService {
         layer.setSections(sections);
         project.getNameCount().setSection(project.getNameCount().getSection() + 1);
         project.getLayers().add(layer);
-        project.getSortLayers().add(layer.getId());
         projectRepository.save(project);
 
         for (int i = 0; i < dems.size(); i++) {
@@ -333,7 +334,6 @@ public class ProjectServiceImpl implements ProjectService {
         }
         List<Section> sections = layers.get(index).getSections();
         String type = layers.get(index).getType();
-        project.getSortLayers().remove(layerId);
         layers.remove(index);
         projectRepository.save(project);
         if(type.equals("section")) {
@@ -344,7 +344,6 @@ public class ProjectServiceImpl implements ProjectService {
                     file.delete();
                 }
             }
-
         }
     }
 
@@ -364,13 +363,12 @@ public class ProjectServiceImpl implements ProjectService {
         }
         Project project = optionalProject.get();
         project.getLayers().add(layer);
-        project.getSortLayers().add(id);
         projectRepository.save(project);
         return id;
     }
 
     @Override
-    public String computeContour(String projectId, String demId, String email, String interval, String shpName) {
+    public String computeContour(String projectId, String demId, String email, String interval, String shpName, String srid) {
         Map<String, Object> demMap = analyticDataSetMapper.findById(demId);
         if(demMap == null) {
             throw new MyException(ResultEnum.NO_OBJECT);
@@ -389,7 +387,10 @@ public class ProjectServiceImpl implements ProjectService {
                 Process process = AnalyseUtil.createContour(contourDir, interval, address + "\\" + fileName, resultPath);
                 int code = process.waitFor();
                 if(code == 0) {
-                    Process process1 = AnalyseUtil.uploadShpToDataBase(shp2pgsqlDir, baseDir + email + "\\" + "projects\\" + projectId, shpName);
+                    while(!AnalyseUtil.shpFileIsExist(baseDir + email + "\\" + "projects\\" + projectId, shpName)) {
+                        Thread.currentThread().sleep(300);
+                    }
+                    Process process1 = AnalyseUtil.uploadShpToDataBase(shp2pgsqlDir, baseDir + email + "\\" + "projects\\" + projectId, shpName, srid);
                     int code1 = process1.waitFor();
                     if(code1 == 0) {
                         Optional<Project> optionalProject = projectRepository.findById(projectId);
@@ -402,14 +403,13 @@ public class ProjectServiceImpl implements ProjectService {
                         layer.setName(shpName);
                         layer.setType("contour");
                         project.getLayers().add(layer);
-                        project.getSortLayers().add(uuid);
                         projectRepository.save(project);
-                        redisService.set(uuid, 1, 24*7*60l);
+                        redisService.set(uuid, 1, 3*60l);
                     } else {
-                        redisService.set(uuid, -1, 24*7*60l);
+                        redisService.set(uuid, -1, 3*60l);
                     }
                 } else {
-                    redisService.set(uuid, -1, 24*7*60l);
+                    redisService.set(uuid, -1, 3*60l);
                 }
             }
         }.start();
@@ -423,5 +423,113 @@ public class ProjectServiceImpl implements ProjectService {
             redisService.del(uid);
         }
         return state;
+    }
+
+    @Override
+    public void sortLayer(String projectId, List<Layer> layers) {
+        Optional<Project> optionalProject = projectRepository.findById(projectId);
+        if(!optionalProject.isPresent()) {
+            throw new MyException(ResultEnum.NO_OBJECT);
+        }
+        Project project = optionalProject.get();
+        project.setLayers(layers);
+        projectRepository.save(project);
+    }
+
+    @Override
+    public String addRegion(String projectId, JSONArray jsonArray, String demId, String email) {
+        Optional<Project> optionalProject = projectRepository.findById(projectId);
+        if(!optionalProject.isPresent()) {
+            throw new MyException(ResultEnum.NO_OBJECT);
+        }
+        Project project = optionalProject.get();
+        Map<String, Object> map = analyticDataSetMapper.findById(demId);
+        String name = (String) map.get("name");
+        String rasterAddress = (String) map.get("address") +"\\" + map.get("file_name");
+        String uuid = UUID.randomUUID().toString();
+        String outputPng = baseDir + email + "\\projects\\" + projectId + "\\" + uuid + ".png";
+        String outputJson = baseDir + email + "\\projects\\" + projectId + "\\" + uuid + ".json";
+        new Thread() {
+            @Override
+            @SneakyThrows
+            public void run() {
+                redisService.set(uuid, 0,60l);
+                String tempPath = baseDir + email + "\\temp\\" + uuid + ".txt";
+                Process process = AnalyseUtil.rasterCrop(tempPath, rasterAddress, outputPng, outputJson, jsonArray);
+                int code = process.waitFor();
+                if(code == 0) {
+                    redisService.set(uuid, 1);
+                    Layer layer = new Layer();
+                    layer.setId(uuid);
+                    layer.setName(name + "_形态");
+                    layer.setType("region");
+                    layer.setPoints(AnalyseUtil.getPoints(outputJson));
+                    project.getLayers().add(layer);
+                    projectRepository.save(project);
+                } else {
+                    redisService.set(uuid, -1);
+                }
+                LocalUploadUtil.deleteFolder(tempPath);
+            }
+        }.start();
+        return uuid;
+    }
+
+    @Override
+    public Layer getRegionLayer(String projectId, String layerId) {
+        Optional<Project> optionalProject = projectRepository.findById(projectId);
+        if(!optionalProject.isPresent()) {
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
+        Project project = optionalProject.get();
+        List<Layer> layers = project.getLayers();
+        for(Layer layer : layers) {
+            if(layer.getId().equals(layerId)) {
+                return layer;
+            }
+        }
+        throw new MyException(ResultEnum.NO_OBJECT);
+    }
+
+    @Override
+    public int checkAddRegion(String key) {
+        int code = (int) redisService.get(key);
+        if(code == 1 || code == -1) {
+            redisService.del(key);
+        }
+        return code;
+    }
+
+    @Override
+    public void getRegion(String projectId, String layerId, String email, HttpServletResponse response) {
+        String address = baseDir + email + "\\projects\\" + projectId + "\\" + layerId + ".png";
+        File file = new File(address);
+        if(!file.exists()) {
+            throw new MyException(ResultEnum.NO_OBJECT);
+        }
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(file);
+            ServletOutputStream servletOutputStream = response.getOutputStream();
+            byte[] bytes = new byte[1024];
+            int len = inputStream.read(bytes);
+            while(len != -1) {
+                servletOutputStream.write(bytes);
+                len = inputStream.read(bytes);
+            }
+            inputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        } finally {
+            try {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+            }
+        }
     }
 }

@@ -15,7 +15,7 @@ import java.util.Map;
  */
 @Repository
 public interface AnalyticDataSetMapper {
-    List<Map<String, Object>> findDataByType(@Param("type") String type);
+    List<Map<String, Object>> findDataByType(@Param("list") List<String> types);
 
     Map<String, Object> findById(@Param("id") String id);
 

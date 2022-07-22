@@ -1,6 +1,6 @@
 import { get, post, del, patch } from './axios'
 import {
-    RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, AddFileJsonData, RenameJsonData, UnPackJsonData, UpdateParentIdAndLevelJsonData, CompressFileJsonData, GetFlushIdJsonData,
+    RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, AddFileJsonData, RenameJsonData, UnPackJsonData, UpdateParentIdAndLevelJsonData, CompressFileJsonData, GetFlushIdJsonData, ComputeContourJsonData,
     SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData, GetNoUploadJsonData, AddRecordJsonData, AddMessageJsonData, DeleteFilesOrFolders, GetProjectsJsonData, Layer
 } from './type/userType'
 
@@ -87,6 +87,26 @@ export async function checkLayerState(projectId: string, sectionId: string) {
 
 export async function getFlushId(jsonData: GetFlushIdJsonData) {
     return await post(`/project/getFlushId`, jsonData)
+}
+
+export async function computeContour(jsonData: ComputeContourJsonData) {
+    return await post(`/project/computeContour`, jsonData)
+}
+
+export async function sortLayer(projectId: string, layers: any[]) {
+    return await post(`/project/sortLayer/${projectId}`, layers)
+}
+
+export async function addRegion(projectId: string, demId: string, jsonArray: any[]) {
+    return await post(`/project/addRegion/${projectId}/${demId}`, jsonArray)
+}
+
+export async function getRegionLayer(projectId: string, layerId: string) {
+    return await get(`/project/getRegionLayer/${projectId}/${layerId}`)
+}
+
+export async function checkAddRegion(key: string) {
+    return await get(`/project/checkAddRegion/${key}`)
 }
 
 //========================vectorRelationship相关接口=================================

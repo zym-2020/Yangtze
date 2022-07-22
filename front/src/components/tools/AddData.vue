@@ -50,10 +50,18 @@
                 class="data"
                 @dblclick="dblclick(item)"
               >
-                <svg style="width: 20px; height: 20px">
-                  <use xlink:href="#icon-raster"></use>
-                </svg>
-                <span>{{ item.name }}</span>
+                <div v-if="item.type === 'riverBed'">
+                  <svg style="width: 20px; height: 20px">
+                    <use xlink:href="#icon-raster"></use>
+                  </svg>
+                  <span>{{ item.name }}</span>
+                </div>
+                <div v-if="item.type === 'deepHorizonLine'">
+                  <svg style="width: 20px; height: 20px">
+                    <use xlink:href="#icon-vector"></use>
+                  </svg>
+                  <span>{{ item.name }}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -182,6 +190,8 @@ export default defineComponent({
         return "#icon-vector";
       } else if (type === "satellite") {
         return "#icon-tiff";
+      } else if (type === "deepHorizonLine") {
+        return "#icon-vector";
       }
     };
 

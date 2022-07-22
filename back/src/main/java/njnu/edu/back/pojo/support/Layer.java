@@ -26,7 +26,11 @@ public class Layer {
     String vectorType;   //针对shape
     JSONObject geoJson;
     List<Section> sections;
+    List<Point> points;
     String demSlopeId;
+    String regionDem;
+
+
 //    String selectDemId;          //dem id针对断面形态
 //    String selectDemName;       //dem name针对断面形态
 //    List<String> selectDemIds;      //针对断面比较

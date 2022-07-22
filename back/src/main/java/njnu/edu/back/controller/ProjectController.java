@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -30,44 +31,52 @@ public class ProjectController {
     @Autowired
     ProjectService projectService;
 
+    @AuthCheck
     @RequestMapping(value = "/addProjectWithoutAvatar", method = RequestMethod.POST)
     public JsonResult addProject(@RequestBody Project project, @JwtTokenParser("email") String email) {
         return ResultUtils.success(projectService.addProject(project, email));
     }
 
+    @AuthCheck
     @RequestMapping(value = "/addProjectWithAvatar", method = RequestMethod.POST)
     public JsonResult addProject(@RequestParam String jsonString, @RequestParam MultipartFile file, @JwtTokenParser("email") String email) {
         return ResultUtils.success(projectService.addProject(jsonString, file, email));
     }
 
+    @AuthCheck
     @RequestMapping(value = "/addLayer/{projectId}", method = RequestMethod.PATCH)
     public JsonResult addLayer(@RequestBody Layer layer, @PathVariable String projectId) {
         projectService.addLayer(layer, projectId);
         return ResultUtils.success();
     }
 
+    @AuthCheck
     @RequestMapping(value = "/addLayers/{projectId}", method = RequestMethod.PATCH)
     public JsonResult addLayers(@RequestBody List<Layer> layers, @PathVariable String projectId) {
         return ResultUtils.success(projectService.addLayers(layers, projectId));
     }
 
+    @AuthCheck
     @RequestMapping(value = "/addSection/{projectId}", method = RequestMethod.POST)
     public JsonResult addSection(@RequestBody Layer layer, @PathVariable String projectId, @JwtTokenParser("email") String email) {
 
         return ResultUtils.success(projectService.addSection(layer, projectId, email));
     }
 
+    @AuthCheck
     @RequestMapping(value = "/getSectionValue/{projectId}/{sectionId}", method = RequestMethod.POST)
     public JsonResult getSectionValue(@PathVariable String projectId, @PathVariable String sectionId, @JwtTokenParser("email") String email, @RequestBody List<String> valueIds) {
         return ResultUtils.success(projectService.getSectionValue(sectionId, projectId, email, valueIds));
     }
 
 
+    @AuthCheck
     @RequestMapping(value = "/getProjectInfo/{projectId}", method = RequestMethod.GET)
     public JsonResult getProjectInfo(@PathVariable String projectId) {
         return ResultUtils.success(projectService.getProjectInfo(projectId));
     }
 
+    @AuthCheck
     @RequestMapping(value = "/getAll", method = RequestMethod.POST)
     public JsonResult getAll(@RequestBody JSONObject jsonObject) {
         int page = jsonObject.getInt("page");
@@ -76,22 +85,26 @@ public class ProjectController {
         return ResultUtils.success(projectService.getAll(page, size, keyWord));
     }
 
+    @AuthCheck
     @RequestMapping(value = "/getProjectsByEmail/{email}", method = RequestMethod.GET)
     public JsonResult getProjectsByEmail(@PathVariable String email) {
         return ResultUtils.success(projectService.getProjectsByEmail(email));
     }
 
+    @AuthCheck
     @RequestMapping(value = "/checkState/{projectId}/{sectionId}", method = RequestMethod.GET)
     public JsonResult checkState(@PathVariable String projectId, @PathVariable String sectionId) {
         return ResultUtils.success(projectService.checkState(projectId, sectionId));
     }
 
+    @AuthCheck
     @RequestMapping(value = "/delLayer/{projectId}/{layerId}", method = RequestMethod.DELETE)
     public JsonResult delLayer(@PathVariable String projectId, @PathVariable String layerId, @JwtTokenParser("email") String email) {
         projectService.delLayer(projectId, layerId, email);
         return ResultUtils.success();
     }
 
+    @AuthCheck
     @RequestMapping(value = "/getFlushId", method = RequestMethod.POST)
     public JsonResult getFlushId(@RequestBody JSONObject jsonObject) {
         String projectId = jsonObject.getStr("projectId");
@@ -101,23 +114,54 @@ public class ProjectController {
         return ResultUtils.success(projectService.getFlushId(projectId, benchmark, reference, name));
     }
 
+    @AuthCheck
     @RequestMapping(value = "/computeContour", method = RequestMethod.POST)
     public JsonResult computeContour(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
         String projectId = jsonObject.getStr("projectId");
         String demId = jsonObject.getStr("demId");
         String interval = jsonObject.getStr("interval");
         String shpName = jsonObject.getStr("shpName");
-        return ResultUtils.success(projectService.computeContour(projectId, demId, email, interval, shpName));
+        String srid = jsonObject.getStr("srid");
+        return ResultUtils.success(projectService.computeContour(projectId, demId, email, interval, shpName, srid));
     }
 
+    @AuthCheck
     @RequestMapping(value = "/checkContourState/{uid}", method = RequestMethod.GET)
     public JsonResult checkContourState(@PathVariable String uid) {
         return ResultUtils.success(projectService.checkContourState(uid));
     }
 
+    @AuthCheck
+    @RequestMapping(value = "/sortLayer/{projectId}", method = RequestMethod.POST)
+    public JsonResult sortLayer(@PathVariable String projectId, @RequestBody List<Layer> layers) {
+        projectService.sortLayer(projectId, layers);
+        return ResultUtils.success();
+    }
 
+    @AuthCheck
+    @RequestMapping(value = "/addRegion/{projectId}/{demId}", method = RequestMethod.POST)
+    public JsonResult addRegion(@RequestBody JSONArray jsonArray, @PathVariable String projectId, @PathVariable String demId, @JwtTokenParser("email") String email) {
+        return ResultUtils.success(projectService.addRegion(projectId, jsonArray, demId, email));
+    }
 
+    @AuthCheck
+    @RequestMapping(value = "/checkAddRegion/{key}", method = RequestMethod.GET)
+    public JsonResult checkAddRegion(@PathVariable String key) {
+        return ResultUtils.success(projectService.checkAddRegion(key));
+    }
 
+    @AuthCheck
+    @RequestMapping(value = "/getRegionLayer/{projectId}/{layerId}", method = RequestMethod.GET)
+    public JsonResult getRegionLayer(@PathVariable String projectId, @PathVariable String layerId) {
+        return ResultUtils.success(projectService.getRegionLayer(projectId, layerId));
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/getRegion/{email}/{projectId}/{layerId}", method = RequestMethod.GET)
+    public JsonResult getRegion(@PathVariable String projectId, @PathVariable String layerId, @PathVariable String email, HttpServletResponse response) {
+        projectService.getRegion(projectId, layerId, email, response);
+        return ResultUtils.success();
+    }
 
 
 }

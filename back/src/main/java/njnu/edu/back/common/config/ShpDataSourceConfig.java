@@ -22,7 +22,7 @@ import javax.sql.DataSource;
  * @Description:
  */
 @Configuration
-@MapperScan(basePackages = "njnu.edu.back.shpDao", sqlSessionTemplateRef  = "mainSqlSessionTemplate")
+@MapperScan(basePackages = "njnu.edu.back.shpDao", sqlSessionTemplateRef  = "shpSqlSessionTemplate")
 public class ShpDataSourceConfig {
     @Bean(name = "shpDataSource")
     @ConfigurationProperties(prefix = "spring.datasource.shp")

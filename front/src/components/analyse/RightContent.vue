@@ -32,79 +32,50 @@
     </div>
     <div class="tree">
       <el-scrollbar>
-        <div v-if="view">
-          <el-tree
-            :data="treeData"
-            :props="defaultProps"
-            :default-expand-all="true"
-            draggable
-            :allow-drop="allowDrop"
-            @node-drop="sortLayer"
-            @node-contextmenu="layerContextClick"
-            v-if="treeData[0].children.length > 0"
-          >
-            <template #default="{ node, data }">
-              <div class="custom-tree-node">
-                <span>{{ node.label }}</span>
-                <div class="icon" v-if="data.type != 'project'">
-                  <svg
-                    style="width: 20px; height: 20px"
-                    v-if="data.show"
-                    @click.stop="hideLayer(data)"
-                  >
-                    <use xlink:href="#icon-view1"></use>
-                  </svg>
-                  <svg
-                    style="width: 20px; height: 20px"
-                    v-else
-                    @click.stop="showLayer(data)"
-                  >
-                    <use xlink:href="#icon-hide"></use>
-                  </svg>
-                </div>
+        <el-tree
+          :data="treeData"
+          :props="defaultProps"
+          :default-expand-all="true"
+          draggable
+          :allow-drop="allowDrop"
+          @node-drop="sortLayer"
+          @node-contextmenu="layerContextClick"
+          v-if="treeData[0].children.length > 0"
+        >
+          <template #default="{ node, data }">
+            <div class="custom-tree-node">
+              <span>{{ node.label }}</span>
+              <div class="icon" v-if="data.type != 'project'">
+                <svg
+                  style="width: 20px; height: 20px"
+                  v-if="data.show"
+                  @click.stop="hideLayer(data)"
+                >
+                  <use xlink:href="#icon-view1"></use>
+                </svg>
+                <svg
+                  style="width: 20px; height: 20px"
+                  v-else
+                  @click.stop="showLayer(data)"
+                >
+                  <use xlink:href="#icon-hide"></use>
+                </svg>
               </div>
-            </template>
-          </el-tree>
-          <div v-else>
-            <el-empty description="暂无图层信息！" />
-          </div>
-        </div>
+            </div>
+          </template>
+        </el-tree>
         <div v-else>
-          <el-tree
-            :data="dataView"
-            :props="defaultProps"
-            :default-expand-all="true"
-          >
-            <template #default="{ node, data }">
-              <div class="custom-tree-node">
-                <div class="data-icon" v-if="data.children == undefined">
-                  <svg
-                    style="width: 20px; height: 20px"
-                    v-if="data.icon != undefined"
-                  >
-                    <use :xlink:href="data.icon"></use>
-                  </svg>
-                  <img :src="data.img" alt="" height="18" width="18" v-else />
-                </div>
-                <div class="label">
-                  <div>{{ node.label }}</div>
-                  <div v-if="data.type === 'classify'" class="classify">
-                    {{ data.children.length }}
-                  </div>
-                </div>
-              </div>
-            </template>
-          </el-tree>
+          <el-empty description="暂无图层信息！" />
         </div>
       </el-scrollbar>
     </div>
     <div class="footer">
-      <div @click="change">
+      <!-- <div>
         <svg>
           <use xlink:href="#icon-qiehuangongsi"></use>
         </svg>
       </div>
-      <div>当前视图：图层视图</div>
+      <div>当前视图：图层视图</div> -->
     </div>
 
     <el-dialog v-model="createFlag" width="600px" :show-close="false">
@@ -191,7 +162,7 @@ import CreateProject from "@/components/tools/CreateProject.vue";
 import AddData from "@/components/tools/AddData.vue";
 import ProjectManage from "@/components/tools/ProjectManage.vue";
 import router from "@/router";
-import { computedDataView } from "@/components/tools/ts/leftToolTreeData";
+
 import SectionShow from "@/components/projectDialog/SectionShow.vue";
 import { getSectionValue, delLayer } from "@/api/request";
 import LayerContextMenu from "@/components/contextMenu/LayerContextMenu.vue";
@@ -200,7 +171,13 @@ import sectionContrastShow from "@/components/projectDialog/SectionContrastShow.
 import areaElevationShow from "@/components/projectDialog/AreaElevationShow.vue";
 import flushFiltShow from "@/components/projectDialog/FlushFiltShow.vue";
 export default defineComponent({
-  emits: ["setVisible", "setLayers", "toolClick", "deleteLayer"],
+  emits: [
+    "setVisible",
+    "setLayers",
+    "toolClick",
+    "deleteLayer",
+    "sortMapLayers",
+  ],
   components: {
     CreateProject,
     AddData,
@@ -215,7 +192,6 @@ export default defineComponent({
     const createFlag = ref(false);
     const addFlag = ref(false);
     const manageFlag = ref(false);
-    const view = ref(true);
     const sectionShow = ref(false);
     const sectionContrastShow = ref(false);
     const layerContextMenuFlag = ref(false);
@@ -253,18 +229,6 @@ export default defineComponent({
         children: [],
       },
     ]);
-    const sortLayers = ref<string[]>([]);
-
-    const dataView = computed(() => {
-      const result = [
-        {
-          name: (router.currentRoute.value.params.projectInfo as any)
-            .projectName,
-          children: computedDataView(treeData.value[0].children),
-        },
-      ];
-      return result;
-    });
 
     const init = () => {
       treeData.value[0].name = (
@@ -280,10 +244,6 @@ export default defineComponent({
       treeData.value[0].children.forEach((item) => {
         item.show = true;
       });
-
-      sortLayers.value = (
-        router.currentRoute.value.params.projectInfo as any
-      ).sortLayers;
     };
 
     const listClick = () => {
@@ -311,8 +271,11 @@ export default defineComponent({
         return false;
       }
     };
-    const sortLayer = (draggingNode: any, dropNode: any, type: string) => {
-      //   console.log(draggingNode, dropNode, type);
+    const sortLayer = (draggingNode: any) => {
+      context.emit("sortMapLayers", {
+        dragId: draggingNode.data.id,
+        tree: treeData.value[0].children,
+      });
     };
 
     const hideLayer = (data: any) => {
@@ -342,8 +305,7 @@ export default defineComponent({
       val.forEach((item) => {
         item.show = true;
         treeData.value[0].children.push(item);
-        sortLayers.value.push(item.id);
-        tempArr.push({ id: item.id, type: item.type, isAdd: true });
+        tempArr.push(item);
       });
       context.emit("setLayers", tempArr);
     };
@@ -352,17 +314,12 @@ export default defineComponent({
       manageFlag.value = false;
     };
 
-    const change = () => {
-      view.value = !view.value;
-    };
-
     const toolClick = () => {
       context.emit("toolClick");
     };
 
     const addLayer = (layer: any) => {
       treeData.value[0].children.push(layer);
-      sortLayers.value.push(layer.id);
     };
 
     const delContextLayer = async (val: string) => {
@@ -452,9 +409,9 @@ export default defineComponent({
       } else if (params.type === "flush-silt") {
         if (data != null) {
           if ((data as any).code === 0) {
-            flushFiltValue.data = data.data
-            flushFiltValue.dems = dems as any
-            flushFiltShow.value = true
+            flushFiltValue.data = data.data;
+            flushFiltValue.dems = dems as any;
+            flushFiltShow.value = true;
           }
         }
       }
@@ -502,16 +459,12 @@ export default defineComponent({
       treeData,
       sortLayer,
       listClick,
-      sortLayers,
       allowDrop,
       hideLayer,
       showLayer,
       createProject,
       returnData,
       selectProjectId,
-      view,
-      change,
-      dataView,
       toolClick,
       addLayer,
       sectionShow,

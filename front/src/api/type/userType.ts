@@ -187,3 +187,11 @@ export interface GetFlushIdJsonData {
     reference: string
     name: string
 }
+
+export interface ComputeContourJsonData {
+    projectId: string
+    demId: string
+    interval: string
+    shpName: string
+    srid: string
+}

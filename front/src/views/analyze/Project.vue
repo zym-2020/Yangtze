@@ -28,6 +28,7 @@
           @setLayers="setLayers"
           @toolClick="toolClick"
           @deleteLayer="deleteLayer"
+          @sortMapLayers="sortMapLayers"
         ></right-content>
       </div>
     </div>
@@ -39,12 +40,21 @@
         @slopeClick="slopeClick"
         @flushSilt="flushSilt"
         @contourClick="contourClick"
+        @regionByDIYClick="regionByDIYClick"
       ></tool-content>
     </div>
     <div class="legend" v-if="slopeFlag">
       <Legend />
     </div>
   </div>
+
+  <el-dialog v-model="dataSelectFlag" width="400px" title="请选择数据集">
+    <data-select
+      :demLayers="demLayers"
+      :dataSelectType="dataSelectType"
+      @dataSelectReturn="dataSelectReturn"
+    ></data-select>
+  </el-dialog>
 </template>
 
 <script lang="ts">
@@ -59,12 +69,18 @@ import { notice } from "@/utils/notice";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { uuid } from "@/utils/common";
 import Legend from "@/components/tools/Legend.vue";
+import DataSelect from "@/components/tools/DataSelect.vue";
 import {
   addLayers,
   addSection,
   checkLayerState,
   getFlushId,
+  sortLayer,
+  addRegion,
+  checkAddRegion,
+  getRegionLayer,
 } from "@/api/request";
+import { useStore } from "@/store";
 
 export default defineComponent({
   components: {
@@ -72,8 +88,10 @@ export default defineComponent({
     TopContent,
     ToolContent,
     Legend,
+    DataSelect,
   },
   setup() {
+    const store = useStore();
     const container = ref<HTMLElement>();
     const right = ref<HTMLElement>();
     const rightLayer = ref();
@@ -86,17 +104,30 @@ export default defineComponent({
     const flag = ref(false);
     const map = ref<mapBoxGl.Map>();
     const layers = ref<any[]>([]);
-    const sortLayers = ref<string[]>([]);
     const toolFlag = ref(false);
     const sectionDIYflag = ref(false);
+    const regionByDIYFlag = ref(false);
+    const dataSelectFlag = ref(false);
+    const polygonCoordinates = ref<any[]>([]);
+    const dataSelectType = ref("");
 
-    const draw = new MapboxDraw({
+    const lineDraw = new MapboxDraw({
       controls: {
         combine_features: false,
         uncombine_features: false,
         trash: false,
         point: false,
         polygon: false,
+      },
+    });
+
+    const polygonDraw = new MapboxDraw({
+      controls: {
+        combine_features: false,
+        uncombine_features: false,
+        trash: false,
+        point: false,
+        line_string: false,
       },
     });
 
@@ -118,6 +149,15 @@ export default defineComponent({
       }
       return false;
     });
+
+    const getCoordinates = (coordinates: any[]) => {
+      const result: any[] = [];
+      coordinates.forEach((item) => {
+        result.push([item.longitude, item.latitude]);
+      });
+      console.log(result);
+      return result;
+    };
 
     const tdtVec: AnySourceData = {
       type: "raster",
@@ -195,13 +235,9 @@ export default defineComponent({
       }
     };
 
-    const addAllLayers = (layers: any[], sortLayers: string[]) => {
-      sortLayers.forEach((item) => {
-        for (let i = 0; i < layers.length; i++) {
-          if (item === layers[i].id) {
-            addLayer(layers[i]);
-          }
-        }
+    const addAllLayers = (layers: any[]) => {
+      layers.forEach((item) => {
+        addLayer(item);
       });
     };
 
@@ -224,7 +260,6 @@ export default defineComponent({
           });
         } else if (layer.type === "riverBed" || layer.type === "flush") {
           map.value?.addSource(layer.id, {
-            // type: "raster-dem",
             type: "raster",
             tiles: [
               `http://localhost:8002/analyticDataSet/getRaster/${layer.id}/{x}/{y}/{z}`,
@@ -232,7 +267,6 @@ export default defineComponent({
           });
           map.value?.addLayer({
             id: layer.id,
-            // type: "hillshade",
             type: "raster",
             source: layer.id,
           });
@@ -268,19 +302,33 @@ export default defineComponent({
             source: layer.id,
             type: "raster",
           });
-        } else if (layer.type === "contour") {
-          // map.value?.addSource(layer.id, {
-          //   type: "vector",
-          //   tiles: [
-          //     `http://localhost:8002/analyticDataSet/${layer.name}/{x}/{y}/{z}`
-          //   ]
-          // })
-          // map.value?.addLayer({
-          //   id: layer.id,
-          //   source: layer.id,
-          //   type: "line",
-          //   "source-layer": layer.name
-          // })
+        } else if (
+          layer.type === "contour" ||
+          layer.type === "deepHorizonLine"
+        ) {
+          map.value?.addSource(layer.id, {
+            type: "vector",
+            tiles: [
+              `http://localhost:8002/analyticDataSet/${layer.name}/{x}/{y}/{z}`,
+            ],
+          });
+          map.value?.addLayer({
+            id: layer.id,
+            source: layer.id,
+            type: "line",
+            "source-layer": layer.name,
+          });
+        } else if (layer.type === "region") {
+          map.value?.addSource(layer.id, {
+            type: "image",
+            url: `http://localhost:8002/project/getRegion/${store.state.user.email}/${router.currentRoute.value.params.id}/${layer.id}`,
+            coordinates: getCoordinates(layer.points),
+          });
+          map.value?.addLayer({
+            id: layer.id,
+            source: layer.id,
+            type: "raster",
+          });
         }
       }
     };
@@ -289,26 +337,24 @@ export default defineComponent({
       if (map.value?.getLayer(val) != undefined) {
         map.value.removeLayer(val);
         map.value.removeSource(val);
-        for (let i = 0; i < sortLayers.value.length; i++) {
-          if (sortLayers.value[i] === val) {
-            sortLayers.value.splice(i, 1);
-          }
-        }
       }
     };
 
-    const removeAllLayers = (oldSortList: string[]) => {
-      oldSortList.forEach((item) => {
+    const removeAllLayers = (layers: any[]) => {
+      layers.forEach((item) => {
         if (map.value != undefined) {
-          map.value.removeLayer(item);
-          map.value.removeSource(item);
+          map.value.removeLayer(item.id);
+          map.value.removeSource(item.id);
         }
       });
     };
 
     const removeControl = () => {
-      if (map.value?.hasControl(draw)) {
-        map.value?.removeControl(draw);
+      if (map.value?.hasControl(lineDraw)) {
+        map.value.removeControl(lineDraw);
+      }
+      if (map.value?.hasControl(polygonDraw)) {
+        map.value.removeControl(polygonDraw);
       }
     };
 
@@ -325,9 +371,8 @@ export default defineComponent({
 
     const setLayers = (val: any[]) => {
       val.forEach((item) => {
-        if (item.isAdd) {
-          addLayer(item);
-        }
+        addLayer(item);
+        console.log(layers.value);
       });
     };
 
@@ -337,15 +382,34 @@ export default defineComponent({
 
     const closeClick = () => {
       sectionDIYClose();
+      regionByDIYClose();
       toolFlag.value = false;
     };
 
     const sectionByDIYClick = () => {
       if (!sectionDIYflag.value) {
         if (demLayers.value.length > 0) {
-          map.value?.addControl(draw, "top-left");
+          removeControl();
+          map.value?.addControl(lineDraw, "top-left");
+          map.value?.off("draw.create", drawPolygon);
           map.value?.on("draw.create", drawSection);
           sectionDIYflag.value = true;
+          regionByDIYFlag.value = false
+        } else {
+          notice("warning", "警告", "请检查是否添加了基础河床数据");
+        }
+      }
+    };
+
+    const regionByDIYClick = () => {
+      if (!regionByDIYFlag.value) {
+        if (demLayers.value.length > 0) {
+          removeControl();
+          map.value?.off("draw.create", drawSection);
+          map.value?.on("draw.create", drawPolygon);
+          map.value?.addControl(polygonDraw, "top-left");
+          regionByDIYFlag.value = true;
+          sectionDIYflag.value = false
         } else {
           notice("warning", "警告", "请检查是否添加了基础河床数据");
         }
@@ -356,6 +420,11 @@ export default defineComponent({
       removeControl();
       sectionDIYflag.value = false;
       map.value?.off("draw.create", drawSection);
+    };
+
+    const regionByDIYClose = () => {
+      removeControl();
+      regionByDIYFlag.value = false;
     };
 
     const getName = (type: string) => {
@@ -377,7 +446,7 @@ export default defineComponent({
     };
 
     const drawSection = async () => {
-      const coordinates = (draw.getAll().features[0].geometry as any)
+      const coordinates = (lineDraw.getAll().features[0].geometry as any)
         .coordinates;
       const uid = uuid();
       const layer = {
@@ -390,7 +459,7 @@ export default defineComponent({
         },
       };
 
-      draw.deleteAll();
+      lineDraw.deleteAll();
       drawLayer(layer);
       const res = await addSection(
         layer,
@@ -419,55 +488,130 @@ export default defineComponent({
       }
     };
 
-    const slopeClick = async (val: any) => {
-      const json = [
-        {
-          id: uuid(),
-          type: "slope",
-          name: val.name + "河床坡度",
-          demSlopeId: val.id,
-          show: true,
-        },
-      ];
-      const data = await addLayers(
-        json,
-        router.currentRoute.value.params.id as string
-      );
-      if (data != null && (data as any).code === 0) {
-        addLayer(json[0]);
-        rightLayer.value.addLayer(json[0]);
-        console.log(layers.value, sortLayers.value);
+    const drawPolygon = () => {
+      const coordinates = (polygonDraw.getAll().features[0].geometry as any)
+        .coordinates;
+      polygonCoordinates.value = coordinates;
+      dataSelectType.value = "region";
+      dataSelectFlag.value = true;
+
+      polygonDraw.deleteAll();
+    };
+
+    const dataSelectReturn = async (val: any) => {
+      dataSelectFlag.value = false;
+      if (val.type === "region") {
+        const key = await addRegion(
+          router.currentRoute.value.params.id as string,
+          val.data,
+          polygonCoordinates.value
+        );
+        async function handle(param: string) {
+          const data = await checkAddRegion(param);
+          if (data != null) {
+            if ((data as any).code === 0) {
+              if (data.data === 1) {
+                const layer = await getRegionLayer(
+                  router.currentRoute.value.params.id as string,
+                  key.data
+                );
+                console.log(layer.data);
+                layer.data.show = true;
+                rightLayer.value.addLayer(layer.data);
+                addLayer(layer.data);
+                notice("success", "成功", "计算成功");
+              } else if (data.data === 0) {
+                setTimeout(async () => {
+                  await handle(param);
+                }, 1000);
+              } else {
+                notice("error", "错误", "区域计算错误");
+              }
+            }
+          }
+        }
+        if (key != null && (key as any).code === 0) {
+          await handle(key.data);
+        }
+      } else if (val.type === "slope") {
+        const json = [
+          {
+            id: uuid(),
+            type: "slope",
+            name: val.data.name + "河床坡度",
+            demSlopeId: val.data.id,
+            show: true,
+          },
+        ];
+        const data = await addLayers(
+          json,
+          router.currentRoute.value.params.id as string
+        );
+        if (data != null && (data as any).code === 0) {
+          addLayer(json[0]);
+          rightLayer.value.addLayer(json[0]);
+        }
+      } else if (val.type === "flushSilt") {
+        const benchmark = val.data.benchmark.id;
+        const reference = val.data.reference.id;
+        const name = val.data.reference.name + "_" + val.data.benchmark.name;
+        if (benchmark != "" && reference != "") {
+          const data = await getFlushId({
+            projectId: router.currentRoute.value.params.id as string,
+            benchmark: benchmark,
+            reference: reference,
+            name: name,
+          });
+          if (data != null && (data as any).code === 0) {
+            const flushId = data.data;
+            const layer = {
+              id: flushId,
+              name: name,
+              type: "flush",
+              show: true,
+            };
+            addLayer(layer);
+            rightLayer.value.addLayer(layer);
+          }
+        }
+      } else if (val.type === "contour") {
+        console.log(val.data);
       }
     };
 
-    const flushSilt = async (val: any) => {
-      const benchmark = val.benchmark.id;
-      const reference = val.reference.id;
-      const name = val.reference.name + "_" + val.benchmark.name;
-      if (benchmark != "" && reference != "") {
-        const data = await getFlushId({
-          projectId: router.currentRoute.value.params.id as string,
-          benchmark: benchmark,
-          reference: reference,
-          name: name,
-        });
-        if(data != null && (data as any).code === 0) {
-          const flushId = data.data
-          const layer = {
-            id: flushId,
-            name: name,
-            type: "flush",
-            show: true
+    const slopeClick = async () => {
+      dataSelectType.value = "slope";
+      dataSelectFlag.value = true;
+    };
+
+    const flushSilt = async () => {
+      dataSelectType.value = "flushSilt";
+      dataSelectFlag.value = true;
+    };
+
+    const contourClick = () => {
+      dataSelectType.value = "contour";
+      dataSelectFlag.value = true;
+    };
+
+    const sortMapLayers = async (val: any) => {
+      const dragId = val.dragId;
+      console.log(val);
+      for (let i = 0; i < val.tree.length; i++) {
+        if (dragId === val.tree[i].id) {
+          if (i === val.tree.length - 1) {
+            map.value?.moveLayer(dragId);
+          } else {
+            map.value?.moveLayer(dragId, val.tree[i + 1].id);
           }
-          addLayer(layer)
-          rightLayer.value.addLayer(layer)
+          break;
         }
       }
+      await sortLayer(
+        (router.currentRoute.value.params.projectInfo as any).id,
+        val.tree
+      );
     };
-
-    const contourClick = (val: any) => {
-
-    }
 
     watch(
       () => {
@@ -477,20 +621,18 @@ export default defineComponent({
         if (router.currentRoute.value.name === "project") {
           removeControl();
           sectionDIYflag.value = false;
-          removeAllLayers(sortLayers.value);
+          regionByDIYFlag.value = false;
+          removeAllLayers(layers.value);
           layers.value = (
             router.currentRoute.value.params.projectInfo as any
           ).layers;
-          sortLayers.value = (
-            router.currentRoute.value.params.projectInfo as any
-          ).sortLayers;
-          console.log(layers.value, sortLayers.value, flag.value);
+
           if (flag.value) {
-            addAllLayers(layers.value, sortLayers.value);
+            addAllLayers(layers.value);
           } else {
             if (map.value) {
               map.value.on("load", () => {
-                addAllLayers(layers.value, sortLayers.value);
+                addAllLayers(layers.value);
               });
             }
           }
@@ -500,18 +642,17 @@ export default defineComponent({
 
     onMounted(async () => {
       initMap();
+
       layers.value = (
         router.currentRoute.value.params.projectInfo as any
       ).layers;
-      sortLayers.value = (
-        router.currentRoute.value.params.projectInfo as any
-      ).sortLayers;
+      console.log(layers.value);
       if (flag.value) {
-        addAllLayers(layers.value, sortLayers.value);
+        addAllLayers(layers.value);
       } else {
         if (map.value) {
           map.value.on("load", () => {
-            addAllLayers(layers.value, sortLayers.value);
+            addAllLayers(layers.value);
           });
         }
       }
@@ -533,15 +674,21 @@ export default defineComponent({
       toolClick,
       closeClick,
       sectionDIYflag,
+      regionByDIYFlag,
       demLayers,
       sectionByDIYClick,
+      regionByDIYClick,
       slopeClick,
       sectionDIYClose,
       rightLayer,
       deleteLayer,
       slopeFlag,
       flushSilt,
-      contourClick
+      contourClick,
+      sortMapLayers,
+      dataSelectFlag,
+      dataSelectReturn,
+      dataSelectType,
     };
   },
 });

@@ -10,6 +10,7 @@ import njnu.edu.back.pojo.support.Layer;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +47,17 @@ public interface ProjectService {
 
     String getFlushId(String projectId, String benchmark, String reference, String name);
 
-    String computeContour(String projectId, String demId, String email, String interval, String shpName);
+    String computeContour(String projectId, String demId, String email, String interval, String shpName, String srid);
 
     int checkContourState(String uid);
+
+    void sortLayer(String projectId, List<Layer> layers);
+
+    String addRegion(String projectId, JSONArray jsonArray, String demId, String email);
+
+    Layer getRegionLayer(String projectId, String layerId);
+
+    int checkAddRegion(String key);
+
+    void getRegion(String projectId, String layerId, String Email, HttpServletResponse response);
 }
