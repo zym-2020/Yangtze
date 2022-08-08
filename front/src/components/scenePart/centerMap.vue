@@ -36,6 +36,16 @@ onMounted(() => {
     if(mapConfig[+mapIndex.value]['dynamicFunc'] !== undefined) {
       map.on('load', ()=>{
         (mapConfig[+mapIndex.value]['dynamicFunc'] as ((map: mapboxgl.Map)=>void))(map);
+        map.on('mouseenter', ['tidestations', 'tidestationsLabel'], (e)=> {
+          map.getCanvas().style.cursor = 'pointer';
+        });
+        map.on('mouseleave', ['tidestations', 'tidestationsLabel'], (e)=> {
+          map.getCanvas().style.cursor = '';
+        });
+        map.on('click', ['tidestations', 'tidestationsLabel'], (e)=> {
+          console.log(e.features);
+          map.flyTo({zoom: 12, center: e.lngLat, speed: 0.7});
+        })  
       });
     }
 });

@@ -131,7 +131,7 @@ div.scene-wrapper {
                     text-align: center;
                     position: absolute;
                     left: 15%;
-                    top: -2%;
+                    top: -5%;
                     line-height: 1em;
                     p {
                         font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;

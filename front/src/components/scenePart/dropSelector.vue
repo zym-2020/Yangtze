@@ -8,7 +8,9 @@
           <label>
             <input
               type="checkbox"
-              funcId="{{ com.funcId }}"
+              :value="com.name"
+              v-model="checkedComs"
+              @change="selectCom"
             /><span>{{ com.name }}</span>
           </label>
         </li>
@@ -38,6 +40,14 @@ const comIndex = ref(props.selectorId);
 
 const componentInfo = ref(commponentOpt[+comIndex.value]);
 
+const checkedComs = ref<string[]>([]);
+
+const emit = defineEmits(['changeCom']);
+
+const selectCom = function() {
+  emit('changeCom', checkedComs.value);
+};
+
 
 </script>
 
@@ -61,10 +71,10 @@ form {
     display: block;
     position: relative;
     line-height: 35px;
-    border: 1px solid #ddd;
     margin: 0 0 50px;
     padding: 0;
     border-radius: 1em;
+    backdrop-filter: blur(5px);
 
     label {
       margin: 0;
@@ -79,6 +89,8 @@ form {
         width: auto;
         line-height: 3.6vh;
         cursor: pointer;
+        border-radius: 1em;
+        box-shadow: 0.2em 0.2em 0.2em rgb(51, 51, 51);
         &:after {
           clear: both;
           display: block;
@@ -136,7 +148,6 @@ form {
             position: absolute;
             right: 10px;
             z-index: 99;
-            border-radius: 1ems;
           }
           &:hover {
             background: rgba(214, 214, 214, 0.5);
@@ -177,9 +188,11 @@ form {
               height: 2.4em;
               position: inherit;
               top: 0;
-              border-top: 1px solid #ddd;
+              border: none;
               line-height: 2.4em;
-              border-radius: 1em;
+              border-radius: 0.3em;
+              box-shadow: 0.2em 0.2em 0.2em rgb(51, 51, 51);
+              backdrop-filter: blur(5px);
 
               &:before {
                 content: "\2A09";
