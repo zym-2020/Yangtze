@@ -27,4 +27,5 @@ public class File {
     String uploader;
     String meta;
     boolean folder;
+    String size;
 }

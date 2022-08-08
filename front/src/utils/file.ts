@@ -2,7 +2,10 @@ import SparkMD5 from 'spark-md5'
 import { getToken } from './auth'
 import axios from 'axios';
 import { checkMergeState } from '@/api/request'
+import { useStore } from '@/store';
+import { notice } from './notice';
 
+const store = useStore()
 export function getFileMd5(file: File, callback: (f: string) => void) {
 
     const chunkSize = 5242880
@@ -46,11 +49,12 @@ export function createFileChunk(file: File) {
     return fileChunkList
 }
 
-export async function handlePostFiles(chunkList: string[], fileChunk: { file: Blob }[], MD5: string) {
+export async function handlePostFiles(chunkList: string[], fileChunk: { file: Blob }[], MD5: string, id: string, fileName: string) {
     return new Promise((res, rej) => {
         const totalChunks = chunkList.length
         let successCount = 0
         const handle = () => {
+            const store = useStore()
             if (chunkList.length) {
                 const name = chunkList.shift()
                 const token = getToken()
@@ -65,6 +69,7 @@ export async function handlePostFiles(chunkList: string[], fileChunk: { file: Bl
                 }).then(response => {
                     if (response.status === 200 && response.data.code === 0) {
                         successCount++
+                        store.commit("SET_UPLOAD_ITEM", {id: id, name: fileName, state: 2, progress: Math.ceil((fileChunk.length - chunkList.length) / fileChunk.length * 100)})
                         handle()
                     } else {
                         successCount++
@@ -87,19 +92,34 @@ export async function handlePostFiles(chunkList: string[], fileChunk: { file: Bl
     })
 }
 
-export function checkStatus(key: string) {
-    function handle() {
-        return new Promise(async (res, rej) => {
-            res(await checkMerge(key))
-        }).then((response) => {
-            if (response === 0) {
-                setTimeout(() => {
-                    handle()
-                }, 2000)
+export async function checkStatus(key: string, id: string, callback: () => void) {
+    async function handle() {
+        const store = useStore()
+        const response = await new Promise(async (res, rej) => {
+            res(await checkMerge(key));
+        });
+        if (response === 0) {
+            let result
+            setTimeout(async () => {
+                result = await handle();
+            }, 2000);
+            return result
+        } else {
+            for (let i = 0; i < store.state.other.uploadList.length; i++) {
+                if (store.state.other.uploadList[i].id === id) {
+                    const temp = store.state.other.uploadList[i]
+                    store.commit("REMOVE_UPLOAD_ITEM", i)
+                    store.commit("ADD_UPLOADED_ITEM", { id: temp.id, name: temp.name, state: response as number })
+                    store.commit("SET_UPLOAD_DOT_FLAG", true)
+
+                    callback()
+                    break
+                }
             }
-        })
+            return response
+        }
     }
-    handle()
+    return await handle()
 }
 
 export async function checkMerge(key: string) {

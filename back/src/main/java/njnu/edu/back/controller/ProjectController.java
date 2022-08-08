@@ -94,9 +94,12 @@ public class ProjectController {
     }
 
     @AuthCheck
-    @RequestMapping(value = "/getProjects/{size}/{page}", method = RequestMethod.GET)
-    public JsonResult getProjects(@PathVariable int size, @PathVariable int page) {
-        return ResultUtils.success(projectService.pageQuery(size, page));
+    @RequestMapping(value = "/getProjects", method = RequestMethod.POST)
+    public JsonResult getProjects(@RequestBody JSONObject jsonObject) {
+        int size = jsonObject.getInt("size");
+        int page = jsonObject.getInt("page");
+        String keyWord = jsonObject.getStr("keyWord");
+        return ResultUtils.success(projectService.pageQuery(size, page, keyWord));
     }
 
     @AuthCheck

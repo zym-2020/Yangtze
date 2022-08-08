@@ -24,4 +24,5 @@ public class AddFileDTO {
     String uploader;
     String meta;
     boolean folder;
+    String size;
 }

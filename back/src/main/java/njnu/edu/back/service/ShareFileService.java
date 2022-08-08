@@ -16,13 +16,17 @@ import java.util.Map;
  * @Description:
  */
 public interface ShareFileService {
-    void addShareFile(JSONObject jsonObject, String email, MultipartFile file);
+    Map<String, Object> addShareFile(JSONObject jsonObject, String email, MultipartFile file);
 
     Map<String, Object> pageQueryByAdmin(int page, int size, String property, boolean flag, String keyWord);
 
     Map<String, Object> fuzzyQueryClassify(int page, int size, String property, boolean flag, String keyWord, String[] tags);
 
     Map<String, Object> getFileInfoAndMeta(String id);
+
+    Map<String, Object> getFileInfoAndMetaAndUserInfo(String id);
+
+    Map<String, Object> pageQueryByEmail(String email, int page, int size);
 
     void addWatchCount(String id, String userId, String ip);
 
@@ -35,4 +39,15 @@ public interface ShareFileService {
     List<Map<String, Object>> deleteShareFileById(int page, int size, String property, String keyWord, String id);
 
     void updateStatusById(String id, int status);
+
+    void offlineById(String id);
+
+    void examineById(String id);
+
+    void onlineById(String id);
+
+    List<ShareFile> deleteShareFileAsMember(String id, int size, int page, String email);
+
+
+    Map<String, Object> getShareFileById(String id);
 }

@@ -24,4 +24,9 @@ public class FileMetaServiceImpl implements FileMetaService {
     public Map<String, Object> getFileMetaById(String id) {
         return fileMetaMapper.getFileMetaById(id);
     }
+
+    @Override
+    public Map<String, Object> getFileMetaAndUserInfo(String id, String email) {
+        return fileMetaMapper.getFileMetaAndUserInfo(id, email);
+    }
 }

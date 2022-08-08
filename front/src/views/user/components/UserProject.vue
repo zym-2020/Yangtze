@@ -1,6 +1,6 @@
 <template>
   <div class="project-main">
-    <el-scrollbar height="80vh" :always="false">
+    <el-scrollbar height="80vh" :always="false" v-if="data.length > 0">
       <div style="padding: 0 10px">
         <el-row :gutter="20">
           <el-col :span="6" v-for="(item, index) in data" :key="index">
@@ -29,6 +29,7 @@
         </el-row>
       </div>
     </el-scrollbar>
+    <el-empty description="暂无数据" v-else/>
   </div>
 </template>
 

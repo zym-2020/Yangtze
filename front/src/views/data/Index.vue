@@ -8,12 +8,16 @@
             <div class="title">
               <strong>类别</strong>
             </div>
-            <data-collapse @selectList="getSelectList"></data-collapse>
+            <data-collapse @selectList="getSelectList" ></data-collapse>
           </div>
         </div>
         <div class="right">
           <div class="list">
-            <el-input v-model="input" placeholder="请输入关键字" @keyup.enter="search">
+            <el-input
+              v-model="input"
+              placeholder="请输入关键字"
+              @keyup.enter="search"
+            >
               <template #append>
                 <el-button @click="search"
                   ><el-icon><Search /></el-icon
@@ -38,12 +42,17 @@
               </div>
             </div>
             <el-divider />
-            <div v-for="(item, index) in fileList" :key="index">
-              <data-card
-                :fileInfo="item"
-                class="card"
-                @clickName="toDetail(index)"
-              ></data-card>
+            <div v-if="skeletonFlag">
+              <div v-for="(item, index) in fileList" :key="index">
+                <data-card
+                  :fileInfo="item"
+                  class="card"
+                  @clickName="toDetail(index)"
+                ></data-card>
+              </div>
+            </div>
+            <div v-else>
+              <el-skeleton :rows="5" animated v-for="item in 3" :key="item" />
             </div>
 
             <div class="pagination">
@@ -80,6 +89,7 @@ export default defineComponent({
     DataCard,
   },
   setup() {
+    const skeletonFlag = ref(false)
     const input = ref("");
     const keyWord = ref("");
     const selectValue = ref("download");
@@ -242,6 +252,7 @@ export default defineComponent({
         flag: false,
         keyWord: keyWord.value,
       });
+      skeletonFlag.value = true
       if (data != null) {
         if ((data as any).code === 0) {
           fileList.value = data.data.list;
@@ -251,6 +262,7 @@ export default defineComponent({
     });
 
     return {
+      skeletonFlag,
       input,
       options,
       selectValue,
@@ -307,6 +319,7 @@ export default defineComponent({
               top: 20px;
             }
           }
+          
         }
         .card {
           cursor: pointer;

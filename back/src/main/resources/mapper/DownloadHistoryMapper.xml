@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="njnu.edu.back.dao.DownloadHistoryMapper">
+    <resultMap id="DownloadHistoryResultMap" type="njnu.edu.back.pojo.DownloadHistory">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="download_time" property="downloadTime"/>
+        <result column="ip" property="ip"/>
+        <result column="data_id" property="dataId"/>
+        <result column="data_type" property="dataType"/>
+    </resultMap>
     <insert id="addHistory" parameterType="njnu.edu.back.pojo.DownloadHistory">
         insert into download_history values(default, #{userId}, now(), #{ip}, #{dataId}, #{dataType});
     </insert>
 
     <select id="pageQuery" resultType="java.util.HashMap">
         select download_history.*, users.name, users.avatar from download_history, users where download_history.data_id = #{dataId} and user_id::uuid = users.id order by download_time desc limit #{size} offset #{start};
+    </select>
+
+    <select id="countByDataId" resultType="java.lang.Integer">
+        select count(*) from download_history where data_id = #{dataId};
     </select>
 </mapper>

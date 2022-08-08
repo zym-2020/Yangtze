@@ -1,11 +1,13 @@
 package njnu.edu.back.common.utils;
 
+import cn.hutool.json.JSONObject;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +47,7 @@ public class LocalUploadUtil {
         String path = dir + "\\temp\\" + MD5;
         File file = new File(path);
         if(!file.exists()) {
-            file.mkdir();
+            file.mkdirs();
         }
         InputStream ins = null;
         FileOutputStream outs = null;
@@ -125,7 +127,7 @@ public class LocalUploadUtil {
         }
     }
 
-    public static boolean DeleteFolder(String path) {
+    public static boolean deleteFolder(String path) {
         File file = new File(path);
         if(!file.exists()) {
             return false;
@@ -206,6 +208,37 @@ public class LocalUploadUtil {
                 throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
             }
         }
+    }
+
+    /**
+    * @Description:注册新用户时给新用户生成文件目录
+    * @Author: Yiming
+    * @Date: 2022/5/28
+    */
+
+    public static void createUserFolder(String basePath, String email) {
+        new File(basePath + email + "/projects").mkdirs();
+        new File(basePath + email + "/temp").mkdirs();
+        new File(basePath + email + "/upload").mkdirs();
+    }
+
+    public static String getFileSize(long number) {
+        String msg = "";
+        DecimalFormat decimalFormat= new  DecimalFormat( "0.00" );
+        if (number < 1048576) {
+            msg = decimalFormat.format((double) number / 1024) + " KB";
+        } else if (number == 1048576) {
+            msg = "1 MB";
+        } else if (number > 1048576 && number < 1073741824) {
+            msg = decimalFormat.format((double) number / (1024 * 1024)) + " MB";
+        } else if (number > 1048576 && number == 1073741824) {
+            msg = "1 GB";
+        } else if (number > 1073741824 && number < 1099511627776l) {
+            msg = decimalFormat.format((double) number / (1024 * 1024 * 1024)) + " GB";
+        } else {
+            msg = "文件超过1 TB";
+        }
+        return msg;
     }
 
 }

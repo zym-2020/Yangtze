@@ -23,7 +23,7 @@
         <result column="column" property="column"/>
     </resultMap>
     <insert id="addShareFile" parameterType="njnu.edu.back.pojo.ShareFile">
-        insert into share_files values(default, #{name}, #{description}, #{originAddress}, #{visualSource}, #{visualType}, #{structuredSource}, #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}, #{creator}, now(), #{meta}, #{download}, #{watch}, now(), #{avatar}, #{originName}, #{structuredName}, #{visualName}, #{status});
+        insert into share_files values(#{id}::uuid, #{name}, #{description}, #{originAddress}, #{visualSource}, #{visualType}, #{structuredSource}, #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}, #{creator}, now(), #{meta}, #{download}, #{watch}, now(), #{avatar}, #{originName}, #{structuredName}, #{visualName}, #{status});
     </insert>
 
     <select id="pageQueryByAdminDESC" resultType="java.util.HashMap">
@@ -39,7 +39,7 @@
     </select>
 
     <select id="fuzzyQueryASC" resultMap="ShareFileResultMap">
-        select * from share_files where name like #{keyWord} and status = 1order by ${property} asc limit #{size} offset #{start};
+        select * from share_files where name like #{keyWord} and status = 1 order by ${property} asc limit #{size} offset #{start};
     </select>
 
     <select id="fuzzyQueryClassifyDESC" resultMap="ShareFileResultMap">
@@ -60,6 +60,10 @@
         limit #{size} offset #{start};
     </select>
 
+    <select id="pageQueryByEmail" resultMap="ShareFileResultMap">
+        select * from share_files where (status = 1 or status = -1) and creator = #{email} order by update_time asc limit #{size} offset #{start};
+    </select>
+
     <select id="countFuzzyQuery" resultType="java.lang.Integer">
         select count(*) from share_files where name like #{keyWord} and status = 1;
     </select>
@@ -70,9 +74,13 @@
 
     <select id="countFuzzyQueryClassify" resultType="java.lang.Integer">
         select count(*) from (
-                             select * from share_files where tags @> #{tags}::text[] and status = 1;
+                             select * from share_files where tags @> #{tags}::text[] and status = 1
                                  ) as t
         where t.name like #{keyWord};
+    </select>
+
+    <select id="countPageQueryByEmail" resultType="java.lang.Integer">
+        select count(*) from share_files where status = 1 and creator = #{email};
     </select>
 
     <select id="getShareFileById" resultMap="ShareFileResultMap">
@@ -127,11 +135,30 @@
         delete from share_files where id::text = #{id};
         delete from browse_history where data_id = #{id};
         delete from download_history where data_id = #{id};
-        select share_files.*, users.name as "userName", users.avatar as "userAvatar" from users, share_files where share_files.name like #{keyWord} and users.email = share_files.creator order by ${property} desc limit #{size} offset #{start};
+        select share_files.*, users.name as "userName", users.avatar as "userAvatar" from users, share_files where share_files.name like #{keyWord} and users.email = share_files.creator and status != 0 order by ${property} desc limit #{size} offset #{start};
     </select>
 
     <update id="updateStatusById">
         update share_files set status = #{status} where id::text = #{id};
     </update>
 
+    <update id="offlineById">
+        update share_files set status = -1 where id::text = #{id};
+    </update>
+
+    <update id="examineById">
+        update share_files set status = 0 where id::text = #{id};
+    </update>
+
+    <update id="onlineById">
+        update share_files set status = 1 where id::text = #{id};
+    </update>
+
+    <select id="deleteShareFileAsMember" resultMap="ShareFileResultMap">
+        delete from file_meta where id::text = (select meta from share_files where id::text = #{id});
+        delete from share_files where id::text = #{id};
+        delete from browse_history where data_id = #{id};
+        delete from download_history where data_id = #{id};
+        select * from share_files where (status = 1 or status = -1) and creator = #{email} order by update_time asc limit #{size} offset #{start};
+    </select>
 </mapper>

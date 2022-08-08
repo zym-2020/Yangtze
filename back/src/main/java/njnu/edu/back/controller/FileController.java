@@ -29,8 +29,7 @@ public class FileController {
     @AuthCheck
     @RequestMapping(value = "/addFile", method = RequestMethod.POST)
     public JsonResult addFile(@RequestBody AddFileDTO addFileDTO, @JwtTokenParser("email") String email) {
-        fileService.addFile(addFileDTO, email);
-        return ResultUtils.success();
+        return ResultUtils.success(fileService.addFile(addFileDTO, email));
     }
 
     @AuthCheck
@@ -41,14 +40,17 @@ public class FileController {
 
     @AuthCheck
     @RequestMapping(value = "/findByParentId/{parentId}", method = RequestMethod.GET)
-    public JsonResult findByParentId(@PathVariable String parentId) {
-        return ResultUtils.success(fileService.findByParentId(parentId));
+    public JsonResult findByParentId(@PathVariable String parentId, @JwtTokenParser("email") String email) {
+        return ResultUtils.success(fileService.findByParentId(parentId, email));
     }
 
     @AuthCheck
-    @RequestMapping(value = "/getNoUpload/{MD5}/{total}", method = RequestMethod.GET)
-    public JsonResult getNoUpload(@PathVariable String MD5, @JwtTokenParser("email") String email, @PathVariable int total) {
-        return ResultUtils.success(fileService.getNoUpload(MD5, email, total));
+    @RequestMapping(value = "/getNoUpload", method = RequestMethod.POST)
+    public JsonResult getNoUpload(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
+        String MD5 = jsonObject.getStr("MD5");
+        int total = jsonObject.getInt("total");
+        JSONObject metaData = jsonObject.getJSONObject("meta");
+        return ResultUtils.success(fileService.getNoUpload(MD5, email, total, metaData));
     }
 
     @AuthCheck
@@ -59,9 +61,9 @@ public class FileController {
     }
 
     @AuthCheck
-    @RequestMapping(value = "/mergeFile", method = RequestMethod.POST)
-    public JsonResult mergeFile(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
-        return ResultUtils.success(fileService.mergeFile(email, jsonObject.getStr("MD5"), jsonObject.getStr("type"), jsonObject.getStr("name"), jsonObject.getInt("total"), jsonObject.getInt("level"), jsonObject.getStr("parentId"), jsonObject.getStr("meta")));
+    @RequestMapping(value = "/mergeFile/{MD5}/{uuid}", method = RequestMethod.POST)
+    public JsonResult mergeFile(@PathVariable String MD5, @PathVariable String uuid, @JwtTokenParser("email") String email) {
+        return ResultUtils.success(fileService.mergeFile(email, MD5, uuid));
     }
 
     @AuthCheck
@@ -78,9 +80,9 @@ public class FileController {
     }
 
     @AuthCheck
-    @RequestMapping(value = "/deleteFile/{id}", method = RequestMethod.DELETE)
-    public JsonResult deleteFile(@PathVariable String id) {
-        fileService.deleteFile(id);
+    @RequestMapping(value = "/deleteFilesOrFolders", method = RequestMethod.DELETE)
+    public JsonResult deleteFilesOrFolders(@RequestBody JSONObject jsonObject) {
+        fileService.deleteFilesOrFolders(jsonObject);
         return ResultUtils.success();
     }
 
@@ -91,9 +93,33 @@ public class FileController {
     }
 
     @AuthCheck
-    @RequestMapping(value = "/deleteFolder/{id}", method = RequestMethod.DELETE)
-    public JsonResult deleteFolder(@PathVariable String id) {
-        fileService.deleteFolder(id);
+    @RequestMapping(value = "/unPack", method = RequestMethod.POST)
+    public JsonResult unPack(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
+        String id = jsonObject.getStr("id");
+        String parentId = jsonObject.getStr("parentId");
+        int level = jsonObject.getInt("level");
+        fileService.unPack(id, parentId, level, email);
+        return ResultUtils.success();
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/getTree", method = RequestMethod.GET)
+    public JsonResult getTree(@JwtTokenParser("email") String email) {
+        return ResultUtils.success(fileService.getFolderTree(email));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/updateParentIdAndLevel", method = RequestMethod.POST)
+    public JsonResult updateParentIdAndLevel(@RequestBody JSONObject jsonObject) {
+
+        fileService.updateParentIdAndLevel(jsonObject);
+        return ResultUtils.success();
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/compressFile", method = RequestMethod.POST)
+    public JsonResult compressFile(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
+        fileService.compressFile(jsonObject, email);
         return ResultUtils.success();
     }
 }

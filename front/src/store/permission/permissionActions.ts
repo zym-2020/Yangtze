@@ -16,6 +16,7 @@ export type Actions = {
 
 export const permissionActions: ActionTree<PermissionState, RootState> & Actions = {
     generateRoutes({ commit }: AugmentedActionContext, roles: string[]) {
+        const temp = JSON.parse(JSON.stringify(asyncRouters))
         const result = filterAsyncRoutes(asyncRouters, roles)
         commit('SET_ROUTERS', result)
     },
@@ -27,23 +28,25 @@ export const permissionActions: ActionTree<PermissionState, RootState> & Actions
 const filterAsyncRoutes = (asyncRouters: RouteRecordRaw[], roles: string[]) => {
     const result: RouteRecordRaw[] = []
     asyncRouters.forEach(item => {
-        if(hasPermission(item, roles)) {
-            if(item.children) {
-                item.children = filterAsyncRoutes(item.children, roles)
+        const r = { ...item }
+        if(hasPermission(r, roles)) {
+            if(r.children) {
+                r.children = filterAsyncRoutes(r.children, roles)
             }
-            result.push(item)
+            result.push(r)
         }
     })
     return result
 }
 
 const hasPermission = function (router: RouteRecordRaw, roles: string[]) {
-    if (router.meta && router.meta.roles) {
+    if (router.meta != undefined && router.meta.roles != undefined) {
         return roles.some(role => {
             if (router.meta?.roles != undefined) {
                 return (router.meta.roles as string[]).includes(role)
             }
         })
+
     } else {
         return true
     }

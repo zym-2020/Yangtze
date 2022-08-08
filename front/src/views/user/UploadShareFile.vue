@@ -184,21 +184,29 @@ import {
   shallowRef,
   onBeforeUnmount,
   onMounted,
+  computed,
 } from "vue";
 import "@wangeditor/editor/dist/css/style.css"; // 引入 css
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
 import { IDomEditor } from "@wangeditor/editor";
 import PageHeader from "@/components/page/PageHeader.vue";
 import ResourceDialog from "@/components/dialog/ResourceDialog.vue";
-import { addShareFile } from "@/api/request";
+import {
+  addShareFile,
+  addMessage,
+  examineById,
+  getShareFileById,
+} from "@/api/request";
 import { notice } from "@/utils/notice";
 import type { FormInstance } from "element-plus";
 import AvatarUpload from "@/components/upload/AvatarUpload.vue";
 import router from "@/router";
+import { useStore } from "@/store";
 
 export default defineComponent({
   components: { PageHeader, Editor, Toolbar, ResourceDialog, AvatarUpload },
   setup() {
+    const store = useStore();
     const defaultProps = {
       children: "children",
       label: "label",
@@ -207,6 +215,8 @@ export default defineComponent({
     const resourceType = ref("");
     const editorRef = shallowRef<IDomEditor>();
     const toolbarConfig = {};
+    const fileList = ref<any[]>([]);
+    const tempCache = ref<any[]>([]);
     const editorConfig = {
       scroll: true,
       autoFocus: true,
@@ -214,6 +224,7 @@ export default defineComponent({
 
     const fileRef = ref<HTMLElement>();
     const metaRef = ref<HTMLElement>();
+    const avatarFlag = ref(false);
 
     const handleCreated = (editor: any) => {
       editorRef.value = editor; // 记录 editor 实例，重要！
@@ -259,9 +270,9 @@ export default defineComponent({
     };
 
     const upload = (val: any) => {
-      console.log(val)
-      form.avatar  = val
-    }
+      avatarFlag.value = true;
+      form.avatar = val;
+    };
 
     const commit = async (
       formEl1: FormInstance | undefined,
@@ -287,22 +298,50 @@ export default defineComponent({
                 name: form.name,
                 description: form.description,
                 originAddress: form.origin.address,
+                originName: form.origin.name,
                 visualSource: "",
                 visualType: "",
+                visualName: "",
                 structuredSource: "",
+                structuredName: "",
                 tags: form.tagList,
               },
             };
-            const formData = new FormData()
-            formData.append("jsonString", JSON.stringify(jsonData))
-            formData.append("file", form.avatar)
+            const formData = new FormData();
+            formData.append("jsonString", JSON.stringify(jsonData));
+            if (avatarFlag.value) {
+              formData.append("file", form.avatar);
+            } else {
+              formData.append("file", new Blob());
+            }
+
             const data = await addShareFile(formData);
             if (data != null) {
               if ((data as any).code === 0) {
-                notice("success", "成功", "公布成功!");
+                notice("success", "成功", "请等待管理员审核通过！");
+                const fileID = data.data.list.value;
+                const dataCacheById = await getShareFileById(fileID.value);
+                tempCache.value = dataCacheById.data.list;
+                const jsonDataById = computed(() => {
+                  return JSON.stringify(tempCache.value as any);
+                });            
+                const tempData = await addMessage({
+                  id: "",
+                  dataName: form.name,
+                  dataUploadTime: "",
+                  dataExamineTime: "2012-02-25",
+                  dataCache: jsonDataById.value,
+                  messageRequest: "fff",
+                  reply: false,
+                  fileId: fileID.value,
+                  messageSender: "fgz",
+                  messageReceiver: " ",
+                  messageResponse: "examine",
+                  messageType: "upload",
+                  replyUser: false,
+                });
+                await examineById(fileID.value);
                 init();
-              } else if ((data as any).code === -99) {
-                notice("warning", "警告", "您没有权限！");
               } else {
                 notice("error", "错误", "数据公布错误!");
               }
@@ -351,7 +390,15 @@ export default defineComponent({
       },
       {
         label: "基础数据",
-        options: ["水文参数数据", "三维点数据", "流场数据", "工程数据", "数模数据", "物模数据", "影像数据"],
+        options: [
+          "水文参数数据",
+          "三维点数据",
+          "流场数据",
+          "工程数据",
+          "数模数据",
+          "物模数据",
+          "影像数据",
+        ],
       },
       {
         label: "辅助数据",
@@ -359,24 +406,24 @@ export default defineComponent({
       },
       {
         label: "工程实施数据",
-        options: ["工程前数据", "工程后数据"]
+        options: ["工程前数据", "工程后数据"],
       },
       {
         label: "处理数据",
-        options: ["原始数据", "整合数据"]
+        options: ["原始数据", "整合数据"],
       },
       {
         label: "辅助数据",
-        options: ["PPT", "PDF", "DOC", "XLS"]
+        options: ["PPT", "PDF", "DOC", "XLS"],
       },
       {
         label: "数据库数据",
-        options: ["水文Access数据库"]
+        options: ["水文Access数据库"],
       },
       {
         label: "资源类型",
-        options: ["excel"]
-      }
+        options: ["excel"],
+      },
     ]);
 
     const form = reactive({
@@ -395,7 +442,7 @@ export default defineComponent({
         name: "",
         address: "",
       },
-      avatar: ''
+      avatar: "",
     });
 
     const metaForm = reactive({
@@ -443,11 +490,16 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      if(router.currentRoute.value.params.originFileAddress != undefined && router.currentRoute.value.params.originFileName != undefined) {
-        form.origin.name = router.currentRoute.value.params.originFileName as string
-        form.origin.address = router.currentRoute.value.params.originFileAddress as string
+      if (
+        router.currentRoute.value.params.originFileAddress != undefined &&
+        router.currentRoute.value.params.originFileName != undefined
+      ) {
+        form.origin.name = router.currentRoute.value.params
+          .originFileName as string;
+        form.origin.address = router.currentRoute.value.params
+          .originFileAddress as string;
       }
-    })
+    });
 
     return {
       form,
@@ -468,7 +520,7 @@ export default defineComponent({
       metaRules,
       fileRef,
       metaRef,
-      upload
+      upload,
     };
   },
 });

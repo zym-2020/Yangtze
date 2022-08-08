@@ -14,7 +14,7 @@
         <el-button size="small" @click="dialogCreateFolder = true"
           >创建文件夹</el-button
         >
-        <el-button size="small">刷新</el-button>
+        <el-button size="small" @click="flushed">刷新</el-button>
         <el-button type="info" size="small" @click="dialogUpload = true"
           >上传</el-button
         >
@@ -27,6 +27,7 @@
       :default-sort="{ prop: 'name', order: 'ascending' }"
       @row-contextmenu="contextMenuClick"
       @cell-dblclick="dblclick"
+      @selection-change="handleChange"
       highlight-current-row
       class="table"
     >
@@ -49,11 +50,7 @@
           <div style="display: flex; align-items: center" v-else>
             <svg style="width: 20px; height: 20px" @click="open">
               <use
-                :xlink:href="
-                  scope.row.folder === true
-                    ? '#icon-wenjianjia'
-                    : '#icon-wenjian'
-                "
+                :xlink:href="getIcon(scope.row.folder, scope.row.name)"
               ></use>
             </svg>
             <span style="margin-left: 10px">{{ scope.row.name }}</span>
@@ -96,50 +93,77 @@
       <upload-dialog
         :level="level"
         :parentId="path.length > 0 ? path[path.length - 1].id : '-1'"
+        @commitFile="dialogUpload = false"
       ></upload-dialog>
+    </el-dialog>
+
+    <el-dialog v-model="moveFlag" width="500px" :show-close="false">
+      <move-dialog
+        :moveItemList="moveItemList"
+        @moveResult="moveResult"
+      ></move-dialog>
     </el-dialog>
 
     <user-folder-context-menu
       class="user-folder-context-menu"
       v-show="folderFlag"
       :contextMenuInstance="contextMenuInstance"
+      :selectList="selectTables"
       @delSuccess="delSuccess"
       @rename="contextRename"
+      @unPack="contextUnpack"
+      @move="move"
     ></user-folder-context-menu>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, nextTick, onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import UserFolderContextMenu from "@/components/contextMenu/UserFolderContextMenu.vue";
 import UploadDialog from "./UploadDialog.vue";
 import FolderDialog from "./FolderDialog.vue";
 import { findByLevel, addFile, findByParentId, rename } from "@/api/request";
-import { dateFormat, uuid } from "@/utils/common";
+import { dateFormat } from "@/utils/common";
 import { notice } from "@/utils/notice";
+import MoveDialog from "./MoveDialog.vue";
+import NProgress from "nprogress";
+
+NProgress.configure({ showSpinner: false });
 export default defineComponent({
   components: {
     UserFolderContextMenu,
     UploadDialog,
     FolderDialog,
+    MoveDialog,
   },
   setup() {
     const folderFlag = ref(false);
+    const moveFlag = ref(false);
     const renameId = ref("");
     const tableData = ref<any[]>([]);
     const path = ref<{ name: string; parentId: string; id: string }[]>([]);
     const dialogUpload = ref(false);
     const dialogCreateFolder = ref(false);
     const level = ref(0);
-    const contextMenuInstance = ref({});
+    const contextMenuInstance = ref<any>({});
+    const moveItemList = ref<any[]>([]);
+    const selectTables = ref<any[]>([]);
     const renameValue = ref("");
+
     let oldName = "";
 
     const contextMenuClick = (row: any, column: any, event: any) => {
       event.preventDefault();
       folderFlag.value = false;
       folderFlag.value = true;
+
       contextMenuInstance.value = row;
+      if(path.value.length > 0) {
+        contextMenuInstance.value.parentName = path.value[path.value.length - 1].name
+      } else {
+        contextMenuInstance.value.parentName = 'user'
+      }
+
       const menu: any = document.querySelector(".user-folder-context-menu");
       const table = document.querySelector(".el-tabs__content") as HTMLElement;
       if (
@@ -172,29 +196,58 @@ export default defineComponent({
       document.addEventListener("click", closeMenu);
     };
 
+    const getIcon = (folder: boolean, fileName: string) => {
+      if (folder) {
+        return "#icon-wenjianjia";
+      } else {
+        const fileExtName = fileName.substring(
+          fileName.lastIndexOf("."),
+          fileName.length
+        );
+        if (
+          fileExtName === ".zip" ||
+          fileExtName === ".7z" ||
+          fileExtName === ".tar" ||
+          fileExtName === ".rar"
+        ) {
+          return "#icon-zip";
+        } else {
+          return "#icon-wenjian";
+        }
+      }
+    };
+
     const dblclick = async (row: any) => {
       if (row.folder) {
+        NProgress.start();
         const dataList = await findByParentId(row.id);
-        tableData.value = dataList.data;
-        path.value.push({
-          name: row.name,
-          parentId: row.parent_id,
-          id: row.id,
-        });
-        level.value = level.value + 1;
+        if (dataList != null) {
+          if ((dataList as any).code === 0) {
+            tableData.value = dataList.data;
+            path.value.push({
+              name: row.name,
+              parentId: row.parent_id,
+              id: row.id,
+            });
+            level.value = level.value + 1;
+          }
+        }
+        NProgress.done();
       }
     };
 
     const backClick = async () => {
       if (path.value.length > 0) {
+        NProgress.start();
         const dataList = await findByParentId(
           path.value[path.value.length - 1].parentId
         );
-        if (dataList != null) {
+        if (dataList != null && (dataList as any).code === 0) {
           tableData.value = dataList.data;
           path.value.pop();
           level.value = level.value - 1;
         }
+        NProgress.done();
       }
     };
 
@@ -202,9 +255,14 @@ export default defineComponent({
       return dateFormat(time, "yyyy-MM-dd");
     };
 
+    const handleChange = (selection: any) => {
+      console.log(selection);
+      selectTables.value = selection;
+    };
+
     const createFolder = async (val: string) => {
       const data = await addFile({
-        id: uuid(),
+        id: "",
         name: val,
         address: "",
         fileName: "",
@@ -215,11 +273,12 @@ export default defineComponent({
         folder: true,
       });
       dialogCreateFolder.value = false;
-      if ((data as any).code === 0) {
+      if (data != null && (data as any).code === 0) {
         tableData.value.push({
+          id: data.data,
           name: val,
           level: level.value,
-          parentId:
+          parent_id:
             path.value.length > 0 ? path.value[path.value.length - 1].id : "-1",
           folder: true,
           create_time: date(new Date().toString()),
@@ -229,13 +288,16 @@ export default defineComponent({
       }
     };
 
-    const delSuccess = () => {
+    const delSuccess = (val: any[]) => {
       tableData.value.forEach((item, index) => {
-        if (item.id === (contextMenuInstance.value as any).id) {
-          tableData.value.splice(index, 1);
+        for (let i = 0; i < val.length; i++) {
+          if (item.id === val[i]) {
+            tableData.value.splice(index, 1);
+          }
         }
       });
     };
+
     const contextRename = () => {
       renameId.value = (contextMenuInstance.value as any).id;
       renameValue.value = (contextMenuInstance.value as any).name;
@@ -264,9 +326,46 @@ export default defineComponent({
       renameId.value = "";
     };
 
+    const flushed = async () => {
+      NProgress.start();
+      let id = "";
+      if (path.value.length === 0) {
+        id = "-1";
+      } else {
+        id = path.value[path.value.length - 1].id;
+      }
+      const data = await findByParentId(id);
+      if (data != null) {
+        if ((data as any).code === 0) {
+          tableData.value = data.data;
+        }
+      }
+      NProgress.done();
+    };
+
+    const contextUnpack = async () => {
+      await flushed();
+    };
+
+    const move = () => {
+      if (selectTables.value.length > 0) {
+        moveItemList.value = selectTables.value;
+      } else {
+        moveItemList.value.push(contextMenuInstance.value);
+      }
+      moveFlag.value = true;
+    };
+
+    const moveResult = async (val: string) => {
+      if (val === "success") {
+        await flushed();
+      }
+      moveFlag.value = false;
+    };
+
     onMounted(async () => {
       const tableList = await findByLevel(level.value);
-      if (tableList != null) {
+      if (tableList != null && (tableList as any).code === 0) {
         tableData.value = tableList.data;
       }
     });
@@ -290,6 +389,15 @@ export default defineComponent({
       renameValue,
       blurHandle,
       enterHandle,
+      getIcon,
+      flushed,
+      contextUnpack,
+      move,
+      moveFlag,
+      moveResult,
+      handleChange,
+      moveItemList,
+      selectTables,
     };
   },
 });

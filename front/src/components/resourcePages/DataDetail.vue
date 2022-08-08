@@ -160,15 +160,15 @@
           </div>
           <div class="creator">
             <el-avatar
-              src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
+              :src="avatarUrl"
             />
-            <div class="name">zym</div>
+            <div class="name">{{fileMeta.name}}</div>
           </div>
           <el-divider content-position="left"
             >{{ date(fileInfo.createTime) }} 创建</el-divider
           >
         </div>
-        <div class="history">
+        <!-- <div class="history">
           <div class="divider">
             <div class="mark"></div>
             <div class="text"><strong>修改历史</strong></div>
@@ -180,7 +180,7 @@
             更新次数：11
             <span style="color: #94bddb; cursor: pointer">查看</span>
           </div>
-        </div>
+        </div> -->
         <div class="explain">
           <div class="divider">
             <div class="mark"></div>
@@ -238,6 +238,10 @@ export default defineComponent({
       return props.fileMeta;
     });
 
+    const avatarUrl = computed(() => {
+      return (props.fileMeta as any).avatar === '' ? 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png' : 'http://localhost:8002' + (props.fileMeta as any).avatar
+    })
+
     const avatar = computed(() => {
       if (
         (props.fileInfo as any).avatar != "" &&
@@ -270,7 +274,8 @@ export default defineComponent({
       fileMeta,
       date,
       avatar,
-      downloadOrigin
+      downloadOrigin,
+      avatarUrl
     };
   },
 });

@@ -28,9 +28,9 @@ public interface ProjectMapper {
 
     String getResultByEmailAndProjectName(@Param("email") String email, @Param("projectName") String projectName);
 
-    List<Map<String, Object>> pageQuery(@Param("size") int size, @Param("start") int start);
+    List<Map<String, Object>> pageQuery(@Param("size") int size, @Param("start") int start, @Param("keyWord") String keyWord);
 
     Map<String, Object> findProjectById(@Param("id") String id);
 
-    int countAll();
+    int countAll(@Param("keyWord") String keyWord);
 }

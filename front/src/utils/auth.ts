@@ -1,5 +1,6 @@
 import { resetRouter } from "@/router"
 import { useStore } from "@/store"
+import router from '@/router'
 
 
 
@@ -25,6 +26,7 @@ export function hasPermission(roles: string[], routeRoles: string[]): boolean {
     }
     return false
 }
+
 
 //清空路由
 export function clearRouter() {

@@ -1,3 +1,4 @@
+import internal from "stream"
 
 export interface LoginJsonData {
     email: string,
@@ -48,16 +49,6 @@ export interface SectionContrastJsonData {
     projectName: string
 }
 
-export interface MergeFileJsonData {
-    MD5: string,
-    type: string,
-    name: string,
-    total: number,
-    level: number,
-    parentId: string,
-    meta: string
-}
-
 export interface AddFileJsonData {
     id?: string
     name: string
@@ -74,6 +65,12 @@ export interface RenameJsonData {
     name: string
 }
 
+export interface SetUserInfoWithoutAvatarJsonData {
+    name: string
+    contactEmail: string
+    occupation: string
+    department: string
+}
 export interface SetUserInfoWithoutAvatarJsonData {
     name: string
     contactEmail: string
@@ -102,3 +99,88 @@ export interface UpdateStatusByIdJsonData {
     id: string
     status: number
 }
+
+export interface GetNoUploadJsonData {
+    MD5: string
+    total: number
+    meta: {
+        name: string
+        total: number
+        level: number
+        parentId: string
+        meta: string
+        size?: string
+    }
+}
+
+export interface AddRecordJsonData {
+    id?: string
+    fileName: string
+    state: number
+}
+export interface AddMessageJsonData {
+    id: string
+    dataName: string
+    messageType: string
+    dataUploadTime: string
+    dataExamineTime: string
+    dataCache: string,
+    messageRequest: string,
+    reply: boolean,
+    fileId: string,
+    messageSender: string,
+    messageReceiver: string,
+    messageResponse: string,
+    replyUser: boolean
+    
+}
+
+export interface UnPackJsonData {
+    id: string
+    parentId: string
+    level: number
+}
+
+export interface UpdateParentIdAndLevelJsonData {
+    parentId: string
+    levelFrom: number
+    levelTo: number
+    files: string[]
+    folders: string[]
+}
+
+export interface CompressFileJsonData {
+    compressName: string
+    parentId: string
+    level: number
+    files: string[]
+    folders: string[]
+}
+
+export interface DeleteFilesOrFolders {
+    files : string[]
+    folders: string[]
+}
+
+export interface GetProjectsJsonData {
+    size: number
+    page: number
+    keyWord: string
+}
+// export interface AddShareFileJsonData {
+//     meta: {
+//         provider: string
+//         time: string
+//         range: string
+//         detail: string
+//     }
+//     fileInfo: {
+//         name: string
+//         description: string
+//         originAddress: string
+//         visualSource: string
+//         visualType: string
+//         structuredSource: string
+//         tags: string[]
+//     }
+// }

@@ -23,7 +23,7 @@ axiosInstance.interceptors.response.use(
             setToken(response.data.refreshToken)
         }
         setTimeout(() => {
-            requestList.delete(response.config.url)
+            requestList.delete(response.config.url + response.config.data)
         }, 600) //请求间隔600ms
         return response.data
     },
@@ -33,8 +33,7 @@ axiosInstance.interceptors.response.use(
             return null
         } else {
             notice('error', '错误', '请求错误')
-            console.log(err)
-            requestList.delete(err.config.url)
+            requestList.delete(err.config.url + err.config.data)
             return err.data
         }
         
@@ -52,7 +51,7 @@ axiosInstance.interceptors.request.use(
                 let url: string = config.baseURL as string + config.url
                 e(url)
             }
-            requestList.has(config.url) ? cancelRequest() : requestList.add(config.url)
+            requestList.has(config.url + JSON.stringify(config.data)) ? cancelRequest() : requestList.add(config.url + JSON.stringify(config.data))
         })
         return config
     }
@@ -63,7 +62,7 @@ export const get = (url: string, params?: any) => {
     return axiosInstance({
         url: url,
         params: params,
-        method: 'get',
+        method: 'get'
     })
 }
 

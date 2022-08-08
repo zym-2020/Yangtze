@@ -5,7 +5,7 @@ import { RootState } from '@/store'
 import { notice } from '@/utils/notice';
 import { setToken, clear, clearRouter } from '@/utils/auth'
 import { login, getUserInfoByToken, setUserInfo, setUserInfoWithoutAvatar } from '@/api/request'
-import router from '@/router'
+import router, { resetRouter } from '@/router'
 
 type AugmentedActionContext = {
     ['commit']<K extends keyof Mutations>(key: K, payload: Parameters<Mutations[K]>[1]): ReturnType<Mutations[K]>
@@ -57,7 +57,6 @@ export const userActions: ActionTree<UserState, RootState> & Actions = {
         commit("SET_NAME", "")
         commit("SET_ROLES", [])
         clearRouter()
-
         router.push({ path: '/login' })
     },
 
@@ -87,8 +86,8 @@ export const userActions: ActionTree<UserState, RootState> & Actions = {
                 occupation: userInfo.occupation,
                 department: userInfo.department
             })
-            if(data != null) {
-                if((data as any).code === 0) {
+            if (data != null) {
+                if ((data as any).code === 0) {
                     setToken(data.data)
                     commit("SET_NAME", userInfo.name)
                     notice("success", "成功", "修改用户信息成功")

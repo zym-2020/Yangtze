@@ -1,7 +1,11 @@
 package njnu.edu.back.dao;
 
 import njnu.edu.back.pojo.BrowseHistory;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,5 +18,5 @@ import org.springframework.stereotype.Repository;
 public interface BrowseHistoryMapper {
     void addHistory(BrowseHistory browseHistory);
 
-
+    List<Map<String, Object>> getDataGroupByDate(@Param("dataId") String dataId, @Param("date") String date);
 }
