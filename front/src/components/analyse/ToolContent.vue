@@ -19,7 +19,9 @@
               <el-button type="primary" size="small" @click="sectionByDIYClick">
                 任意断面
               </el-button>
-              <el-button type="success" size="small">文本输入</el-button>
+              <el-button type="success" size="small" @click="sectionInput"
+                >文本输入</el-button
+              >
             </div>
           </el-collapse-item>
           <el-collapse-item name="2">
@@ -33,7 +35,9 @@
               <el-button type="primary" size="small" @click="regionByDIYClick">
                 任意区域
               </el-button>
-              <el-button type="success" size="small">文本输入</el-button>
+              <el-button type="success" size="small" @click="regionInput"
+                >文本输入</el-button
+              >
             </div>
           </el-collapse-item>
           <el-collapse-item name="3">
@@ -78,7 +82,65 @@
             <el-button type="primary" size="small" @click="flushSilt"
               >冲淤计算</el-button
             >
-            <el-button type="success" size="small">冲淤等深线</el-button>
+            <el-button type="success" size="small" @click="flushDeepLine"
+              >冲淤等深线</el-button
+            >
+          </el-collapse-item>
+          <el-collapse-item name="7">
+            <template #title>
+              <svg style="width: 20px; height: 20px; margin-right: 10px">
+                <use xlink:href="#icon-jurassic_ys-i-border"></use>
+              </svg>
+              <div>边界分析</div>
+            </template>
+          </el-collapse-item>
+          <el-collapse-item name="8">
+            <template #title>
+              <svg style="width: 20px; height: 20px; margin-right: 10px">
+                <use xlink:href="#icon-datijihunningtujiance"></use>
+              </svg>
+              <div>河道容积计算</div>
+            </template>
+          </el-collapse-item>
+          <el-collapse-item name="9">
+            <template #title>
+              <svg style="width: 20px; height: 20px; margin-right: 10px">
+                <use xlink:href="#icon-chaoweizhan"></use>
+              </svg>
+              <div>潮位分析</div>
+            </template>
+          </el-collapse-item>
+          <el-collapse-item name="10">
+            <template #title>
+              <svg style="width: 20px; height: 20px; margin-right: 10px">
+                <use xlink:href="#icon-_H_"></use>
+              </svg>
+              <div>流速流向</div>
+            </template>
+          </el-collapse-item>
+          <el-collapse-item name="11">
+            <template #title>
+              <svg style="width: 20px; height: 20px; margin-right: 10px">
+                <use xlink:href="#icon-yangsha"></use>
+              </svg>
+              <div>含沙量过程</div>
+            </template>
+          </el-collapse-item>
+          <el-collapse-item name="12">
+            <template #title>
+              <svg style="width: 20px; height: 20px; margin-right: 10px">
+                <use xlink:href="#icon-1301"></use>
+              </svg>
+              <div>悬移质颗分</div>
+            </template>
+          </el-collapse-item>
+          <el-collapse-item name="12">
+            <template #title>
+              <svg style="width: 20px; height: 20px; margin-right: 10px">
+                <use xlink:href="#icon-duanmian"></use>
+              </svg>
+              <div>大断面过程</div>
+            </template>
           </el-collapse-item>
         </el-collapse>
       </el-scrollbar>
@@ -87,7 +149,6 @@
 </template>
 
 <script lang="ts">
-import { notice } from "@/utils/notice";
 import { defineComponent, ref, computed } from "vue";
 export default defineComponent({
   props: {
@@ -102,6 +163,9 @@ export default defineComponent({
     "slopeClick",
     "flushSilt",
     "contourClick",
+    "sectionInput",
+    "regionInput",
+    "flushDeepLine",
   ],
   setup(props, context) {
     const options = computed(() => {
@@ -132,6 +196,18 @@ export default defineComponent({
       context.emit("contourClick");
     };
 
+    const sectionInput = () => {
+      context.emit("sectionInput");
+    };
+
+    const regionInput = () => {
+      context.emit("regionInput");
+    };
+
+    const flushDeepLine = () => {
+      context.emit("flushDeepLine");
+    };
+
     return {
       closeClick,
       sectionByDIYClick,
@@ -140,6 +216,9 @@ export default defineComponent({
       options,
       flushSilt,
       contourClick,
+      sectionInput,
+      regionInput,
+      flushDeepLine,
     };
   },
 });

@@ -6,6 +6,62 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "1040940",
+      "name": "圆形小颗粒",
+      "font_class": "1301",
+      "unicode": "e6a6",
+      "unicode_decimal": 59046
+    },
+    {
+      "icon_id": "7947928",
+      "name": "扬沙",
+      "font_class": "yangsha",
+      "unicode": "e677",
+      "unicode_decimal": 58999
+    },
+    {
+      "icon_id": "10217109",
+      "name": "流动性风险",
+      "font_class": "_H_",
+      "unicode": "e612",
+      "unicode_decimal": 58898
+    },
+    {
+      "icon_id": "26800941",
+      "name": "潮位站",
+      "font_class": "chaoweizhan",
+      "unicode": "e7e1",
+      "unicode_decimal": 59361
+    },
+    {
+      "icon_id": "26805946",
+      "name": "断面",
+      "font_class": "duanmian",
+      "unicode": "e7e6",
+      "unicode_decimal": 59366
+    },
+    {
+      "icon_id": "10589800",
+      "name": "油水内边界_油气藏_地质对象_jurassi",
+      "font_class": "jurassic_ys-i-border",
+      "unicode": "e687",
+      "unicode_decimal": 59015
+    },
+    {
+      "icon_id": "21319116",
+      "name": "大体积混凝土监测",
+      "font_class": "datijihunningtujiance",
+      "unicode": "e6fa",
+      "unicode_decimal": 59130
+    },
+    {
+      "icon_id": "8940192",
+      "name": "word",
+      "font_class": "word",
+      "unicode": "e603",
+      "unicode_decimal": 58883
+    },
+    {
       "icon_id": "3851144",
       "name": "面积图",
       "font_class": "icon",

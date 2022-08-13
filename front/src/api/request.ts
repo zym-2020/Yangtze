@@ -48,7 +48,7 @@ export async function getProjectsByEmail(email: string) {
     return await get(`/project/getProjectsByEmail/${email}`)
 }
 
-export async function addLayers(jsonData: { id: string, name: string, type: string }[], projectId: string) {
+export async function addLayers(jsonData: { id: string, name: string, type: string, demSlopeId?: string }[], projectId: string) {
     return await patch(`/project/addLayers/${projectId}`, jsonData)
 }
 

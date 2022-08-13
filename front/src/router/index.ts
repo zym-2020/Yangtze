@@ -220,7 +220,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                         meta: {
                             roles: ['admin']
                         }
-                    
+
 
                     },
                     {
@@ -229,7 +229,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                         meta: {
                             roles: ['admin']
                         }
-                    
+
 
                     },
                     {
@@ -238,7 +238,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                         meta: {
                             roles: ['admin']
                         }
-                    
+
 
                     },
                     {
@@ -247,7 +247,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                         meta: {
                             roles: ['admin']
                         }
-                    
+
 
                     },
                     {
@@ -256,15 +256,15 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                         meta: {
                             roles: ['admin']
                         }
-                    
 
-                    },                    {
+
+                    }, {
                         path: 'mdownloadfail',
                         component: () => import('@/views/user/views/MdownloadfailManage.vue'),
                         meta: {
                             roles: ['admin']
                         }
-                    
+
 
                     },
                 ]

@@ -108,7 +108,7 @@ export default defineComponent({
 
     const getUserAvatar = (url: string) => {
       return url != undefined && url != undefined && url != ""
-        ? "http://localhost:8002" + url
+        ? "http://172.21.213.244:8002" + url
         : "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png";
     };
 

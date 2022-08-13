@@ -29,7 +29,9 @@
       >
     </div>
   </div>
-  <div v-if="dataSelectType === 'flushSilt'">
+  <div
+    v-if="dataSelectType === 'flushSilt' || dataSelectType === 'flushDeepLine'"
+  >
     <div class="select">
       <el-select v-model="benchmark" placeholder="基准年" size="small">
         <el-option
@@ -135,7 +137,10 @@ export default defineComponent({
           data: val,
           type: dataSelectType.value,
         });
-      } else if (dataSelectType.value === "flushSilt") {
+      } else if (
+        dataSelectType.value === "flushSilt" ||
+        dataSelectType.value === "flushDeepLine"
+      ) {
         const params = {
           benchmark: {
             id: benchmark.value,

@@ -41,6 +41,9 @@
         @flushSilt="flushSilt"
         @contourClick="contourClick"
         @regionByDIYClick="regionByDIYClick"
+        @sectionInput="sectionInput"
+        @regionInput="regionInput"
+        @flushDeepLine="flushDeepLine"
       ></tool-content>
     </div>
     <div class="legend" v-if="slopeFlag">
@@ -54,6 +57,13 @@
       :dataSelectType="dataSelectType"
       @dataSelectReturn="dataSelectReturn"
     ></data-select>
+  </el-dialog>
+
+  <el-dialog v-model="textInputFlag" width="400px" title="请输入坐标点">
+    <text-input
+      :textInputValue="textInputValue"
+      @returnPoints="returnPoints"
+    ></text-input>
   </el-dialog>
 </template>
 
@@ -69,6 +79,7 @@ import { notice } from "@/utils/notice";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { uuid } from "@/utils/common";
 import Legend from "@/components/tools/Legend.vue";
+import TextInput from "@/components/analyse/TextInput.vue";
 import DataSelect from "@/components/tools/DataSelect.vue";
 import {
   addLayers,
@@ -89,6 +100,7 @@ export default defineComponent({
     ToolContent,
     Legend,
     DataSelect,
+    TextInput,
   },
   setup() {
     const store = useStore();
@@ -110,6 +122,8 @@ export default defineComponent({
     const dataSelectFlag = ref(false);
     const polygonCoordinates = ref<any[]>([]);
     const dataSelectType = ref("");
+    const textInputFlag = ref(false);
+    const textInputValue = ref("");
 
     const lineDraw = new MapboxDraw({
       controls: {
@@ -247,7 +261,7 @@ export default defineComponent({
           map.value?.addSource(layer.id, {
             type: "raster",
             tiles: [
-              `http://localhost:8002/analyticDataSet/getRaster/${layer.id}/{x}/{y}/{z}`,
+              `http://172.21.213.244:8002/analyticDataSet/getRaster/${layer.id}/{x}/{y}/{z}`,
             ],
           });
           map.value?.addLayer({
@@ -262,7 +276,7 @@ export default defineComponent({
           map.value?.addSource(layer.id, {
             type: "raster",
             tiles: [
-              `http://localhost:8002/analyticDataSet/getRaster/${layer.id}/{x}/{y}/{z}`,
+              `http://172.21.213.244:8002/analyticDataSet/getRaster/${layer.id}/{x}/{y}/{z}`,
             ],
           });
           map.value?.addLayer({
@@ -294,7 +308,7 @@ export default defineComponent({
           map.value?.addSource(layer.id, {
             type: "raster",
             tiles: [
-              `http://localhost:8002/analyticDataSet/getSlope/${layer.demSlopeId}/{x}/{y}/{z}`,
+              `http://172.21.213.244:8002/analyticDataSet/getSlope/${layer.demSlopeId}/{x}/{y}/{z}`,
             ],
           });
           map.value?.addLayer({
@@ -309,7 +323,7 @@ export default defineComponent({
           map.value?.addSource(layer.id, {
             type: "vector",
             tiles: [
-              `http://localhost:8002/analyticDataSet/${layer.name}/{x}/{y}/{z}`,
+              `http://172.21.213.244:8002/analyticDataSet/${layer.name}/{x}/{y}/{z}`,
             ],
           });
           map.value?.addLayer({
@@ -321,7 +335,7 @@ export default defineComponent({
         } else if (layer.type === "region") {
           map.value?.addSource(layer.id, {
             type: "image",
-            url: `http://localhost:8002/project/getRegion/${store.state.user.email}/${router.currentRoute.value.params.id}/${layer.id}`,
+            url: `http://172.21.213.244:8002/project/getRegion/${store.state.user.email}/${router.currentRoute.value.params.id}/${layer.id}`,
             coordinates: getCoordinates(layer.points),
           });
           map.value?.addLayer({
@@ -394,7 +408,7 @@ export default defineComponent({
           map.value?.off("draw.create", drawPolygon);
           map.value?.on("draw.create", drawSection);
           sectionDIYflag.value = true;
-          regionByDIYFlag.value = false
+          regionByDIYFlag.value = false;
         } else {
           notice("warning", "警告", "请检查是否添加了基础河床数据");
         }
@@ -409,10 +423,93 @@ export default defineComponent({
           map.value?.on("draw.create", drawPolygon);
           map.value?.addControl(polygonDraw, "top-left");
           regionByDIYFlag.value = true;
-          sectionDIYflag.value = false
+          sectionDIYflag.value = false;
         } else {
           notice("warning", "警告", "请检查是否添加了基础河床数据");
         }
+      }
+    };
+
+    const sectionInput = () => {
+      if (demLayers.value.length > 0) {
+        removeControl();
+        map.value?.off("draw.create", drawSection);
+        map.value?.off("draw.create", drawPolygon);
+        textInputValue.value = "section";
+        textInputFlag.value = true;
+      } else {
+        notice("warning", "警告", "请检查是否添加了基础河床数据");
+      }
+    };
+
+    const regionInput = () => {
+      if (demLayers.value.length > 0) {
+        removeControl();
+        map.value?.off("draw.create", drawSection);
+        map.value?.off("draw.create", drawPolygon);
+        textInputValue.value = "region";
+        textInputFlag.value = true;
+      } else {
+        notice("warning", "警告", "请检查是否添加了基础河床数据");
+      }
+    };
+
+    const flushDeepLine = () => {
+      dataSelectType.value = "flushDeepLine";
+      dataSelectFlag.value = true;
+    };
+
+    const returnPoints = async (val: any) => {
+      textInputFlag.value = false;
+      if (val.type === "section") {
+        const uid = uuid();
+        const coordinates: any[] = [];
+        val.data.forEach((item: any) => {
+          coordinates.push([item.lon, item.lat]);
+        });
+        const layer = {
+          id: uid,
+          type: "section",
+          geoJson: {
+            coordinates: coordinates,
+            type: "LineString",
+          },
+        };
+        drawLayer(layer);
+        const res = await addSection(
+          layer,
+          router.currentRoute.value.params.id as string
+        );
+        async function handle(params: any) {
+          const data = await checkLayerState(
+            router.currentRoute.value.params.id as string,
+            uid
+          );
+          if (data != null) {
+            if ((data as any).code === 0) {
+              if (data.data === 1) {
+                rightLayer.value.updateLayer(params);
+                rightLayer.value.showResult({ layer: params, type: "section" });
+              } else if (data.data === 0) {
+                setTimeout(async () => {
+                  await handle(params);
+                }, 1000);
+              }
+            }
+          }
+        }
+        if (res != null && (res as any).code === 0) {
+          await handle(res.data);
+        }
+      } else if (val.type === "region") {
+        const coordinates: any[] = [[]];
+        val.data.forEach((item: any) => {
+          coordinates[0].push([item.lon, item.lat]);
+        });
+        coordinates[0].push([val.data[0].lon, val.data[0].lat]);
+        polygonCoordinates.value = coordinates;
+        dataSelectType.value = "region";
+        dataSelectFlag.value = true;
       }
     };
 
@@ -574,6 +671,8 @@ export default defineComponent({
             rightLayer.value.addLayer(layer);
           }
         }
+      } else if (val.type === "flushDeepLine") {
+        console.log(val);
       } else if (val.type === "contour") {
         console.log(val.data);
       }
@@ -678,6 +777,9 @@ export default defineComponent({
       demLayers,
       sectionByDIYClick,
       regionByDIYClick,
+      sectionInput,
+      regionInput,
+      flushDeepLine,
       slopeClick,
       sectionDIYClose,
       rightLayer,
@@ -689,6 +791,9 @@ export default defineComponent({
       dataSelectFlag,
       dataSelectReturn,
       dataSelectType,
+      textInputFlag,
+      textInputValue,
+      returnPoints,
     };
   },
 });

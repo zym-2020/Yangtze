@@ -9,7 +9,7 @@
               :src="
                 avatarUrl === ''
                   ? 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
-                  : 'http://localhost:8002' + avatarUrl
+                  : 'http://172.21.213.244:8002' + avatarUrl
               "
               fit="cover"
             />
@@ -143,7 +143,7 @@
             </div>
             <div class="btn">
               <el-button size="small" @click="commit">提交</el-button>
-              <el-button @click="editFlag = flase" size="small">取消</el-button>
+              <el-button @click="editFlag = false" size="small">取消</el-button>
             </div>
           </div>
         </div>
