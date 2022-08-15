@@ -10,23 +10,27 @@
                     :chartId="chartInfo[0].chartId" 
                     :order="chartInfo[0].order" 
                     :styleType="chartInfo[0].styleType"
+                    :notShown="chartInfo[0].notShown"
                 ></ChartContainer>
             </div>
             <ChartContainer 
                 :chartId="chartInfo[1].chartId" 
                 :order="chartInfo[1].order" 
                 :styleType="chartInfo[1].styleType"
+                :notShown="chartInfo[1].notShown"
             ></ChartContainer>
             <ChartContainer 
                 :chartId="chartInfo[2].chartId" 
                 :order="chartInfo[2].order" 
                 :styleType="chartInfo[2].styleType"
+                :notShown="chartInfo[2].notShown"
             ></ChartContainer>
             <CenterMap :mapId="mapIndex"/>
             <ChartContainer 
                 :chartId="chartInfo[3].chartId" 
                 :order="chartInfo[3].order" 
                 :styleType="chartInfo[3].styleType"
+                :notShown="chartInfo[3].notShown"
             ></ChartContainer>
             <DataTable :tableId='tableIndex'/>
             <StatBox :statIndex="statIdx"/>
@@ -64,10 +68,10 @@ export default {
         ]);
         
         const chartInfo = ref([
-            {chartId: "0", order: "0", styleType: "1"}, 
-            {chartId: "1", order: "0", styleType: "2"}, 
-            {chartId: "2", order: "0", styleType: "2"}, 
-            {chartId: "3", order: "0", styleType: "3"}, 
+            {chartId: "0", order: "0", styleType: "1", notShown: false}, 
+            {chartId: "1", order: "0", styleType: "2", notShown: false}, 
+            {chartId: "2", order: "0", styleType: "2", notShown: false}, 
+            {chartId: "3", order: "0", styleType: "3", notShown: false}, 
         ]);
 
         const mapIndex = ref('0');

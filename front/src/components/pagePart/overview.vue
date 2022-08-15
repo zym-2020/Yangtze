@@ -1,11 +1,10 @@
 <template>
   <div class="overview-wrapper">
     <div class="content-wrapper">
-      <h1 class="overview-title">Overview</h1>
+      <h1 class="overview-title">概述</h1>
       <p class="overview-text">
-        This is overview text.This is over-view text.This is over-view text.This
-        is over-view text.This is over-view text.This is over-view text.This is
-        over-view text.This is over-view text.This is over-view text.
+        南京水利科学研究院简称南京水科院，是中国综合性水利科学研究机构、国家级社会公益类非营利性科研机构。主要从事基础理论、应用基础研究和高新技术开发，
+        承担水利、交通、能源等领域中具有前瞻性、基础性和关键性的科学研究任务。
       </p>
     </div>
   </div>

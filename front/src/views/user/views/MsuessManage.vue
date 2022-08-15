@@ -600,7 +600,7 @@ export default defineComponent({
       // console.log("fgztest",TempData)
       // console.log("123456", data)
 
-      // axios.get('http://localhost:8003/ship/getShipBinary', {
+      // axios.get('http://172.21.212.10:8003/ship/getShipBinary', {
       //   responseType: 'arraybuffer'
       // }).then((res) => {
       //   const dataView = new DataView(res.data)

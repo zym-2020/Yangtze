@@ -1,5 +1,6 @@
 import { Shader } from "../core/shader/shader";
 import * as THREE from 'three';
+import { PositionOptions } from "mapbox-gl";
 
 class tbvsSymbol {
     symbolID: number | string;
@@ -7,7 +8,7 @@ class tbvsSymbol {
     rowIndexLength: number;
     position: Array<number>;
 
-    constructor (symbolID: number | string, rowIndexStart: number, rowIndexLength: number, position: Array<number>) {
+    constructor (symbolID: number | string, rowIndexStart: number, rowIndexLength: number, position: Array<number>, ) {
         this.symbolID = symbolID;
         this.rowIndexStart = rowIndexStart;
         this.rowIndexLength = rowIndexLength;
@@ -156,7 +157,91 @@ class tbvsSymbols {
     }
 }
 
+class BillboardSymbol {
+    symbolID: number;
+    position: Array<number>;
+
+    constructor (symbolID: number, position: Array<number>, private rotation: number, private scale: [number, number]) {
+        this.symbolID = symbolID;
+        this.position = position;
+    }
+
+    addPosition2DToMemory(positions: Array<number>): Array<number> {
+        let i = 0;
+        positions.push(this.position[0]);
+        positions.push(this.position[1]);
+        positions.push(this.position[2]);
+        positions.push(this.position[3]);
+
+        return positions;
+    }
+}
+
+class BillboardSymbolManager {
+    deviceDataBuffer: Float32Array;
+    vao: WebGLVertexArrayObject | null;
+    vbo: WebGLBuffer | null;
+    maxInstanceNum: number;
+    instanceNum: number;
+
+
+    constructor(maxInstanceNum: number) {
+        this.vao = null;
+        this.vbo = null;
+        this.maxInstanceNum = maxInstanceNum;
+        this.instanceNum = 0;
+        this.deviceDataBuffer = new Float32Array(maxInstanceNum * 7);
+    }
+
+    setMemory(position: Array<number>, rotation: number, scale: [number, number]): void {
+
+        // set position information of the marker
+        this.deviceDataBuffer[this.maxInstanceNum * 0 + this.instanceNum * 4 + 0] = position[0];
+        this.deviceDataBuffer[this.maxInstanceNum * 0 + this.instanceNum * 4 + 1] = position[1];
+        this.deviceDataBuffer[this.maxInstanceNum * 0 + this.instanceNum * 4 + 2] = position[2];
+        this.deviceDataBuffer[this.maxInstanceNum * 0 + this.instanceNum * 4 + 3] = position[3];
+
+        // set rotation information of the marker
+        this.deviceDataBuffer[this.maxInstanceNum * 4 + this.instanceNum * 1 + 0] = rotation;
+
+        // set scale information of the marker
+        this.deviceDataBuffer[this.maxInstanceNum * 5 + this.instanceNum * 2 + 0] = scale[1];
+        this.deviceDataBuffer[this.maxInstanceNum * 5 + this.instanceNum * 2 + 1] = scale[0];
+
+        this.instanceNum ++;
+    }
+
+    setup(gl: WebGL2RenderingContext, shader: Shader): void {
+
+        this.vao = gl.createVertexArray();
+        gl.bindVertexArray(this.vao);
+        console.log(this.deviceDataBuffer);
+
+        this.vbo = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
+        gl.bufferData(gl.ARRAY_BUFFER, this.deviceDataBuffer, gl.STATIC_DRAW);
+        shader.setVertexBufferPointer_Instancing(gl, 0, 4, gl.FLOAT, false, 4 * 4, this.maxInstanceNum * 0 * 4);
+        shader.setVertexBufferPointer_Instancing(gl, 1, 1, gl.FLOAT, false, 4 * 1, this.maxInstanceNum * 4 * 4);
+        shader.setVertexBufferPointer_Instancing(gl, 2, 2, gl.FLOAT, false, 4 * 2, this.maxInstanceNum * 5 * 4);
+
+        gl.bindVertexArray(null);
+    }
+
+    use(gl: WebGL2RenderingContext) {
+        gl.bindVertexArray(this.vao);
+    }
+
+    getNumInstance() {
+        return this.instanceNum;
+    }
+
+    isEmpty(): boolean {
+        return !this.instanceNum;
+    }
+}
+
 export {
     tbvsSymbol,
-    tbvsSymbols
+    tbvsSymbols,
+    BillboardSymbolManager
 };

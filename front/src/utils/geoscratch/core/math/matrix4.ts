@@ -1,5 +1,3 @@
-import { DEG2RAD } from './utils';
-import { Matrix } from "three";
 import { Vector3 } from "./vector3";
 
 class Matrix4x4 {

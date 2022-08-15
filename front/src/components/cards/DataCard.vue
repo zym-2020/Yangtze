@@ -50,7 +50,7 @@ export default defineComponent({
     });
     const avatar = computed(() => {
       if((props.fileInfo as any).avatar != '' && (props.fileInfo as any).avatar != undefined && (props.fileInfo as any).avatar != null) {
-        return 'http://localhost:8002' + (props.fileInfo as any).avatar
+        return 'http://172.21.212.10:8002' + (props.fileInfo as any).avatar
       }
       return imgBase64(name.value);
     });
