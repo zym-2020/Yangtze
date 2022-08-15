@@ -532,4 +532,38 @@ public class ProjectServiceImpl implements ProjectService {
             }
         }
     }
+
+
+    @Override
+    public void getRegion(String pngName, String email, HttpServletResponse response) {
+        String address = baseDir + email + "\\Tif\\" + pngName + ".png";
+        File file = new File(address);
+        if (!file.exists()) {
+            throw new MyException(ResultEnum.NO_OBJECT);
+        }
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(file);
+            ServletOutputStream servletOutputStream = response.getOutputStream();
+            byte[] bytes = new byte[1024];
+            int len = inputStream.read(bytes);
+            while (len != -1) {
+                servletOutputStream.write(bytes);
+                len = inputStream.read(bytes);
+            }
+            inputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        } finally {
+            try {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+            }
+        }
+    }
 }

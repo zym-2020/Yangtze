@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
  * @Description:
  */
 @Repository
-public interface VectorUserTile {
+public interface VectorTile {
     Object selectTile(TileBox tileBox);
 }

@@ -25,7 +25,7 @@
                 :styleType="chartInfo[2].styleType"
                 :notShown="chartInfo[2].notShown"
             ></ChartContainer>
-            <centerVisualMap :mapId="mapIndex"/>
+            <centerMap :mapId="mapIndex"/>
             <ChartContainer 
                 :chartId="chartInfo[3].chartId" 
                 :order="chartInfo[3].order" 
@@ -42,7 +42,7 @@
 import { onMounted } from '@vue/runtime-core';
 import { ref } from 'vue';
 import ChartContainer from '../scenePart/chartContainer.vue';
-import centerVisualMap from '../scenePart/centerVisualMap.vue';
+import centerMap from '../scenePart/centerMap.vue';
 import DataTable from '../scenePart/dataTable.vue';
 import StatBox from '../scenePart/statBox.vue';
 
@@ -50,7 +50,7 @@ export default {
     name: 'SceneWrapper',
     components: {
         ChartContainer, 
-        centerVisualMap, 
+        centerMap, 
         DataTable, 
         StatBox
     }, 
