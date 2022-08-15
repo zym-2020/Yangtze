@@ -1,6 +1,8 @@
 <template>
-<div id="map"></div>
-<div id="stats"></div>
+    <div>
+        <div id="map"></div>
+        <div id="stats"></div>
+    </div>
 </template>
 
 <script lang="ts">
