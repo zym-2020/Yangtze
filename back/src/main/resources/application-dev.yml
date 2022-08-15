@@ -6,22 +6,18 @@ minio:
 
 spring:
   datasource:
-#    url: jdbc:postgresql://localhost:5432/testdb?stringtype=unspecified
-#    username: postgres
-#    password: 123
-#    driver-class-name: org.postgresql.Driver
+
     main:
-      driver-class-name: org.postgresql.Driver
       jdbc-url: jdbc:postgresql://localhost:5432/testdb?stringtype=unspecified
       username: postgres
       password: 123
+      driver-class-name: org.postgresql.Driver
 
     shp:
-      driver-class-name: org.postgresql.Driver
-      jdbc-url: jdbc:postgresql://localhost:5432/shp_data?stringtype=unspecified
+      jdbc-url: jdbc:postgresql://localhost:5432/shp_dataset?stringtype=unspecified
       username: postgres
       password: 123
-
+      driver-class-name: org.postgresql.Driver
     #配置druid连接池
     druid:
       initial-size: 5 #连接池初始化大小
@@ -32,7 +28,6 @@ spring:
   #      stat-view-servlet: #访问监控网页的登录用户名和密码
   #        login-username: druid
   #        login-password: druid
-
   data:
     mongodb:
       uri: mongodb://localhost:27017/test
@@ -51,6 +46,8 @@ spring:
         max-wait: 1000ms  #最大阻塞时间
         shutdown-timeout: 200ms
 
+
+
   #mongodb地址
 #  data:
 #    mongodb:
@@ -67,3 +64,5 @@ contourdir:
   D:\Python\Python39\Lib\site-packages\osgeo\
 shp2pgsqldir:
   D:\App\postgresql\bin\
+datadir:
+  E:\水科院\数据\

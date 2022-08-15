@@ -20,6 +20,7 @@ module.exports = {
             },
         }
     },
+
     
     configureWebpack: {
         plugins: [
@@ -38,6 +39,7 @@ module.exports = {
             new webpack.DefinePlugin({
                 CESIUM_BASE_URL: JSON.stringify('./')
             })
+
         ],
         resolve: {
             alias: {

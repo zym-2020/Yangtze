@@ -1,73 +1,207 @@
 <template>
-  <div class="data-card">
-    <div class="top">
-      <el-avatar :size="40" :src="avatar" />
-      <div class="text" @click="clickName">{{ name }}</div>
-      <slot name="creator"></slot>
-      <slot name="status"></slot>
-    </div>
-    <div class="des">
-      {{ description }}
-    </div>
-    <div class="bottom">
-      <div class="bottom-top">
-        <div class="time">
-          <strong>上次更新时间：</strong>
-          <span>{{ updateTime }}</span>
+  <div
+    class="data-card"
+    :style="{
+      backgroundColor: checkInDataBoo == true ? 'rgba(30,144,255,0.1)' : '',
+    }"
+  >
+    <el-row>
+      <el-col :span="18">
+        <div class="top">
+          <div class="text" @click="clickName">{{ name }}</div>
+          <slot name="creator"></slot>
+          <slot name="status"></slot>
+          <div v-show="watchs >= 20">
+            <el-tag
+              style="margin-top: 10px; margin-left: 5px"
+              type="danger"
+              effect="dark"
+              round
+            >
+              HOT
+            </el-tag>
+          </div>
         </div>
-        <div class="watch">
+      </el-col>
+      <el-col :span="4" style="margin-top: 10px">
+        <el-button @click="getDataSet()" style="margin-right: 20px">{{
+          checkInData
+        }}</el-button>
+      </el-col>
+      <el-col :span="2" style="margin-top: 10px">
+        <div style="text-align: right">
+          <el-tooltip content="Public" placement="left-start" effect="light">
+            <el-icon :size="25" color="#00CD00"><Unlock /></el-icon>
+          </el-tooltip>
+        </div>
+      </el-col>
+    </el-row>
+    <div v-show="shdes">
+      <el-row style="margin-top: 10px">
+        <el-col :span="5">
+          <div class="block">
+            <el-image
+              style="width: 180px; height: 160px"
+              :src="avatar"
+              fit="fill"
+            />
+          </div>
+        </el-col>
+        <el-col :span="19">
+          <el-row>
+            <div class="des">
+              {{ description }}
+            </div>
+          </el-row>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :offset="5">
+          <div>
+            <el-tag
+              v-for="(item, index) in tagList"
+              :key="index"
+              style="
+                margin-right: 8px;
+                background-color: rgba(21, 69, 153, 0.8);
+                color: #e5cab9;
+              "
+              effect="dark"
+              round
+            >
+              {{ item }}
+            </el-tag>
+          </div>
+        </el-col>
+      </el-row>
+    </div>
+    <div v-show="shsta" style="width: 100%; height: 80%">
+      <!-- <BrowseStatistics></BrowseStatistics> -->
+      <DownLoadSta2 :id="id"></DownLoadSta2>
+    </div>
+    <el-divider style="color: #00bfff">
+      <el-icon><star-filled /></el-icon>
+    </el-divider>
+    <el-row>
+      <el-col :span="1">
+        <div>
+          <el-avatar :size="35" :url="avatar"></el-avatar>
+        </div>
+      </el-col>
+      <el-col :span="3">
+        <div style="margin-left: 10px; margin-top: 6px; font-size: 8px">
+          <span style="color: #6495ed">{{ creator }}</span>
+        </div>
+      </el-col>
+      <el-col :span="5">
+        <div
+          style="
+            margin-left: 10px;
+            margin-top: 6px;
+            font-size: 8px;
+            text-align: left;
+          "
+        >
+          <strong>上传于：</strong>
+          {{ updateTime }}
+        </div>
+      </el-col>
+      <el-col :span="12" style="text-align: right">
+        <el-button type="primary" plain @click="showDes" autofocus="true"
+          >数据介绍</el-button
+        >
+        <el-button type="primary" plain @click="showSta">数据统计</el-button>
+      </el-col>
+      <el-col :span="2">
+        <div style="margin-left: 10px; margin-top: 6px; text-align: right">
           <el-icon><View /></el-icon>
-          <span>{{ watch }}</span>
+          <span>{{ watchs }}</span>
         </div>
-        <div class="download">
-          <el-icon><Download /></el-icon>
-          <span>{{ download }}</span>
-        </div>
-      </div>
-      <div class="bottom-bottom">
-        <el-tag v-for="(item, index) in tagList" :key="index">
-          {{ item }}
-        </el-tag>
-      </div>
-    </div>
+      </el-col>
+      <el-col :span="1" style="margin-top: 6px; text-align: right">
+        <el-icon><Download /></el-icon>
+        <span>{{ download }}</span>
+      </el-col>
+    </el-row>
   </div>
+  <hr style="border-color: #d8d8d8" />
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from "vue";
+import { computed, defineComponent, onMounted, ref, watch } from "vue";
 import { imgBase64, generateColorByText, dateFormat } from "@/utils/common";
+import BrowseStatistics from "../resourcePages/components/BrowseStatistics.vue";
+import DownLoadSta2 from "../resourcePages/components/DownSta2.vue";
+import axios from "axios";
+import * as echarts from "echarts";
 
 export default defineComponent({
+  components: { BrowseStatistics, DownLoadSta2 },
   props: {
     fileInfo: {
       type: Object,
     },
+    dataSelect: {
+      type: Object,
+    },
   },
-  emits: ['clickName'],
+  emits: ["clickName", "getDataSet"],
   setup(props, context) {
+    const shdes = ref(true);
+    const shsta = ref(false);
+    const checkInData = ref("选中至资源集合");
+    const checkInDataBoo = ref(false);
     const name = computed(() => {
       return (props.fileInfo as any).name;
     });
     const avatar = computed(() => {
-      if((props.fileInfo as any).avatar != '' && (props.fileInfo as any).avatar != undefined && (props.fileInfo as any).avatar != null) {
-        return 'http://localhost:8002' + (props.fileInfo as any).avatar
+      if (
+        (props.fileInfo as any).avatar != "" &&
+        (props.fileInfo as any).avatar != undefined &&
+        (props.fileInfo as any).avatar != null
+      ) {
+        return "http://localhost:8002" + (props.fileInfo as any).avatar;
       }
       return imgBase64(name.value);
     });
     const description = computed(() => {
-      if((props.fileInfo as any).description){return (props.fileInfo as any).description;}
-      else{return "该条目暂无简介"}
-      
+      if ((props.fileInfo as any).description) {
+        return (props.fileInfo as any).description;
+      } else {
+        return "该条目暂无简介";
+      }
+    });
+    const creator = computed(() => {
+      if ((props.fileInfo as any).creator) {
+        return (props.fileInfo as any).creator;
+      } else {
+        return "该条目暂无简介";
+      }
+    });
+
+    const id = computed(() => {
+      return (props.fileInfo as any).id;
     });
     const updateTime = computed(() => {
-      return dateFormat((props.fileInfo as any).updateTime, "yyyy年MM月dd日hh时");
+      return dateFormat(
+        (props.fileInfo as any).updateTime,
+        "yyyy年MM月dd日hh时"
+      );
     });
-    const watch = computed(() => {
+    const watchs = computed(() => {
       return (props.fileInfo as any).watch;
     });
+    const showDes = () => {
+      shdes.value = true;
+      shsta.value = false;
+    };
+    const showSta = () => {
+      shdes.value = false;
+      shsta.value = true;
+    };
     const download = computed(() => {
-      return (props.fileInfo as any).download
-    })
+      return (props.fileInfo as any).download;
+    });
     const tagList = computed(() => {
       return (props.fileInfo as any).tags;
     });
@@ -77,19 +211,61 @@ export default defineComponent({
     };
 
     const clickName = () => {
-      context.emit('clickName')
-    }
+      context.emit("clickName");
+    };
+
+    const getDataSet = () => {
+      context.emit("getDataSet", props.fileInfo);
+      checkInDataBoo.value = true;
+      checkInData.value = "该资源已选入集合";
+    };
+
+    const fits = ["fill", "contain", "cover", "none", "scale-down"];
+    const url =
+      "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg";
+//监听父组件中的数组表格，注意对于数组要深度监听
+    watch(
+      () => props.dataSelect,
+      (newValue, oldValue) => {
+        for (let i = 0; i < (props.dataSelect as any)?.length; i++) {
+          //如果发现表格中包含该条目，则将该条目的背景色调为浅蓝色，证明已经选中
+          if (
+            (props.dataSelect as any[])[i].name == (props.fileInfo as any).name
+          )
+          {
+            checkInDataBoo.value = true
+            //break跳出了for循环，证明该条目已经在表格中
+            break;
+          }
+          else{
+            checkInDataBoo.value = false
+          }
+        }
+      },
+      { immediate: true, deep: true }
+    );
 
     return {
+      shdes,
+      shsta,
+      checkInData,
+      id,
       avatar,
       name,
       description,
+      checkInDataBoo,
       updateTime,
-      watch,
+      watchs,
       download,
       tagList,
       getColor,
-      clickName
+      clickName,
+      showDes,
+      showSta,
+      getDataSet,
+      fits,
+      url,
+      creator,
     };
   },
 });
@@ -97,28 +273,33 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .data-card {
-  margin-bottom: 20px;
+  margin-bottom: 5px;
+
   .top {
     display: flex;
     position: relative;
     height: 40px;
     line-height: 40px;
     .text {
-      margin-left: 10px;
+      //margin-left: 10px;
       font-size: 22px;
       color: #4fb5ea;
     }
   }
   .des {
-    margin-top: 15px;
+    margin-top: 8px;
     font-size: 14px;
+    display: flex;
     line-height: 30px;
+    justify-content: center;
+    //align-items: center;
   }
   .bottom {
     .bottom-top {
       display: flex;
       margin-top: 10px;
-      .watch, .download {
+      .watch,
+      .download {
         margin-left: 20px;
         position: relative;
         .el-icon {
@@ -135,6 +316,31 @@ export default defineComponent({
       .el-tag {
         margin-right: 10px;
       }
+    }
+  }
+}
+
+.block {
+  padding: 10px 0;
+  text-align: center;
+  border-right: solid 1px var(--el-border-color);
+  display: inline-block;
+  width: 20%;
+  box-sizing: border-box;
+  vertical-align: top;
+}
+.block:last-child {
+  border-right: none;
+}
+
+.pos {
+  height: 100%;
+  .el-row {
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    .el-col {
+      height: 100%;
     }
   }
 }

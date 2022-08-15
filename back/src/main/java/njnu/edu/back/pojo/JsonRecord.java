@@ -16,9 +16,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class JsonRecord {
     String id;
-    String name;
     String shpName;
     String jsonName;
+    String jsonAddress;
     String shpAddress;
     String shpPinYinName;
+
 }

@@ -33,10 +33,10 @@ public class ShipBinaryController {
             return b2;
     }
 
-    @AuthCheck
-    @RequestMapping(value = "/QueryByMsi/{mmsi}", method = RequestMethod.GET)
-    public JsonResult QueryByMsi(@PathVariable int mmsi) {
-        return ResultUtils.success(shipService.QueryByMsi(mmsi));
-    }
+//    @AuthCheck
+//    @RequestMapping(value = "/QueryByMsi/{mmsi}", method = RequestMethod.GET)
+//    public JsonResult QueryByMsi(@PathVariable int mmsi) {
+//        return ResultUtils.success(shipService.QueryByMsi(mmsi));
+//    }
 
 }

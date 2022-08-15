@@ -8,14 +8,14 @@
       </template>
       <div class="des" title="哈哈哈">
         <strong>简介：</strong>
-        <div class="des-text">{{ projectInfo.description }}</div>
+        <div class="des-text">{{ projectInfo?.description }}</div>
       </div>
       <div class="img">
         <el-avatar
           shape="square"
           fit="cover"
           v-if="
-            projectInfo.avatar === '' || projectInfo.avatar === null
+            projectInfo?.avatar === '' || projectInfo?.avatar === null
           "
           >{{ projectInfo.projectName }}</el-avatar
         >

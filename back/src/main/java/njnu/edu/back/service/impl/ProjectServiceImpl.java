@@ -95,10 +95,10 @@ public class ProjectServiceImpl implements ProjectService {
             throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
         }finally {
             try {
-                if(in != null) {
+                if (in != null) {
                     in.close();
                 }
-                if(out != null) {
+                if (out != null) {
                     out.close();
                 }
             } catch (Exception e) {

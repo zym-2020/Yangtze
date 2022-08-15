@@ -13,6 +13,7 @@ import router from '@/router'
 export default defineComponent({
   setup() {
     const chart = ref<HTMLElement>();
+    
 
     const chartInit = (dateList: any[], valueList: any[]) => {
 

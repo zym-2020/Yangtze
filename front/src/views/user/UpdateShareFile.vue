@@ -31,18 +31,18 @@
             v-model="form.tagList"
             multiple
             placeholder="标签"
-            collapse-tags
+            
           >
             <el-option-group
               v-for="(group, groupIndex) in options"
               :key="groupIndex"
-              :label="group.label"
+              :label="group.title"
             >
               <el-option
-                v-for="(item, index) in group.options"
+                v-for="(item, index) in group.data"
                 :key="index"
-                :label="item"
-                :value="item"
+                :label="item.name"
+                :value="item.name"
               />
             </el-option-group>
           </el-select>
@@ -106,6 +106,11 @@
         </el-form-item>
         <el-form-item label="条目封面：">
           <avatar-upload @upload="upload"></avatar-upload>
+        </el-form-item>
+
+        <el-form-item label="条目缩略图：">
+          <!-- <avatar-upload @upload="uploadTh"></avatar-upload> -->
+          <thumb-upload @uploadTh="uploadTh"></thumb-upload>
         </el-form-item>
       </el-form>
       <el-divider />
@@ -184,6 +189,8 @@ import {
   shallowRef,
   onBeforeUnmount,
   watch,
+  computed,
+  onMounted,
 } from "vue";
 import "@wangeditor/editor/dist/css/style.css"; // 引入 css
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
@@ -194,17 +201,27 @@ import { updateShareFileNoAvatar, updateShareFile } from "@/api/request";
 import { notice } from "@/utils/notice";
 import type { FormInstance } from "element-plus";
 import AvatarUpload from "@/components/upload/AvatarUpload.vue";
+import ThumbUpload from "@/components/upload/ThumbUpload.vue";
 import router from "@/router";
 import { useStore } from "@/store";
 
 export default defineComponent({
-  components: { PageHeader, Editor, Toolbar, ResourceDialog, AvatarUpload },
+  components: {
+    PageHeader,
+    Editor,
+    Toolbar,
+    ResourceDialog,
+    AvatarUpload,
+    ThumbUpload,
+  },
   setup() {
     const defaultProps = {
       children: "children",
       label: "label",
     };
     const folderFlag = ref(false);
+    const updateAvatar = ref(false);
+    const updateThumbnail = ref(false);
     const resourceType = ref("");
     const editorRef = shallowRef<IDomEditor>();
     const toolbarConfig = {};
@@ -212,7 +229,11 @@ export default defineComponent({
       scroll: true,
       autoFocus: true,
     };
+    const thumbFlag = ref(false);
     const updateAvatarFlag = ref(false);
+    const check = () => {
+      if (form.avatar) updateAvatarFlag.value = true;
+    };
 
     const fileRef = ref<HTMLElement>();
     const metaRef = ref<HTMLElement>();
@@ -264,14 +285,33 @@ export default defineComponent({
     };
 
     const upload = (val: any) => {
+      // if (val == router.currentRoute.value.params.avatar)
+      //   updateAvatar.value = true;
       form.avatar = val;
       updateAvatarFlag.value = true;
+    };
+
+    const uploadTh = (val: any) => {
+      // if (val == router.currentRoute.value.params.thumbnail)
+      //   updateThumbnail.value = true;
+      form.thumbnail = val;
+      thumbFlag.value = true;
     };
 
     const commit = async (
       formEl1: FormInstance | undefined,
       formEl2: FormInstance | undefined
     ) => {
+      if (
+        form.avatar == 
+        (router.currentRoute.value.params.fileInfo as any).avatar
+      )
+        updateAvatar.value = true;
+      if (
+        form.thumbnail ==
+        (router.currentRoute.value.params.fileInfo as any).thumbnail
+      )
+        updateThumbnail.value = true;
       if (!formEl1 || !formEl2) return;
       await formEl1.validate(async (valid1, fields) => {
         await formEl2.validate(async (valid2) => {
@@ -300,12 +340,37 @@ export default defineComponent({
                 structuredSource: "",
                 tags: form.tagList,
                 avatar: form.avatar,
+                thumbnail: form.thumbnail,
               };
-              if (updateAvatarFlag.value) {
-                delete jsonData.avatar;
+              if ((router.currentRoute.value.params.fileInfo as any).avatar)
+                updateAvatarFlag.value = true;
+              // console.log(
+              //   "fff" +
+              //     (router.currentRoute.value.params.fileInfo as any).avatar
+              // );
+              // console.log("ggg1" + form.avatar);
+              // console.log("ggg2" + form.thumbnail);
+
+              if (updateAvatar.value == true) {
+                const file1 = new File([], "index.js", {
+                  type: "text/javascript",
+                });
+                form.avatar = file1;
+              }
+              if (updateThumbnail.value == true) {
+                const file2 = new File([], "index.js", {
+                  type: "text/javascript",
+                });
+                form.thumbnail = file2;
+              }
+              console.log("hh" + updateThumbnail.value);
+
+              if (true) {
+                //delete jsonData.avatar;
                 const formData = new FormData();
                 formData.append("jsonString", JSON.stringify(jsonData));
                 formData.append("multipartFile", form.avatar);
+                formData.append("multipartFile2", form.thumbnail);
                 const data = await updateShareFile(formData);
                 if (data != null) {
                   if ((data as any).code === 0) {
@@ -334,32 +399,315 @@ export default defineComponent({
       });
     };
 
-    const options = ref([
-      {
-        label: "基础数据、整合数据、可视化数据",
-        options: ["栅格ASC文件", "栅格TXT文件", "栅格文件", "矢量文件", "等高线", "等深线", "潮位","大断面结果","含沙量","流量","输沙率","流速","流向","悬移质","冲淤","深泓线","风速","风向","DWG工程文件","TXT工程文件"],
-      },
-      {
-        label: "数学模型",
-        options: ["流场", ],
-      },
-      {
-        label: "流场数据",
-        options: ["流场矢量线数据", "流场栅格数据"],
-      },
-      {
-        label: "物理模型",
-        options: ["地图数据", "浓度场数据", ],
-      },
-      {
-        label: "辅助数据",
-        options: [
-          "Pdf",
-          "Excel",
-          "PPT",
-          "Word",
+    const options = ref([     {
+        title: "一级分类（必选）",
+        data: [
+          {
+            name: "基础地形数据",
+            count: false,
+          },
+          {
+            name: "基础水文数据",
+            count: false,
+          },
+          {
+            name: "基础工程数据",
+            count: false,
+          },
+          {
+            name: "整合资料库",
+            count: false,
+          },
+          {
+            name: "数模案例库",
+            count: false,
+          },
+          {
+            name: "物模案例库",
+            count: false,
+          },
+          {
+            name: "影像资料库",
+            count: false,
+          },
+          {
+            name: "辅助资料库",
+            count: false,
+          },
+          {
+            name: "元数据",
+            count: false,
+          },
         ],
       },
+        {
+        title: "基础地形数据",
+        data: [
+          {
+            name: "栅格TXT文件",
+            count: false,
+          },
+                    {
+            name: "栅格ASC文件",
+            count: false,
+          },
+        ]
+        },
+                {
+        title: "基础水文数据",
+        data: [
+          {
+            name: "潮位数据",
+            count: false,
+          },
+                    {
+            name: "流速流向数据",
+            count: false,
+          },
+                              {
+            name: "含沙量数据",
+            count: false,
+          },
+                              {
+            name: "流量数据",
+            count: false,
+          },
+                                        {
+            name: "输沙率数据",
+            count: false,
+          },
+          {
+            name: "悬移质数据",
+            count: false,
+          },          {
+            name: "冲淤数据",
+            count: false,
+          },
+                    {
+            name: "深泓线数据",
+            count: false,
+          },
+                    {
+            name: "沙滩数据",
+            count: false,
+          },
+                    {
+            name: "床沙数据",
+            count: false,
+          },
+              {
+            name: "含盐度数据",
+            count: false,
+          },
+                        {
+            name: "风速风向数据",
+            count: false,
+          },
+                                  {
+            name: "报告文字数据",
+            count: false,
+          },
+                                            {
+            name: "水文测验布置",
+            count: false,
+          },
+        ]
+        },
+
+      {
+        title: "基础工程数据",
+        data: [
+                    {
+            name: "DWG工程文件",
+            count: false,
+          },
+          {
+            name: "码头工程",
+            count: false,
+          },
+                    {
+            name: "桥梁工程",
+            count: false,
+          },
+                              {
+            name: "规划未实施工程",
+            count: false,
+          },
+                              {
+            name: "水利工程",
+            count: false,
+          },   
+          {
+            name: "护岸工程",
+            count: false,
+          },      
+                    {
+            name: "航道整治工程",
+            count: false,
+          },    
+                              {
+            name: "水利工程",
+            count: false,
+          },                        {
+            name: "航标",
+            count: false,
+          },  
+        ],
+      },
+      {
+        title: "整合地形数据",
+        data: [
+          {
+            name: "SHAPEFILE",
+            count: false,
+          },
+          {
+            name: "等高线",
+            count: false,
+          },
+                    {
+            name: "等深线",
+            count: false,
+          },
+                    {
+            name: "高程点",
+            count: false,
+          },
+                    {
+            name: "边界",
+            count: false,
+          },
+                    {
+            name: "TIN",
+            count: false,
+          },          {
+            name: "DEM",
+            count: false,
+          },
+        ],
+      },
+      {
+        title: "整合水文数据",
+        data: [
+          {
+            name: "MDB关系数据库",
+            count: false,
+          },
+        ],
+      },
+      {
+        title: "整合工程数据",
+        data: [
+                   {
+            name: "DWG工程文件",
+            count: false,
+          },
+          {
+            name: "码头工程",
+            count: false,
+          },
+                    {
+            name: "桥梁工程",
+            count: false,
+          },
+                              {
+            name: "规划未实施工程",
+            count: false,
+          },
+                              {
+            name: "水利工程",
+            count: false,
+          },   
+          {
+            name: "护岸工程",
+            count: false,
+          },      
+                    {
+            name: "航道整治工程",
+            count: false,
+          },    
+                              {
+            name: "水利工程",
+            count: false,
+          },                        {
+            name: "航标",
+            count: false,
+          },  
+        ],
+      },
+            {
+        title: "数模案例库",
+        data: [
+          {
+            name: "流场",
+            count: false,
+          },
+        ],
+      },
+                  {
+        title: "物模案例库",
+        data: [
+          {
+            name: "流速",
+            count: false,
+          },
+                    {
+            name: "泥沙",
+            count: false,
+          },
+                    {
+            name: "水位",
+            count: false,
+          },
+                              {
+            name: "视频",
+            count: false,
+          },
+          {
+            name: "照片",
+            count: false,
+          },
+        ],
+      },     
+       {
+        title: "影像资料库",
+        data: [
+          {
+            name: "遥感影像",
+            count: false,
+          },
+        ],
+      },
+             {
+        title: "辅助资料库",
+        data: [
+          {
+            name: "地名数据",
+            count: false,
+          },          {
+            name: "固定断面线",
+            count: false,
+          },          {
+            name: "制导线",
+            count: false,
+          },
+        ],
+      },             {
+        title: "元数据",
+        data: [
+          {
+            name: "Pdf",
+            count: false,
+          },          {
+            name: "Word",
+            count: false,
+          },          {
+            name: "PPT",
+            count: false,
+          },
+        ],
+      },
+     
     ]);
 
     const form = reactive({
@@ -383,6 +731,7 @@ export default defineComponent({
           .visualSource,
       },
       avatar: (router.currentRoute.value.params.fileInfo as any).avatar,
+      thumbnail: (router.currentRoute.value.params.fileInfo as any).thumbnail,
     });
 
     const metaForm = reactive({
@@ -432,6 +781,9 @@ export default defineComponent({
           form.avatar = (
             router.currentRoute.value.params.fileInfo as any
           ).avatar;
+          form.thumbnail = (
+            router.currentRoute.value.params.fileInfo as any
+          ).thumbnail;
           metaForm.provider = (
             router.currentRoute.value.params.fileMeta as any
           ).provider;
@@ -488,7 +840,17 @@ export default defineComponent({
         { required: true, message: "数据获取方式不得为空！", trigger: "blur" },
       ],
     });
-
+    onMounted(() => {
+      // console.log("zzz1" + form.avatar);
+      // console.log(
+      //   "zzz11" + (router.currentRoute.value.params.fileInfo as any).avatar
+      // );
+      // console.log("zzz2" + form.thumbnail);
+      // console.log(
+      //   "zzz22" + (router.currentRoute.value.params.fileInfo as any).thumbnail
+      // );
+      // console.log(updateThumbnail.value);
+    });
     // 组件销毁时，也及时销毁编辑器
     onBeforeUnmount(() => {
       const editor = editorRef.value;
@@ -516,6 +878,8 @@ export default defineComponent({
       fileRef,
       metaRef,
       upload,
+      uploadTh,
+      check,
     };
   },
 });

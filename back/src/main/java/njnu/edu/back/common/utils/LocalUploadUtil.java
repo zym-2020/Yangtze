@@ -211,10 +211,10 @@ public class LocalUploadUtil {
     }
 
     /**
-    * @Description:注册新用户时给新用户生成文件目录
-    * @Author: Yiming
-    * @Date: 2022/5/28
-    */
+     * @Description:注册新用户时给新用户生成文件目录
+     * @Author: Yiming
+     * @Date: 2022/5/28
+     */
 
     public static void createUserFolder(String basePath, String email) {
         new File(basePath + email + "/projects").mkdirs();

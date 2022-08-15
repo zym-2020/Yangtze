@@ -9,7 +9,12 @@ import njnu.edu.back.common.resolver.JwtTokenParser;
 import njnu.edu.back.common.result.JsonResult;
 import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.common.result.ResultUtils;
+import njnu.edu.back.common.utils.PolygonCheck;
+import njnu.edu.back.dao.ShareFileMapper;
+import njnu.edu.back.dao.ShpCoordinatesMapper;
+import njnu.edu.back.dao.TideStationMapper;
 import njnu.edu.back.pojo.FileMeta;
+import njnu.edu.back.pojo.TideStation;
 import njnu.edu.back.pojo.dto.UpdateShareFileAndFileMetaDTO;
 import njnu.edu.back.service.ShareFileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +22,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -31,11 +39,20 @@ public class ShareFileController {
     @Autowired
     ShareFileService shareFileService;
 
+    @Autowired
+    ShpCoordinatesMapper shpCoordinatesMapper;
+
+    @Autowired
+    TideStationMapper tideStationMapper;
+
+    @Autowired
+    ShareFileMapper shareFileMapper;
+
     @AuthCheck
     @RequestMapping(value = "/addShareFile", method = RequestMethod.POST)
-    public JsonResult addShareFile(@RequestParam String jsonString, @RequestParam MultipartFile file, @JwtTokenParser("email") String email) {
+    public JsonResult addShareFile(@RequestParam String jsonString, @RequestParam MultipartFile file,@RequestParam MultipartFile file2, @JwtTokenParser("email") String email) {
         JSONObject jsonObject = JSON.parseObject(jsonString);
-        return ResultUtils.success(shareFileService.addShareFile(jsonObject, email, file));
+        return ResultUtils.success(shareFileService.addShareFile(jsonObject, email, file,file2));
     }
 
 
@@ -48,11 +65,29 @@ public class ShareFileController {
 
     @AuthCheck
     @RequestMapping(value = "/updateShareFile", method = RequestMethod.PATCH)
-    public JsonResult updateShare(@RequestParam String jsonString, @RequestParam MultipartFile multipartFile) {
+    public JsonResult updateShare(@RequestParam String jsonString, @RequestParam MultipartFile multipartFile,@RequestParam MultipartFile multipartFile2) {
         UpdateShareFileAndFileMetaDTO updateShareFileAndFileMetaDTO = JSONObject.parseObject(jsonString, UpdateShareFileAndFileMetaDTO.class);
-        shareFileService.updateShareFileAndFileMeta(updateShareFileAndFileMetaDTO, multipartFile);
+        int flag=0;
+        if (multipartFile.isEmpty() && multipartFile2.isEmpty()) {
+            flag=1;
+            shareFileMapper.updateFileInfoAndFileMeta(updateShareFileAndFileMetaDTO);
+            System.out.println("1");
+        } else if (multipartFile.isEmpty()) {
+            flag=2;
+            shareFileService.updateShareFileAndFileMeta(updateShareFileAndFileMetaDTO,  multipartFile2,flag);
+            System.out.println("2");
+        } else if (multipartFile2.isEmpty()) {
+            flag=3;
+            shareFileService.updateShareFileAndFileMeta(updateShareFileAndFileMetaDTO, multipartFile,flag);
+             System.out.println("3");
+        } else {
+            flag=4;
+            shareFileService.updateShareFileAndFileMeta(updateShareFileAndFileMetaDTO, multipartFile, multipartFile2);
+            System.out.println("4");
+        }
         return ResultUtils.success();
     }
+
 
     @AuthCheck
     @RequestMapping(value = "/getFileInfoAndMeta/{id}", method = RequestMethod.GET)
@@ -184,4 +219,48 @@ public class ShareFileController {
     public JsonResult getShareFileById(@PathVariable String id) {
         return ResultUtils.success(shareFileService.getShareFileById(id));
     }
+
+    @AuthCheck
+    @RequestMapping(value = "/getOtherTags/{id}", method = RequestMethod.PATCH)
+    public JsonResult getOtherTags(@PathVariable String id) {
+        return ResultUtils.success(shareFileService.getOtherTags(id));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/getShpCoordinates/{jsonString}", method = RequestMethod.GET)
+    public JsonResult getOtherCoordinates(@PathVariable String jsonString) {
+        Map<String,Object> map=JSONObject.parseObject(jsonString, Map.class);
+        return ResultUtils.success();
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/getShpByCoordinates/{arrayString}", method = RequestMethod.GET)
+    public JsonResult getShpByCoordinates(@PathVariable String arrayString) {
+        //Map<String,Object> map=JSONObject.parseObject(jsonString, Map.class);
+        String[] arr=arrayString.split(",");
+        List<Map<String, Object>> map = shpCoordinatesMapper.QueryCoordinates();
+        List<Map<String, Object>> map2= PolygonCheck.getCoorShp(arr,map);
+        return ResultUtils.success(map2);
+    }
+
+
+    @AuthCheck
+    @RequestMapping(value = "/QueryCoordinatesByName/{name}", method = RequestMethod.GET)
+    public JsonResult QueryCoordinatesByName(@PathVariable String name) {
+        //Map<String,Object> map=JSONObject.parseObject(jsonString, Map.class);
+        List<Map<String, Object>> lis= shpCoordinatesMapper.QueryCoordinatesByName(name);
+        return ResultUtils.success(lis);
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/QueryHeightByName/{name}", method = RequestMethod.GET)
+    public JsonResult QueryHeightByName(@PathVariable String name) {
+        //Map<String,Object> map=JSONObject.parseObject(jsonString, Map.class);
+        List<Map<String, Object>> lis= tideStationMapper.QueryHeightByName(name);
+        return ResultUtils.success(lis);
+    }
+
+
+
+
 }

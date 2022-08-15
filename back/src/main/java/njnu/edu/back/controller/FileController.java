@@ -5,13 +5,18 @@ import njnu.edu.back.common.auth.AuthCheck;
 import njnu.edu.back.common.resolver.JwtTokenParser;
 import njnu.edu.back.common.result.JsonResult;
 import njnu.edu.back.common.result.ResultUtils;
+import njnu.edu.back.common.utils.ZipOperate;
 import njnu.edu.back.pojo.dto.AddFileDTO;
 import njnu.edu.back.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,6 +30,9 @@ import javax.servlet.http.HttpServletResponse;
 public class FileController {
     @Autowired
     FileService fileService;
+
+    @Value("${basedir}")
+    String basedir;
 
     @AuthCheck
     @RequestMapping(value = "/addFile", method = RequestMethod.POST)
@@ -52,14 +60,14 @@ public class FileController {
         JSONObject metaData = jsonObject.getJSONObject("meta");
         return ResultUtils.success(fileService.getNoUpload(MD5, email, total, metaData));
     }
-
+    @CrossOrigin
     @AuthCheck
     @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
     public JsonResult uploadFile(@RequestParam MultipartFile file, @RequestParam String MD5, @RequestParam String name, @JwtTokenParser("email") String email) {
         fileService.uploadFile(file, MD5, email, name);
         return ResultUtils.success();
     }
-
+    @CrossOrigin
     @AuthCheck
     @RequestMapping(value = "/mergeFile/{MD5}/{uuid}", method = RequestMethod.POST)
     public JsonResult mergeFile(@PathVariable String MD5, @PathVariable String uuid, @JwtTokenParser("email") String email) {
@@ -92,6 +100,18 @@ public class FileController {
         fileService.getAvatar(pictureName, response);
     }
 
+    @CrossOrigin
+    @RequestMapping(value = "/thumbnail/{pictureName}", method = RequestMethod.GET)
+    public void getThumbnail(@PathVariable String pictureName, HttpServletResponse response) {
+        fileService.getThumbnail(pictureName, response);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/photos/{pictureName}", method = RequestMethod.GET)
+    public void getPhotos(@PathVariable String pictureName, HttpServletResponse response) {
+        fileService.getPhotos(pictureName, response);
+    }
+
     @AuthCheck
     @RequestMapping(value = "/unPack", method = RequestMethod.POST)
     public JsonResult unPack(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
@@ -122,4 +142,5 @@ public class FileController {
         fileService.compressFile(jsonObject, email);
         return ResultUtils.success();
     }
+
 }

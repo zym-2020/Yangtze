@@ -8,7 +8,7 @@ const store = useStore()
 const requestList = new Set()
 
 const axiosInstance: AxiosInstance = axios.create({
-    baseURL: 'http://localhost:8080/Yangtze/',
+    baseURL: '/Yangtze/',
     timeout: 200000
 })
 
@@ -29,6 +29,7 @@ axiosInstance.interceptors.response.use(
     },
     (err: AxiosResponse) => {
         if (axios.isCancel(err)) {
+            console.log(err)
             notice('warning', '警告', '操作过于频繁')
             return null
         } else {

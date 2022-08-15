@@ -12,8 +12,8 @@
         :fileInfo="fileInfo"
         :fileMeta="fileMeta"
       ></data-detail>
-      <data-statistics v-show="active === 2"></data-statistics>
-      <similar-data v-show="active === 3"></similar-data>
+      <data-statistics v-if="active === 2"></data-statistics>
+      <similar-data v-if="active === 3"></similar-data>
     </div>
   </div>
 </template>
@@ -44,7 +44,6 @@ export default defineComponent({
       active.value = val;
     };
     onMounted(async () => {
-      console.log(123)
       if (
         router.currentRoute.value.params.id != null &&
         router.currentRoute.value.params.id != undefined
@@ -65,8 +64,10 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .share-file {
+  overflow-y:hidden ;
   .main {
     width: 100%;
+
   }
 }
 </style>

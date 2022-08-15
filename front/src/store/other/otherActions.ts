@@ -43,11 +43,13 @@ export const otherActions: ActionTree<OtherState, RootState> & Actions = {
                         commit("SET_UPLOAD_ITEM", { id: temp.id, name: temp.name, state: 2, progress: 0 })
                         await handlePostFiles(chunkList.data, fileChunk, md5, temp.id, temp.name);
                         if (chunkList.data.length === 0) {
+                            console.log(chunkList.data.length)
                             const key = await mergeFile(md5, temp.id);
                             if (key != null) {
                                 if ((key as any).code === 0) {
                                     const result = await checkStatus(key.data, temp.id, handle)
                                 } else {
+                                    console.log((key as any).code)
                                     notice("error", "失败", "文件合并时出错，请重新上传");
                                     for (let i = 0; i < store.state.other.uploadList.length; i++) {
                                         if (store.state.other.uploadList[i].id === temp.id) {

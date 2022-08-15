@@ -60,4 +60,6 @@ public interface ProjectService {
     int checkAddRegion(String key);
 
     void getRegion(String projectId, String layerId, String Email, HttpServletResponse response);
+    
+    void getRegion(String pngName ,String Email, HttpServletResponse response);
 }
