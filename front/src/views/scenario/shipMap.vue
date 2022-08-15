@@ -11,9 +11,9 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { getMap } from '../../utils/visualTools/mapSetting';
 import Stats from 'three/examples/jsm/libs/stats.module';
 
-import {tbvsSymbol, tbvsSymbols} from "../../utils/geoscratch/function/tbvs";
+import {tbvsSymbol, tbvsSymbols, BillboardSymbolManager} from "../../utils/geoscratch/function/tbvs";
 import { onMounted } from '@vue/runtime-dom';
-import { TLayer } from "../../utils/visualTools/customLayer"
+import { TBVSLayer, TLayer } from "../../utils/visualTools/customLayer"
 import { encodeFloatToDouble } from "../../utils/geoscratch/core/webglUtil/utils";
 
 let map: Map;
@@ -65,25 +65,34 @@ export default {
             // console.log(shipData.getInt32(12));
             const shipNum = shipData.byteLength / 25;
 
-            const lonStart = shipNum * 4;
-            const latStart = shipNum * 8;
+            const latStart = shipNum * 4;
+            const lonStart = shipNum * 8;
+            const rotStart = shipNum * 12;
+            const lenStart = shipNum * 16;
+            const widStart = shipNum * 20;
 
+            const symbolManager = new BillboardSymbolManager(100000);
             let aisPoints: Array<tbvsSymbol> = [];
             for (let i = 0; i < shipNum; i++) {
                 const lon = shipData.getInt32(lonStart + i * 4) / 100000;
                 const lat = shipData.getInt32(latStart + i * 4) / 100000;
-                // console.log(lon, lat);
+                const rot = shipData.getInt32(rotStart + i *4) / 1000;
+                const len = shipData.getInt32(lenStart + i *4) / 500;
+                const wid = shipData.getInt32(widStart + i *4) / 500;
+                // console.log(rot, len, wid);
+                console.log(lon, lat);
                 let style = [88, 20];
 
-                const position = mapboxgl.MercatorCoordinate.fromLngLat({lng:lat, lat:lon});
+                const position = mapboxgl.MercatorCoordinate.fromLngLat({lng:lon, lat:lat});
                 const positionX = encodeFloatToDouble(position.x);
                 const positionY = encodeFloatToDouble(position.y);
                 aisPoints.push(new tbvsSymbol(0, style[0], style[1], [positionX[0], positionY[0], positionX[1], positionY[1]]));
+                symbolManager.setMemory([positionX[0], positionY[0], positionX[1], positionY[1]], rot, [len, wid]);
             }
             // console.log(aisPoints);
             const aisMarkers = new tbvsSymbols(aisPoints);
 
-            let cusLayer = new TLayer('tbvs', 'custom', '3d', aisMarkers);
+            let cusLayer = new TBVSLayer('tbvs', 'custom', '3d', aisMarkers, symbolManager);
  
             map.addLayer(cusLayer as mapboxgl.CustomLayerInterface);
 

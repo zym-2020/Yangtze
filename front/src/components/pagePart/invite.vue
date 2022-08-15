@@ -1,9 +1,9 @@
 <template>
   <div class="invite-wrapper">
-    <h2>Ready to get started?</h2>
-    <p>Create an account to join us in sharing data.</p>
+    <h2>准备好加入我们了吗 ？</h2>
+    <p>创建自己的账号和我们一起分享并使用数据。</p>
     <div class="button-wrapper">
-      <button class="button">Sign up</button>
+      <button class="button">创建账号</button>
     </div>
   </div>
 </template>

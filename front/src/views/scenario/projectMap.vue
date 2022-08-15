@@ -2,7 +2,7 @@
     <div id="map"></div>
     <el-card shadow="hover" id="total-num" :body-style="{ padding: '0 16px 0 16px' }">
         <h3 class="header-small">工程总数</h3>
-        <p class="num-small">12</p>
+        <p class="num-small">{{ total }}</p>
     </el-card>
     <el-checkbox-group class="checkbox-group" id="info-vs" v-model="checkboxGroup1" size="large" @change="InfoChange">
         <el-checkbox-button class="check-button" id="info-checkbox" label="info" size='large'>
@@ -110,6 +110,8 @@ const planList = ref([
     {name:'通白初设施工方案', id:5, lyrName:'tbcsplan', flySet: {zoom:10.61, center:[121.031,31.860]}, status: '未开始', money: '15.68亿', startTime: '2014-12-3', allDuration: '16个月', brief: '该工程是国务院部署实施的150项重大水利工程之一，也是今年重点推进的55项重大水利工程之一', target: '全面提升湘西州府吉首市城市防洪能力和供水保障能力，改善吉首市农业产业灌溉条件，防洪能力由10年一遇提高到50年一遇，同时还将进一步丰富旅游资源，改善峒河流域生态环境'}, 
 ]);
 
+const total = ref(projectList.value.length + planList.value.length);
+
 const layerIDList = [
     'bmxszzproject', 'hgszzproject', 'tzszdycproject', 'xsd1qproject', 'xsd2qproject', 'xsd3qproject', 'xkszzproject', 
     'fzfbplan', 'hcgbtplan', 'htplan', 'hts1qplan', 'szsplan', 'tbcsplan'];
@@ -189,7 +191,7 @@ onMounted(()=> {
         let flySet = list[id].flySet;
         detailInfo.value = {name: list[id].name, status: list[id].status, money: list[id].money, startTime: list[id].startTime, allDuration: list[id].allDuration, brief: list[id].brief, target:list[id].target};
         mapUtil.Fly2Pos(flySet.zoom, flySet.center as [number, number]);
-        await new Promise(r => setTimeout(r, 500));
+        await new Promise(r => setTimeout(r, 500)); // wait for flight
         if(checkboxGroup1.value.indexOf('info') < 0) {
             checkboxGroup1.value.push('info');
             detailSeen.value = true;
@@ -257,7 +259,7 @@ div#map {
   position: absolute;
   top: 0;
   left: 0;
-  background: rgb(0, 155, 226);
+  background: rgb(255, 255, 255);
 }
 
 #total-num {

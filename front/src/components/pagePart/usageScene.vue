@@ -6,7 +6,7 @@
       <p>
         {{usageText[sequence].descript}}
       </p>
-      <a class="button arrow">Learn More</a>
+      <a class="button arrow">点击进入</a>
     </div>
   </div>
 </template>
@@ -25,10 +25,10 @@ export default {
     const sequence = ref(props.seq);
     const position = ref(props.pos);
     const usageText = ref({
-      '1': {title:'Search', descript:'Search and geocoding is tied to everything we build — maps, navigation, AR — and underlies every app that helps humans explore their world.'}, 
-      '2': {title:'Atlas', descript:'With Atlas, you can self-host Mapbox maps and geocoding APIs, Streets, Satellite, and Terrain tilesets, and Mapbox Studio on your network, behind a firewall, or even air-gapped. '}, 
-      '3': {title:'Data', descript:'Our data is powered by hundreds of data sources, and a distributed global users base of more than half a billion monthly active users.'}
-    })
+      '1': {title:'资源门户', descript:'包罗用户所上传的所有共享资源，资源门户以资源共享与资源预览功能为核心的同时，又以资源描述与资源分类为支持进行资源索引。对资源进行灵活整合与统一组织。'}, 
+      '2': {title:'一张图', descript:'以底图数据和同类相关信息资源整合为基础，以统一的技术标准整合各类信息资源，实现了部门内部信息资源的集成管理和共享服务，与完整的资源展示和交互功能。'}, 
+      '3': {title:'分析中心', descript:'综合研究分析平台以数据和模型分析库及分析功能为驱动，以中心数据库为中心，结合本地数据库中的缓存数据，支撑应用层的各种分析操作。'}
+    });
     return { sequence, position, usageText };
   }
 }
@@ -36,8 +36,8 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-$carouselBg: "../../assets/home/carousel";
-$indexs : 'index1', 'index2', 'index3', 'index4', 'index5', 'index6';
+$carouselBg: "../../assets/home/usage";
+$indexs : 'index1', 'index2', 'index3';
 
 div.usage-wrapper {
   width: 75%;

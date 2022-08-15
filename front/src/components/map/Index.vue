@@ -105,7 +105,7 @@ export default defineComponent({
         map.value?.addSource(resource.id as string, {
           type: "raster",
           tiles: [
-            `http://localhost:8002/analyticDataSet/getRaster/${resource.id}/{x}/{y}/{z}`,
+            `http://172.21.212.10:8002/analyticDataSet/getRaster/${resource.id}/{x}/{y}/{z}`,
           ],
         });
         map.value?.addLayer({
@@ -120,7 +120,7 @@ export default defineComponent({
         map.value?.addSource(resource.id as string, {
           type: "raster-dem",
           tiles: [
-            `http://localhost:8002/analyticDataSet/getRaster/${resource.id}/{x}/{y}/{z}`,
+            `http://172.21.212.10:8002/analyticDataSet/getRaster/${resource.id}/{x}/{y}/{z}`,
           ],
         });
         map.value?.addLayer({
@@ -137,7 +137,7 @@ export default defineComponent({
         map.value?.addSource(resource.id as string, {
           type: resource.type,
           tiles: [
-            `http://localhost:8002/vector/${resource.tableName}/{x}/{y}/{z}`,
+            `http://172.21.212.10:8002/vector/${resource.tableName}/{x}/{y}/{z}`,
           ],
         });
         map.value?.addLayer({
@@ -207,7 +207,7 @@ export default defineComponent({
         map.value?.addSource(resource.id as string, {
           type: resource.type,
           tiles: [
-            `http://localhost:8002/raster/getRaster/${resource.id}/{x}/{y}/{z}`,
+            `http://172.21.212.10:8002/raster/getRaster/${resource.id}/{x}/{y}/{z}`,
           ],
         });
         map.value?.addLayer({

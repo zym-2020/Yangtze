@@ -1,10 +1,7 @@
 import { get, post, del, patch } from './axios'
 
-import { RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData, AddFileJsonData, RenameJsonData, 
-    SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData, GetNoUploadJsonData, AddRecordJsonData,  AddMessageJsonData } from './type/userType'
 import { ResourceState } from '@/store/resourse/resourceState'
 import { arrayBuffer } from 'stream/consumers'
-import axios from 'axios'
 import {
     RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData, AddFileJsonData, RenameJsonData, UnPackJsonData, UpdateParentIdAndLevelJsonData, CompressFileJsonData,
     SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData, GetNoUploadJsonData, AddRecordJsonData, AddMessageJsonData, DeleteFilesOrFolders, GetProjectsJsonData
@@ -329,7 +326,7 @@ export async function CountUserReply() {
 
 // export async function responseTest(response:string) {
     
-//     axios.get("http://localhost:8080/Yangtze/admin/message/responseMessage/122", { responseType: 'arraybuffer'}).then((res) => {
+//     axios.get("http://172.21.212.10:8080/Yangtze/admin/message/responseMessage/122", { responseType: 'arraybuffer'}).then((res) => {
         
 //         const dataView = new DataView(res.data)
 //         console.log("223",res.data)
@@ -340,7 +337,7 @@ export async function CountUserReply() {
 
 export async function responseBinary(response:String) {
     
-    axios.get("http://localhost:8080/Yangtze/admin/message/responseBinary/122", { responseType: 'arraybuffer'}).then((res) => {
+    axios.get("http://172.21.212.10:8080/Yangtze/admin/message/responseBinary/122", { responseType: 'arraybuffer'}).then((res) => {
         
         const dataView = new DataView(res.data)
         console.log("223",res.data)
@@ -351,7 +348,7 @@ export async function responseBinary(response:String) {
 
 export async function getShipBinary(response:String) {
     
-    axios.get("http://localhost:8003/ship/getShipBinary", { responseType: 'arraybuffer'}).then((res) => {
+    axios.get("http://172.21.212.10:8003/ship/getShipBinary", { responseType: 'arraybuffer'}).then((res) => {
         
         const dataView = new DataView(res.data)
         console.log("223",res.data)

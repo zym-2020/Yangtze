@@ -1,7 +1,7 @@
 import axios from 'axios';
 import mapboxgl from "mapbox-gl";
 import {Shader} from '../../utils/geoscratch/core/shader/shader';
-import {tbvsSymbols} from "../../utils/geoscratch/function/tbvs";
+import {tbvsSymbols, BillboardSymbolManager} from "../../utils/geoscratch/function/tbvs";
 import { Matrix4x4 } from "../../utils/geoscratch/core/math/matrix4";
 import {loadTexture} from "../../utils/geoscratch/resource/data/texture"
 import { encodeFloatToDouble } from "../../utils/geoscratch/core/webglUtil/utils";
@@ -42,7 +42,9 @@ class TBVSLayer extends CustomLayer {
     framebuffer: Array<number>;
     pixelRatio: number;
 
-    constructor(id: string, type: string, renderingMode: string, symbols: tbvsSymbols) {
+    symblManager: BillboardSymbolManager;
+
+    constructor(id: string, type: string, renderingMode: string, symbols: tbvsSymbols, manager: BillboardSymbolManager) {
       super(id, type, renderingMode);
       this.map = null;
       this.shader = null;
@@ -51,6 +53,8 @@ class TBVSLayer extends CustomLayer {
 
       this.framebuffer = [];
       this.pixelRatio = window.devicePixelRatio;
+
+      this.symblManager = manager;
     }
 
     async onAdd(map: mapboxgl.Map, gl: WebGL2RenderingContext) {
@@ -59,21 +63,23 @@ class TBVSLayer extends CustomLayer {
         this.framebuffer.push(gl.canvas.height);
 
         // Get vertex shader source
-        const vertexSource = await axios.get("http://localhost:8080/shaders/tbvs.vert")
+        const vertexSource = await axios.get("http://172.21.212.10:8080/shaders/tbvs.vert")
         .then((response) => {
             return response.data;
         })
         // Get fragment shader source
-        const fragmentSource = await axios.get("http://localhost:8080/shaders/tbvs.frag")
+        const fragmentSource = await axios.get("http://172.21.212.10:8080/shaders/tbvs.frag")
         .then((response) => {
             return response.data;
         })
         this.shader = new Shader(gl, vertexSource, fragmentSource);
 
         // Create a texture
-        this.texture = loadTexture(gl, "http://localhost:8080/images/TBVS_88.png", 0);
+        this.texture = loadTexture(gl, "http://172.21.212.10:8080/images/TBVS_88.png", 0);
 
-        this.symbols?.setup(gl, this.shader);
+        // this.symbols?.setup(gl, this.shader);
+
+        this.symblManager.setup(gl, this.shader);
         
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
         gl.bindVertexArray(null);
@@ -87,7 +93,8 @@ class TBVSLayer extends CustomLayer {
 
         gl.bindTexture(gl.TEXTURE_2D, this.texture);
         this.shader.use(gl);
-        this.symbols.use(gl);
+        this.symblManager.use(gl);
+        // this.symbols.use(gl);
 
         const center = this.map.getCenter();
         const mercatorCenter = mapboxgl.MercatorCoordinate.fromLngLat({lng:center.lng, lat:center.lat});
@@ -100,7 +107,7 @@ class TBVSLayer extends CustomLayer {
         relativeToEyeMatrix[14] += relativeToEyeMatrix[2] * mercatorCenter.x + relativeToEyeMatrix[6] * mercatorCenter.y;
         relativeToEyeMatrix[15] += relativeToEyeMatrix[3] * mercatorCenter.x + relativeToEyeMatrix[7] * mercatorCenter.y;
 
-        const symbolPixel = 50.0;
+        const symbolPixel = 25.0;
         const radius = 0.0;
         let modelMatrix = Matrix4x4.identity();
         modelMatrix = Matrix4x4.xRotate(modelMatrix, radius);
@@ -109,15 +116,18 @@ class TBVSLayer extends CustomLayer {
         modelMatrix = Matrix4x4.scale(modelMatrix, this.pixelRatio * symbolPixel / this.framebuffer[0], this.pixelRatio * symbolPixel / this.framebuffer[1], 1.0);
         modelMatrix = Matrix4x4.translate(modelMatrix, 0, 0, 0);
 
+        this.shader.setInt(gl, "u_maxInstanceNum", this.symblManager.getNumInstance());
         this.shader.setInt(gl, "symbolTexture", 0);
         this.shader.setFloat2(gl, "u_mercatorCenterHigh", mercatorCenterX[0], mercatorCenterY[0]);
         this.shader.setFloat2(gl, "u_mercatorCenterLow", mercatorCenterX[1], mercatorCenterY[1]);
         this.shader.setMat4(gl, "u_matrix", relativeToEyeMatrix);
         this.shader.setMat4(gl, "u_symbolMatrix", modelMatrix);
+        this.shader.setFloat2(gl, "u_bufferSize", this.framebuffer[0], this.framebuffer[1]);
 
 
         const primitiveType = gl.TRIANGLES;
-        gl.drawArraysInstanced(primitiveType, 0, 63, this.symbols.getNumInstance()); // 218619
+        // gl.drawArraysInstanced(primitiveType, 0, 63, this.symbols.getNumInstance()); // 218619
+        gl.drawArraysInstanced(primitiveType, 0, 18, this.symblManager.getNumInstance());
         gl.bindVertexArray(null);
         gl.bindTexture(gl.TEXTURE_2D, null);
     }
@@ -143,9 +153,11 @@ class TLayer extends CustomLayer {
     rayCaster: three.Raycaster;
     pointer: three.Vector2;
 
+    symblManager: BillboardSymbolManager;
+
     
 
-    constructor(id: string, type: string, renderingMode: string, symbols: tbvsSymbols) {
+    constructor(id: string, type: string, renderingMode: string, symbols: tbvsSymbols, manager: BillboardSymbolManager) {
         super(id, type, renderingMode);
         this.map = null;
 
@@ -166,6 +178,8 @@ class TLayer extends CustomLayer {
 
         this.rayCaster = new three.Raycaster();
         this.pointer = new three.Vector2();
+
+        this.symblManager = manager;
     }
 
     async onAdd(map: mapboxgl.Map, gl: WebGL2RenderingContext) {
@@ -177,7 +191,7 @@ class TLayer extends CustomLayer {
         this.scene = new three.Scene();
         this.camera = new three.PerspectiveCamera();
 
-        this.texture = new three.TextureLoader().load('http://localhost:8080/textures/TBVS_88.png', (texture)=> {console.log("this is ", texture.image.width)});
+        this.texture = new three.TextureLoader().load('http://172.21.212.10:8080/textures/TBVS_88.png', (texture)=> {console.log("this is ", texture.image.width)});
         this.texture.flipY = false;
         console.log("texture? ", this.texture);
 
@@ -190,11 +204,11 @@ class TLayer extends CustomLayer {
             u_matrix: {value: new three.Matrix4()}, 
             u_symbolMatrix: {value: new three.Matrix4()}
         };
-        const vertexShader = await axios.get("http://localhost:8080/shaders/tbvs_three.vert")
+        const vertexShader = await axios.get("http://172.21.212.10:8080/shaders/tbvs_three.vert")
                             .then((response) => {
                                 return response.data;
                             });
-        const fragmentShader = await axios.get("http://localhost:8080/shaders/tbvs_three.frag")
+        const fragmentShader = await axios.get("http://172.21.212.10:8080/shaders/tbvs_three.frag")
                             .then((response) => {
                                 return response.data;
                             });
@@ -368,11 +382,11 @@ class mLayer extends CustomLayer {
             glslVersion: three.GLSL3,
             uniforms: {
             },
-            vertexShader: await axios.get("http://localhost:8080/shaders/tbvs_three.vert")
+            vertexShader: await axios.get("http://172.21.212.10:8080/shaders/tbvs_three.vert")
                                 .then((response) => {
                                     return response.data;
                                 }), 
-            fragmentShader: await axios.get("http://localhost:8080/shaders/tbvs_three.frag")
+            fragmentShader: await axios.get("http://172.21.212.10:8080/shaders/tbvs_three.frag")
                                 .then((response) => {
                                     return response.data;
                                 }),

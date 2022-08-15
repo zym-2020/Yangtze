@@ -19,7 +19,7 @@
           "
           >{{ projectInfo.project_name }}</el-avatar
         >
-        <img :src="'http://localhost:8002' + projectInfo.avatar" alt="" width="248" height="180" v-else />
+        <img :src="'http://172.21.212.10:8002' + projectInfo.avatar" alt="" width="248" height="180" v-else />
       </div>
       <div class="foot">
         <div class="time" :title="getDate(projectInfo.create_time)">

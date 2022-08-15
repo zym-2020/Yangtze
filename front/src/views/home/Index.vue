@@ -22,7 +22,7 @@ export default defineComponent({
     const tdtCva: AnySourceData = {
       type: "vector",
       tiles: [
-        "http://localhost:8002/vector/cwz1/{x}/{y}/{z}",
+        "http://172.21.212.10:8002/vector/cwz1/{x}/{y}/{z}",
         // "http://t0.tianditu.gov.cn/DataServer?T=cia_w&x={x}&y={y}&l={z}&tk=35a94ab5985969d0b93229c30db6abd6",
         // "http://t0.tianditu.com/cva_w/wmts?tk=35a94ab5985969d0b93229c30db6abd6&SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=cva&STYLE=default&TILEMATRIXSET=w&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=tiles",
       ],
