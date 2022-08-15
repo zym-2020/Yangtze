@@ -9,7 +9,7 @@ import { getCurrentProjectName } from "@/utils/project";
 const store = useStore()
 
 export class MapUtils {
-    section_1 = (map: mapBoxGl.Map | undefined, draw: MapboxDraw) => {
+    section_1 = (map | mapBoxGl.Map | undefined, draw: MapboxDraw) => {
         if (map?.loaded()) {
             map.addControl(draw, "top-right");
         } else {

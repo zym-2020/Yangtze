@@ -26,23 +26,25 @@
             :rows="3"
           />
         </el-form-item>
-        <el-form-item label="标签：" prop="tagList">
+        <el-form-item label="标签：" prop="tagList" >
           <el-select
             v-model="form.tagList"
             multiple
             placeholder="标签"
-            collapse-tags
+            
+            size="large"
+            style="width:300px"
           >
             <el-option-group
               v-for="(group, groupIndex) in options"
               :key="groupIndex"
-              :label="group.label"
+              :label="group.title"
             >
               <el-option
-                v-for="(item, index) in group.options"
+                v-for="(item, index) in group.data"
                 :key="index"
-                :label="item"
-                :value="item"
+                :label="item.name"
+                :value="item.name"
               />
             </el-option-group>
           </el-select>
@@ -106,6 +108,11 @@
         </el-form-item>
         <el-form-item label="条目封面：">
           <avatar-upload @upload="upload"></avatar-upload>
+        </el-form-item>
+
+        <el-form-item label="条目缩略图：">
+          <!-- <avatar-upload @upload="uploadTh"></avatar-upload> -->
+          <thumb-upload  @uploadTh="uploadTh"></thumb-upload>
         </el-form-item>
       </el-form>
       <el-divider />
@@ -200,11 +207,12 @@ import {
 import { notice } from "@/utils/notice";
 import type { FormInstance } from "element-plus";
 import AvatarUpload from "@/components/upload/AvatarUpload.vue";
+import ThumbUpload from "@/components/upload/ThumbUpload.vue";
 import router from "@/router";
 import { useStore } from "@/store";
 
 export default defineComponent({
-  components: { PageHeader, Editor, Toolbar, ResourceDialog, AvatarUpload },
+  components: { PageHeader, Editor, Toolbar, ResourceDialog, AvatarUpload,ThumbUpload },
   setup() {
     const store = useStore();
     const defaultProps = {
@@ -225,6 +233,7 @@ export default defineComponent({
     const fileRef = ref<HTMLElement>();
     const metaRef = ref<HTMLElement>();
     const avatarFlag = ref(false);
+    const thumbFlag =ref(false);
 
     const handleCreated = (editor: any) => {
       editorRef.value = editor; // 记录 editor 实例，重要！
@@ -274,6 +283,11 @@ export default defineComponent({
       form.avatar = val;
     };
 
+    const uploadTh = (val: any) => {
+      thumbFlag.value = true;
+      form.thumbnail = val;
+    };
+
     const commit = async (
       formEl1: FormInstance | undefined,
       formEl2: FormInstance | undefined
@@ -313,18 +327,26 @@ export default defineComponent({
               formData.append("file", form.avatar);
             } else {
               formData.append("file", new Blob());
+            };
+            if (thumbFlag.value) {
+              formData.append("file2", form.thumbnail);
+            } else {
+              formData.append("file2", new Blob());
             }
 
             const data = await addShareFile(formData);
             if (data != null) {
               if ((data as any).code === 0) {
                 notice("success", "成功", "请等待管理员审核通过！");
-                const fileID = data.data.list.value;
-                const dataCacheById = await getShareFileById(fileID.value);
+                
+                const fileID = data.data.list;
+                const dataCacheById = await getShareFileById(fileID);
+               
                 tempCache.value = dataCacheById.data.list;
                 const jsonDataById = computed(() => {
                   return JSON.stringify(tempCache.value as any);
-                });            
+                }); 
+                          
                 const tempData = await addMessage({
                   id: "",
                   dataName: form.name,
@@ -333,13 +355,14 @@ export default defineComponent({
                   dataCache: jsonDataById.value,
                   messageRequest: "fff",
                   reply: false,
-                  fileId: fileID.value,
+                  fileId: fileID as string,
                   messageSender: "fgz",
                   messageReceiver: " ",
                   messageResponse: "examine",
                   messageType: "upload",
                   replyUser: false,
                 });
+                console.log("ffff")
                 await examineById(fileID.value);
                 init();
               } else {
@@ -371,59 +394,320 @@ export default defineComponent({
         (metaForm.getMode = "");
     };
 
-    const options = ref([
-      {
-        label: "水文参数数据",
-        options: ["潮位", "大断面", "含沙量", "流量", "流速", "流向", "悬移质"],
+    const options = ref([     {
+        title: "一级分类（必选）",
+        data: [
+          {
+            name: "基础地形数据",
+            count: false,
+          },
+          {
+            name: "基础水文数据",
+            count: false,
+          },
+          {
+            name: "基础工程数据",
+            count: false,
+          },
+          {
+            name: "整合资料库",
+            count: false,
+          },
+          {
+            name: "数模案例库",
+            count: false,
+          },
+          {
+            name: "物模案例库",
+            count: false,
+          },
+          {
+            name: "影像资料库",
+            count: false,
+          },
+          {
+            name: "辅助资料库",
+            count: false,
+          },
+          {
+            name: "元数据",
+            count: false,
+          },
+        ],
       },
+        {
+        title: "基础地形数据",
+        data: [
+          {
+            name: "栅格TXT文件",
+            count: false,
+          },
+                    {
+            name: "栅格ASC文件",
+            count: false,
+          },
+        ]
+        },
+                {
+        title: "基础水文数据",
+        data: [
+          {
+            name: "潮位数据",
+            count: false,
+          },
+                    {
+            name: "流速流向数据",
+            count: false,
+          },
+                              {
+            name: "含沙量数据",
+            count: false,
+          },
+                              {
+            name: "流量数据",
+            count: false,
+          },
+                                        {
+            name: "输沙率数据",
+            count: false,
+          },
+          {
+            name: "悬移质数据",
+            count: false,
+          },          {
+            name: "冲淤数据",
+            count: false,
+          },
+                    {
+            name: "深泓线数据",
+            count: false,
+          },
+                    {
+            name: "沙滩数据",
+            count: false,
+          },
+                    {
+            name: "床沙数据",
+            count: false,
+          },
+              {
+            name: "含盐度数据",
+            count: false,
+          },
+                        {
+            name: "风速风向数据",
+            count: false,
+          },
+                                  {
+            name: "报告文字数据",
+            count: false,
+          },
+                                            {
+            name: "水文测验布置",
+            count: false,
+          },
+        ]
+        },
+
       {
-        label: "水文数据",
-        options: ["深泓线", "沙滩", "浓度场", "流场", "冲淤"],
-      },
-      {
-        label: "流场数据",
-        options: ["流场矢量线数据", "流场栅格数据"],
-      },
-      {
-        label: "物理模型数据",
-        options: ["模型照片", "试验照片", "等高线", "长江BMP图像"],
-      },
-      {
-        label: "基础数据",
-        options: [
-          "水文参数数据",
-          "三维点数据",
-          "流场数据",
-          "工程数据",
-          "数模数据",
-          "物模数据",
-          "影像数据",
+        title: "基础工程数据",
+        data: [
+                    {
+            name: "DWG工程文件",
+            count: false,
+          },
+          {
+            name: "码头工程",
+            count: false,
+          },
+                    {
+            name: "桥梁工程",
+            count: false,
+          },
+                              {
+            name: "规划未实施工程",
+            count: false,
+          },
+                              {
+            name: "水利工程",
+            count: false,
+          },   
+          {
+            name: "护岸工程",
+            count: false,
+          },      
+                    {
+            name: "航道整治工程",
+            count: false,
+          },    
+                              {
+            name: "水利工程",
+            count: false,
+          },                        {
+            name: "航标",
+            count: false,
+          },  
         ],
       },
       {
-        label: "辅助数据",
-        options: ["潮位站", "长江流域遥感影像", "等高线", "长江BMP图像"],
+        title: "整合地形数据",
+        data: [
+          {
+            name: "SHAPEFILE",
+            count: false,
+          },
+          {
+            name: "等高线",
+            count: false,
+          },
+                    {
+            name: "等深线",
+            count: false,
+          },
+                    {
+            name: "高程点",
+            count: false,
+          },
+                    {
+            name: "边界",
+            count: false,
+          },
+                    {
+            name: "TIN",
+            count: false,
+          },          {
+            name: "DEM",
+            count: false,
+          },
+        ],
       },
       {
-        label: "工程实施数据",
-        options: ["工程前数据", "工程后数据"],
+        title: "整合水文数据",
+        data: [
+          {
+            name: "MDB关系数据库",
+            count: false,
+          },
+        ],
       },
       {
-        label: "处理数据",
-        options: ["原始数据", "整合数据"],
+        title: "整合工程数据",
+        data: [
+                   {
+            name: "DWG工程文件",
+            count: false,
+          },
+          {
+            name: "码头工程",
+            count: false,
+          },
+                    {
+            name: "桥梁工程",
+            count: false,
+          },
+                              {
+            name: "规划未实施工程",
+            count: false,
+          },
+                              {
+            name: "水利工程",
+            count: false,
+          },   
+          {
+            name: "护岸工程",
+            count: false,
+          },      
+                    {
+            name: "航道整治工程",
+            count: false,
+          },    
+                              {
+            name: "水利工程",
+            count: false,
+          },                        {
+            name: "航标",
+            count: false,
+          },  
+        ],
       },
-      {
-        label: "辅助数据",
-        options: ["PPT", "PDF", "DOC", "XLS"],
+            {
+        title: "数模案例库",
+        data: [
+          {
+            name: "流场",
+            count: false,
+          },
+        ],
       },
-      {
-        label: "数据库数据",
-        options: ["水文Access数据库"],
+                  {
+        title: "物模案例库",
+        data: [
+          {
+            name: "流速",
+            count: false,
+          },
+                    {
+            name: "泥沙",
+            count: false,
+          },
+                    {
+            name: "水位",
+            count: false,
+          },
+          {
+            name:"潮汐",
+            conut:false
+
+          },
+                              {
+            name: "视频",
+            count: false,
+          },
+          {
+            name: "照片",
+            count: false,
+          },
+        ],
+      },     
+       {
+        title: "影像资料库",
+        data: [
+          {
+            name: "遥感影像",
+            count: false,
+          },
+        ],
       },
-      {
-        label: "资源类型",
-        options: ["excel"],
+             {
+        title: "辅助资料库",
+        data: [
+          {
+            name: "地名数据",
+            count: false,
+          },          {
+            name: "固定断面线",
+            count: false,
+          },          {
+            name: "制导线",
+            count: false,
+          },
+        ],
+      },             {
+        title: "元数据",
+        data: [
+          {
+            name: "Pdf",
+            count: false,
+          },          {
+            name: "Word",
+            count: false,
+          },          {
+            name: "PPT",
+            count: false,
+          },
+        ],
       },
+     
     ]);
 
     const form = reactive({
@@ -443,6 +727,7 @@ export default defineComponent({
         address: "",
       },
       avatar: "",
+      thumbnail : "",
     });
 
     const metaForm = reactive({
@@ -521,6 +806,7 @@ export default defineComponent({
       fileRef,
       metaRef,
       upload,
+      uploadTh,
     };
   },
 });

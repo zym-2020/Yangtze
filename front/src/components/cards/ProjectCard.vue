@@ -2,37 +2,37 @@
   <div class="project-card">
     <el-card class="card" shadow="hover">
       <template #header>
-        <div class="card-header" :title="projectInfo.project_name">
-          <strong>{{ projectInfo.project_name }}</strong>
+        <div class="card-header" :title="projectInfo?.project_name">
+          <strong>{{ projectInfo?.project_name }}</strong>
         </div>
       </template>
       <div class="des" title="哈哈哈">
         <strong>简介：</strong>
-        <div class="des-text">{{ projectInfo.description }}</div>
+        <div class="des-text">{{ projectInfo?.description }}</div>
       </div>
       <div class="img">
         <el-avatar
           shape="square"
           fit="cover"
           v-if="
-            projectInfo.avatar === '' || projectInfo.avatar === null
+            projectInfo?.avatar === '' || projectInfo?.avatar === null
           "
           >{{ projectInfo.project_name }}</el-avatar
         >
-        <img :src="'http://localhost:8002' + projectInfo.avatar" alt="" width="248" height="180" v-else />
+        <img :src="'http://localhost:8002' + projectInfo?.avatar" alt="" width="248" height="180" v-else />
       </div>
       <div class="foot">
-        <div class="time" :title="getDate(projectInfo.create_time)">
+        <div class="time" :title="getDate(projectInfo?.create_time)">
           <svg style="width: 20px; height: 20px; margin-top: 5px">
             <use xlink:href="#icon-shijian"></use>
           </svg>
-          <strong class="text">{{ getDate(projectInfo.create_time) }}</strong>
+          <strong class="text">{{ getDate(projectInfo?.create_time) }}</strong>
         </div>
-        <div class="user" :title="projectInfo.name">
+        <div class="user" :title="projectInfo?.name">
           <svg style="width: 20px; height: 20px; margin-top: 5px">
             <use xlink:href="#icon-nickname"></use>
           </svg>
-          <strong class="text">{{ projectInfo.name }}</strong>
+          <strong class="text">{{ projectInfo?.name }}</strong>
         </div>
       </div>
     </el-card>

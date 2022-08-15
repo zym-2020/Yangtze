@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * Created with IntelliJ IDEA.
  *
@@ -108,6 +110,11 @@ public class ProjectController {
         return ResultUtils.success(projectService.findProjectById(projectId));
     }
 
-
+    @CrossOrigin
+    @RequestMapping(value = "/getRegion/{email}/{pngName}", method = RequestMethod.GET)
+    public JsonResult getRegion(@PathVariable String pngName, @PathVariable String email, HttpServletResponse response) {
+        projectService.getRegion(pngName, email, response);
+        return ResultUtils.success();
+    }
 
 }

@@ -11,7 +11,7 @@ import java.util.Map;
 @Repository
 public interface ShipMapper {
 
-    List<Map<String, Object>> QueryByMsi(@Param("mmsi") int mmsi);
+    List<Map<String, Object>> QueryCode();
 
 
 }

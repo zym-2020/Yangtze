@@ -13,7 +13,7 @@
               :key="route.path"
             />
           </keep-alive>
-          <component :is="Component" v-if="!route.meta.keepAlive" />
+          <component :is="Component" :key="route.path"  v-if="!route.meta.keepAlive" />
         </router-view>
         <el-drawer v-model="uploadPageFlag" size="300px" :with-header="false">
           <upload-page class="upload"></upload-page>
@@ -36,6 +36,7 @@ export default defineComponent({
   setup() {
     const route = computed(() => {
       return router.currentRoute.value;
+      
     });
     const uploadPageFlag = ref(false);
 

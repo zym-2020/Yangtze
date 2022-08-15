@@ -14,7 +14,7 @@
     </insert>
 
     <select id="pageQuery" resultType="java.util.HashMap">
-        select download_history.*, users.name, users.avatar from download_history, users where download_history.data_id = #{dataId} and user_id::uuid = users.id order by download_time desc limit #{size} offset #{start};
+        select users.name,download_history.download_time,download_history.data_type from download_history, users where download_history.data_id = #{dataId} and user_id::uuid = users.id order by download_time desc limit #{size} offset #{start};
     </select>
 
     <select id="countByDataId" resultType="java.lang.Integer">

@@ -1,8 +1,4 @@
 import { get, post, del, patch } from './axios'
-
-import { RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData, AddFileJsonData, RenameJsonData, 
-    SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData, GetNoUploadJsonData, AddRecordJsonData,  AddMessageJsonData } from './type/userType'
-import { ResourceState } from '@/store/resourse/resourceState'
 import { arrayBuffer } from 'stream/consumers'
 import axios from 'axios'
 import {
@@ -12,7 +8,6 @@ import {
 import { Resource, Analyse } from '@/store/resourse/resourceState'
 
 
-import axios from 'axios'
 
 //========================User相关接口=================================
 export async function login(jsonData: LoginJsonData) {
@@ -158,6 +153,9 @@ export async function compressFile(jsonData: CompressFileJsonData) {
     return await post(`/file/compressFile`, jsonData)
 }
 
+export async function getFilePath(path: string) {
+    return await get(`/file/getFilePath/${path}`)
+}
 //========================share_file相关接口=================================
 export async function addShareFile(formData: FormData) {
     return await post(`/share/addShareFile`, formData)
@@ -228,6 +226,18 @@ export async function deleteShareFileAsMember(id: string, page: number, size: nu
 export async function getShareFileById(id: string) {
     return await patch(`/share/getShareFileById/${id}`)
 }
+
+export async function getOtherTags(id: string) {
+    return await patch(`/share/getOtherTags/${id}`)
+}
+
+
+export async function getShpByCoordinates(arrayString: string) {
+    return await get(`/share/getShpByCoordinates/${arrayString}`)
+}
+
+
+
 //========================fileMeta相关接口=================================
 
 export async function getFileMetaAndUserInfo(id: string, email: string) {
@@ -327,42 +337,9 @@ export async function CountUserReply() {
     return await get(`/admin/message/CountUserReply`)
 }
 
-// export async function responseTest(response:string) {
-    
-//     axios.get("http://localhost:8080/Yangtze/admin/message/responseMessage/122", { responseType: 'arraybuffer'}).then((res) => {
-        
-//         const dataView = new DataView(res.data)
-//         console.log("223",res.data)
-//         console.log("123", dataView.byteLength, dataView.getInt32(4))
-//         return dataView
-//     })
-// }
-
-export async function responseBinary(response:String) {
-    
-    axios.get("http://localhost:8080/Yangtze/admin/message/responseBinary/122", { responseType: 'arraybuffer'}).then((res) => {
-        
-        const dataView = new DataView(res.data)
-        console.log("223",res.data)
-        console.log("123", dataView.byteLength, dataView.getInt32(4))
-        return dataView
-    })
+export async function ZipEntryPath(path:string){
+    return await get(`/admin/message/ZipEntryPath/${path}`)
 }
-
-export async function getShipBinary(response:String) {
-    
-    axios.get("http://localhost:8003/ship/getShipBinary", { responseType: 'arraybuffer'}).then((res) => {
-        
-        const dataView = new DataView(res.data)
-        console.log("223",res.data)
-        console.log("123", dataView.byteLength, dataView.getInt32(4))
-        return dataView
-    })
-}
-
-// export async function queryByMsi(mmsi:number) {
-//     return await get(`/admin/message/QueryByMsi/${mmsi}`)
-// }
 
 //========================analyticDataSet相关接口=================================
 export async function findDataByType(type: string) {
@@ -382,3 +359,39 @@ export async function getAreaShip(key: string, scode: string, xy: string) {
     })
 }
 
+export async function QueryCode() {
+    axios.get("http://localhost:8002/ship/QueryCode", { responseType: 'arraybuffer'}).then((res) => {
+        
+        const dataView = new DataView(res.data)
+        // console.log("223",res.data)
+        // console.log("123", dataView.byteLength, dataView.getInt32(4))
+        return dataView
+    })
+
+}
+//========================JsonRecord相关接口=================================
+
+export async function QueryShpByName(name:string){
+    return await get(`/jsonRecord/QueryByName/${name}`)
+
+}
+
+
+export async function QueryShpByNewName(name:string){
+    return await get(`/jsonRecord/QueryByNewName/${name}`)
+
+}
+
+//========================ShpCoordinates相关接口=================================
+
+export async function QueryCoordinatesByName(name:string){
+    return await get(`/share/QueryCoordinatesByName/${name}`)
+
+}
+
+//========================TideStation相关接口=================================
+
+export async function QueryHeightByName(name:string){
+    return await get(`/share/QueryHeightByName/${name}`)
+
+}

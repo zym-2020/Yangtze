@@ -10,10 +10,13 @@ import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.resolver.JwtTokenParser;
 import njnu.edu.back.common.result.JsonResult;
 import njnu.edu.back.common.result.ResultUtils;
+import njnu.edu.back.common.utils.Zip2;
 import njnu.edu.back.dao.MessageMapper;
+import njnu.edu.back.pojo.ShareFile;
 import njnu.edu.back.pojo.dto.AddMessageDTO;
 import njnu.edu.back.service.DownloadService;
 import njnu.edu.back.service.MessageService;
+import njnu.edu.back.service.ShareFileService;
 import njnu.edu.back.service.UploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +27,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -38,6 +43,8 @@ public class MessageController {
     DownloadService downloadService;
     @Autowired
     MessageMapper messageMapper;
+    @Autowired
+    ShareFileService shareFileService;
 
 
 
@@ -127,6 +134,7 @@ public class MessageController {
     public JsonResult responseMessage(@PathVariable String response, @PathVariable String id) {
         messageService.responseMessage(response, id);
         return ResultUtils.success();
+
     }
 
     @CrossOrigin
@@ -168,5 +176,19 @@ public class MessageController {
             counts=false;
         }
         return counts;
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/ZipEntryPath/{path}", method = RequestMethod.GET)
+    public List ZipEntryPath(@PathVariable String path) {
+        List lis=new ArrayList();
+        Map<String, Object> result;
+        result=shareFileService.getShareFileById(path);
+        ShareFile share=(ShareFile)(result.get("list"));
+        String suf= new String(".zip");
+        //System.out.println((share.getOriginAddress().substring(share.getOriginAddress().length()-4,share.getOriginAddress().length())));
+        if((share.getOriginAddress().substring(share.getOriginAddress().length()-4,share.getOriginAddress().length()).equals(suf) ))
+                lis= Zip2.read(share.getOriginAddress());
+        return lis;
     }
 }

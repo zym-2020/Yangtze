@@ -62,7 +62,7 @@
     </select>
 
     <select id="QueryByReceiver" resultMap="MessageResultMap">
-        select name,
+        select data_name
         from message
         where message_receiver = #{property};
     </select>

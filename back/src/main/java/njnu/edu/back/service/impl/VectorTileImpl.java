@@ -1,9 +1,9 @@
 package njnu.edu.back.service.impl;
 
 import njnu.edu.back.common.utils.TileUtil;
-import njnu.edu.back.dao.VectorTile;
 import njnu.edu.back.pojo.support.TileBox;
 import njnu.edu.back.service.VectorTileService;
+import njnu.edu.back.shpDao.VectorUserTile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,12 +18,12 @@ import org.springframework.stereotype.Service;
 public class VectorTileImpl implements VectorTileService {
 
     @Autowired
-    VectorTile vectorTile;
+    VectorUserTile vectorUserTile;
 
     @Override
     public Object getVectorTile(String tableName, int x, int y, int z) {
         TileBox tileBox = TileUtil.tile2boundingBox(x, y, z, tableName);
-        Object result = vectorTile.selectTile(tileBox);
+        Object result = vectorUserTile.selectTile(tileBox);
         return result;
     }
 }

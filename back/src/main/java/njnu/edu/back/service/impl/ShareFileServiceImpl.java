@@ -46,7 +46,7 @@ public class ShareFileServiceImpl implements ShareFileService {
     String basedir;
 
     @Override
-    public Map<String, Object> addShareFile(JSONObject jsonObject, String email, MultipartFile file) {
+    public Map<String, Object> addShareFile(JSONObject jsonObject, String email, MultipartFile file,MultipartFile file2) {
         Map<String, Object> result = new HashMap<>();
         FileMeta fileMeta = jsonObject.getObject("meta", FileMeta.class);
         ShareFile shareFile = jsonObject.getObject("fileInfo", ShareFile.class);
@@ -65,6 +65,14 @@ public class ShareFileServiceImpl implements ShareFileService {
             shareFile.setAvatar("/file/avatar/" + uuid + "." + suffix);
         } else {
             shareFile.setAvatar("");
+        }
+        if(!file2.isEmpty()) {
+            String uuid = UUID.randomUUID().toString();
+            String suffix = file2.getOriginalFilename().substring(file2.getOriginalFilename().lastIndexOf(".") + 1);
+            LocalUploadUtil.uploadAvatar(basedir + "other\\thumbnail\\" + uuid + "." + suffix, file2);
+            shareFile.setThumbnail("/file/thumbnail/" + uuid + "." + suffix);
+        } else {
+            shareFile.setThumbnail("");
         }
         shareFile.setStatus(0);
         shareFileMapper.addShareFile(shareFile);
@@ -166,13 +174,39 @@ public class ShareFileServiceImpl implements ShareFileService {
     }
 
     @Override
-    public void updateShareFileAndFileMeta(UpdateShareFileAndFileMetaDTO updateShareFileAndFileMetaDTO, MultipartFile multipartFile) {
+    public void updateShareFileAndFileMeta(UpdateShareFileAndFileMetaDTO updateShareFileAndFileMetaDTO, MultipartFile multipartFile,MultipartFile multipartFile2) {
         String uuid = UUID.randomUUID().toString();
+        String uuid2 = UUID.randomUUID().toString();
         String suffix = multipartFile.getOriginalFilename().substring(multipartFile.getOriginalFilename().lastIndexOf(".") + 1);
+        String suffix2 = multipartFile.getOriginalFilename().substring(multipartFile2.getOriginalFilename().lastIndexOf(".") );
         LocalUploadUtil.uploadAvatar(basedir + "other\\avatar\\" + uuid + "." + suffix, multipartFile);
+        LocalUploadUtil.uploadAvatar(basedir + "other\\thumbnail\\" + uuid2 + "." + suffix2, multipartFile2);
         updateShareFileAndFileMetaDTO.setAvatar("/file/avatar/" + uuid + "." + suffix);
+        updateShareFileAndFileMetaDTO.setThumbnail("/file/thumbnail/" + uuid2 + "." + suffix2);
         shareFileMapper.updateFileInfoAndFileMeta(updateShareFileAndFileMetaDTO);
     }
+    @Override
+    public void updateShareFileAndFileMeta(UpdateShareFileAndFileMetaDTO updateShareFileAndFileMetaDTO, MultipartFile multipartFile,int flag){
+            String uuid = UUID.randomUUID().toString();
+            if(flag==3){
+                String suffix = multipartFile.getOriginalFilename().substring(multipartFile.getOriginalFilename().lastIndexOf(".") + 1);
+                LocalUploadUtil.uploadAvatar(basedir + "other\\avatar\\" + uuid + "." + suffix, multipartFile);
+                updateShareFileAndFileMetaDTO.setAvatar("/file/avatar/" + uuid + "." + suffix);
+                shareFileMapper.updateFileInfoAndFileMeta(updateShareFileAndFileMetaDTO);
+            }
+            else if (flag==2)
+            {
+                String suffix2 = multipartFile.getOriginalFilename().substring(multipartFile.getOriginalFilename().lastIndexOf(".") );
+                LocalUploadUtil.uploadAvatar(basedir + "other\\thumbnail\\" + uuid + "." + suffix2, multipartFile);
+                updateShareFileAndFileMetaDTO.setThumbnail("/file/thumbnail/" + uuid + "." + suffix2);
+                updateShareFileAndFileMetaDTO.setThumbnail("/file/thumbnail/" + uuid + "." + suffix2);
+                shareFileMapper.updateFileInfoAndFileMeta(updateShareFileAndFileMetaDTO);
+            }
+            else {
+                shareFileMapper.updateFileInfoAndFileMeta(updateShareFileAndFileMetaDTO);
+
+            }
+        }
 
     @Override
     public List<Map<String, Object>> deleteShareFileById(int page, int size, String property, String keyWord, String id) {
@@ -213,5 +247,11 @@ public class ShareFileServiceImpl implements ShareFileService {
         result.put("list", shareFileMapper.getShareFileById(id));
         return result;
     }
-    
+
+    @Override
+    public Map<String, Object> getOtherTags(String id){
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", shareFileMapper.getOtherTags(id));
+        return result;
+    }
 }

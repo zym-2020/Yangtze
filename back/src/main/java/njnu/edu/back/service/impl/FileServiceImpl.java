@@ -195,6 +195,83 @@ public class FileServiceImpl implements FileService {
 
     }
 
+    @Override
+    public void getThumbnail(String pictureName, HttpServletResponse response) {
+        String path = basedir + "other\\thumbnail\\" + pictureName;
+        java.io.File file = new java.io.File(path);
+        if(!file.exists()) {
+            return;
+        }
+        InputStream in = null;
+        ServletOutputStream sos = null;
+        try {
+            in = new FileInputStream(file);
+            sos = response.getOutputStream();
+            byte[] b = new byte[1024];
+            while(in.read(b) != -1) {
+                sos.write(b);
+            }
+            sos.flush();
+            in.close();
+            sos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        } finally {
+            try {
+                if(in != null) {
+                    in.close();
+                }
+                if(sos != null) {
+                    sos.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+            }
+        }
+
+    }
+
+
+    @Override
+    public void getPhotos(String pictureName, HttpServletResponse response) {
+        String path = basedir + "photograph\\photo\\" + pictureName;
+        java.io.File file = new java.io.File(path);
+        if(!file.exists()) {
+            return;
+        }
+        InputStream in = null;
+        ServletOutputStream sos = null;
+        try {
+            in = new FileInputStream(file);
+            sos = response.getOutputStream();
+            byte[] b = new byte[1024];
+            while(in.read(b) != -1) {
+                sos.write(b);
+            }
+            sos.flush();
+            in.close();
+            sos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        } finally {
+            try {
+                if(in != null) {
+                    in.close();
+                }
+                if(sos != null) {
+                    sos.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+            }
+        }
+
+    }
+
 
 
     /**

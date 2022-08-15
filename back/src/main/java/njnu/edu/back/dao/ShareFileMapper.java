@@ -64,5 +64,7 @@ public interface ShareFileMapper {
 
     List<ShareFile> deleteShareFileAsMember(@Param("id") String id, @Param("size") int size, @Param("start") int start, @Param("email") String email);
 
+    List<Map<String, Object>> getOtherTags(@Param("id") String id);
+
 
 }

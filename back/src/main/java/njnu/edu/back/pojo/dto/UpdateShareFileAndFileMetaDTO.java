@@ -36,4 +36,5 @@ public class UpdateShareFileAndFileMetaDTO {
     String structuredSource;
     String[] tags;
     String avatar;
+    String thumbnail;
 }

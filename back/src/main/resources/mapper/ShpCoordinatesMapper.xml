@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="njnu.edu.back.dao.ShpCoordinatesMapper">
+
+
+    <select id="QueryCoordinates" resultType="java.util.HashMap">
+        SELECT share_files.*,shp_coordinates.coordinates
+        FROM public.share_files , public.shp_coordinates
+        where public.share_files.name = public.shp_coordinates.shp_name ;
+    </select>
+
+    <select id="QueryCoordinatesByName" resultType="java.util.HashMap">
+        select coordinates
+        from shp_coordinates
+        where shp_name = #{name};
+    </select>
+
+</mapper>

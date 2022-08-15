@@ -21,6 +21,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.*;
 
@@ -41,7 +43,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     RasterRelationshipMapper rasterRelationshipMapper;
-    
+
     @Autowired
     RedisService redisService;
 
@@ -66,14 +68,14 @@ public class ProjectServiceImpl implements ProjectService {
             in = multipartFile.getInputStream();
 
             File outFile = new File(baseDir + "other\\avatar");
-            if(!outFile.exists()) {
+            if (!outFile.exists()) {
                 outFile.mkdir();
             }
             out = new FileOutputStream(outFile + "\\" + uuid + "." + suffix);
             int len = -1;
             byte[] bytes = new byte[1024];
-            while((len = in.read(bytes)) != -1) {
-                out.write(bytes, 0 ,len);
+            while ((len = in.read(bytes)) != -1) {
+                out.write(bytes, 0, len);
             }
             ip = CommonUtils.getIp();
             out.close();
@@ -83,10 +85,10 @@ public class ProjectServiceImpl implements ProjectService {
             throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
         } finally {
             try {
-                if(in != null) {
+                if (in != null) {
                     in.close();
                 }
-                if(out != null) {
+                if (out != null) {
                     out.close();
                 }
             } catch (Exception e) {
@@ -129,10 +131,10 @@ public class ProjectServiceImpl implements ProjectService {
         String path = rasterRelationship.getAddress() + "\\" + rasterRelationship.getFileName();
         String resultPath = baseDir + email + "\\projects\\" + projectName + "\\断面形态";
         File file = new File(resultPath);
-        if(!file.exists()) {
+        if (!file.exists()) {
             file.mkdir();
         }
-        redisService.set(email + projectName + sectionName + rasterRelationship.getFileName(), 0, 60*24l);
+        redisService.set(email + projectName + sectionName + rasterRelationship.getFileName(), 0, 60 * 24l);
         new Thread() {
             @Override
             @SneakyThrows
@@ -140,10 +142,10 @@ public class ProjectServiceImpl implements ProjectService {
                 Process start = AnalyseUtil.saveSectionValue(path, lat1.toString(), lon1.toString(), lat2.toString(), lon2.toString(), resultPath + "\\" + sectionName + "_" + rasterRelationship.getFileName() + ".txt");
 
                 int exitCode = start.waitFor();
-                if(exitCode == 0) {
+                if (exitCode == 0) {
                     redisService.del(email + projectName + sectionName + rasterRelationship.getFileName());
                 } else {
-                    redisService.set(email + projectName + sectionName + rasterRelationship.getFileName(), -1, 60*24l);
+                    redisService.set(email + projectName + sectionName + rasterRelationship.getFileName(), -1, 60 * 24l);
                 }
                 System.out.println(exitCode);
             }
@@ -155,28 +157,28 @@ public class ProjectServiceImpl implements ProjectService {
     public List<Double> getSectionValue(String email, String projectName, String sectionName, String DEMName, String DEMId) {
         String filePath = baseDir + email + "\\projects\\" + projectName + "\\断面形态\\" + sectionName + "_" + DEMName + ".txt";
         File file = new File(filePath);
-        if(!file.exists()) {
+        if (!file.exists()) {
             Integer state = (Integer) redisService.get(email + projectName + sectionName + DEMName);
-            if(state == null) {
+            if (state == null) {
                 String result = projectMapper.getResultByEmailAndProjectName(email, projectName);
                 ProjectJsonBean projectJsonBean = JSONObject.parseObject(result, ProjectJsonBean.class);
                 cn.hutool.json.JSONObject temp = null;
-                for(Resource resource : projectJsonBean.getAnalyse().getSection().getAnalysisResultList()) {
-                    if(resource.getName().equals(sectionName)) {
+                for (Resource resource : projectJsonBean.getAnalyse().getSection().getAnalysisResultList()) {
+                    if (resource.getName().equals(sectionName)) {
                         temp = resource.getGeoJson();
                         break;
                     }
                 }
-                if(temp == null) throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+                if (temp == null) throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
                 double lat1 = temp.getJSONArray("coordinates").get(0, JSONArray.class).get(0, Double.class);
                 double lon1 = temp.getJSONArray("coordinates").get(0, JSONArray.class).get(1, Double.class);
                 double lat2 = temp.getJSONArray("coordinates").get(1, JSONArray.class).get(0, Double.class);
                 double lon2 = temp.getJSONArray("coordinates").get(1, JSONArray.class).get(1, Double.class);
                 saveSectionValue(DEMId, lat1, lon1, lat2, lon2, sectionName, email, projectName);
                 throw new MyException(100, "正在计算断面");
-            } else if(state == 0) {
+            } else if (state == 0) {
                 throw new MyException(100, "正在计算断面");
-            } else if(state == -1) {
+            } else if (state == -1) {
                 throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
             } else {
                 throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
@@ -187,7 +189,7 @@ public class ProjectServiceImpl implements ProjectService {
             try {
                 bufferedReader = new BufferedReader(new FileReader(file));
                 String tempString = null;
-                while((tempString = bufferedReader.readLine()) != null) {
+                while ((tempString = bufferedReader.readLine()) != null) {
                     result.add(Double.parseDouble(tempString));
                 }
                 bufferedReader.close();
@@ -196,7 +198,7 @@ public class ProjectServiceImpl implements ProjectService {
                 e.printStackTrace();
                 throw new MyException(-1, "读取断面文件时出错");
             } finally {
-                if(bufferedReader != null) {
+                if (bufferedReader != null) {
                     try {
                         bufferedReader.close();
                     } catch (Exception e) {
@@ -221,10 +223,10 @@ public class ProjectServiceImpl implements ProjectService {
     public void saveSectionContrastValue(Double lat1, Double lon1, Double lat2, Double lon2, String sectionName, String email, String projectName) {
         String resultPath = baseDir + email + "\\projects\\" + projectName + "\\断面比较";
         File file = new File(resultPath);
-        if(!file.exists()) {
+        if (!file.exists()) {
             file.mkdir();
         }
-        redisService.set(email + projectName + sectionName + "断面比较", 0, 60*24l);
+        redisService.set(email + projectName + sectionName + "断面比较", 0, 60 * 24l);
 
         new Thread() {
             @Override
@@ -232,10 +234,10 @@ public class ProjectServiceImpl implements ProjectService {
             public void run() {
                 Process start = AnalyseUtil.saveSectionContrast(lat1.toString(), lon1.toString(), lat2.toString(), lon2.toString(), resultPath + "\\" + sectionName + ".txt");
                 int exitCode = start.waitFor();
-                if(exitCode == 0) {
+                if (exitCode == 0) {
                     redisService.del(email + projectName + sectionName + "断面比较");
                 } else {
-                    redisService.set(email + projectName + sectionName + "断面比较", -1, 60*24l);
+                    redisService.set(email + projectName + sectionName + "断面比较", -1, 60 * 24l);
                 }
                 System.out.println(exitCode);
             }
@@ -246,26 +248,26 @@ public class ProjectServiceImpl implements ProjectService {
     public Map<String, List<Double>> getSectionContrastValue(String email, String projectName, String sectionName) {
         String filePath = baseDir + email + "\\projects\\" + projectName + "\\断面比较\\" + sectionName + ".txt";
         File file = new File(filePath);
-        if(!file.exists()) {
+        if (!file.exists()) {
             Integer state = (Integer) redisService.get(email + projectName + sectionName + "断面比较");
-            if(state == null) {
+            if (state == null) {
                 String result = projectMapper.getResultByEmailAndProjectName(email, projectName);
                 ProjectJsonBean projectJsonBean = JSONObject.parseObject(result, ProjectJsonBean.class);
                 cn.hutool.json.JSONObject temp = null;
-                for(Resource resource : projectJsonBean.getAnalyse().getSectionContrast().getAnalysisResultList()) {
-                    if(resource.getName().equals(sectionName)) {
+                for (Resource resource : projectJsonBean.getAnalyse().getSectionContrast().getAnalysisResultList()) {
+                    if (resource.getName().equals(sectionName)) {
                         temp = resource.getGeoJson();
                         break;
                     }
                 }
-                if(temp == null) throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+                if (temp == null) throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
                 double lat1 = temp.getJSONArray("coordinates").get(0, JSONArray.class).get(0, Double.class);
                 double lon1 = temp.getJSONArray("coordinates").get(0, JSONArray.class).get(1, Double.class);
                 double lat2 = temp.getJSONArray("coordinates").get(1, JSONArray.class).get(0, Double.class);
                 double lon2 = temp.getJSONArray("coordinates").get(1, JSONArray.class).get(1, Double.class);
                 saveSectionContrastValue(lat1, lon1, lat2, lon2, sectionName, email, projectName);
                 throw new MyException(100, "正在计算断面");
-            } else if(state == 0) {
+            } else if (state == 0) {
                 throw new MyException(100, "正在计算断面");
             } else {
                 throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
@@ -279,13 +281,13 @@ public class ProjectServiceImpl implements ProjectService {
                 int count = Integer.parseInt(countStr);
                 String keys = bufferedReader.readLine();
                 String[] keyArray = keys.split(" ");
-                for(int i = 0;i < count;i++) {
+                for (int i = 0; i < count; i++) {
                     result.put(keyArray[i], new ArrayList<>());
                 }
                 String temp = null;
                 int number = 0;
-                while((temp = bufferedReader.readLine()) != null) {
-                    if(temp.equals("")) {
+                while ((temp = bufferedReader.readLine()) != null) {
+                    if (temp.equals("")) {
                         System.out.println(temp);
                         number = number + 1;
                     } else {
@@ -297,7 +299,7 @@ public class ProjectServiceImpl implements ProjectService {
                 e.printStackTrace();
                 throw new MyException(-1, "读取断面文件时出错");
             } finally {
-                if(bufferedReader != null) {
+                if (bufferedReader != null) {
                     try {
                         bufferedReader.close();
                     } catch (Exception e) {
@@ -324,4 +326,36 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
 
+    @Override
+    public void getRegion(String pngName, String email, HttpServletResponse response) {
+        String address = baseDir + email + "\\Tif\\" + pngName + ".png";
+        File file = new File(address);
+        if (!file.exists()) {
+            throw new MyException(ResultEnum.NO_OBJECT);
+        }
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(file);
+            ServletOutputStream servletOutputStream = response.getOutputStream();
+            byte[] bytes = new byte[1024];
+            int len = inputStream.read(bytes);
+            while (len != -1) {
+                servletOutputStream.write(bytes);
+                len = inputStream.read(bytes);
+            }
+            inputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        } finally {
+            try {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+            }
+        }
+    }
 }

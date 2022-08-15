@@ -38,6 +38,10 @@ public interface FileService {
 
     void getAvatar(String pictureName, HttpServletResponse response);
 
+    void getThumbnail(String pictureName, HttpServletResponse response);
+
+    void getPhotos(String pictureName, HttpServletResponse response);
+
     void unPack(String filePath, String parentId, int level, String email);
 
     List<Map<String, Object>> getFolderTree(String email);

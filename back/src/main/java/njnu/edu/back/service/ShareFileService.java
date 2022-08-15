@@ -16,7 +16,7 @@ import java.util.Map;
  * @Description:
  */
 public interface ShareFileService {
-    Map<String, Object> addShareFile(JSONObject jsonObject, String email, MultipartFile file);
+    Map<String, Object> addShareFile(JSONObject jsonObject, String email, MultipartFile file,MultipartFile file2);
 
     Map<String, Object> pageQueryByAdmin(int page, int size, String property, boolean flag, String keyWord);
 
@@ -34,7 +34,9 @@ public interface ShareFileService {
 
     void updateShareFileAndFileMetaNoAvatar(UpdateShareFileAndFileMetaDTO updateShareFileAndFileMetaDTO);
 
-    void updateShareFileAndFileMeta(UpdateShareFileAndFileMetaDTO updateShareFileAndFileMetaDTO, MultipartFile multipartFile);
+    void updateShareFileAndFileMeta(UpdateShareFileAndFileMetaDTO updateShareFileAndFileMetaDTO, MultipartFile multipartFile,MultipartFile multipartFile2);
+
+    void updateShareFileAndFileMeta(UpdateShareFileAndFileMetaDTO updateShareFileAndFileMetaDTO, MultipartFile multipartFile,int flag);
 
     List<Map<String, Object>> deleteShareFileById(int page, int size, String property, String keyWord, String id);
 
@@ -50,4 +52,10 @@ public interface ShareFileService {
 
 
     Map<String, Object> getShareFileById(String id);
+
+    Map<String, Object> getOtherTags(String id);
+
+
+
+
 }

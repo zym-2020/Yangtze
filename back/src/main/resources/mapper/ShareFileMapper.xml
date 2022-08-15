@@ -20,10 +20,10 @@
         <result column="origin_name" property="originName"/>
         <result column="structured_name" property="structuredName"/>
         <result column="visual_name" property="visualName"/>
-        <result column="column" property="column"/>
+        <result column="thumbnail" property="thumbnail"/>
     </resultMap>
     <insert id="addShareFile" parameterType="njnu.edu.back.pojo.ShareFile">
-        insert into share_files values(#{id}::uuid, #{name}, #{description}, #{originAddress}, #{visualSource}, #{visualType}, #{structuredSource}, #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}, #{creator}, now(), #{meta}, #{download}, #{watch}, now(), #{avatar}, #{originName}, #{structuredName}, #{visualName}, #{status});
+        insert into share_files values(#{id}::uuid, #{name}, #{description}, #{originAddress}, #{visualSource}, #{visualType}, #{structuredSource}, #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}, #{creator}, now(), #{meta}, #{download}, #{watch}, now(), #{avatar}, #{originName}, #{structuredName}, #{visualName}, #{status},#{thumbnail});
     </insert>
 
     <select id="pageQueryByAdminDESC" resultType="java.util.HashMap">
@@ -113,6 +113,7 @@
             structured_source = #{structuredSource},
             tags = #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler},
             avatar = #{avatar},
+            thumbnail =#{thumbnail},
             update_time = now()
         where id::text = #{id};
 
@@ -160,5 +161,9 @@
         delete from browse_history where data_id = #{id};
         delete from download_history where data_id = #{id};
         select * from share_files where (status = 1 or status = -1) and creator = #{email} order by update_time asc limit #{size} offset #{start};
+    </select>
+
+    <select id="getOtherTags" resultType="java.util.HashMap">
+        select tags,name,id from share_files where id::text != #{id};
     </select>
 </mapper>

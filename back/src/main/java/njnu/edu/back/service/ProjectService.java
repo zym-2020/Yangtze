@@ -6,6 +6,7 @@ import njnu.edu.back.pojo.dto.AddProject;
 import njnu.edu.back.pojo.support.projectJson.ProjectJsonBean;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -41,4 +42,5 @@ public interface ProjectService {
 
     Map<String, Object> findProjectById(String projectId);
 
+    void getRegion(String pngName ,String Email, HttpServletResponse response);
 }

@@ -61,30 +61,35 @@
         </div>
       </el-col>
       <el-col :span="4">
-      
-        <div v-if="messageResponse=='success'" class="time">
-          <el-icon :color="iconColor" >
-          <Select />
+        <div v-if="messageResponse == 'success'" class="time">
+          <el-icon :color="iconColor">
+            <Select />
           </el-icon>
           <span>{{ examineStatusCheck }}</span>
         </div>
-          <div v-else-if="messageResponse=='fail'" class="time">
-          <el-icon :color="iconColor" >
-          <CloseBold />
+        <div v-else-if="messageResponse == 'fail'" class="time">
+          <el-icon :color="iconColor">
+            <CloseBold />
           </el-icon>
           <span>{{ examineStatusCheck }}</span>
         </div>
-        <div v-else-if="messageResponse=='examine'" class="time">
-          <el-icon :color="iconColor" style="margin-top:5px;margin-right:3px">
-          <Clock />
+        <div v-else-if="messageResponse == 'examine'" class="time">
+          <el-icon
+            :color="iconColor"
+            style="margin-top: 5px; margin-right: 3px"
+          >
+            <Clock />
           </el-icon>
           <span>{{ examineStatusCheck }}</span>
         </div>
-        
       </el-col>
       <el-col :span="4" :offset="4">
         <div style="float: right">
-          <el-tooltip content='该条消息将被回收至【历史消息】' placement="bottom" effect="light">
+          <el-tooltip
+            content="该条消息将被回收至【历史消息】"
+            placement="bottom"
+            effect="light"
+          >
             <el-button type="primary" @click="deleteMessage">
               已知晓通知</el-button
             >
@@ -99,15 +104,6 @@
             v-show="showDetails"
             class="flex justify-space-between mb-4 flex-wrap gap-4"
           >
-            <!-- <el-button
-              @click="showDetails = !showDetails"
-              key="primary"
-              type="primary"
-              text="true"
-              >查看数据描述</el-button
-            > -->
-            <!-- <n-icon>ArrowCircleDown16Regular</n-icon> -->
-            
             <n-button
               strong
               secondary
@@ -131,14 +127,13 @@
               :size="size"
               border
             >
-              <el-descriptions-item >
+              <el-descriptions-item>
                 <template #label>
                   <div class="cell-item">
                     <el-icon :style="iconStyle">
                       <user />
                     </el-icon>
                     资源名称
-                    
                   </div>
                 </template>
                 {{ dataCache.name }}
@@ -147,7 +142,7 @@
               <el-descriptions-item>
                 <template #label>
                   <div class="cell-item">
-<el-icon><Download /></el-icon>
+                    <el-icon><Download /></el-icon>
                     资源下载量
                   </div>
                 </template>
@@ -156,7 +151,7 @@
               <el-descriptions-item>
                 <template #label>
                   <div class="cell-item">
-<el-icon><View /></el-icon>
+                    <el-icon><View /></el-icon>
                     资源浏览量
                   </div>
                 </template>
@@ -165,7 +160,7 @@
               <el-descriptions-item>
                 <template #label>
                   <div class="cell-item">
-<el-icon><Stamp /></el-icon>
+                    <el-icon><Stamp /></el-icon>
                     数据提供者
                   </div>
                 </template>
@@ -174,18 +169,18 @@
               <el-descriptions-item>
                 <template #label>
                   <div class="cell-item">
-<el-icon><List /></el-icon>
+                    <el-icon><List /></el-icon>
                     资源类别
                   </div>
                 </template>
-                      <el-tag
-        v-for="(item, index) in dataCacheTags"
-        :key="index"
-        class="ml-2"
-        :type="tagsType[index % 4]"
-        style="margin-right: 10px"
-        >{{ item }}</el-tag
-      >
+                <el-tag
+                  v-for="(item, index) in dataCacheTags"
+                  :key="index"
+                  class="ml-2"
+                  :type="tagsType[index % 4]"
+                  style="margin-right: 10px"
+                  >{{ item }}</el-tag
+                >
               </el-descriptions-item>
               <el-descriptions-item>
                 <template #label>
@@ -201,7 +196,7 @@
               <el-descriptions-item>
                 <template #label>
                   <div class="cell-item">
-<el-icon><Cloudy /></el-icon>
+                    <el-icon><Cloudy /></el-icon>
                     原始数据
                   </div>
                 </template>
@@ -210,7 +205,7 @@
               <el-descriptions-item>
                 <template #label>
                   <div class="cell-item">
-<el-icon><DataAnalysis /></el-icon>
+                    <el-icon><DataAnalysis /></el-icon>
                     整合数据
                   </div>
                 </template>
@@ -219,7 +214,7 @@
               <el-descriptions-item>
                 <template #label>
                   <div class="cell-item">
-<el-icon><DataLine /></el-icon>
+                    <el-icon><DataLine /></el-icon>
                     可视化数据
                   </div>
                 </template>
@@ -228,7 +223,7 @@
               <el-descriptions-item>
                 <template #label>
                   <div class="cell-item">
-<el-icon><LocationInformation /></el-icon>
+                    <el-icon><LocationInformation /></el-icon>
                     数据存放路径
                   </div>
                 </template>
@@ -237,7 +232,7 @@
               <el-descriptions-item>
                 <template #label>
                   <div class="cell-item">
-<el-icon><Pointer /></el-icon>
+                    <el-icon><Pointer /></el-icon>
                     资源共享方式
                   </div>
                 </template>
@@ -247,7 +242,7 @@
               <el-descriptions-item>
                 <template #label>
                   <div class="cell-item">
-<el-icon><SetUp /></el-icon>
+                    <el-icon><SetUp /></el-icon>
                     资源可视化来源
                   </div>
                 </template>
@@ -256,7 +251,7 @@
               <el-descriptions-item>
                 <template #label>
                   <div class="cell-item">
-<el-icon><PriceTag /></el-icon>
+                    <el-icon><PriceTag /></el-icon>
                     资源可视化类型
                   </div>
                 </template>
@@ -265,7 +260,7 @@
               <el-descriptions-item>
                 <template #label>
                   <div class="cell-item">
-<el-icon><Share /></el-icon>
+                    <el-icon><Share /></el-icon>
                     资源共享方式
                   </div>
                 </template>
@@ -274,7 +269,7 @@
               <el-descriptions-item>
                 <template #label>
                   <div class="cell-item">
-<el-icon><Histogram /></el-icon>
+                    <el-icon><Histogram /></el-icon>
                     资源创造时间
                   </div>
                 </template>
@@ -283,7 +278,7 @@
               <el-descriptions-item>
                 <template #label>
                   <div class="cell-item">
-<el-icon><Sort /></el-icon>
+                    <el-icon><Sort /></el-icon>
                     资源更新时间
                   </div>
                 </template>
@@ -292,7 +287,7 @@
               <el-descriptions-item>
                 <template #label>
                   <div class="cell-item">
-<el-icon><StarFilled /></el-icon>
+                    <el-icon><StarFilled /></el-icon>
                     资源状态
                   </div>
                 </template>
@@ -301,7 +296,7 @@
               <el-descriptions-item>
                 <template #label>
                   <div class="cell-item">
-<el-icon><Picture /></el-icon>
+                    <el-icon><Picture /></el-icon>
                     资源封面
                   </div>
                 </template>
@@ -313,16 +308,16 @@
         <el-row style="margin: 20px">
           <el-col :span="1.5" :offset="10">
             <div style="text-align: center">
-            <el-tooltip content='该条消息将被回收至【历史消息】' placement="bottom" effect="light">
-              <n-button type="primary" @click="checkYes" ghost>同意上传</n-button>
-              </el-tooltip>
+              <n-button type="primary" @click="checkYes" ghost
+                >同意上传</n-button
+              >
             </div>
           </el-col>
           <el-col :span="1.5" :offset="1">
             <div style="text-align: center">
-            <el-tooltip content='该条消息将被回收至【历史消息】' placement="bottom" effect="light">
-              <n-button type="error" @click="checkNo" ghost>不同意上传</n-button>
-              </el-tooltip>
+              <n-button type="error" @click="checkNo" ghost
+                >不同意上传</n-button
+              >
             </div>
           </el-col>
         </el-row>
@@ -347,7 +342,7 @@ import { defineComponent, onMounted, ref, computed } from "vue";
 import { imgBase64 } from "@/utils/common";
 import { ElMessageBox } from "element-plus";
 import { dateFormat } from "@/utils/common";
-import  axios  from 'axios'
+import axios from "axios";
 import {
   Iphone,
   Location,
@@ -355,20 +350,21 @@ import {
   Tickets,
   User,
 } from "@element-plus/icons-vue";
-
-//import  { ArrowCircleDown16Regular } from "vicons";
 import {
   offlineMessage,
   responseMessage,
   onlineById,
   offlineById,
   offlineUserMessage,
+  QueryCode,
+  QueryShpByName,
+  getFilePath,
+  ZipEntryPath,
 } from "@/api/request";
 import { NButton } from "naive-ui";
 export default defineComponent({
   components: {
     NButton,
-    //ArrowCircleDown16Regular
   },
   props: {
     fileInfo: {
@@ -422,17 +418,13 @@ export default defineComponent({
         "yyyy年MM月dd日hh时mm分"
       );
     });
-      const dataUploadTimeFormat = computed(() => {
-      return  (props.fileInfo as any).dataUploadTime
-   
-     
+    const dataUploadTimeFormat = computed(() => {
+      return (props.fileInfo as any).dataUploadTime;
     });
-        const dataExamineTimeFormat = computed(() => {
-      
-        return (props.fileInfo as any).dataExamineTime
+    const dataExamineTimeFormat = computed(() => {
+      return (props.fileInfo as any).dataExamineTime;
+    });
 
-    });
-    
     const examineStatus = computed(() => {
       return (props.fileInfo as any).reply;
     });
@@ -488,7 +480,7 @@ export default defineComponent({
       else if (messageResponse.value == "examine") return "消息正在审核";
       else return "";
     });
-      const iconColor = computed(() => {
+    const iconColor = computed(() => {
       if (messageResponse.value == "success") return "green";
       else if (messageResponse.value == "examine") return "orange";
       else if (messageResponse.value == "fail") return "red";
@@ -556,11 +548,9 @@ export default defineComponent({
       if (props.showDe == true) {
         await (n.value = !n.value);
         await offlineMessage(fileId.value, dataUploadTimeFormat.value);
-        //await function(){n.value=false}
       } else {
         await (n.value = !n.value);
         await offlineUserMessage(fileId.value, dataUploadTimeFormat.value);
-        //await function(){n.value=false}
       }
     };
     const checkYes = async () => {
@@ -574,7 +564,6 @@ export default defineComponent({
         }
       ).then(async () => {
         await responseMessage("success", id.value);
-        //console.log(dataCacheId.value);
         await onlineById(dataCacheId.value);
       });
     };
@@ -593,46 +582,7 @@ export default defineComponent({
       });
     };
     onMounted(async () => {
-       avatar.value = imgBase64("哈哈");
-      // const data = await responseBinary('222');
-      // const data2 =await queryByMsi(3333);
-      // const TempData=data2.data.list;
-      // console.log("fgztest",TempData)
-      // console.log("123456", data)
-
-      // axios.get('http://localhost:8003/ship/getShipBinary', {
-      //   responseType: 'arraybuffer'
-      // }).then((res) => {
-      //   const dataView = new DataView(res.data)
-      //   console.log("32_0",dataView.getInt32(0))
-      //   console.log("32_1",dataView.getInt32(4))
-      //   console.log("32_2",dataView.getInt32(8))
-      //   console.log("32_3",dataView.getInt32(12))
-      //   console.log("32_4",dataView.getInt32(16))
-      //   console.log("32_5",dataView.getInt32(20))
-      //   console.log("32_6",dataView.getInt32(24))
-      //   console.log("32_7",dataView.getInt32(28))
-      //   console.log("32_8",dataView.getInt32(32))
-      //   console.log("32_9",dataView.getInt32(36))
-      //   console.log("32_10",dataView.getInt32(40))
-      //   console.log("32_11",dataView.getInt32(44))
-      //   console.log("8_0",dataView.getInt8(48))
-      //   console.log("8_1",dataView.getInt8(49))
-      // })
-      // const dataView = new DataView(data as any as ArrayBuffer)
-      // console.log("123", dataView, dataView.getInt32(0))
-      // const enc = new TextEncoder();
-      // const intBuffer = enc.encode(data as any as string);
-      // console.log("byteLength: ", intBuffer.byteLength);
-      // console.log("dsada", new Int32Array((intBuffer.reverse()).buffer).reverse());
-
-
-      // const d = new DataView(data as any as ArrayBuffer)
-      // let intbuffer = new Int32Array(str.length);
-      // for (let i = 0 ; i < str.length; ++i) {
-      //   intbuffer[i] = str.charCodeAt(i);
-      // }
-      // console.log("hhqhqhqhqhhq", str.length);
+      avatar.value = imgBase64("哈哈");
     });
     return {
       avatar,

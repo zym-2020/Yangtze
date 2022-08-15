@@ -103,15 +103,23 @@ const frontData: StrKeyObjects = {
             },
             'dynamicFunc': dynamicMap1, 
         },
+        
         {
-            'initStyle': {},
-            'dynamicFunc': {}, 
+            'initStyle': {
+                container: 'map', 
+                style: 'mapbox://styles/johnnyt/cl39v9pcv009614qp3gnmcpos', 
+                center: [121.180, 31.723], 
+                zoom: 10.5,
+            },
+             
         },
         {
             'initStyle': {},
             'dynamicFunc': {}, 
         },
     ],
+
+
     'charts': [
         {
             'chartOpt': {

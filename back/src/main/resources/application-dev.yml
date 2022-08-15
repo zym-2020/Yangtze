@@ -6,10 +6,18 @@ minio:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/testdb?stringtype=unspecified
-    username: postgres
-    password: 123
-    driver-class-name: org.postgresql.Driver
+
+    main:
+      jdbc-url: jdbc:postgresql://localhost:5432/testdb?stringtype=unspecified
+      username: postgres
+      password: 123
+      driver-class-name: org.postgresql.Driver
+
+    shp:
+      jdbc-url: jdbc:postgresql://localhost:5432/shp_dataset?stringtype=unspecified
+      username: postgres
+      password: 123
+      driver-class-name: org.postgresql.Driver
     #配置druid连接池
     druid:
       initial-size: 5 #连接池初始化大小
@@ -20,6 +28,10 @@ spring:
   #      stat-view-servlet: #访问监控网页的登录用户名和密码
   #        login-username: druid
   #        login-password: druid
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/test
+
   redis:
     host: localhost
     port: 6379
@@ -34,15 +46,18 @@ spring:
         max-wait: 1000ms  #最大阻塞时间
         shutdown-timeout: 200ms
 
+
+
   #mongodb地址
 #  data:
 #    mongodb:
 #      uri: mongodb://127.0.0.1:27017/yangtze
 
-mybatis:
-  mapper-locations: classpath:mapper/*.xml
+#mybatis.mapper-locations: classpath*:mapper/*.xml,classpath*:shpMapper/*.xml
 
 basedir:
   E:\Minio\data\test\
 pythondir:
   D:\zhuomian\水科院\python\
+datadir:
+  E:\水科院\数据\

@@ -177,7 +177,7 @@ export default defineComponent({
     };
 
     onMounted(async () => {
-      const data = await pageQueryByEmail(0, 10);
+      const data = await pageQueryByEmail(0, 100);
       if (data != null) {
         if ((data as any).code === 0) {
           fileList.value = data.data.list;

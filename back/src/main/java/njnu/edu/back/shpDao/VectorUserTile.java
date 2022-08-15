@@ -1,4 +1,4 @@
-package njnu.edu.back.dao;
+package njnu.edu.back.shpDao;
 
 import njnu.edu.back.pojo.support.TileBox;
 import org.springframework.stereotype.Repository;
@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
  * @Description:
  */
 @Repository
-public interface VectorTile {
+public interface VectorUserTile {
     Object selectTile(TileBox tileBox);
 }
