@@ -8,7 +8,7 @@
         :class="item.pos"
         :id="'index' + item.index"
       >
-        <p>{{ item.index }}</p>
+        <!-- <p>{{ item.index }}</p> -->
       </div>
     </div>
     <div class="control-wrapper">
