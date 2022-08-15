@@ -27,8 +27,8 @@ div.overview-wrapper {
     position: absolute;
     background-color: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(6px);
-    width: 30%;
-    height: 40%;
+    width: 28vw;
+    height: 20vw;
     left: 35%;
     top: 14%;
     border-radius: 1em;

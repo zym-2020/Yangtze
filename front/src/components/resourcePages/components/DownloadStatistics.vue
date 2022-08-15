@@ -143,7 +143,7 @@ export default defineComponent({
       if (avatar === "" || avatar === undefined || avatar === null) {
         return "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png";
       } else {
-        return "http://172.21.212.10:8002" + avatar;
+        return "http://localhost:8002" + avatar;
       }
     };
 

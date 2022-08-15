@@ -12,7 +12,7 @@ module.exports = {
         port: 8080,
         proxy: {
             '/Yangtze': {
-                target: 'http://172.21.212.10:8002/',
+                target: 'http://localhost:8002/',
                 changeOrigin: true,
                 pathRewrite: {
                     "^/Yangtze": ""

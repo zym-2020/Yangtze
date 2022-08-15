@@ -239,7 +239,7 @@ export default defineComponent({
     });
 
     const avatarUrl = computed(() => {
-      return (props.fileMeta as any).avatar === '' ? 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png' : 'http://172.21.212.10:8002' + (props.fileMeta as any).avatar
+      return (props.fileMeta as any).avatar === '' ? 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png' : 'http://localhost:8002' + (props.fileMeta as any).avatar
     })
 
     const avatar = computed(() => {
@@ -248,7 +248,7 @@ export default defineComponent({
         (props.fileInfo as any).avatar != undefined &&
         (props.fileInfo as any).avatar != null
       ) {
-        return "http://172.21.212.10:8002" + (props.fileInfo as any).avatar;
+        return "http://localhost:8002" + (props.fileInfo as any).avatar;
       }
 
       return imgBase64((props.fileInfo as any).name === undefined ? '' : (props.fileInfo as any).name);

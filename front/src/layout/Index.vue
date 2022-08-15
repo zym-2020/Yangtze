@@ -68,6 +68,7 @@ export default defineComponent({
 .el-main {
   padding: 0;
   height: 100%;
+  overflow: unset;
   /deep/ .el-drawer__body{
      padding: 0px;
   }

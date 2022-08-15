@@ -36,7 +36,7 @@ export default defineComponent({
       const fileInfo: any = router.currentRoute.value.params.fileInfo
       if(fileInfo != undefined && fileInfo != null && fileInfo.avatar != '' && fileInfo.avatar != undefined && fileInfo.avatar != null) {
         console.log(1)
-        imageUrl.value = "http://172.21.212.10:8002" + fileInfo.avatar
+        imageUrl.value = "http://localhost:8002" + fileInfo.avatar
       }
     })
 

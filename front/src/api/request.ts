@@ -360,7 +360,7 @@ export async function CountUserReply() {
 
 export async function responseBinary(response:String) {
     
-    axios.get("http://172.21.212.10:8080/Yangtze/admin/message/responseBinary/122", { responseType: 'arraybuffer'}).then((res) => {
+    axios.get("http://localhost:8080/Yangtze/admin/message/responseBinary/122", { responseType: 'arraybuffer'}).then((res) => {
         
         const dataView = new DataView(res.data)
         console.log("223",res.data)
@@ -371,7 +371,7 @@ export async function responseBinary(response:String) {
 
 export async function getShipBinary(response:String) {
     
-    axios.get("http://172.21.212.10:8003/ship/getShipBinary", { responseType: 'arraybuffer'}).then((res) => {
+    axios.get("http://localhost:8003/ship/getShipBinary", { responseType: 'arraybuffer'}).then((res) => {
         
         const dataView = new DataView(res.data)
         console.log("223",res.data)

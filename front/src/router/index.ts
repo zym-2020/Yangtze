@@ -85,7 +85,11 @@ export const asyncRouters: Array<RouteRecordRaw> = [
         },
         children: [
             {
-                path: '/scenarioOne',
+                path: "",
+                redirect: "/scenario/scenarioOne"
+            },
+            {
+                path: 'scenarioOne',
                 component: () => import('@/views/scenario/realTimeMap.vue'),
                 meta: {
                     roles: ['member', 'admin'],
@@ -93,21 +97,21 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 }
             }, 
             {
-                path: '/scenarioTwo',
+                path: 'scenarioTwo',
                 component: () => import('@/views/scenario/TheMap.vue'),
                 meta: {
                     roles: ['member', 'admin']
                 }
             }, 
             {
-                path: '/scenarioThree',
+                path: 'scenarioThree',
                 component: () => import('@/views/scenario/shipMap.vue'),
                 meta: {
                     roles: ['member', 'admin']
                 }
             }, 
             {
-                path: '/scenarioFour',
+                path: 'scenarioFour',
                 component: () => import('@/views/scenario/projectMap.vue'),
                 meta: {
                     roles: ['member', 'admin']
@@ -125,7 +129,6 @@ export const asyncRouters: Array<RouteRecordRaw> = [
         children: [
             {
                 path: '',
-                name: 'AnalyzeChild',
                 redirect: '/analyze/list'
 
             },
