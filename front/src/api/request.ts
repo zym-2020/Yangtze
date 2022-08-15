@@ -2,7 +2,7 @@ import { get, post, del, patch } from './axios'
 
 import {
     RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, AddFileJsonData, RenameJsonData, UnPackJsonData, UpdateParentIdAndLevelJsonData, CompressFileJsonData, GetFlushIdJsonData, ComputeContourJsonData,
-    SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData, GetNoUploadJsonData, AddRecordJsonData, AddMessageJsonData, DeleteFilesOrFolders, GetProjectsJsonData, Layer
+    SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData, GetNoUploadJsonData, AddRecordJsonData, AddMessageJsonData, DeleteFilesOrFolders, GetProjectsJsonData, Layer, SectionJsonData, SectionContrastJsonData 
 } from './type/userType'
 import { Resource, Analyse } from '@/store/resourse/resourceState'
 
@@ -46,40 +46,69 @@ export async function addProjectWithAvatar(formData: FormData) {
     return await post(`/project/addProjectWithAvatar`, formData)
 }
 
-export async function getResult(projectId: string) {
-    return await get(`/project/getResult/${projectId}`)
+export async function getProjectsByEmail(email: string) {
+    return await get(`/project/getProjectsByEmail/${email}`)
 }
 
-export async function setResult(jsonData: {layerDataList: Resource[], analyse: Analyse}, id: string) {
-    return await patch(`/project/setResult/${id}`, jsonData)
+export async function addLayers(jsonData: { id: string, name: string, type: string, demSlopeId?: string }[], projectId: string) {
+    return await patch(`/project/addLayers/${projectId}`, jsonData)
 }
 
-export async function section(jsonData: SectionJsonData) {
-    return await post(`/project/section`, jsonData)
+export async function addSection(layer: Layer, projectId: string) {
+    return await post(`/project/addSection/${projectId}`, layer)
 }
 
-export async function getSectionValue(projectName: string, sectionName: string, DEMName: string, DEMId: string) {
-    return await get(`/project/getSectionValue/${projectName}/${sectionName}/${DEMName}/${DEMId}`)
+export async function getSectionValue(projectId: string, sectionId: string, valueIds: string[]) {
+    return await post(`/project/getSectionValue/${projectId}/${sectionId}`, valueIds)
 }
 
-export async function delSection(projectName: string, sectionName: string, DEMName: string) {
-    return await del(`/project/delSection/${projectName}/${sectionName}/${DEMName}`)
+export async function delLayer(projectId: string, layerId: string) {
+    return await del(`/project/delLayer/${projectId}/${layerId}`)
 }
 
-export async function saveSectionContrastValue(jsonData: SectionContrastJsonData) {
-    return await post(`/project/saveSectionContrastValue`, jsonData)
+
+export async function addSectionContrast(projectId: string, layer: Layer) {
+    return await post(`/project/addSectionContrast/${projectId}`, layer)
 }
 
-export async function getSectionContrastValue(projectName: string, sectionName: string) {
-    return await get(`/project/getSectionContrastValue/${projectName}/${sectionName}`)
+export async function getSectionContrast(projectId: string, layerId: string) {
+    return await get(`/project/getSectionContrast/${projectId}/${layerId}`)
 }
 
-export async function getProjects(jsonData: GetProjectsJsonData) {
-    return await post(`/project/getProjects`, jsonData)
+export async function getAll(jsonData: { page: number, size: number, keyWord: string }) {
+    return await post(`/project/getAll`, jsonData)
 }
 
-export async function findProjectById(projectId: string) {
-    return await get(`/project/findProjectById/${projectId}`)
+export async function getProjectInfo(projectId: string) {
+    return await get(`/project/getProjectInfo/${projectId}`)
+}
+
+export async function checkLayerState(projectId: string, sectionId: string) {
+    return await get(`/project/checkState/${projectId}/${sectionId}`)
+}
+
+export async function getFlushId(jsonData: GetFlushIdJsonData) {
+    return await post(`/project/getFlushId`, jsonData)
+}
+
+export async function computeContour(jsonData: ComputeContourJsonData) {
+    return await post(`/project/computeContour`, jsonData)
+}
+
+export async function sortLayer(projectId: string, layers: any[]) {
+    return await post(`/project/sortLayer/${projectId}`, layers)
+}
+
+export async function addRegion(projectId: string, demId: string, jsonArray: any[]) {
+    return await post(`/project/addRegion/${projectId}/${demId}`, jsonArray)
+}
+
+export async function getRegionLayer(projectId: string, layerId: string) {
+    return await get(`/project/getRegionLayer/${projectId}/${layerId}`)
+}
+
+export async function checkAddRegion(key: string) {
+    return await get(`/project/checkAddRegion/${key}`)
 }
 
 //========================vectorRelationship相关接口=================================

@@ -62,7 +62,7 @@ export async function handlePostFiles(chunkList: string[], fileChunk: { file: Bl
                 formData.append("file", fileChunk[parseInt(name as string)].file)
                 formData.append("MD5", MD5)
                 formData.append("name", name as string)
-                axios.post('http://172.21.213.244:8080/Yangtze/file/uploadFile', formData, {
+                axios.post('http://localhost:8080/Yangtze/file/uploadFile', formData, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }

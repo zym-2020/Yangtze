@@ -16,7 +16,7 @@
                   "
                   >{{ item.projectName }}</el-avatar
                 >
-                <img :src="'http://172.21.213.244:8002' + item.avatar" width="248" height="180" v-else />
+                <img :src="'http://localhost:8002' + item.avatar" width="248" height="180" v-else />
               </div>
               <div class="detail">
                 <div class="head" :title="item.projectName">

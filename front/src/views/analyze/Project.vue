@@ -261,7 +261,7 @@ export default defineComponent({
           map.value?.addSource(layer.id, {
             type: "raster",
             tiles: [
-              `http://172.21.213.244:8002/analyticDataSet/getRaster/${layer.id}/{x}/{y}/{z}`,
+              `http://localhost:8002/analyticDataSet/getRaster/${layer.id}/{x}/{y}/{z}`,
             ],
           });
           map.value?.addLayer({
@@ -276,7 +276,7 @@ export default defineComponent({
           map.value?.addSource(layer.id, {
             type: "raster",
             tiles: [
-              `http://172.21.213.244:8002/analyticDataSet/getRaster/${layer.id}/{x}/{y}/{z}`,
+              `http://localhost:8002/analyticDataSet/getRaster/${layer.id}/{x}/{y}/{z}`,
             ],
           });
           map.value?.addLayer({
@@ -308,7 +308,7 @@ export default defineComponent({
           map.value?.addSource(layer.id, {
             type: "raster",
             tiles: [
-              `http://172.21.213.244:8002/analyticDataSet/getSlope/${layer.demSlopeId}/{x}/{y}/{z}`,
+              `http://localhost:8002/analyticDataSet/getSlope/${layer.demSlopeId}/{x}/{y}/{z}`,
             ],
           });
           map.value?.addLayer({
@@ -323,7 +323,7 @@ export default defineComponent({
           map.value?.addSource(layer.id, {
             type: "vector",
             tiles: [
-              `http://172.21.213.244:8002/analyticDataSet/${layer.name}/{x}/{y}/{z}`,
+              `http://localhost:8002/analyticDataSet/${layer.name}/{x}/{y}/{z}`,
             ],
           });
           map.value?.addLayer({
@@ -335,7 +335,7 @@ export default defineComponent({
         } else if (layer.type === "region") {
           map.value?.addSource(layer.id, {
             type: "image",
-            url: `http://172.21.213.244:8002/project/getRegion/${store.state.user.email}/${router.currentRoute.value.params.id}/${layer.id}`,
+            url: `http://localhost:8002/project/getRegion/${store.state.user.email}/${router.currentRoute.value.params.id}/${layer.id}`,
             coordinates: getCoordinates(layer.points),
           });
           map.value?.addLayer({
