@@ -8,7 +8,7 @@ const store = useStore()
 const requestList = new Set()
 
 const axiosInstance: AxiosInstance = axios.create({
-    baseURL: 'http://localhost:8080/Yangtze/',
+    baseURL: 'http://172.21.213.244:8080/Yangtze/',
     timeout: 200000
 })
 

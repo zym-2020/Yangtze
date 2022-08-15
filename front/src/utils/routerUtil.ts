@@ -1,5 +1,5 @@
 import { RouteLocationNormalized } from 'vue-router'
-import { getFileInfoAndMeta, getFileMetaAndUserInfo, findProjectById, getFileInfoAndMetaAndUserInfo } from '@/api/request'
+import { getFileInfoAndMeta, getFileMetaAndUserInfo, getProjectInfo, getFileInfoAndMetaAndUserInfo } from '@/api/request'
 import { useStore } from '@/store'
 
 
@@ -47,14 +47,14 @@ export async function toIdPages(to: RouteLocationNormalized) {
         }
     } else if (to.name === 'project') {
         if (to.params.id != '' && to.params.id != null && to.params.id != null) {
-            if (to.params.result != undefined && to.params.result != null) {
+            if (to.params.projectInfo != undefined && to.params.projectInfo != null) {
+                to.params.projectInfo = JSON.parse(to.params.projectInfo as string)
                 return 1
             } else {
-                const data = await findProjectById(to.params.id as string)
+                const data = await getProjectInfo(to.params.id as string)
                 if (data != null) {
                     if ((data as any).code === 0) {
-                        to.params.name = data.data.project_name
-                        to.params.result = data.data.result
+                        to.params.projectInfo = data.data
                         return 1
                     } else {
                         return -1

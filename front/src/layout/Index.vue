@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="main-body">
     <el-container>
       <el-header>
         <header-component @openUploadList="openUploadList"></header-component>
@@ -55,6 +55,12 @@ export default defineComponent({
 
 
 <style lang="scss" scoped>
+.main-body {
+  height: 100%;
+  .el-container {
+    height: 100%;
+  }
+}
 .el-header {
   padding: 0;
   height: 60px;

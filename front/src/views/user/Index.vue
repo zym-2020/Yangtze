@@ -9,7 +9,7 @@
               :src="
                 avatarUrl === ''
                   ? 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
-                  : 'http://localhost:8002' + avatarUrl
+                  : 'http://172.21.213.244:8002' + avatarUrl
               "
               fit="cover"
             />
@@ -155,7 +155,8 @@
               <user-resource></user-resource>
             </el-tab-pane>
             <el-tab-pane label="工程" name="project">
-              <user-project></user-project>
+              <!-- <user-project></user-project> -->
+              <div>hahah</div>
             </el-tab-pane>
             <el-tab-pane label="共享条目" name="share">
               <user-share-file></user-share-file>

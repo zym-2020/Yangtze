@@ -1,11 +1,16 @@
 package njnu.edu.back.service;
 
+
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import njnu.edu.back.pojo.Project;
 import njnu.edu.back.pojo.dto.AddProject;
-import njnu.edu.back.pojo.support.projectJson.ProjectJsonBean;
+import njnu.edu.back.pojo.support.Layer;
+
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -17,28 +22,42 @@ import java.util.Map;
  * @Description:
  */
 public interface ProjectService {
-    Map<String, Object> addProject(AddProject addProject, String email, MultipartFile multipartFile);
 
-    Map<String, Object> addProjectWithoutAvatar(AddProject addProject, String email);
+    Project addProject(Project project, String email);
 
-    String getResultById(String id);
+    Project addProject(String jsonString, MultipartFile file, String email);
 
-    List<Map<String, Object>> getProjectsByEmail(String email);
+    void addLayer(Layer layer, String projectId);
 
-    int setResult(ProjectJsonBean result, String id);
+    Project addLayers(List<Layer> layers, String projectId);
 
-    void saveSectionValue(String DEMId, Double lat1, Double lon1, Double lat2, Double lon2, String sectionName, String email, String projectName);
+    Layer addSection(Layer layer, String projectId, String email);
 
-    List<Double> getSectionValue(String email, String projectName, String sectionName, String DEMName, String DEMId);
+    List<Map<String, Object>> getSectionValue(String sectionId, String projectId, String email, List<String> valueIds);
 
-    void delSection(String email, String projectName, String sectionName, String DEMName);
+    Project getProjectInfo(String projectId);
 
-    void saveSectionContrastValue(Double lat1, Double lon1, Double lat2, Double lon2, String sectionName, String email, String projectName);
+    Page<Project> getAll(int page, int size, String keyWord);
 
-    Map<String, List<Double>> getSectionContrastValue(String email, String projectName, String sectionName);
+    List<Project> getProjectsByEmail(String email);
 
-    JSONObject pageQuery(int size, int page, String keyWord);
+    int checkState(String projectId, String layerId);
 
-    Map<String, Object> findProjectById(String projectId);
+    void delLayer(String projectId, String layerId, String email);
 
+    String getFlushId(String projectId, String benchmark, String reference, String name);
+
+    String computeContour(String projectId, String demId, String email, String interval, String shpName, String srid);
+
+    int checkContourState(String uid);
+
+    void sortLayer(String projectId, List<Layer> layers);
+
+    String addRegion(String projectId, JSONArray jsonArray, String demId, String email);
+
+    Layer getRegionLayer(String projectId, String layerId);
+
+    int checkAddRegion(String key);
+
+    void getRegion(String projectId, String layerId, String Email, HttpServletResponse response);
 }

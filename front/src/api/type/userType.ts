@@ -15,7 +15,8 @@ export interface RegisterJsonData {
 export interface ProjectJsonData {
     projectName: string,
     description: string,
-    result: string
+    creator: string,
+    creatorName: string
 }
 
 
@@ -31,22 +32,23 @@ export interface NewShapeJsonData {
 }
 
 export interface SectionJsonData {
+    id: string
     DEMId: string,
     lat1: number,
     lon1: number,
     lat2: number,
     lon2: number,
-    sectionName: string,
-    projectName: string
+    projectId: string
 }
 
 export interface SectionContrastJsonData {
+    id: string
     lat1: number,
     lon1: number,
     lat2: number,
     lon2: number,
-    sectionName: string,
-    projectName: string
+    demIds: string[]
+    projectId: string
 }
 
 export interface AddFileJsonData {
@@ -158,7 +160,7 @@ export interface CompressFileJsonData {
 }
 
 export interface DeleteFilesOrFolders {
-    files : string[]
+    files: string[]
     folders: string[]
 }
 
@@ -167,20 +169,37 @@ export interface GetProjectsJsonData {
     page: number
     keyWord: string
 }
-// export interface AddShareFileJsonData {
-//     meta: {
-//         provider: string
-//         time: string
-//         range: string
-//         detail: string
-//     }
-//     fileInfo: {
-//         name: string
-//         description: string
-//         originAddress: string
-//         visualSource: string
-//         visualType: string
-//         structuredSource: string
-//         tags: string[]
-//     }
-// }
+
+
+export interface Layer {
+    id: string
+    type: string
+    name?: string
+    tableName?: string
+    vectorType?: string
+    geoJson?: {
+        coordinates: any[],
+        type: string
+    }
+    sections?: {
+        id: string;
+        sectionId: string
+        state: number
+    }[]
+    demSlopeId?: string
+}
+
+export interface GetFlushIdJsonData {
+    projectId: string
+    benchmark: string
+    reference: string
+    name: string
+}
+
+export interface ComputeContourJsonData {
+    projectId: string
+    demId: string
+    interval: string
+    shpName: string
+    srid: string
+}

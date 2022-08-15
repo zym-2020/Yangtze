@@ -39,7 +39,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref } from "vue";
-import { addProject, addProjectWithoutAvatar } from "@/api/request";
+import { addProjectWithAvatar, addProjectWithoutAvatar } from "@/api/request";
 // import { Plus } from "@element-plus/icons-vue";
 import { notice } from "@/utils/notice";
 import type { FormInstance, UploadFile } from "element-plus";
@@ -80,7 +80,8 @@ export default defineComponent({
             data = await addProjectWithoutAvatar({
               projectName: form.name,
               description: form.description,
-              result: result,
+              creator: store.state.user.email,
+              creatorName: store.state.user.name,
             });
             if (data != null) {
               if ((data as any).code === 0) {
@@ -91,11 +92,15 @@ export default defineComponent({
             }
           } else {
             const formData = new FormData();
-            formData.append("projectName", form.name);
-            formData.append("description", form.description);
-            formData.append("result", result);
+            const jsonString = {
+              projectName: form.name,
+              description: form.description,
+              creator: store.state.user.email,
+              creatorName: store.state.user.name,
+            };
+            formData.append("jsonString", JSON.stringify(jsonString));
             formData.append("file", file.value);
-            data = await addProject(formData);
+            data = await addProjectWithAvatar(formData);
             if (data != null) {
               if ((data as any).code === 0) {
                 notice("success", "成功", "创建成功");
@@ -105,7 +110,6 @@ export default defineComponent({
             }
           }
 
-          data.data.name = store.state.user.name;
           context.emit("createProject", data.data);
         }
       });

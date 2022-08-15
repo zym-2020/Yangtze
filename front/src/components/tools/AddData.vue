@@ -50,10 +50,18 @@
                 class="data"
                 @dblclick="dblclick(item)"
               >
-                <svg style="width: 20px; height: 20px">
-                  <use xlink:href="#icon-raster"></use>
-                </svg>
-                <span>{{ item.name }}</span>
+                <div v-if="item.type === 'riverBed'">
+                  <svg style="width: 20px; height: 20px">
+                    <use xlink:href="#icon-raster"></use>
+                  </svg>
+                  <span>{{ item.name }}</span>
+                </div>
+                <div v-if="item.type === 'deepHorizonLine'">
+                  <svg style="width: 20px; height: 20px">
+                    <use xlink:href="#icon-vector"></use>
+                  </svg>
+                  <span>{{ item.name }}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -99,8 +107,18 @@
         <el-col :span="9">
           <div class="selected">
             <el-scrollbar height="400px">
+              <div
+                v-for="(item, index) in currentLayers"
+                :key="index"
+                class="result current-layers"
+              >
+                <svg style="width: 20px; height: 20px; margin-left: 5px">
+                  <use :xlink:href="getIcon(item.type)"></use>
+                </svg>
+                <span>{{ item.name }}</span>
+              </div>
               <div v-for="(item, index) in result" :key="index" class="result">
-                <svg style="width: 20px; height: 20px; margin-left: 5px;">
+                <svg style="width: 20px; height: 20px; margin-left: 5px">
                   <use :xlink:href="getIcon(item.type)"></use>
                 </svg>
                 <span>{{ item.name }}</span>
@@ -125,32 +143,29 @@
 
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref } from "vue";
-import { findDataByType } from "@/api/request";
-import { useStore } from "@/store";
+import { findDataByType, addLayers } from "@/api/request";
 import router from "@/router";
+import { notice } from "@/utils/notice";
 export default defineComponent({
   emits: ["returnData"],
   props: {
     layers: {
-      type: Array
-    }
+      type: Array,
+    },
   },
   setup(props, context) {
-    const store = useStore();
     const flag = ref(1);
     const input = ref("");
     const riverBedData = ref<any[]>([]);
     const hydrologyData = ref<any[]>([]);
-    const satelliteData = ref<any[]>([])
+    const satelliteData = ref<any[]>([]);
+    const currentLayers = ref<any[]>(props.layers as any[]);
     const result = ref<any[]>([]);
-    const projectId = computed(() => {
-      return router.currentRoute.value.params.id;
-    });
 
     const dblclick = (item: any) => {
       let hasResult = false;
-      console.log(item);
-      result.value.forEach((e) => {
+      const tempArr: any[] = currentLayers.value.concat(result.value);
+      tempArr.forEach((e) => {
         if (item.id === e.id) {
           hasResult = true;
         }
@@ -173,8 +188,10 @@ export default defineComponent({
         return "#icon-raster";
       } else if (type === "hydrology") {
         return "#icon-vector";
-      } else if (type === 'satellite') {
-        return "#icon-tiff"
+      } else if (type === "satellite") {
+        return "#icon-tiff";
+      } else if (type === "deepHorizonLine") {
+        return "#icon-vector";
       }
     };
 
@@ -185,54 +202,55 @@ export default defineComponent({
           id: item.id,
           name: item.name,
           type: item.type,
-          show: item.has_tiles,
         });
       });
-      const tempString: string[] = []
-      props.layers?.forEach((item: any) => {
-        tempString.push(item.id)
-      })
-      store.commit("SET_TEMP_LAYERS", tempString)
-      console.log("tempString", tempString)
-      console.log("layers", props.layers)
-      await store.dispatch("setResource", {
-        projectJsonBean: {
-          layerDataList: layerDataList,
-          analyse: store.state.resource.analyse,
-        },
-        id: projectId.value as string,
-      });
-      context.emit("returnData");
+      const data = await addLayers(
+        layerDataList,
+        router.currentRoute.value.params.id as string
+      );
+      if (data != null) {
+        if ((data as any).code === 0) {
+          console.log(data);
+          context.emit("returnData", layerDataList);
+          notice("success", "成功", "添加数据成功");
+        }
+      }
+
+      // const tempString: string[] = [];
+      // props.layers?.forEach((item: any) => {
+      //   tempString.push(item.id);
+      // });
+      // store.commit("SET_TEMP_LAYERS", tempString);
+      // console.log("tempString", tempString);
+      // console.log("layers", props.layers);
+      // const data = await store.dispatch("setResource", {
+      //   projectJsonBean: {
+      //     layerDataList: layerDataList,
+      //     analyse: store.state.resource.analyse,
+      //   },
+      //   id: projectId.value as string,
+      // });
+
+      // context.emit("returnData");
     };
 
     onMounted(async () => {
-      store.state.resource.layerDataList.forEach((item) => {
-        result.value.push({
-          name: item.name,
-          id: item.id,
-          type: item.type,
-          has_tiles: item.show,
-        });
-      });
-
       const data1 = await findDataByType("riverBed");
       if (data1 != null) {
         if ((data1 as any).code === 0) {
-          console.log(data1);
           riverBedData.value = data1.data;
         }
       }
       const data2 = await findDataByType("hydrology");
       if (data2 != null) {
         if ((data2 as any).code === 0) {
-          console.log(data2);
           hydrologyData.value = data2.data;
         }
       }
-      const data3 = await findDataByType('satellite') 
+      const data3 = await findDataByType("satellite");
       if (data3 != null) {
-        if((data3 as any).code === 0) {
-          satelliteData.value = data3.data
+        if ((data3 as any).code === 0) {
+          satelliteData.value = data3.data;
         }
       }
     });
@@ -242,6 +260,7 @@ export default defineComponent({
       input,
       clickType,
       result,
+      currentLayers,
       dblclick,
       delDbclick,
       commit,
@@ -350,6 +369,9 @@ export default defineComponent({
             cursor: pointer;
           }
         }
+      }
+      .current-layers {
+        background: #e6e6e6;
       }
     }
   }

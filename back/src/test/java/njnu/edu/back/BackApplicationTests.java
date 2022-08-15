@@ -3,9 +3,9 @@ package njnu.edu.back;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import njnu.edu.back.common.auth.AuthCheck;
-import njnu.edu.back.common.utils.CommonUtils;
-import njnu.edu.back.common.utils.ZipOperate;
+import njnu.edu.back.common.utils.*;
 import njnu.edu.back.service.FileService;
+import njnu.edu.back.service.ProjectService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,18 +20,21 @@ import java.util.Map;
 class BackApplicationTests {
 
     @Autowired
-    FileService fileService;
+    ProjectService projectService;
 
     @Test
     void contextLoads() {
-        List<Map<String, Object>> fileList = new ArrayList<>();
-        Map<String, Object> temp1 = new HashMap<>();
-        Map<String, Object> temp2 = new HashMap<>();
-        temp1.put("path", "test/test.xml ");
-        temp1.put("address", "D:\\zhuomian\\test.xml");
-        fileList.add(temp1);
-        ZipOperate.compressFile("D:\\zhuomian\\test.zip", fileList);
-
+//        projectService.computeContour("62ba63044bf8161735590782", "82ca348b-b825-4d80-9b69-300b3562c3e3", "123@qq.com", "10", "test");
+//        String exePath = "D:\\App\\postgresql\\bin\\";
+//        String shpPath = "E:\\Minio\\data\\test\\123@qq.com\\projects\\62ba63044bf8161735590782";
+//        String shpName = "test";
+//        Process process = AnalyseUtil.uploadShpToDataBase(exePath, shpPath, shpName);
+//        try {
+//            int code = process.waitFor();
+//            System.out.println(code);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
 }

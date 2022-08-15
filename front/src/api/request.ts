@@ -1,11 +1,10 @@
 import { get, post, del, patch } from './axios'
 
 import {
-    RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, SectionJsonData, SectionContrastJsonData, AddFileJsonData, RenameJsonData, UnPackJsonData, UpdateParentIdAndLevelJsonData, CompressFileJsonData,
-    SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData, GetNoUploadJsonData, AddRecordJsonData, AddMessageJsonData, DeleteFilesOrFolders, GetProjectsJsonData
+    RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, AddFileJsonData, RenameJsonData, UnPackJsonData, UpdateParentIdAndLevelJsonData, CompressFileJsonData, GetFlushIdJsonData, ComputeContourJsonData,
+    SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData, GetNoUploadJsonData, AddRecordJsonData, AddMessageJsonData, DeleteFilesOrFolders, GetProjectsJsonData, Layer
 } from './type/userType'
 import { Resource, Analyse } from '@/store/resourse/resourceState'
-
 
 import axios from 'axios'
 
@@ -38,16 +37,13 @@ export async function setUserInfoWithoutAvatar(jsonData: SetUserInfoWithoutAvata
 
 
 //========================Project相关接口=================================
-export async function addProject(formData: FormData) {
-    return await post(`/project/addProject`, formData)
-}
 
 export async function addProjectWithoutAvatar(jsonData: ProjectJsonData) {
     return await post(`/project/addProjectWithoutAvatar`, jsonData)
 }
 
-export async function getProjectsByEmail() {
-    return await get(`/project/getProjectsByEmail`)
+export async function addProjectWithAvatar(formData: FormData) {
+    return await post(`/project/addProjectWithAvatar`, formData)
 }
 
 export async function getResult(projectId: string) {
@@ -374,6 +370,16 @@ export async function getAreaShip(key: string, scode: string, xy: string) {
             scode: scode,
             xy: xy
         }
+    })
+}
+
+export async function getShip() {
+    axios.get("http://localhost:8002/ship/getShip", {
+        responseType: 'arraybuffer'
+    }).then(res => {
+        console.log(res)
+        const d = new DataView(res.data)
+        console.log(d.getInt32(0))
     })
 }
 

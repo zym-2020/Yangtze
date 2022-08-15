@@ -16,13 +16,13 @@
                   "
                   >{{ item.projectName }}</el-avatar
                 >
-                <img :src="'http://localhost:8002' + item.avatar" width="248" height="180" v-else />
+                <img :src="'http://172.21.213.244:8002' + item.avatar" width="248" height="180" v-else />
               </div>
               <div class="detail">
                 <div class="head" :title="item.projectName">
                   {{ item.projectName }}
                 </div>
-                <div class="des">{{ item.des }}</div>
+                <div class="des">{{ item.description }}</div>
               </div>
             </div>
           </el-col>
@@ -36,14 +36,16 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import { getProjectsByEmail } from "@/api/request";
+import { useStore } from '@/store'
 import router from "@/router";
 export default defineComponent({
   setup() {
     const data = ref([]);
-
+    const store = useStore()
     const getProjectList = async () => {
-      const projectList = await getProjectsByEmail();
+      const projectList = await getProjectsByEmail(store.state.user.email);
       if (projectList != null) {
+        console.log(projectList)
         data.value = projectList.data;
       }
     };

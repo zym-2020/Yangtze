@@ -23,6 +23,8 @@ public class AnalyticDataSetController {
     @Autowired
     AnalyticDataSetService analyticDataSetService;
 
+
+
     @AuthCheck
     @RequestMapping(value = "/findDataByType/{type}", method = RequestMethod.GET)
     public JsonResult findDataByType(@PathVariable String type) {
@@ -34,4 +36,17 @@ public class AnalyticDataSetController {
     public void getRaster(@PathVariable String rasterId, @PathVariable String x, @PathVariable String y, @PathVariable String z, HttpServletResponse response) {
         analyticDataSetService.getRaster(rasterId, x, y, z, response);
     }
+
+    @CrossOrigin
+    @RequestMapping(value = "/getSlope/{rasterId}/{x}/{y}/{z}", method = RequestMethod.GET)
+    public void getSlope(@PathVariable String rasterId, @PathVariable String x, @PathVariable String y, @PathVariable String z, HttpServletResponse response) {
+        analyticDataSetService.getSlope(rasterId, x, y, z, response);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/{tableName}/{x}/{y}/{z}", method = RequestMethod.GET)
+    public Object getVectorTile(@PathVariable String tableName, @PathVariable int x, @PathVariable int y, @PathVariable int z) {
+        return analyticDataSetService.getVectorTile(tableName, x, y, z);
+    }
+
 }

@@ -17,9 +17,33 @@ export default defineComponent({
   setup(props) {
     const chart = ref<HTMLElement>();
     let myChart: echarts.ECharts;
+
+    const getSeries = () => {
+      const result: any[] = [];
+      (props.sectionContrastValue as any).dems.forEach((item: any) => {
+        (props.sectionContrastValue as any).data.forEach((d: any) => {
+          if (d.dem === item.valueId) {
+            result.push({
+              type: "line",
+              data: d.list,
+              smooth: true,
+            });
+          }
+        });
+      });
+
+      return result;
+    };
+
     const init = () => {
       const xData: string[] = [];
-      for (let i = 0; i < 272; i++) {
+      let max = -1;
+      (props.sectionContrastValue as any).data.forEach((item: any) => {
+        if (item.list.length > max) {
+          max = item.list.length;
+        }
+      });
+      for (let i = 0; i < max; i++) {
         xData.push((i * 40).toString());
       }
       const option: echarts.EChartsOption = {
@@ -42,23 +66,24 @@ export default defineComponent({
           type: "value",
           name: "断面高程值",
         },
-        series: [
-          {
-            type: "line",
-            data: (props.sectionContrastValue as any).value["199801_dem"],
-            smooth: true,
-          },
-          {
-            type: "line",
-            data: (props.sectionContrastValue as any).value["200408_dem"],
-            smooth: true,
-          },
-          {
-            type: "line",
-            data: (props.sectionContrastValue as any).value["200602_dem"],
-            smooth: true,
-          },
-        ],
+        series: getSeries(),
+        // series: [
+        //   {
+        //     type: "line",
+        //     data: (props.sectionContrastValue as any).value["199801_dem"],
+        //     smooth: true,
+        //   },
+        //   {
+        //     type: "line",
+        //     data: (props.sectionContrastValue as any).value["200408_dem"],
+        //     smooth: true,
+        //   },
+        //   {
+        //     type: "line",
+        //     data: (props.sectionContrastValue as any).value["200602_dem"],
+        //     smooth: true,
+        //   },
+        // ],
       };
       myChart = echarts.init(chart.value as HTMLElement, undefined, {
         height: 300,
@@ -67,6 +92,7 @@ export default defineComponent({
       myChart.setOption(option);
     };
     onMounted(() => {
+      console.log(props.sectionContrastValue)
       init();
     });
     return {

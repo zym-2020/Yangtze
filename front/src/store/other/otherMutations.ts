@@ -5,6 +5,8 @@ export type Mutations<S = OtherState> = {
     SET_DATA_SELECT(state: S, dataSelect: { id: string, name: string }): void
     SET_DATA_SELECTS(state: S, dataSelects: { id: string, name: string }[]): void
 
+    SET_EDIT_STATE(state: S, jsonParam: {type: string, flag: boolean, state: string}): void
+
     SET_UPLOAD_LIST(state: S, uploadList: { id: string, name: string, state: number, progress: number }[]): void
     ADD_UPLOAD_LIST(state: S, upload: { id: string, name: string, state: number, progress: number }): void
     SET_UPLOAD_ITEM(state: S, uploadItem: { id: string, name: string, state: number, progress: number }): void
@@ -34,6 +36,11 @@ export const otherMutations: MutationTree<OtherState> & Mutations = {
     },
     SET_DATA_SELECTS(state: OtherState, dataSelects: { id: string, name: string }[]) {
         state.dataSelects = dataSelects
+    },
+    SET_EDIT_STATE(state: OtherState, jsonParam: {type: string, flag: boolean, state: string}) {
+        state.editState.flag = jsonParam.flag
+        state.editState.state = jsonParam.state
+        state.editState.type = jsonParam.type
     },
     SET_UPLOAD_LIST(state: OtherState, uploadList: { id: string, name: string, state: number, progress: number }[]) {
         state.uploadList = uploadList
