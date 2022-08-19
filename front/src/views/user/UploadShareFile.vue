@@ -49,6 +49,29 @@
             </el-option-group>
           </el-select>
         </el-form-item>
+                <el-form-item label="可视化方法：" prop="visualList" >
+          <el-select
+            v-model="form.visualList"
+            multiple
+            placeholder="可视化方法"
+            
+            size="large"
+            style="width:300px"
+          >
+            <el-option-group
+              v-for="(group, groupIndex) in visOptions"
+              :key="groupIndex"
+              :label="group.title"
+            >
+              <el-option
+                v-for="(item, index) in group.data"
+                :key="index"
+                :label="item.name"
+                :value="item.name"
+              />
+            </el-option-group>
+          </el-select>
+        </el-form-item>
         <el-form-item label="原始数据：" prop="origin">
           <el-button type="primary" plain @click="openFolder('origin')">
             添加<el-icon class="el-icon--right"><Upload /></el-icon>
@@ -319,6 +342,7 @@ export default defineComponent({
                 structuredSource: "",
                 structuredName: "",
                 tags: form.tagList,
+                visualMethod:form.visualList
               },
             };
             const formData = new FormData();
@@ -378,6 +402,7 @@ export default defineComponent({
       form.name = "";
       form.description = "";
       (form.tagList = []), (form.origin.name = "");
+      form.visualList = [];
       form.origin.address = "";
       form.struct.name = "";
       form.struct.address = "";
@@ -393,7 +418,56 @@ export default defineComponent({
         (metaForm.type = ""),
         (metaForm.getMode = "");
     };
-
+const visOptions =ref([
+  {
+    title:"空间数据可视化",
+    data: [
+          {
+            name: "矢量数据可视",
+            count: false,
+          },
+          {
+            name: "栅格数据可视",
+            count: false,
+          },
+          ]
+  },
+    {
+    title:"表格数据可视化",
+    data: [
+          {
+            name: "测站数据可视",
+            count: false,
+          },
+          {
+            name: "潮位数据可视",
+            count: false,
+          },
+          ]
+  },
+    {
+    title:"照片数据可视化",
+    data: [
+          {
+            name: "试验数据可视",
+            count: false,
+          },
+          ]
+  },
+      {
+    title:"其他数据可视化",
+    data: [
+          {
+            name: "哈哈数据可视",
+            count: false,
+          },
+          {
+            name: "哼哼数据可视",
+            count: false,
+          },
+          ]
+  },
+])
     const options = ref([     {
         title: "一级分类（必选）",
         data: [
@@ -714,6 +788,7 @@ export default defineComponent({
       name: "",
       description: "",
       tagList: [],
+      visualList:[],
       origin: {
         name: "",
         address: "",
@@ -795,6 +870,7 @@ export default defineComponent({
       toolbarConfig,
       editorConfig,
       handleCreated,
+      visOptions,
       commit,
       folderFlag,
       selectedFile,

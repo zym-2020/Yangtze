@@ -47,6 +47,29 @@
             </el-option-group>
           </el-select>
         </el-form-item>
+                        <el-form-item label="可视化方法：" prop="visualList" >
+          <el-select
+            v-model="form.visualList"
+            multiple
+            placeholder="可视化方法"
+            
+            size="large"
+            style="width:300px"
+          >
+            <el-option-group
+              v-for="(group, groupIndex) in visOptions"
+              :key="groupIndex"
+              :label="group.title"
+            >
+              <el-option
+                v-for="(item, index) in group.data"
+                :key="index"
+                :label="item.name"
+                :value="item.name"
+              />
+            </el-option-group>
+          </el-select>
+        </el-form-item>
         <el-form-item label="原始数据：" prop="origin">
           <el-button type="primary" plain @click="openFolder('origin')">
             添加<el-icon class="el-icon--right"><Upload /></el-icon>
@@ -398,7 +421,56 @@ export default defineComponent({
         });
       });
     };
-
+const visOptions =ref([
+  {
+    title:"空间数据可视化",
+    data: [
+          {
+            name: "矢量数据可视",
+            count: false,
+          },
+          {
+            name: "栅格数据可视",
+            count: false,
+          },
+          ]
+  },
+    {
+    title:"表格数据可视化",
+    data: [
+          {
+            name: "测站数据可视",
+            count: false,
+          },
+          {
+            name: "潮位数据可视",
+            count: false,
+          },
+          ]
+  },
+    {
+    title:"照片数据可视化",
+    data: [
+          {
+            name: "试验数据可视",
+            count: false,
+          },
+          ]
+  },
+      {
+    title:"其他数据可视化",
+    data: [
+          {
+            name: "哈哈数据可视",
+            count: false,
+          },
+          {
+            name: "哼哼数据可视",
+            count: false,
+          },
+          ]
+  },
+])
     const options = ref([     {
         title: "一级分类（必选）",
         data: [
@@ -715,6 +787,7 @@ export default defineComponent({
       description: (router.currentRoute.value.params.fileInfo as any)
         .description,
       tagList: (router.currentRoute.value.params.fileInfo as any).tags,
+      visualList :(router.currentRoute.value.params.fileInfo as any).visual_method,
       origin: {
         name: (router.currentRoute.value.params.fileInfo as any).originName,
         address: (router.currentRoute.value.params.fileInfo as any)
@@ -760,6 +833,9 @@ export default defineComponent({
           form.tagList = (
             router.currentRoute.value.params.fileInfo as any
           ).tags;
+            form.visualList = (
+            router.currentRoute.value.params.fileInfo as any
+          ).visualMethod;
           form.origin.name = (
             router.currentRoute.value.params.fileInfo as any
           ).originName;
@@ -872,6 +948,7 @@ export default defineComponent({
       selectedFile,
       tagClose,
       resourceType,
+      visOptions,
       openFolder,
       fileRules,
       metaRules,

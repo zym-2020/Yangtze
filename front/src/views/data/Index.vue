@@ -61,7 +61,7 @@
   </el-table>
   </div>
   <div>
-  <el-button class="mt-4" style="width: 100% ;margin-top:20px" @click="onAddItem"
+  <el-button class="mt-4" style="width: 100% ;margin-top:20px" @click="getSelection"
     >Add Item</el-button
   >
   </div>
@@ -166,7 +166,8 @@ import DataCollapse from "@/components/page/DataCollapse.vue";
 import DataCard from "@/components/cards/DataCard.vue";
 import FindMap from "@/components/scenePart/FindMap.vue";
 import {dateFormat } from "@/utils/common";
-import {
+import { DataSetJsonData } from "@/api/type/userType"
+import { 
   fuzzyQuery,
   fuzzyQueryClassify,
   getShpByCoordinates,
@@ -183,11 +184,13 @@ import {
 } from '@element-plus/icons-vue'
 import dayjs from 'dayjs'
 import NProgress from "nprogress";
+import { uuid } from "@/utils/common";
 NProgress.configure({ showSpinner: false });
 interface User {
   date: string
   name: string
   address: string
+  tags: string[]
 }
 export default defineComponent({
   components: {
@@ -195,6 +198,7 @@ export default defineComponent({
     DataCollapse,
     DataCard,
     FindMap,
+    
   },
   
   setup() {
@@ -210,6 +214,56 @@ export default defineComponent({
     const getsSelectList = ref<any[]>([]);
     const searchMap = ref(false);
     const searchSet = ref(false);
+    const selectionData= ref<DataSetJsonData[]>([])
+    const getSelection=()=>{
+      //selectionData.value[0].name=multipleSelection?.value[0].name
+      console.log(multipleSelection.value[0])
+      //(selectionData.value[0] as any).name="fff"
+      let tempdes=''
+      let tagSum:string[]=[]
+     for(let i=0;i<multipleSelection.value.length;i++){
+
+       tempdes = tempdes +'资源'+i+':'+multipleSelection.value[i].address+';'+'\n'
+       multipleSelection.value[i].tags.forEach((item : any)=>{
+        if(tagSum.indexOf(item)==-1)
+            tagSum.push(item)
+       })
+        //tagSum.concat(multipleSelection.value[i].tags as string[])
+        //console.log(multipleSelection.value[i].tags)
+     }
+      console.log(tagSum)
+     const sumData: DataSetJsonData[] = [
+  {
+    id: uuid(),
+    name :'资源融合数据集',
+    description: tempdes,
+    originName: 'string',
+    structuredName: 'string',
+    originAddress: 'string',
+    //
+    visualSource: 'string',
+    //
+    visualType: 'string',
+    //
+    structuredSource: 'string',
+    //
+    tags: tagSum, 
+    creator: '123qq.com',
+    createTime: String(new Date()),
+    updateTime: 'string',
+    download: 0,
+    watch: 0,
+    meta: 'string',
+    avatar :'string',
+    status: 1,
+    thumbnail: 'string',
+    visual_method :['dd','lala']
+  },
+  ]
+      console.log(sumData[0])
+      console.log(sumData[0].name)
+
+    }
     const options = ref<{ label: string; value: string }[]>([
       {
         label: "下载量",
@@ -246,21 +300,24 @@ const tableData = ref([
     date: '2016-05-03',
     name: 'Tom',
     address: 'No. 189, Grove St, Los Angeles',
+    tags:['Tom','Tom']
   },
   {
     date: '2016-05-02',
     name: 'Tom',
     address: 'No. 189, Grove St, Los Angeles',
+    tags:['Tom','Tom']
   },
   {
     date: '2016-05-04',
     name: 'Tom',
     address: 'No. 189, Grove St, Los Angeles',
+    tags:['Tom','Tom']
   },
 
 ])
-const multipleSelection = ref<User[]>([])
-const handleSelectionChange = (val: User[]) => {
+const multipleSelection = ref<any[]>([])
+const handleSelectionChange = (val: any[]) => {
   multipleSelection.value = val
 
 }
@@ -280,7 +337,9 @@ const onAddItem = (val:any) => {
         "yyyy年MM月dd日"
       ),
     name: val.name,
-    address: val.watch,
+    address: val.id,
+    tags:val.tags,
+  
   })
 }
     //空间查询
@@ -307,7 +366,6 @@ const onAddItem = (val:any) => {
       searchSet.value = !searchSet.value;
     };
     const getDataSet= (val:any)=>{
-
       onAddItem(val)
     }
     const getCoor = async (val: any[]) => {
@@ -544,6 +602,7 @@ const onAddItem = (val:any) => {
       tableRowClassName,
       onAddItem,
       tableStyleName,
+      getSelection,
       pageChange,
       search,
       getSelectList,

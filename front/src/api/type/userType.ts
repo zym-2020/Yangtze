@@ -203,3 +203,26 @@ export interface ComputeContourJsonData {
     shpName: string
     srid: string
 }
+
+export interface DataSetJsonData {
+    id: string
+    name :string
+    description: string
+    originName: string
+    structuredName: string
+    originAddress: string
+    visualSource: string
+    visualType: string
+    structuredSource: string
+    tags: string[]
+    creator: string
+    createTime: string
+    updateTime: string
+    download: Integer
+    watch: Integer
+    meta: string
+    avatar :string
+    status: Integer
+    thumbnail: string
+    visual_method: string[]
+}

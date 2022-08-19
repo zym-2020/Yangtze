@@ -223,14 +223,16 @@ export default defineComponent({
     const fits = ["fill", "contain", "cover", "none", "scale-down"];
     const url =
       "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg";
-//监听父组件中的数组表格，注意对于数组要深度监听
+          //监听父组件中的数组表格，注意对于数组要深度监听
     watch(
       () => props.dataSelect,
       (newValue, oldValue) => {
         for (let i = 0; i < (props.dataSelect as any)?.length; i++) {
           //如果发现表格中包含该条目，则将该条目的背景色调为浅蓝色，证明已经选中
           if (
-            (props.dataSelect as any[])[i].name == (props.fileInfo as any).name
+            (props.dataSelect as any[])[i].name == (props.fileInfo as any).name 
+            && (props.dataSelect as any[])[i].address == (props.fileInfo as any).id
+            
           )
           {
             checkInDataBoo.value = true

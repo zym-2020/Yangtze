@@ -37,4 +37,5 @@ public class UpdateShareFileAndFileMetaDTO {
     String[] tags;
     String avatar;
     String thumbnail;
+    String[] visualMethod;
 }

@@ -34,7 +34,7 @@ public class ShpDataSourceConfig {
     public SqlSessionFactory testSqlSessionFactory(@Qualifier("shpDataSource") DataSource dataSource) throws Exception {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
-        bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:shpMapper/*.xml"));
+        bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath*:shpMapper/*.xml"));
         return bean.getObject();
     }
 

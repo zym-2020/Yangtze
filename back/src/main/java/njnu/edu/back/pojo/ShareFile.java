@@ -38,4 +38,5 @@ public class ShareFile {
     String avatar;
     Integer status;
     String thumbnail;
+    String[] visualMethod;
 }
