@@ -8,6 +8,7 @@ import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Random;
 
 /**
  * Created with IntelliJ IDEA.
@@ -83,4 +84,15 @@ public class CommonUtils {
         }
         return utfBytes;
     }
+
+    public static String getRandomCharStr(int n) {
+        String codes = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        Random random = new Random();
+        StringBuilder randomStr = new StringBuilder();
+        for (int i = 0; i < n; i++) {
+            randomStr.append(codes.charAt(random.nextInt(62)));
+        }
+        return randomStr.toString();
+    }
+
 }

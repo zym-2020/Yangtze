@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="njnu.edu.back.dao.main">
+    <insert id="addDataList">
+        insert into data_list values(default, #{name}, #{location, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}, #{description}, #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler},
+                                     #{creator}, now(), now(), #{download}, #{watch}, #{avatar}, #{status}, #{provider}, #{time}, #{range}, #{type}, #{providerPhone},
+                                     #{providerEmail}, #{providerAddress}, #{getOnline}, #{detail}, #{thumbnail})
+    </insert>
+
+    <update id="updateDataList">
+        update data_list
+        set name = #{name}, location = #{location, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}, description = #{description}, tags = #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler},
+            update_time = #{updateTime}, provider = #{provider}, time = #{time}, range = #{range}, type = #{type}, provider_phone = #{providerPhone}, provider_email = #{providerEmail}
+            provider_address = #{providerAddress}, get_online = #{getOnline}, detail = #{detail},
+            <if test="avatar != ''">
+                avatar = #{avatar},
+            </if>
+            <if test="thumbnail != ''">
+                thumbnail = #{thumbnail}
+            </if>
+        where id::text = #{id}
+    </update>
+
+    <select id="getFileInfo" resultType="java.util.Map">
+        select id, name, location, description, tags, creator, create_time as "createTime", update_time as "updateTime", download, watch, avatar, status,
+               provider, time, range, type, provider_phone as "providerPhone", provider_email as "providerEmail", provider_address as "providerAddress", get_online as "getOnline", detail, thumbnail
+        from data_list where id::text = #{id}
+    </select>
+
+    <select id="getFileInfoAndUserInfo" resultType="java.util.Map">
+        select d.id as id, d.name as name, location, description, tags, creator, create_time as "createTime", update_time as "updateTime", download, watch, d.avatar as avatar, status,
+               provider, time, range, type, provider_phone as "providerPhone", provider_email as "providerEmail", provider_address as "providerAddress", get_online as "getOnline", detail, thumbnail,
+               u.name as "userName", email, u.avatar as "userAvatar"
+        from data_list d, users u
+        where d.id::text = #{id} and creator = email
+    </select>
+
+    <update id="addWatchCount">
+        update data_list set watch = watch + 1 where id::text = #{id}
+    </update>
+
+    <select id="fuzzyQuery" resultType="java.util.Map">
+        select id, name, location, description, tags, creator, create_time as "createTime", update_time as "updateTime", download, watch, avatar, status,
+               provider, time, range, type, provider_phone as "providerPhone", provider_email as "providerEmail", provider_address as "providerAddress", get_online as "getOnline", detail, thumbnail
+        from data_list
+        where
+            <if test="status == 2">
+                (status = 1 or status = 0 or status = -1)
+            </if>
+            <if test="status != 2">
+                status = #{status}
+            </if>
+            <if test="keyword != ''">
+                and name like #{keyword}
+            </if>
+            <if test="tags.length > 0">
+                and tags @> #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}::text[]
+            </if>
+            <if test="flag">
+                order by ${property} asc
+                limit #{size} offset #{start};
+            </if>
+            <if test="!flag">
+                order by ${property} desc
+                limit #{size} offset #{start};
+            </if>
+    </select>
+
+    <select id="countFuzzyQuery" resultType="java.lang.Integer">
+        select count(*) from data_list
+        where
+            <if test="status == 2">
+                (status = 1 or status = 0 or status = -1)
+            </if>
+            <if test="status != 2">
+                status = #{status}
+            </if>
+            <if test="keyword != ''">
+                and name like #{keyword}
+            </if>
+            <if test="tags.length > 0">
+                and tags @> #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}::text[]
+            </if>
+    </select>
+
+    <delete id="deleteById">
+        delete from data_list where id::text = #{id}
+    </delete>
+</mapper>

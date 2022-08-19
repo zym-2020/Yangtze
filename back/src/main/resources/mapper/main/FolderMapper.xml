@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="njnu.edu.back.dao.main.FolderMapper">
+    <select id="findListById">
+        select * from folders
+        <foreach collection="list" item="item" open="where id::text in (" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+    <delete id="batchDelete">
+        delete from folders
+        <foreach collection="list" item="item" open="where id::text in (" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+
+    <select id="findByParentId" resultType="java.util.Map">
+        select * from folders where parent_id = #{parentId}
+    </select>
+</mapper>

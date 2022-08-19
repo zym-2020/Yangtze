@@ -17,33 +17,29 @@ import java.util.Map;
  */
 @Repository
 public interface FileMapper {
-    int addFile(AddFileDTO addFileDTO);
+    int addFile(@Param("file") File file);
 
-    List<Map<String, Object>> findByLevel(@Param("level") int level, @Param("email") String email);
+    List<Map<String, Object>> findByFolderId(@Param("folderId")String folderId, @Param("email") String email);
 
-    List<Map<String, Object>> findByParentId(@Param("parentId")String parentId, @Param("email") String email);
-
-    void rename(@Param("id") String id, @Param("name") String name);
+    void rename(@Param("id") String id, @Param("fileName") String fileName);
 
     void batchDelete(@Param("list") List<String> list);
 
     void batchDeleteFolder(@Param("list") List<String> list);
 
-    List<Map<String, Object>> recursionFindFiles(@Param("list") List<String> list);
-
     Map<String, Object> findById(@Param("id") String id);
 
-    List<Map<String, Object>> findDeleteById(@Param("list") List<String> list);
+    List<Map<String, Object>> findListById(@Param("list") List<String> list);
 
-    int batchInsert(List<File> fileList);
-
-    List<Map<String, Object>> selectFolder(@Param("email") String email);
-
-    int updateFolderParentIdAndLevel(@Param("list") List<String> list, @Param("parentId") String parentId, @Param("levelDifference") int levelDifference);
-
-    int updateFileParentIdAndLevel(@Param("list") List<String> list, @Param("parentId") String parentId, @Param("levelDifference") int levelDifference);
-
-    List<Map<String, Object>> selectFolderPath(@Param("list") List<String> id);
-
-    List<Map<String, Object>> selectFilePath(@Param("list") List<String> id);
+//    int batchInsert(List<File> fileList);
+//
+//    List<Map<String, Object>> selectFolder(@Param("email") String email);
+//
+//    int updateFolderParentIdAndLevel(@Param("list") List<String> list, @Param("parentId") String parentId, @Param("levelDifference") int levelDifference);
+//
+//    int updateFileParentIdAndLevel(@Param("list") List<String> list, @Param("parentId") String parentId, @Param("levelDifference") int levelDifference);
+//
+//    List<Map<String, Object>> selectFolderPath(@Param("list") List<String> id);
+//
+//    List<Map<String, Object>> selectFilePath(@Param("list") List<String> id);
 }

@@ -6,6 +6,7 @@ import njnu.edu.back.common.resolver.JwtTokenParser;
 import njnu.edu.back.common.result.JsonResult;
 import njnu.edu.back.common.result.ResultUtils;
 import njnu.edu.back.common.utils.ZipOperate;
+import njnu.edu.back.pojo.File;
 import njnu.edu.back.pojo.dto.AddFileDTO;
 import njnu.edu.back.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,20 +37,14 @@ public class FileController {
 
     @AuthCheck
     @RequestMapping(value = "/addFile", method = RequestMethod.POST)
-    public JsonResult addFile(@RequestBody AddFileDTO addFileDTO, @JwtTokenParser("email") String email) {
-        return ResultUtils.success(fileService.addFile(addFileDTO, email));
+    public JsonResult addFile(@RequestBody File file, @JwtTokenParser("email") String email) {
+        return ResultUtils.success(fileService.addFile(file, email));
     }
 
     @AuthCheck
-    @RequestMapping(value = "/findByLevel/{level}", method = RequestMethod.GET)
-    public JsonResult findByLevel(@PathVariable int level, @JwtTokenParser("email") String email) {
-        return ResultUtils.success(fileService.findByLevel(level, email));
-    }
-
-    @AuthCheck
-    @RequestMapping(value = "/findByParentId/{parentId}", method = RequestMethod.GET)
-    public JsonResult findByParentId(@PathVariable String parentId, @JwtTokenParser("email") String email) {
-        return ResultUtils.success(fileService.findByParentId(parentId, email));
+    @RequestMapping(value = "/findByFolderId/{folderId}", method = RequestMethod.GET)
+    public JsonResult findByParentId(@PathVariable String folderId, @JwtTokenParser("email") String email) {
+        return ResultUtils.success(fileService.findByFolderId(folderId, email));
     }
 
     @AuthCheck
@@ -57,9 +52,9 @@ public class FileController {
     public JsonResult getNoUpload(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
         String MD5 = jsonObject.getStr("MD5");
         int total = jsonObject.getInt("total");
-        JSONObject metaData = jsonObject.getJSONObject("meta");
-        return ResultUtils.success(fileService.getNoUpload(MD5, email, total, metaData));
+        return ResultUtils.success(fileService.getNoUpload(MD5, email, total));
     }
+
     @CrossOrigin
     @AuthCheck
     @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
@@ -67,11 +62,18 @@ public class FileController {
         fileService.uploadFile(file, MD5, email, name);
         return ResultUtils.success();
     }
+
     @CrossOrigin
     @AuthCheck
-    @RequestMapping(value = "/mergeFile/{MD5}/{uuid}", method = RequestMethod.POST)
-    public JsonResult mergeFile(@PathVariable String MD5, @PathVariable String uuid, @JwtTokenParser("email") String email) {
-        return ResultUtils.success(fileService.mergeFile(email, MD5, uuid));
+    @RequestMapping(value = "/mergeFile", method = RequestMethod.POST)
+    public JsonResult mergeFile(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
+        String MD5 = jsonObject.getStr("MD5");
+        String uid = jsonObject.getStr("uid");
+        int total = jsonObject.getInt("total");
+        String name = jsonObject.getStr("name");
+        String size = jsonObject.getStr("size");
+        String folderId = jsonObject.getStr("folderId");
+        return ResultUtils.success(fileService.mergeFile(email, MD5, uid, total, name, size, folderId));
     }
 
     @AuthCheck
@@ -83,7 +85,7 @@ public class FileController {
     @AuthCheck
     @RequestMapping(value = "/rename", method = RequestMethod.PATCH)
     public JsonResult rename(@RequestBody JSONObject jsonObject) {
-        fileService.rename(jsonObject.getStr("id"), jsonObject.getStr("name"));
+        fileService.rename(jsonObject.getStr("id"), jsonObject.getStr("fileName"));
         return ResultUtils.success();
     }
 
@@ -94,53 +96,41 @@ public class FileController {
         return ResultUtils.success();
     }
 
-    @CrossOrigin
-    @RequestMapping(value = "/avatar/{pictureName}", method = RequestMethod.GET)
-    public void getAvatar(@PathVariable String pictureName, HttpServletResponse response) {
-        fileService.getAvatar(pictureName, response);
-    }
+    /**
+    * @Description:这部分代码后期再重新整理
+    * @Author: Yiming
+    * @Date: 2022/8/19
+    */
 
-    @CrossOrigin
-    @RequestMapping(value = "/thumbnail/{pictureName}", method = RequestMethod.GET)
-    public void getThumbnail(@PathVariable String pictureName, HttpServletResponse response) {
-        fileService.getThumbnail(pictureName, response);
-    }
-
-    @CrossOrigin
-    @RequestMapping(value = "/photos/{pictureName}", method = RequestMethod.GET)
-    public void getPhotos(@PathVariable String pictureName, HttpServletResponse response) {
-        fileService.getPhotos(pictureName, response);
-    }
-
-    @AuthCheck
-    @RequestMapping(value = "/unPack", method = RequestMethod.POST)
-    public JsonResult unPack(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
-        String id = jsonObject.getStr("id");
-        String parentId = jsonObject.getStr("parentId");
-        int level = jsonObject.getInt("level");
-        fileService.unPack(id, parentId, level, email);
-        return ResultUtils.success();
-    }
-
-    @AuthCheck
-    @RequestMapping(value = "/getTree", method = RequestMethod.GET)
-    public JsonResult getTree(@JwtTokenParser("email") String email) {
-        return ResultUtils.success(fileService.getFolderTree(email));
-    }
-
-    @AuthCheck
-    @RequestMapping(value = "/updateParentIdAndLevel", method = RequestMethod.POST)
-    public JsonResult updateParentIdAndLevel(@RequestBody JSONObject jsonObject) {
-
-        fileService.updateParentIdAndLevel(jsonObject);
-        return ResultUtils.success();
-    }
-
-    @AuthCheck
-    @RequestMapping(value = "/compressFile", method = RequestMethod.POST)
-    public JsonResult compressFile(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
-        fileService.compressFile(jsonObject, email);
-        return ResultUtils.success();
-    }
+//    @AuthCheck
+//    @RequestMapping(value = "/unPack", method = RequestMethod.POST)
+//    public JsonResult unPack(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
+//        String id = jsonObject.getStr("id");
+//        String parentId = jsonObject.getStr("parentId");
+//        int level = jsonObject.getInt("level");
+//        fileService.unPack(id, parentId, level, email);
+//        return ResultUtils.success();
+//    }
+//
+//    @AuthCheck
+//    @RequestMapping(value = "/getTree", method = RequestMethod.GET)
+//    public JsonResult getTree(@JwtTokenParser("email") String email) {
+//        return ResultUtils.success(fileService.getFolderTree(email));
+//    }
+//
+//    @AuthCheck
+//    @RequestMapping(value = "/updateParentIdAndLevel", method = RequestMethod.POST)
+//    public JsonResult updateParentIdAndLevel(@RequestBody JSONObject jsonObject) {
+//
+//        fileService.updateParentIdAndLevel(jsonObject);
+//        return ResultUtils.success();
+//    }
+//
+//    @AuthCheck
+//    @RequestMapping(value = "/compressFile", method = RequestMethod.POST)
+//    public JsonResult compressFile(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
+//        fileService.compressFile(jsonObject, email);
+//        return ResultUtils.success();
+//    }
 
 }

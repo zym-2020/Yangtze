@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="njnu.edu.back.dao.main.DataRelationalMapper">
+    <delete id="batchDeleteByDataListId">
+        delete from data_relational
+        <foreach collection="list" item="item" open="where file_id in (" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="batchDeleteFolder">
+        with recursive temp_folder as (
+        select * from folders
+        <foreach collection="list" item="item" open="where id::text in (" close=")" separator=",">
+            #{item}
+        </foreach>
+        union
+        select f.* from folders f
+        inner join temp_folder on temp_folder.id::text = f.parent_id
+        ) delete from data_relational where file_id in (select id from temp_files);
+    </delete>
+</mapper>

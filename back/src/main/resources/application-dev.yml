@@ -68,3 +68,5 @@ shp2pgsqldir:
   D:\App\postgresql\bin\
 datadir:
   E:\水科院\数据\
+pictureAddress:
+  E:\Minio\data\test\other\avatar\
