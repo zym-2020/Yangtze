@@ -1,18 +1,9 @@
 package njnu.edu.back;
 
-import cn.hutool.json.JSONArray;
-import cn.hutool.json.JSONObject;
-import njnu.edu.back.common.auth.AuthCheck;
-import njnu.edu.back.common.utils.*;
 import njnu.edu.back.service.FileService;
 import njnu.edu.back.service.ProjectService;
-import njnu.edu.back.common.utils.CommonUtils;
 import njnu.edu.back.common.utils.PolygonCheck;
-import njnu.edu.back.common.utils.Zip2;
-import njnu.edu.back.common.utils.ZipOperate;
-import njnu.edu.back.dao.ShpCoordinatesMapper;
-import njnu.edu.back.pojo.ShareFile;
-import njnu.edu.back.service.FileService;
+import njnu.edu.back.dao.main.ShpCoordinatesMapper;
 import njnu.edu.back.service.ShareFileService;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration;
@@ -20,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.net.URLDecoder;
 import java.util.*;
 
 @SpringBootApplication(exclude = MybatisAutoConfiguration.class)

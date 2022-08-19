@@ -3,11 +3,10 @@ package njnu.edu.back.service.impl;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.common.utils.Encrypt;
-import njnu.edu.back.dao.DownloadHistoryMapper;
-import njnu.edu.back.dao.FileMapper;
-import njnu.edu.back.dao.ShareFileMapper;
+import njnu.edu.back.dao.main.DownloadHistoryMapper;
+import njnu.edu.back.dao.main.FileMapper;
+import njnu.edu.back.dao.main.ShareFileMapper;
 import njnu.edu.back.pojo.DownloadHistory;
-import njnu.edu.back.pojo.ShareFile;
 import njnu.edu.back.service.DownloadService;
 import njnu.edu.back.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +14,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URLEncoder;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 

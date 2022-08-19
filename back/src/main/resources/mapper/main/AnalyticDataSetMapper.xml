@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="njnu.edu.back.dao.main.AnalyticDataSetMapper">
+<!--    <select id="findDataByType" resultType="java.util.HashMap">-->
+<!--        select * from analytic_data_set where type = #{type};-->
+<!--    </select>-->
+    <select id="findDataByType" resultType="java.util.HashMap">
+        select * from analytic_data_set
+        <foreach collection="list" item="item" open="where type in (" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="findById" resultType="java.util.HashMap">
+        select * from analytic_data_set where id::text = #{id};
+    </select>
+
+    <select id="findIdByBenchmarkAndReference" resultType="java.lang.String">
+        select id::text from analytic_data_set where benchmark = #{benchmark} and reference = #{reference};
+    </select>
+</mapper>

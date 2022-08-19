@@ -6,7 +6,7 @@ import njnu.edu.back.common.utils.CommonUtils;
 import njnu.edu.back.common.utils.Encrypt;
 import njnu.edu.back.common.utils.JwtTokenUtil;
 import njnu.edu.back.common.utils.LocalUploadUtil;
-import njnu.edu.back.dao.UserMapper;
+import njnu.edu.back.dao.main.UserMapper;
 import njnu.edu.back.pojo.User;
 import njnu.edu.back.pojo.dto.AddUserDTO;
 import njnu.edu.back.service.RedisService;

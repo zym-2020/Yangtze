@@ -5,7 +5,7 @@ import cn.hutool.json.JSONObject;
 import lombok.SneakyThrows;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.utils.GeoToolsUtil;
-import njnu.edu.back.dao.VectorRelationshipMapper;
+import njnu.edu.back.dao.main.VectorRelationshipMapper;
 import njnu.edu.back.pojo.dto.AddVector;
 import njnu.edu.back.service.RedisService;
 import njnu.edu.back.service.VectorRelationshipService;

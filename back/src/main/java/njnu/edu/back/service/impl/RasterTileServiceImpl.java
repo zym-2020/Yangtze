@@ -1,6 +1,6 @@
 package njnu.edu.back.service.impl;
 
-import njnu.edu.back.dao.RasterRelationshipMapper;
+import njnu.edu.back.dao.main.RasterRelationshipMapper;
 import njnu.edu.back.service.RasterTileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.UUID;
 
 /**
  * Created with IntelliJ IDEA.

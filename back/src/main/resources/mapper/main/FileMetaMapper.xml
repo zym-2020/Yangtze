@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="njnu.edu.back.dao.main.FileMetaMapper">
+    <select id="addFileMeta" parameterType="njnu.edu.back.pojo.FileMeta" resultType="java.lang.String">
+        insert into file_meta values(default, #{provider}, #{time}, #{range}, #{detail}, #{type}, #{providerPhone}, #{providerEmail}, #{providerAddress}, #{getOnline}) returning id;
+    </select>
+
+    <select id="getFileMetaById" resultType="java.util.HashMap">
+        select * from file_meta where id::text = #{id};
+    </select>
+
+    <select id="getFileMetaAndUserInfo" resultType="java.util.HashMap">
+        select file_meta.*, users.name, users.avatar from file_meta, users where file_meta.id::text = #{id} and email = #{email};
+    </select>
+</mapper>

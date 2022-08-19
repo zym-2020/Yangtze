@@ -1,6 +1,6 @@
 package njnu.edu.back.service.impl;
 
-import njnu.edu.back.dao.FileMetaMapper;
+import njnu.edu.back.dao.main.FileMetaMapper;
 import njnu.edu.back.service.FileMetaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

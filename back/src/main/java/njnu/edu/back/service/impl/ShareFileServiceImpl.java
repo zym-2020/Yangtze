@@ -2,12 +2,11 @@ package njnu.edu.back.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import njnu.edu.back.common.exception.MyException;
-import njnu.edu.back.common.result.JsonResult;
 import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.common.utils.LocalUploadUtil;
-import njnu.edu.back.dao.BrowseHistoryMapper;
-import njnu.edu.back.dao.FileMetaMapper;
-import njnu.edu.back.dao.ShareFileMapper;
+import njnu.edu.back.dao.main.BrowseHistoryMapper;
+import njnu.edu.back.dao.main.FileMetaMapper;
+import njnu.edu.back.dao.main.ShareFileMapper;
 import njnu.edu.back.pojo.BrowseHistory;
 import njnu.edu.back.pojo.FileMeta;
 import njnu.edu.back.pojo.ShareFile;

@@ -1,13 +1,10 @@
 package njnu.edu.back.service.impl;
 
 import cn.hutool.json.JSONObject;
-import njnu.edu.back.dao.RasterRelationshipMapper;
+import njnu.edu.back.dao.main.RasterRelationshipMapper;
 import njnu.edu.back.service.RasterRelationshipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.

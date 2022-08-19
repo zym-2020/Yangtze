@@ -1,17 +1,11 @@
 package njnu.edu.back.controller;
 
-import cn.hutool.http.HttpResponse;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import njnu.edu.back.common.auth.AuthCheck;
-import njnu.edu.back.common.utils.JsonUtils;
-import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.resolver.JwtTokenParser;
 import njnu.edu.back.common.result.JsonResult;
 import njnu.edu.back.common.result.ResultUtils;
 import njnu.edu.back.common.utils.Zip2;
-import njnu.edu.back.dao.MessageMapper;
+import njnu.edu.back.dao.main.MessageMapper;
 import njnu.edu.back.pojo.ShareFile;
 import njnu.edu.back.pojo.dto.AddMessageDTO;
 import njnu.edu.back.service.DownloadService;
@@ -20,15 +14,10 @@ import njnu.edu.back.service.ShareFileService;
 import njnu.edu.back.service.UploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

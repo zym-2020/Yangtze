@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="njnu.edu.back.dao.main.RasterRelationshipMapper">
+    <resultMap id="RasterRelationshipMap" type="njnu.edu.back.pojo.RasterRelationship">
+        <id column="id" property="id"/>
+        <result column="file_name" property="fileName"/>
+        <result column="category" property="category"/>
+        <result column="address" property="address"/>
+        <result column="meta" property="meta"/>
+        <result column="has_tiles" property="hasTiles"/>
+        <result column="uploader" property="uploader"/>
+        <result column="source" property="source"/>
+    </resultMap>
+    <select id="getAddress" resultType="java.lang.String">
+        select address from raster_relationship where id::text = #{id};
+    </select>
+
+    <select id="pageQuery" resultType="java.util.HashMap">
+        select id, file_name as name, meta, upload_time as time, has_tiles as show from raster_relationship order by id limit #{size} offset #{start};
+    </select>
+
+    <select id="countAll" resultType="java.lang.Integer">
+        select count(*) from raster_relationship;
+    </select>
+
+    <select id="getById" resultMap="RasterRelationshipMap">
+        select * from raster_relationship where id::text = #{id}
+    </select>
+</mapper>

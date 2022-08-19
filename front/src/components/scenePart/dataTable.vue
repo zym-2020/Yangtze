@@ -23,33 +23,31 @@
 
 <script lang='ts'>
 export default {
-    name: 'dataTable'
+  name: "dataTable",
 };
 </script>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { frontData } from '../../frontData';
+import { ref } from "vue";
+import { frontData } from "../../frontData";
 
 interface Props {
-    tableId: string
+  tableId: string;
 }
 
 const props = defineProps<Props>();
 
 const tableIndex = ref(props.tableId);
 
-const tableData = frontData['tables'][+tableIndex.value];
+const tableData = frontData["tables"][+tableIndex.value];
 
-const tbHead = ref(tableData['tHead']);
+const tbHead = ref(tableData["tHead"]);
 
-const tbBody = ref(tableData['tBody']);
-
+const tbBody = ref(tableData["tBody"]);
 </script>
 
 
 <style lang='scss' scoped>
-
 div.data-table-wrapper {
   background-color: transparent;
   height: 50%;
@@ -133,5 +131,4 @@ div.data-table-wrapper {
     }
   }
 }
-
 </style>

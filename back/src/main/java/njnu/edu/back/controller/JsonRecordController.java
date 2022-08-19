@@ -3,7 +3,7 @@ package njnu.edu.back.controller;
 import njnu.edu.back.common.auth.AuthCheck;
 import njnu.edu.back.common.result.JsonResult;
 import njnu.edu.back.common.result.ResultUtils;
-import njnu.edu.back.shpDao.JsonRecordMapper;
+import njnu.edu.back.dao.shp.JsonRecordMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

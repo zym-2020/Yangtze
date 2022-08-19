@@ -1,15 +1,13 @@
 package njnu.edu.back.service.impl;
 
-import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import lombok.SneakyThrows;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
-import njnu.edu.back.common.utils.CommonUtils;
 import njnu.edu.back.common.utils.LocalUploadUtil;
 import njnu.edu.back.common.utils.ZipOperate;
-import njnu.edu.back.dao.FileMapper;
-import njnu.edu.back.dao.UploadRecordMapper;
+import njnu.edu.back.dao.main.FileMapper;
+import njnu.edu.back.dao.main.UploadRecordMapper;
 import njnu.edu.back.pojo.File;
 import njnu.edu.back.pojo.UploadRecord;
 import njnu.edu.back.pojo.dto.AddFileDTO;

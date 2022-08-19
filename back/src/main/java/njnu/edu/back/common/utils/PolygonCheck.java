@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import njnu.edu.back.dao.ShpCoordinatesMapper;
+import njnu.edu.back.dao.main.ShpCoordinatesMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;

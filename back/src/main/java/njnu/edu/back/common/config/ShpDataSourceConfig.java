@@ -22,7 +22,7 @@ import javax.sql.DataSource;
  * @Description:
  */
 @Configuration
-@MapperScan(basePackages = "njnu.edu.back.shpDao", sqlSessionTemplateRef  = "shpSqlSessionTemplate")
+@MapperScan(basePackages = "njnu.edu.back.dao.shp", sqlSessionTemplateRef  = "shpSqlSessionTemplate")
 public class ShpDataSourceConfig {
     @Bean(name = "shpDataSource")
     @ConfigurationProperties(prefix = "spring.datasource.shp")
@@ -34,7 +34,7 @@ public class ShpDataSourceConfig {
     public SqlSessionFactory testSqlSessionFactory(@Qualifier("shpDataSource") DataSource dataSource) throws Exception {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
-        bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:shpMapper/*.xml"));
+        bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mapper/shp/*.xml"));
         return bean.getObject();
     }
 

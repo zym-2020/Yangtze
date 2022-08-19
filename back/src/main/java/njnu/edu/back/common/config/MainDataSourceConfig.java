@@ -23,7 +23,7 @@ import javax.sql.DataSource;
  * @Description:
  */
 @Configuration
-@MapperScan(basePackages = "njnu.edu.back.dao", sqlSessionTemplateRef  = "mainSqlSessionTemplate")
+@MapperScan(basePackages = "njnu.edu.back.dao.main", sqlSessionTemplateRef  = "mainSqlSessionTemplate")
 public class MainDataSourceConfig {
     @Bean(name = "mainDataSource")
     @ConfigurationProperties(prefix = "spring.datasource.main")
@@ -37,7 +37,7 @@ public class MainDataSourceConfig {
     public SqlSessionFactory testSqlSessionFactory(@Qualifier("mainDataSource") DataSource dataSource) throws Exception {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
-        bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mapper/*.xml"));
+        bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mapper/main/*.xml"));
         return bean.getObject();
     }
 

@@ -1,7 +1,7 @@
 package njnu.edu.back.service.impl;
 
 import njnu.edu.back.common.utils.CommonUtils;
-import njnu.edu.back.dao.UploadRecordMapper;
+import njnu.edu.back.dao.main.UploadRecordMapper;
 import njnu.edu.back.pojo.UploadRecord;
 import njnu.edu.back.service.UploadRecordService;
 import org.springframework.beans.factory.annotation.Autowired;

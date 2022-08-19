@@ -7,14 +7,11 @@ import njnu.edu.back.common.auth.AuthCheck;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.resolver.JwtTokenParser;
 import njnu.edu.back.common.result.JsonResult;
-import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.common.result.ResultUtils;
 import njnu.edu.back.common.utils.PolygonCheck;
-import njnu.edu.back.dao.ShareFileMapper;
-import njnu.edu.back.dao.ShpCoordinatesMapper;
-import njnu.edu.back.dao.TideStationMapper;
-import njnu.edu.back.pojo.FileMeta;
-import njnu.edu.back.pojo.TideStation;
+import njnu.edu.back.dao.main.ShareFileMapper;
+import njnu.edu.back.dao.main.ShpCoordinatesMapper;
+import njnu.edu.back.dao.main.TideStationMapper;
 import njnu.edu.back.pojo.dto.UpdateShareFileAndFileMetaDTO;
 import njnu.edu.back.service.ShareFileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
