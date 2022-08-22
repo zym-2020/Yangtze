@@ -360,6 +360,7 @@ import {
   QueryShpByName,
   getFilePath,
   ZipEntryPath,
+  QueryHeightByName,
 } from "@/api/request";
 import { NButton } from "naive-ui";
 export default defineComponent({
@@ -583,6 +584,10 @@ export default defineComponent({
     };
     onMounted(async () => {
        avatar.value = imgBase64("哈哈");
+       const dataList =ref<any[]>()
+      const datass=await QueryHeightByName("徐六泾站潮位观测成果表")
+      dataList.value=datass.data[0].height
+      console.log(dataList.value)
       // const data = await responseBinary('222');
       // const data2 =await queryByMsi(3333);
       // const TempData=data2.data.list;

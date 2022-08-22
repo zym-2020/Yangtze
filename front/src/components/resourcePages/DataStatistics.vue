@@ -5,6 +5,8 @@
       <download-statistics></download-statistics>
       <el-divider content-position="left">数据访问情况</el-divider>
       <browse-statistics></browse-statistics>
+        <el-divider content-position="left">数据hh情况</el-divider>
+      <SectionFlowStatistics></SectionFlowStatistics>
     </div>
   </div>
 </template>
@@ -18,12 +20,15 @@ import DownloadStatistics from "./components/DownloadStatistics.vue";
 import TideStatistics from "./components/TideStatistics.vue";
 import DownloadSta2 from "./components/DownSta2.vue";
 
+import SectionFlowStatistics from "./components/SectionFlowStatistics.vue";
+
 export default defineComponent({
   components: {
     DownloadStatistics,
     BrowseStatistics,
     DownloadSta2,
     TideStatistics,
+    SectionFlowStatistics
   },
   setup() {},
 });

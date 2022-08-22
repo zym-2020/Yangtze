@@ -68,7 +68,7 @@ watch(
         map.value?.addSource("test", {
           type: "vector",
           tiles: [
-            "http://localhost:8002/vector/" + names + "/{x}/{y}/{z}",
+            "http://localhost:8002/analyticDataSet/" + names + "/{x}/{y}/{z}",
           ],
         });
 
