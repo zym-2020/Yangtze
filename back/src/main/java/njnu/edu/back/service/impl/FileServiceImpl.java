@@ -5,12 +5,11 @@ import lombok.SneakyThrows;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.common.utils.CommonUtils;
+import njnu.edu.back.common.utils.Encrypt;
 import njnu.edu.back.common.utils.LocalUploadUtil;
 import njnu.edu.back.common.utils.ZipOperate;
-import njnu.edu.back.dao.main.DataRelationalMapper;
-import njnu.edu.back.dao.main.FileMapper;
-import njnu.edu.back.dao.main.FolderMapper;
-import njnu.edu.back.dao.main.UploadRecordMapper;
+import njnu.edu.back.dao.main.*;
+import njnu.edu.back.pojo.DownloadHistory;
 import njnu.edu.back.pojo.File;
 import njnu.edu.back.pojo.UploadRecord;
 import njnu.edu.back.pojo.dto.AddFileDTO;
@@ -22,9 +21,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -43,6 +44,9 @@ public class FileServiceImpl implements FileService {
     @Value("${basedir}")
     String basedir;
 
+    @Value("${encrypt.key}")
+    String key;
+
     @Autowired
     RedisService redisService;
 
@@ -54,6 +58,12 @@ public class FileServiceImpl implements FileService {
 
     @Autowired
     FolderMapper folderMapper;
+
+    @Autowired
+    DataListMapper dataListMapper;
+
+    @Autowired
+    DownloadHistoryMapper downloadHistoryMapper;
     
 
     @Override
@@ -152,9 +162,115 @@ public class FileServiceImpl implements FileService {
 
     }
 
+    @Override
+    public String getDownloadURL(String id, String userId) {
+        String uuid = UUID.randomUUID().toString();
+        redisService.set(uuid, id, 30l);
+        return Encrypt.encryptByUserId(uuid, userId, key.toCharArray());
+    }
 
+    @Override
+    public void downloadInList(String userId, String id, String dataListId, HttpServletResponse response, HttpServletRequest request) {
+        String ip = request.getRemoteAddr();
+        String tempId = (String) redisService.get(id);
+        if(tempId == null) {
+            throw new MyException(-1, "链接已失效");
+        } else {
+            redisService.del(id);
+            id = tempId;
+        }
+        Map<String, Object> fileInfo = fileMapper.findById(id);
+        String fileName = (String) fileInfo.get("file_name");
+        String address = (String) fileInfo.get("address");
+        java.io.File file = new java.io.File(address);
+        if(!file.exists()) {
+            throw new MyException(ResultEnum.NO_OBJECT);
+        }
+        InputStream in = null;
+        ServletOutputStream sos = null;
+        try {
+            response.setContentType("application/octet-stream");
+            response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
+            response.addHeader("Content-Length", "" + file.length());
+            in = new FileInputStream(file);
+            sos = response.getOutputStream();
+            byte[] b = new byte[1024];
+            while(in.read(b) > 0) {
+                sos.write(b);
+            }
+            sos.flush();
+            sos.close();
+            in.close();
+            dataListMapper.addDownloadCount(dataListId);
+            downloadHistoryMapper.addHistory(new DownloadHistory(null, userId, null, ip, dataListId, id));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        } finally {
+            try {
+                if(in != null) {
+                    in.close();
+                }
+                if(sos != null) {
+                    sos.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+            }
+        }
+    }
 
-//    /**
+    @Override
+    public void downloadLocalFile(String userId, String id, HttpServletResponse response) {
+        String tempId = (String) redisService.get(id);
+        if(tempId == null) {
+            throw new MyException(-1, "链接已失效");
+        } else {
+            redisService.del(id);
+            id = tempId;
+        }
+        Map<String, Object> fileInfo = fileMapper.findById(id);
+        String fileName = (String) fileInfo.get("file_name");
+        String address = (String) fileInfo.get("address");
+        java.io.File file = new java.io.File(address);
+        if(!file.exists()) {
+            throw new MyException(ResultEnum.NO_OBJECT);
+        }
+        InputStream in = null;
+        ServletOutputStream sos = null;
+        try {
+            response.setContentType("application/octet-stream");
+            response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
+            response.addHeader("Content-Length", "" + file.length());
+            in = new FileInputStream(file);
+            sos = response.getOutputStream();
+            byte[] b = new byte[1024];
+            while(in.read(b) > 0) {
+                sos.write(b);
+            }
+            sos.flush();
+            sos.close();
+            in.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        } finally {
+            try {
+                if(in != null) {
+                    in.close();
+                }
+                if(sos != null) {
+                    sos.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+            }
+        }
+    }
+
+    //    /**
 //    * @Description:在线解压操作
 //    * @Author: Yiming
 //    * @Date: 2022/6/8

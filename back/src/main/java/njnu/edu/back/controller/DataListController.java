@@ -69,6 +69,29 @@ public class DataListController {
     }
 
     @AuthCheck
+    @RequestMapping(value = "/pageQueryByEmail/{page}/{size}", method = RequestMethod.GET)
+    public JsonResult pageQueryByEmail(@JwtTokenParser("email") String email, @PathVariable int page, @PathVariable int size) {
+        return ResultUtils.success(dataListService.pageQueryByEmail(email, size, page));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/deleteAsMember", method = RequestMethod.POST)
+    public JsonResult deleteAsMember(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
+        String id = jsonObject.getString("id");
+        int size = jsonObject.getIntValue("size");
+        int page = jsonObject.getIntValue("page");
+        return ResultUtils.success(dataListService.deleteAsMember(id, email, page, size));
+    }
+
+
+    /**
+    * @Description:以下是Admin用户接口
+    * @Author: Yiming
+    * @Date: 2022/8/20
+    */
+
+
+    @AuthCheck
     @RequestMapping(value = "/fuzzyQueryAdmin", method = RequestMethod.POST)
     public JsonResult fuzzyQueryAdmin(@RequestBody JSONObject jsonObject) {
         int page = jsonObject.getIntValue("page");
@@ -82,8 +105,8 @@ public class DataListController {
     }
 
     @AuthCheck
-    @RequestMapping(value = "/deleteShareFileById", method = RequestMethod.DELETE)
-    public JsonResult deleteShareFileById(@RequestBody JSONObject jsonObject) {
+    @RequestMapping(value = "/deleteByAdmin", method = RequestMethod.DELETE)
+    public JsonResult deleteByAdmin(@RequestBody JSONObject jsonObject) {
         int page = jsonObject.getIntValue("page");
         int size = jsonObject.getIntValue("size");
         String keyword = jsonObject.getString("keyword");
@@ -92,7 +115,15 @@ public class DataListController {
         Boolean flag = jsonObject.getBoolean("flag");
         int status = jsonObject.getIntValue("status");
         String id = jsonObject.getString("id");
-        return ResultUtils.success(dataListService.deleteShareFileById(page, size, keyword, tags, property, flag, status, id));
+        return ResultUtils.success(dataListService.deleteByAdmin(page, size, keyword, tags, property, flag, status, id));
     }
+
+    @AuthCheck
+    @RequestMapping(value = "/updateStatusById/{id}/{status}", method = RequestMethod.PATCH)
+    public JsonResult updateStatusById(@PathVariable String id, @PathVariable int status) {
+        dataListService.updateStatusById(id, status);
+        return ResultUtils.success();
+    }
+
 
 }

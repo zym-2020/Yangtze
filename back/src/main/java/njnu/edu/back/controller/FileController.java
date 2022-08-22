@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,6 +96,32 @@ public class FileController {
         fileService.deleteFilesOrFolders(jsonObject);
         return ResultUtils.success();
     }
+
+    @AuthCheck
+    @RequestMapping(value = "/getDownloadURL/{id}", method = RequestMethod.GET)
+    public JsonResult getDownloadURL(@PathVariable String id, @JwtTokenParser("id") String userId) {
+        return ResultUtils.success(fileService.getDownloadURL(id, userId));
+    }
+
+    /**
+    * @Description:加密下载，下载条目下的文件
+    * @Author: Yiming
+    * @Date: 2022/8/20
+    */
+
+    @CrossOrigin
+    @RequestMapping(value = "/downloadInList/{userId}/{id}/{dataListId}", method = RequestMethod.GET)
+    public void downloadInList(@PathVariable String userId, @PathVariable String id, @PathVariable String dataListId, HttpServletResponse response, HttpServletRequest request) {
+        fileService.downloadInList(userId, id, dataListId, response, request);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/downloadLocalFile/{userId}/{id}", method = RequestMethod.GET)
+    public void downloadLocalFile(@PathVariable String userId, @PathVariable String id, HttpServletResponse response) {
+        fileService.downloadLocalFile(userId, id, response);
+    }
+
+
 
     /**
     * @Description:这部分代码后期再重新整理

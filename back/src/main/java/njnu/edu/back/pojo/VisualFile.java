@@ -8,21 +8,15 @@ import lombok.NoArgsConstructor;
  * Created with IntelliJ IDEA.
  *
  * @Author: Yiming
- * @Date: 2022/05/17/14:01
+ * @Date: 2022/08/20/15:05
  * @Description:
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FileMeta {
+public class VisualFile {
     String id;
-    String provider;
-    String time;
-    String range;
-    String detail;
+    String fileName;
     String type;
-    String providerPhone;
-    String providerEmail;
-    String providerAddress;
-    Boolean getOnline;
+    String content;
 }

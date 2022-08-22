@@ -15,8 +15,7 @@ import java.util.Map;
  */
 
 public interface DownloadHistoryService {
-    void addHistory(DownloadHistory downloadHistory);
 
-    Map<String, Object> pageQuery(int size, int page, String dataId);
+    Map<String, Object> pageQuery(int size, int page, String dataListId);
 
 }

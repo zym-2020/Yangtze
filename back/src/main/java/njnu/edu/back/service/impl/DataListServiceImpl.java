@@ -2,6 +2,7 @@ package njnu.edu.back.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.utils.LocalUploadUtil;
 import njnu.edu.back.dao.main.DataListMapper;
 import njnu.edu.back.pojo.DataList;
@@ -148,8 +149,33 @@ public class DataListServiceImpl implements DataListService {
     }
 
     @Override
-    public Map<String, Object> deleteShareFileById(int page, int size, String keyword, String[] tags, String property, Boolean flag, int status, String id) {
+    public Map<String, Object> deleteByAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag, int status, String id) {
         dataListMapper.deleteById(id);
         return fuzzyQueryAdmin(page, size, keyword, tags, property, flag, status);
+    }
+
+    @Override
+    public Map<String, Object> pageQueryByEmail(String email, int size, int page) {
+        List<Map<String, Object>> list = dataListMapper.pageQueryByEmail(email, size, size * page);
+        int count = dataListMapper.countPageQueryByEmail(email);
+        Map<String, Object> map = new HashMap<>();
+        map.put("list", list);
+        map.put("total", count);
+        return map;
+    }
+
+    @Override
+    public void updateStatusById(String id, int status) {
+        dataListMapper.updateStatusById(id, status);
+    }
+
+    @Override
+    public Map<String, Object> deleteAsMember(String id, String email, int page, int size) {
+        Map<String, Object> fileInfo = dataListMapper.getFileInfo(id);
+        if(!fileInfo.get("creator").equals(email)) {
+            throw new MyException(-99, "没有权限！");
+        }
+        dataListMapper.deleteById(id);
+        return pageQueryByEmail(email, size, page);
     }
 }

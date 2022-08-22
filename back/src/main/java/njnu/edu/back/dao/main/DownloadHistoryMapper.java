@@ -18,7 +18,7 @@ import java.util.Map;
 public interface DownloadHistoryMapper {
     void addHistory(DownloadHistory downloadHistory);
 
-    List<Map<String, Object>> pageQuery(@Param("size") int size, @Param("start") int start, @Param("dataId") String id);
+    List<Map<String, Object>> pageQuery(@Param("size") int size, @Param("start") int start, @Param("dataListId") String dataListId);
 
-    int countByDataId(@Param("dataId") String dataId);
+    int countByDataId(@Param("dataListId") String dataListId);
 }

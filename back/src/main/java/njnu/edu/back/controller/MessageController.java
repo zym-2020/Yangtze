@@ -8,7 +8,6 @@ import njnu.edu.back.common.utils.Zip2;
 import njnu.edu.back.dao.main.MessageMapper;
 import njnu.edu.back.pojo.ShareFile;
 import njnu.edu.back.pojo.dto.AddMessageDTO;
-import njnu.edu.back.service.DownloadService;
 import njnu.edu.back.service.MessageService;
 import njnu.edu.back.service.ShareFileService;
 import njnu.edu.back.service.UploadService;
@@ -28,8 +27,7 @@ public class MessageController {
     MessageService messageService;
     @Autowired
     UploadService uploadService;
-    @Autowired
-    DownloadService downloadService;
+
     @Autowired
     MessageMapper messageMapper;
     @Autowired

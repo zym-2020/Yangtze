@@ -23,16 +23,11 @@ public class DownloadHistoryServiceImpl implements DownloadHistoryService {
     DownloadHistoryMapper downloadHistoryMapper;
 
     @Override
-    public void addHistory(DownloadHistory downloadHistory) {
-        downloadHistoryMapper.addHistory(downloadHistory);
-    }
-
-    @Override
-    public Map<String, Object> pageQuery(int size, int page, String dataId) {
+    public Map<String, Object> pageQuery(int size, int page, String dataListId) {
         int start = size * page;
         Map<String, Object> result = new HashMap<>();
-        result.put("total", downloadHistoryMapper.countByDataId(dataId));
-        result.put("list", downloadHistoryMapper.pageQuery(size, start, dataId));
+        result.put("total", downloadHistoryMapper.countByDataId(dataListId));
+        result.put("list", downloadHistoryMapper.pageQuery(size, start, dataListId));
         return result;
     }
 

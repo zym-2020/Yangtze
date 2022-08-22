@@ -39,6 +39,10 @@
         update data_list set watch = watch + 1 where id::text = #{id}
     </update>
 
+    <update id="addDownloadCount">
+        update data_list set download = download + 1 where id::text = #{id}
+    </update>
+
     <select id="fuzzyQuery" resultType="java.util.Map">
         select id, name, location, description, tags, creator, create_time as "createTime", update_time as "updateTime", download, watch, avatar, status,
                provider, time, range, type, provider_phone as "providerPhone", provider_email as "providerEmail", provider_address as "providerAddress", get_online as "getOnline", detail, thumbnail
@@ -86,4 +90,21 @@
     <delete id="deleteById">
         delete from data_list where id::text = #{id}
     </delete>
+
+    <select id="pageQueryByEmail" resultType="java.util.Map">
+        select id, name, location, description, tags, creator, create_time as "createTime", update_time as "updateTime", download, watch, avatar, status,
+               provider, time, range, type, provider_phone as "providerPhone", provider_email as "providerEmail", provider_address as "providerAddress", get_online as "getOnline", detail, thumbnail
+        from data_list where creator = #{email}
+        order by create_time asc
+        limit #{size} offset #{start};
+    </select>
+
+    <select id="countPageQueryByEmail" resultType="java.lang.Integer">
+        select count(*) from data_list where creator = #{email}
+    </select>
+
+    <update id="updateStatusById">
+        update data_list set status = #{status}
+        where id::text = #{id}
+    </update>
 </mapper>

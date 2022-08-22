@@ -6,6 +6,7 @@ import njnu.edu.back.pojo.File;
 import njnu.edu.back.pojo.dto.AddFileDTO;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,12 @@ public interface FileService {
     void rename(String id, String fileName);
 
     void deleteFilesOrFolders(JSONObject jsonObject);
+
+    String getDownloadURL(String id, String userId);
+
+    void downloadInList(String userId, String id, String dataListId, HttpServletResponse response, HttpServletRequest request);
+
+    void downloadLocalFile(String userId, String id, HttpServletResponse response);
 
 //    void unPack(String filePath, String parentId, int level, String email);
 //
