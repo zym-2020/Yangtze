@@ -1,6 +1,7 @@
 package njnu.edu.back.dao.shp;
 
 import njnu.edu.back.pojo.support.TileBox;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Repository;
  * @Description:
  */
 @Repository
-public interface VectorTile {
-    Object selectTile(TileBox tileBox);
+public interface VectorTileMapper {
+    Object getVictorTile(TileBox tileBox);
+
+
 }

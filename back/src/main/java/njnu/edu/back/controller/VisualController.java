@@ -3,10 +3,7 @@ package njnu.edu.back.controller;
 import njnu.edu.back.common.result.ResultUtils;
 import njnu.edu.back.service.VisualService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -40,6 +37,7 @@ public class VisualController {
     * @Date: 2022/8/22
     */
 
+    @CrossOrigin
     @RequestMapping(value = "/getRaster/{visualId}/{x}/{y}/{z}", method = RequestMethod.GET)
     public void getAvatar(@PathVariable String visualId, @PathVariable int x, @PathVariable int y, @PathVariable int z, HttpServletResponse response) {
         visualService.getRaster(visualId, x, y, z, response);
@@ -50,7 +48,8 @@ public class VisualController {
     * @Author: Yiming
     * @Date: 2022/8/22
     */
-    
+
+    @CrossOrigin
     @RequestMapping(value = "/getVectorTiles/{visualId}/{x}/{y}/{z}", method = RequestMethod.GET)
     public void getVectorTiles(@PathVariable String visualId, @PathVariable int x, @PathVariable int y, @PathVariable int z, HttpServletResponse response) {
         visualService.getVectorTiles(visualId, x, y, z, response);

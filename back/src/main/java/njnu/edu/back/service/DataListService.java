@@ -2,6 +2,9 @@ package njnu.edu.back.service;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,4 +36,10 @@ public interface DataListService {
     void updateStatusById(String id, int status);
 
     Map<String, Object> deleteAsMember(String id, String email, int page, int size);
+
+    String getDownloadURL(String id, String userId);
+
+    void downloadAll(String userId, String id, HttpServletRequest request, HttpServletResponse response);
+
+    List<Map<String, Object>> findFiles(String dataListId);
 }

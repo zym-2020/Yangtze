@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * Created with IntelliJ IDEA.
  *
@@ -81,6 +84,22 @@ public class DataListController {
         int size = jsonObject.getIntValue("size");
         int page = jsonObject.getIntValue("page");
         return ResultUtils.success(dataListService.deleteAsMember(id, email, page, size));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/getDownloadURL/{id}", method = RequestMethod.GET)
+    public JsonResult getDownloadURL(@PathVariable String id, @JwtTokenParser("id") String userId) {
+        return ResultUtils.success(dataListService.getDownloadURL(id, userId));
+    }
+
+    @RequestMapping(value = "/downloadAll/{userId}/{id}", method = RequestMethod.GET)
+    public void downloadAll(@PathVariable String userId, @PathVariable String id, HttpServletRequest request, HttpServletResponse response) {
+        dataListService.downloadAll(userId, id, request ,response);
+    }
+
+    @RequestMapping(value = "/findFiles/{dataListId}", method = RequestMethod.GET)
+    public JsonResult findFiles(@PathVariable String dataListId) {
+        return ResultUtils.success(dataListService.findFiles(dataListId));
     }
 
 

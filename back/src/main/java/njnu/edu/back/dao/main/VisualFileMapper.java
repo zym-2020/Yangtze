@@ -18,5 +18,4 @@ import java.util.Map;
 public interface VisualFileMapper {
     Map<String, Object> findById(@Param("id") String id);
 
-    Object getVectorTiles(@Param("tileBox") TileBox tileBox);
 }

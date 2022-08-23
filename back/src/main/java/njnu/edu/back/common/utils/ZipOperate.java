@@ -106,7 +106,7 @@ public class ZipOperate {
                 String address = (String) map.get("address");
                 String name = address.split("\\\\")[address.split("\\\\").length - 1];
                 files.add(new File(address));
-                maps.put(name, (String) map.get("path"));
+                maps.put(name, (String) map.get("fileName"));
             }
             zipFile.addFiles(files);
             zipFile.renameFiles(maps);

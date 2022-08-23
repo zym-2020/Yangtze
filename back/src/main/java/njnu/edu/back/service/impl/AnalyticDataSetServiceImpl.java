@@ -4,7 +4,7 @@ import njnu.edu.back.common.utils.TileUtil;
 import njnu.edu.back.dao.main.AnalyticDataSetMapper;
 import njnu.edu.back.pojo.support.TileBox;
 import njnu.edu.back.service.AnalyticDataSetService;
-import njnu.edu.back.dao.shp.VectorTile;
+import njnu.edu.back.dao.shp.VectorTileMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,7 +32,7 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
     AnalyticDataSetMapper analyticDataSetMapper;
 
     @Autowired
-    VectorTile vectorTile;
+    VectorTileMapper vectorTileMapper;
 
     @Value("${basedir}")
     String baseDir;
@@ -143,7 +143,7 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
     @Override
     public Object getVectorTile(String tableName, int x, int y, int z) {
         TileBox tileBox = TileUtil.tile2boundingBox(x, y, z, tableName);
-        Object result = vectorTile.selectTile(tileBox);
+        Object result = vectorTileMapper.getVictorTile(tileBox);
         return result;
     }
 }

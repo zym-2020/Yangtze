@@ -22,7 +22,7 @@ public class PolygonCheck {
     第三步：用点射法求某一个顶点是否在某个多边形内部，这里需要同时同时判断多变形1上的所有点都在多边形2的内部或者边线段上，
     或者是反向多边形2的所有点在多边形1的内部或边线上，二者满足其一即可；
     */
-    public  static List getCoorShp(String[] arrayString,List<Map<String,Object>> map){
+    public static List getCoorShp(String[] arrayString, List<Map<String,Object>> map){
         //生成的是散列码
         System.out.println(map.size());
         ArrayList<List> lis=new ArrayList<List>();
@@ -45,7 +45,7 @@ public class PolygonCheck {
         return map;
     }
 
-    public static boolean  check(ArrayList<List> list1,ArrayList<List> list2) {
+    public static boolean check(ArrayList<List> list1,ArrayList<List> list2) {
         Polygon polygon = new Polygon();
         Polygon polygon1 = new Polygon();
         List<Point> list=new ArrayList<Point>();

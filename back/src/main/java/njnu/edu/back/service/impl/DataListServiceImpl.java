@@ -3,15 +3,28 @@ package njnu.edu.back.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import njnu.edu.back.common.exception.MyException;
+import njnu.edu.back.common.result.ResultEnum;
+import njnu.edu.back.common.utils.Encrypt;
 import njnu.edu.back.common.utils.LocalUploadUtil;
+import njnu.edu.back.common.utils.ZipOperate;
 import njnu.edu.back.dao.main.DataListMapper;
+import njnu.edu.back.dao.main.DataRelationalMapper;
+import njnu.edu.back.dao.main.DownloadHistoryMapper;
 import njnu.edu.back.pojo.DataList;
+import njnu.edu.back.pojo.DownloadHistory;
 import njnu.edu.back.service.DataListService;
+import njnu.edu.back.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +44,21 @@ public class DataListServiceImpl implements DataListService {
 
     @Value("${pictureAddress}")
     String pictureAddress;
+
+    @Autowired
+    RedisService redisService;
+
+    @Value("${encrypt.key}")
+    String key;
+
+    @Autowired
+    DataRelationalMapper dataRelationalMapper;
+
+    @Value("${tempAddress}")
+    String tempAddress;
+
+    @Autowired
+    DownloadHistoryMapper downloadHistoryMapper;
 
     @Override
     public void addDataList(MultipartFile avatar, MultipartFile thumbnail, String jsonString, String email) {
@@ -177,5 +205,64 @@ public class DataListServiceImpl implements DataListService {
         }
         dataListMapper.deleteById(id);
         return pageQueryByEmail(email, size, page);
+    }
+
+    @Override
+    public String getDownloadURL(String id, String userId) {
+        String uuid = UUID.randomUUID().toString();
+        redisService.set(uuid, id, 30l);
+        return Encrypt.encryptByUserId(uuid, userId, key.toCharArray());
+    }
+
+    @Override
+    public void downloadAll(String userId, String id, HttpServletRequest request, HttpServletResponse response) {
+        String ip = request.getRemoteAddr();
+        String tempId = (String) redisService.get(id);
+        if(tempId == null) {
+            throw new MyException(-1, "链接已失效");
+        } else {
+            redisService.del(id);
+            id = tempId;
+        }
+        List<Map<String, Object>> list = dataRelationalMapper.findFilesByDataListId(id);
+        String destination = tempAddress + id + ".zip";
+        ZipOperate.compressFile(destination, list);
+        InputStream in = null;
+        ServletOutputStream sos = null;
+        try {
+            response.setContentType("application/octet-stream");
+            response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(id + ".zip", "UTF-8"));
+            in = new FileInputStream(destination);
+            sos = response.getOutputStream();
+            byte[] bytes = new byte[1024];
+            while((in.read(bytes)) > -1) {
+                sos.write(bytes);
+            }
+            sos.flush();
+            sos.close();
+            in.close();
+            downloadHistoryMapper.addHistory(new DownloadHistory(null, userId, null, ip, id, "all"));
+            dataListMapper.addDownloadCount(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        } finally {
+            try {
+                if(in != null) {
+                    in.close();
+                }
+                if(sos != null) {
+                    sos.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+            }
+        }
+    }
+
+    @Override
+    public List<Map<String, Object>> findFiles(String dataListId) {
+        return dataRelationalMapper.findFilesByDataListId(dataListId);
     }
 }

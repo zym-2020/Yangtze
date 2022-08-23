@@ -4,6 +4,7 @@ import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.common.utils.TileUtil;
 import njnu.edu.back.dao.main.VisualFileMapper;
+import njnu.edu.back.dao.shp.VectorTileMapper;
 import njnu.edu.back.pojo.support.TileBox;
 import njnu.edu.back.service.VisualService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +31,14 @@ public class VisualServiceImpl implements VisualService {
     @Value("${pictureAddress}")
     String pictureAddress;
 
+    @Value("${visualAddress}")
+    String visualAddress;
+
     @Autowired
     VisualFileMapper visualFileMapper;
+
+    @Autowired
+    VectorTileMapper vectorTileMapper;
 
     @Override
     public void getAvatar(String fileName, HttpServletResponse response) {
@@ -78,11 +85,10 @@ public class VisualServiceImpl implements VisualService {
             sos = response.getOutputStream();
             File file = new File(path);
             if(!file.exists()) {
-                sos.write(new byte[] {});
-                sos.close();
-                return;
+                in = new FileInputStream(visualAddress + "blank.png");
+            } else {
+                in = new FileInputStream(path);
             }
-            in = new FileInputStream(path);
             byte[] bytes = new byte[1024];
             while((in.read(bytes)) > -1) {
                 sos.write(bytes);
@@ -91,8 +97,7 @@ public class VisualServiceImpl implements VisualService {
             sos.close();
             in.close();
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+//            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
         } finally {
             try {
                 if(in != null) {
@@ -102,8 +107,7 @@ public class VisualServiceImpl implements VisualService {
                     sos.close();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
-                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+//                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
             }
         }
     }
@@ -111,8 +115,9 @@ public class VisualServiceImpl implements VisualService {
     @Override
     public void getVectorTiles(String visualId, int x, int y, int z, HttpServletResponse response) {
         Map<String, Object> map = visualFileMapper.findById(visualId);
-        TileBox tileBox = TileUtil.tile2boundingBox(x, y, z, (String) map.get("fileName"));
-        byte[] bytes = (byte[]) visualFileMapper.getVectorTiles(tileBox);
+        TileBox tileBox = TileUtil.tile2boundingBox(x, y, z, (String) map.get("content"));
+        tileBox.setVisualId(visualId);
+        byte[] bytes = (byte[]) vectorTileMapper.getVictorTile(tileBox);
         ServletOutputStream sos = null;
         try {
             response.setContentType("application/octet-stream");

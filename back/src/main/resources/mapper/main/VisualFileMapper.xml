@@ -5,11 +5,4 @@
         select id, file_name as "fileName", type, content from visual_file where id::text = #{id}
     </select>
 
-    <select id="getVectorTiles" resultType="java.lang.Object">
-        select st_asmvt(result, #{visualId}) tile
-        from(
-                select st_asmvtgeom(ST_Transform(geom, 3857), ST_Transform(st_makeenvelope(#{xMin,jdbcType=NUMERIC}, #{yMin,jdbcType=NUMERIC}, #{xMax,jdbcType=NUMERIC},#{yMax,jdbcType=NUMERIC}, 4326), 3857), 4096, 0, true) as geom
-                from ${name}
-            ) as result
-    </select>
 </mapper>
