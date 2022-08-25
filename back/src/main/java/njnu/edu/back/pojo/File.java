@@ -23,7 +23,7 @@ public class File {
     String address;
     String size;
     String time;
-    String[] location;
+    String location;
     String uploader;
     String visualType;
     String visualId;

@@ -72,9 +72,8 @@ public class FileController {
         String uid = jsonObject.getStr("uid");
         int total = jsonObject.getInt("total");
         String name = jsonObject.getStr("name");
-        String size = jsonObject.getStr("size");
         String folderId = jsonObject.getStr("folderId");
-        return ResultUtils.success(fileService.mergeFile(email, MD5, uid, total, name, size, folderId));
+        return ResultUtils.success(fileService.mergeFile(email, MD5, uid, total, name, folderId));
     }
 
     @AuthCheck
@@ -159,5 +158,16 @@ public class FileController {
 //        fileService.compressFile(jsonObject, email);
 //        return ResultUtils.success();
 //    }
+
+    /**
+    * @Description:方便录入数据的接口
+    * @Author: Yiming
+    * @Date: 2022/8/23
+    */
+    @RequestMapping(value = "/importData", method = RequestMethod.POST)
+    public JsonResult importData(@RequestBody JSONObject jsonObject) {
+        fileService.importData(jsonObject.getStr("path"), jsonObject.getStr("email"), jsonObject.getStr("time"));
+        return ResultUtils.success();
+    }
 
 }

@@ -17,7 +17,15 @@ import java.util.Map;
  */
 @Repository
 public interface FileMapper {
-    int addFile(@Param("file") File file);
+
+    /**
+    * @Description:方便录入数据写的方法
+    * @Author: Yiming
+    * @Date: 2022/8/23
+    */
+    Map<String, Object> findByFileName(@Param("fileName") String fileName);
+
+    int addFile(File file);
 
     List<Map<String, Object>> findByFolderId(@Param("folderId")String folderId, @Param("email") String email);
 

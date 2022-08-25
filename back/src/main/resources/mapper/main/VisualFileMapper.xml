@@ -5,4 +5,7 @@
         select id, file_name as "fileName", type, content from visual_file where id::text = #{id}
     </select>
 
+    <insert id="addVisualFile" parameterType="njnu.edu.back.pojo.VisualFile">
+        insert into visual_file values (default, #{fileName}, #{type}, #{content})
+    </insert>
 </mapper>

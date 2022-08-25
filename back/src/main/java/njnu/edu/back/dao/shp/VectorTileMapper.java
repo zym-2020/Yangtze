@@ -15,5 +15,5 @@ import org.springframework.stereotype.Repository;
 public interface VectorTileMapper {
     Object getVictorTile(TileBox tileBox);
 
-
+    Object getVictorTile3D(TileBox tileBox);
 }

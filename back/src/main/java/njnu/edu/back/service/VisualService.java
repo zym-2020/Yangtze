@@ -1,5 +1,8 @@
 package njnu.edu.back.service;
 
+import com.alibaba.fastjson.JSONArray;
+import njnu.edu.back.pojo.VisualFile;
+
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -17,4 +20,10 @@ public interface VisualService {
     void getVectorTiles(String visualId, int x, int y, int z, HttpServletResponse response);
 
     void getPhoto(String visualId, HttpServletResponse response);
+
+    JSONArray getCoordinates(String visualId);
+
+    void getPngResource(String visualId, HttpServletResponse response);
+
+    void addVisualFile(VisualFile visualFile);
 }

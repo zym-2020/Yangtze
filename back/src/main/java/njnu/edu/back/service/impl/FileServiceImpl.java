@@ -41,8 +41,8 @@ public class FileServiceImpl implements FileService {
     @Autowired
     FileMapper fileMapper;
 
-    @Value("${basedir}")
-    String basedir;
+    @Value("${basePath}")
+    String basePath;
 
     @Value("${encrypt.key}")
     String key;
@@ -83,22 +83,24 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public List<String> getNoUpload(String MD5, String email, int total) {
-        List<String> result = LocalUploadUtil.getNoUploadChunk(MD5, basedir + email, total);
+        List<String> result = LocalUploadUtil.getNoUploadChunk(MD5, basePath + email, total);
         return result;
     }
 
     @Override
     public void uploadFile(MultipartFile multipartFile, String MD5, String email, String name) {
-        String dir = basedir + email;
+        String dir = basePath + email;
         LocalUploadUtil.UploadFile(multipartFile, name, dir, MD5);
     }
 
     @Override
-    public String mergeFile(String email, String MD5, String uid, int total, String name, String size, String folderId) {
+    public String mergeFile(String email, String MD5, String uid, int total, String name, String folderId) {
+        Map<String, Object> map = folderMapper.findById(folderId);
+        String address = (String) map.get("address");
         String fileName = name.substring(0, name.lastIndexOf(".")) + CommonUtils.getRandomCharStr(6);
         String suffix = name.substring(name.lastIndexOf(".") + 1);
-        String from = basedir + email + "\\temp\\" + MD5;
-        String to = basedir + email + "\\upload\\" + fileName + "." + suffix;
+        String from = basePath + email + "\\temp\\" + MD5;
+        String to = basePath + address + "\\" + fileName + "." + suffix;
         String key = UUID.randomUUID().toString();
         redisService.set(key, 0, 24*60*3l);
         new Thread() {
@@ -107,10 +109,14 @@ public class FileServiceImpl implements FileService {
             public void run() {
                 int state = LocalUploadUtil.merge(from, to, total);
                 if(state == 1) {
-                    redisService.set(key, 1, 24*60*3l);
-                    File file = new File(null, name, size, to, "", new String[]{}, email, "", "", folderId);
-                    fileMapper.addFile(file);
-                    uploadRecordMapper.addUploadRecord(new UploadRecord(uid, name, email, 1, null));
+                    java.io.File f = new java.io.File(to);
+                    if(f.exists()) {
+                        String size = CommonUtils.getFileSize(f.length());
+                        redisService.set(key, 1, 24*60*3l);
+                        File file = new File(null, name, size, to, "", "", email, "", "", folderId);
+                        fileMapper.addFile(file);
+                        uploadRecordMapper.addUploadRecord(new UploadRecord(uid, name, email, 1, null));
+                    }
                 } else {
                     redisService.set(key, -1, 24*60*3l);
                     uploadRecordMapper.addUploadRecord(new UploadRecord(uid, name, email, -1, null));
@@ -147,7 +153,7 @@ public class FileServiceImpl implements FileService {
             fileMapper.batchDelete(files);
             dataRelationalMapper.batchDeleteByDataListId(files);
             for(Map<String, Object> map : fileMaps) {
-                LocalUploadUtil.deleteFolder((String) map.get("address"));
+                LocalUploadUtil.deleteFolder(basePath + map.get("address"));
             }
         }
         if(folders.size() > 0) {
@@ -156,7 +162,7 @@ public class FileServiceImpl implements FileService {
             dataRelationalMapper.batchDeleteFolder(folders);
             folderMapper.batchDelete(folders);
             for(Map<String, Object> map : folderMaps) {
-                LocalUploadUtil.deleteFolder((String) map.get("address"));
+                LocalUploadUtil.deleteFolder(basePath + map.get("address"));
             }
         }
 
@@ -181,7 +187,7 @@ public class FileServiceImpl implements FileService {
         }
         Map<String, Object> fileInfo = fileMapper.findById(id);
         String fileName = (String) fileInfo.get("file_name");
-        String address = (String) fileInfo.get("address");
+        String address = basePath + fileInfo.get("address");
         java.io.File file = new java.io.File(address);
         if(!file.exists()) {
             throw new MyException(ResultEnum.NO_OBJECT);
@@ -232,7 +238,7 @@ public class FileServiceImpl implements FileService {
         }
         Map<String, Object> fileInfo = fileMapper.findById(id);
         String fileName = (String) fileInfo.get("file_name");
-        String address = (String) fileInfo.get("address");
+        String address = basePath + fileInfo.get("address");
         java.io.File file = new java.io.File(address);
         if(!file.exists()) {
             throw new MyException(ResultEnum.NO_OBJECT);
@@ -439,4 +445,22 @@ public class FileServiceImpl implements FileService {
 //        }
 //
 //    }
+
+
+    @Override
+    public void importData(String folderPath, String email, String time) {
+        java.io.File file = new java.io.File(folderPath);
+        if(!file.exists()) {
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
+        java.io.File[] files = file.listFiles();
+        for(java.io.File f : files) {
+            Map<String, Object> map = fileMapper.findByFileName(f.getName());
+            if(map == null) {
+                String path = f.getAbsolutePath();
+                String address = path.substring(basePath.length());
+                fileMapper.addFile(new File(null, f.getName(), address, CommonUtils.getFileSize(f.length()), time, "", email, "", "", ""));
+            }
+        }
+    }
 }

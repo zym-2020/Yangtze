@@ -1,5 +1,6 @@
 package njnu.edu.back.dao.main;
 
+import njnu.edu.back.pojo.VisualFile;
 import njnu.edu.back.pojo.support.TileBox;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -18,4 +19,5 @@ import java.util.Map;
 public interface VisualFileMapper {
     Map<String, Object> findById(@Param("id") String id);
 
+    void addVisualFile(VisualFile visualFile);
 }

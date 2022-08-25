@@ -28,7 +28,7 @@ public interface FileService {
 
     void uploadFile(MultipartFile multipartFile, String MD5, String email, String name);
 
-    String mergeFile(String email, String MD5, String uid, int total, String name, String size, String folderId);
+    String mergeFile(String email, String MD5, String uid, int total, String name, String folderId);
 
     int checkMergeState(String key);
 
@@ -49,4 +49,6 @@ public interface FileService {
 //    void updateParentIdAndLevel(JSONObject jsonObject);
 //
 //    void compressFile(JSONObject jsonObject, String email);
+
+    void importData(String folderPath, String email, String time);
 }

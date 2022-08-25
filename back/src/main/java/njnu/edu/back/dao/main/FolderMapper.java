@@ -20,4 +20,6 @@ public interface FolderMapper {
     void batchDelete(@Param("list") List<String> list);
 
     List<Map<String, Object>> findByParentId(@Param("parentId") String parentId);
+
+    Map<String, Object> findById(@Param("id") String id);
 }
