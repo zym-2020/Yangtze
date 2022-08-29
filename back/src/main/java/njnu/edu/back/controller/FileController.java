@@ -90,6 +90,7 @@ public class FileController {
     }
 
     @AuthCheck
+    @CrossOrigin
     @RequestMapping(value = "/deleteFilesOrFolders", method = RequestMethod.DELETE)
     public JsonResult deleteFilesOrFolders(@RequestBody JSONObject jsonObject) {
         fileService.deleteFilesOrFolders(jsonObject);
@@ -97,6 +98,7 @@ public class FileController {
     }
 
     @AuthCheck
+    @CrossOrigin
     @RequestMapping(value = "/getDownloadURL/{id}", method = RequestMethod.GET)
     public JsonResult getDownloadURL(@PathVariable String id, @JwtTokenParser("id") String userId) {
         return ResultUtils.success(fileService.getDownloadURL(id, userId));
@@ -166,7 +168,7 @@ public class FileController {
     */
     @RequestMapping(value = "/importData", method = RequestMethod.POST)
     public JsonResult importData(@RequestBody JSONObject jsonObject) {
-        fileService.importData(jsonObject.getStr("path"), jsonObject.getStr("email"), jsonObject.getStr("time"));
+        fileService.importData(jsonObject.getStr("path"), jsonObject.getStr("email"), jsonObject.getStr("time"), jsonObject.getStr("visualType"), jsonObject.getStr("visualId"));
         return ResultUtils.success();
     }
 

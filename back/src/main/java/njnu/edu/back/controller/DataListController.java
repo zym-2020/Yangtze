@@ -26,6 +26,7 @@ public class DataListController {
     @Autowired
     DataListService dataListService;
 
+    @CrossOrigin
     @AuthCheck
     @RequestMapping(value = "/addDataList", method = RequestMethod.POST)
     public JsonResult addDataList(@RequestParam MultipartFile avatar, @RequestParam MultipartFile thumbnail, @RequestParam String jsonString, @JwtTokenParser("email") String email) {
@@ -47,6 +48,7 @@ public class DataListController {
     }
 
     @AuthCheck
+    @CrossOrigin
     @RequestMapping(value = "/getFileInfoAndUserInfo/{id}", method = RequestMethod.GET)
     public JsonResult getFileInfoAndUserInfo(@PathVariable String id) {
         return ResultUtils.success(dataListService.getFileInfoAndUserInfo(id));
@@ -60,6 +62,7 @@ public class DataListController {
     }
 
     @AuthCheck
+    @CrossOrigin
     @RequestMapping(value = "/fuzzyQuery", method = RequestMethod.POST)
     public JsonResult fuzzyQuery(@RequestBody JSONObject jsonObject) {
         int page = jsonObject.getIntValue("page");
@@ -87,6 +90,7 @@ public class DataListController {
     }
 
     @AuthCheck
+    @CrossOrigin
     @RequestMapping(value = "/getDownloadURL/{id}", method = RequestMethod.GET)
     public JsonResult getDownloadURL(@PathVariable String id, @JwtTokenParser("id") String userId) {
         return ResultUtils.success(dataListService.getDownloadURL(id, userId));
@@ -97,6 +101,8 @@ public class DataListController {
         dataListService.downloadAll(userId, id, request ,response);
     }
 
+    @AuthCheck
+    @CrossOrigin
     @RequestMapping(value = "/findFiles/{dataListId}", method = RequestMethod.GET)
     public JsonResult findFiles(@PathVariable String dataListId) {
         return ResultUtils.success(dataListService.findFiles(dataListId));

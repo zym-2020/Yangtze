@@ -448,7 +448,7 @@ public class FileServiceImpl implements FileService {
 
 
     @Override
-    public void importData(String folderPath, String email, String time) {
+    public void importData(String folderPath, String email, String time, String visualType, String visualId) {
         java.io.File file = new java.io.File(folderPath);
         if(!file.exists()) {
             throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
@@ -459,7 +459,7 @@ public class FileServiceImpl implements FileService {
             if(map == null) {
                 String path = f.getAbsolutePath();
                 String address = path.substring(basePath.length());
-                fileMapper.addFile(new File(null, f.getName(), address, CommonUtils.getFileSize(f.length()), time, "", email, "", "", ""));
+                fileMapper.addFile(new File(null, f.getName(), address, CommonUtils.getFileSize(f.length()), time, "", email, visualType, visualId, ""));
             }
         }
     }

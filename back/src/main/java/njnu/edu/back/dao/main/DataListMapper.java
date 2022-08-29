@@ -16,7 +16,7 @@ import java.util.Map;
  */
 @Repository
 public interface DataListMapper {
-    void addDataList(@Param("dataList") DataList dataList);
+    void addDataList(DataList dataList);
 
     void updateDataList(@Param("id") String id, @Param("dataList") DataList dataList);
 

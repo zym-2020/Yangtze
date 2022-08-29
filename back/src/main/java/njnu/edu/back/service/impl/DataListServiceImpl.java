@@ -78,6 +78,7 @@ public class DataListServiceImpl implements DataListService {
         }
         JSONObject jsonObject = JSON.parseObject(jsonString);
         DataList dataList = new DataList();
+        dataList.setId(jsonObject.getString("id"));
         dataList.setName(jsonObject.getString("name"));
         dataList.setDescription(jsonObject.getString("description"));
         dataList.setTags(jsonObject.getObject("tags", String[].class));

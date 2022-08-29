@@ -26,6 +26,7 @@ public class DownloadHistoryController{
     DownloadHistoryService downloadHistoryService;
 
     @AuthCheck
+    @CrossOrigin
     @RequestMapping(value = "/pageQuery/{dataListId}/{size}/{page}", method = RequestMethod.GET)
     public JsonResult pageQuery(@PathVariable int size, @PathVariable int page, @PathVariable String dataListId) {
         return ResultUtils.success(downloadHistoryService.pageQuery(size, page, dataListId));

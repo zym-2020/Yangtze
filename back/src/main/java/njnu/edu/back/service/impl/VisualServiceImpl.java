@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.common.utils.TileUtil;
+import njnu.edu.back.dao.main.FileMapper;
 import njnu.edu.back.dao.main.VisualFileMapper;
 import njnu.edu.back.dao.shp.VectorTileMapper;
 import njnu.edu.back.pojo.VisualFile;
@@ -38,11 +39,17 @@ public class VisualServiceImpl implements VisualService {
     @Value("${visualAddress}")
     String visualAddress;
 
+    @Value("${basePath}")
+    String basePath;
+
     @Autowired
     VisualFileMapper visualFileMapper;
 
     @Autowired
     VectorTileMapper vectorTileMapper;
+
+    @Autowired
+    FileMapper fileMapper;
 
     @Override
     public void getAvatar(String fileName, HttpServletResponse response) {
@@ -145,12 +152,12 @@ public class VisualServiceImpl implements VisualService {
     }
 
     @Override
-    public void getPhoto(String visualId, HttpServletResponse response) {
-        Map<String, Object> map = visualFileMapper.findById(visualId);
+    public void getPhoto(String fileId, HttpServletResponse response) {
+        Map<String, Object> map = fileMapper.findById(fileId);
         InputStream in = null;
         ServletOutputStream sos = null;
         try {
-            in = new FileInputStream((String) map.get("content"));
+            in = new FileInputStream(basePath + map.get("address"));
             sos = response.getOutputStream();
             byte[] bytes = new byte[1024];
             while((in.read(bytes)) > -1) {

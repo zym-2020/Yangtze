@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="njnu.edu.back.dao.main">
-    <insert id="addDataList">
-        insert into data_list values(default, #{name}, #{location, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}, #{description}, #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler},
-                                     #{creator}, now(), now(), #{download}, #{watch}, #{avatar}, #{status}, #{provider}, #{time}, #{range}, #{type}, #{providerPhone},
-                                     #{providerEmail}, #{providerAddress}, #{getOnline}, #{detail}, #{thumbnail})
+<mapper namespace="njnu.edu.back.dao.main.DataListMapper">
+    <insert id="addDataList" parameterType="njnu.edu.back.pojo.DataList">
+        <if test="id != null">
+            insert into data_list values(#{id}, #{name}, #{location, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}, #{description}, #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler},
+            #{creator}, now(), now(), #{download}, #{watch}, #{avatar}, #{status}, #{provider}, #{time}, #{range}, #{type}, #{providerPhone},
+            #{providerEmail}, #{providerAddress}, #{getOnline}, #{detail}, #{thumbnail})
+        </if>
+        <if test="id == null">
+            insert into data_list values(default, #{name}, #{location, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}, #{description}, #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler},
+            #{creator}, now(), now(), #{download}, #{watch}, #{avatar}, #{status}, #{provider}, #{time}, #{range}, #{type}, #{providerPhone},
+            #{providerEmail}, #{providerAddress}, #{getOnline}, #{detail}, #{thumbnail})
+        </if>
+
     </insert>
 
     <update id="updateDataList">

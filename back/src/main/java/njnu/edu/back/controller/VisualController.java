@@ -62,9 +62,9 @@ public class VisualController {
     * @Author: Yiming
     * @Date: 2022/8/22
     */
-    @RequestMapping(value = "/getPhoto/{visualId}", method = RequestMethod.GET)
-    public void getPhoto(@PathVariable String visualId, HttpServletResponse response) {
-        visualService.getPhoto(visualId, response);
+    @RequestMapping(value = "/getPhoto/{fileId}", method = RequestMethod.GET)
+    public void getPhoto(@PathVariable String fileId, HttpServletResponse response) {
+        visualService.getPhoto(fileId, response);
     }
 
     /**

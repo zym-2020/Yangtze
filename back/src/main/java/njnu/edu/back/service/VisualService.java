@@ -19,7 +19,7 @@ public interface VisualService {
 
     void getVectorTiles(String visualId, int x, int y, int z, HttpServletResponse response);
 
-    void getPhoto(String visualId, HttpServletResponse response);
+    void getPhoto(String fileId, HttpServletResponse response);
 
     JSONArray getCoordinates(String visualId);
 
