@@ -160,14 +160,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref,reactive } from "vue";
 import PageHeader from "@/components/page/PageHeader.vue";
 import DataCollapse from "@/components/page/DataCollapse.vue";
 import DataCard from "@/components/cards/DataCard.vue";
 import FindMap from "@/components/scenePart/FindMap.vue";
 import {dateFormat } from "@/utils/common";
+import axios from "axios";
 import {
-  fuzzyQuery,
   fuzzyQueryClassify,
   getShpByCoordinates,
 } from "@/api/request";
@@ -210,6 +210,14 @@ export default defineComponent({
     const getsSelectList = ref<any[]>([]);
     const searchMap = ref(false);
     const searchSet = ref(false);
+    const jsonData = reactive({
+      page : 0,
+      size : 10,
+      keyword: "",
+      tags: [],
+      property:"id",
+      flag: false,
+    });
     const options = ref<{ label: string; value: string }[]>([
       {
         label: "下载量",
@@ -287,18 +295,17 @@ const onAddItem = (val:any) => {
     const isCoor = async () => {
       searchMap.value = !searchMap.value;
       if (searchMap.value == false) {
-        const data = await fuzzyQuery({
-          size: 10,
-          page: 0,
-          property: "download",
-          flag: false,
-          keyWord: keyWord.value,
-        });
+        jsonData.keyword="download"
+        const data = await axios.post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonData,
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bXNzIiwiaWQiOiI0MzYwODUxNC1kODMzLTRiNTAtOWE3NC0wOWI2MzhiOTM4OTEiLCJhdmF0YXIiOiIvZmlsZS9hdmF0YXIvMGE4MjhmMWItMDAyNC00ZDViLThlODUtNjQ1MDQwMzlhY2YyLmpwZyIsImV4cCI6MTY2MTczOTg5NCwiZW1haWwiOiIxMjNAcXEuY29tIn0.eLjI6Bh4qa5A7OIA3Q8W8XXFAl8KsvLfNxUUdK3SKWKaGxsT-7fDuiH5XhBpcwnMbUVaQs6urjkhp6uLSzUmsg'}}).
+    then((res) => {
+         return res.data
+    });
         skeletonFlag.value = true;
         if (data != null) {
           if ((data as any).code === 0) {
-            fileList.value = data.data.list;
-            total.value = data.data.total;
+            fileList.value = (data as any).data.list;
+            total.value = (data as any).data.total;
           }
         }
       }
@@ -329,58 +336,36 @@ const onAddItem = (val:any) => {
     const search = async () => {
       NProgress.start();
       keyWord.value = input.value;
-      let property = "";
-      let flag = false;
       switch (selectValue.value) {
         case "download":
-          property = "download";
-          flag = false;
+          jsonData.property = "download";
+          jsonData.flag = false;
           break;
         case "watch":
-          property = "watch";
-          flag = false;
+          jsonData.property = "watch";
+          jsonData.flag = false;
           break;
         case "update":
-          property = "update_time";
-          flag = false;
+          jsonData.property = "update_time";
+          jsonData.flag = false;
           break;
         case "name":
-          property = "name";
-          flag = false;
+          jsonData.property = "name";
+          jsonData.flag = false;
           break;
       }
-      if (classify.value.length > 0) {
-        const data = await fuzzyQueryClassify({
-          size: 10,
-          page: currentPage.value - 1,
-          property: property,
-          flag: flag,
-          keyWord: keyWord.value,
-          tags: classify.value,
-        });
+        const data = await axios.post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonData,
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bXNzIiwiaWQiOiI0MzYwODUxNC1kODMzLTRiNTAtOWE3NC0wOWI2MzhiOTM4OTEiLCJhdmF0YXIiOiIvZmlsZS9hdmF0YXIvMGE4MjhmMWItMDAyNC00ZDViLThlODUtNjQ1MDQwMzlhY2YyLmpwZyIsImV4cCI6MTY2MTczOTg5NCwiZW1haWwiOiIxMjNAcXEuY29tIn0.eLjI6Bh4qa5A7OIA3Q8W8XXFAl8KsvLfNxUUdK3SKWKaGxsT-7fDuiH5XhBpcwnMbUVaQs6urjkhp6uLSzUmsg'}}).
+    then((res) => {
+         return res.data
+    });
         if (data != null) {
           if ((data as any).code === 0) {
-            fileList.value = data.data.list;
-            total.value = data.data.total;
+            fileList.value =(data as any).data.list;
+            total.value = (data as any).data.total;
             currentPage.value = 1;
           }
         }
-      } else {
-        const data = await fuzzyQuery({
-          size: 10,
-          page: currentPage.value - 1,
-          property: property,
-          flag: flag,
-          keyWord: keyWord.value,
-        });
-        if (data != null) {
-          if ((data as any).code === 0) {
-            fileList.value = data.data.list;
-            total.value = data.data.total;
-            //currentPage.value = 1;
-          }
-        }
-      }
       NProgress.done();
     };
 
@@ -389,56 +374,36 @@ const onAddItem = (val:any) => {
       classify.value = getsSelectList.value;
       NProgress.start();
       currentPage.value = val;
-      let property = "";
-      let flag = false;
       switch (selectValue.value) {
         case "download":
-          property = "download";
-          flag = false;
+          jsonData.property = "download";
+          jsonData.flag = false;
           break;
         case "watch":
-          property = "watch";
-          flag = false;
+          jsonData.property = "watch";
+          jsonData.flag = false;
           break;
         case "update":
-          property = "update_time";
-          flag = false;
+          jsonData.property = "update_time";
+          jsonData.flag = false;
           break;
         case "name":
-          property = "name";
-          flag = false;
+          jsonData.property = "name";
+          jsonData.flag = false;
           break;
       }
-      if (getsSelectList.value.length > 0) {
-        const data = await fuzzyQueryClassify({
-          size: 10,
-          page: currentPage.value - 1,
-          property: property,
-          flag: flag,
-          keyWord: keyWord.value,
-          tags: getsSelectList.value,
-        });
+      jsonData.page=currentPage.value - 1
+        const data = await axios.post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonData,
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bXNzIiwiaWQiOiI0MzYwODUxNC1kODMzLTRiNTAtOWE3NC0wOWI2MzhiOTM4OTEiLCJhdmF0YXIiOiIvZmlsZS9hdmF0YXIvMGE4MjhmMWItMDAyNC00ZDViLThlODUtNjQ1MDQwMzlhY2YyLmpwZyIsImV4cCI6MTY2MTczOTg5NCwiZW1haWwiOiIxMjNAcXEuY29tIn0.eLjI6Bh4qa5A7OIA3Q8W8XXFAl8KsvLfNxUUdK3SKWKaGxsT-7fDuiH5XhBpcwnMbUVaQs6urjkhp6uLSzUmsg'}}).
+    then((res) => {
+         return res.data
+    });
         if (data != null) {
           if ((data as any).code === 0) {
-            fileList.value = data.data.list;
-            total.value = data.data.total;
+            fileList.value = (data as any).data.list;
+            total.value = (data as any).data.total;
           }
         }
-      } else {
-        const data = await fuzzyQuery({
-          size: 10,
-          page: currentPage.value - 1,
-          property: property,
-          flag: flag,
-          keyWord: keyWord.value,
-        });
-        if (data != null) {
-          if ((data as any).code === 0) {
-            fileList.value = data.data.list;
-            total.value = data.data.total;
-          }
-        }
-      }
       NProgress.done();
     };
     const toDetail = (index: number) => {
@@ -453,75 +418,64 @@ const onAddItem = (val:any) => {
     const getSelectList = async (val: any[]) => {
       classify.value = val;
       NProgress.start();
-      let property = "";
-      let flag = false;
       switch (selectValue.value) {
         case "download":
-          property = "download";
-          flag = false;
+          jsonData.property = "download";
+          jsonData.flag = false;
           break;
         case "watch":
-          property = "watch";
-          flag = false;
+          jsonData.property = "watch";
+          jsonData.flag = false;
           break;
         case "update":
-          property = "update_time";
-          flag = false;
+          jsonData.property = "update_time";
+          jsonData.flag = false;
           break;
         case "name":
-          property = "name";
-          flag = false;
+          jsonData.property = "name";
+          jsonData.flag = false;
           break;
       }
-      if (val.length > 0) {
-        const data = await fuzzyQueryClassify({
-          size: 10,
-          page: currentPage.value - 1,
-          property: property,
-          flag: flag,
-          keyWord: keyWord.value,
-          tags: val,
-        });
+      jsonData.page=currentPage.value - 1
+        const data = await axios.post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonData,
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bXNzIiwiaWQiOiI0MzYwODUxNC1kODMzLTRiNTAtOWE3NC0wOWI2MzhiOTM4OTEiLCJhdmF0YXIiOiIvZmlsZS9hdmF0YXIvMGE4MjhmMWItMDAyNC00ZDViLThlODUtNjQ1MDQwMzlhY2YyLmpwZyIsImV4cCI6MTY2MTczOTg5NCwiZW1haWwiOiIxMjNAcXEuY29tIn0.eLjI6Bh4qa5A7OIA3Q8W8XXFAl8KsvLfNxUUdK3SKWKaGxsT-7fDuiH5XhBpcwnMbUVaQs6urjkhp6uLSzUmsg'}}).
+    then((res) => {
+         return res.data
+    });
         if (data != null) {
           if ((data as any).code === 0) {
-            fileList.value = data.data.list;
-            total.value = data.data.total;
+            fileList.value = (data as any).data.list;
+            total.value = (data as any).data.total;
             currentPage.value = 1;
           }
         }
-      } else {
-        const data = await fuzzyQuery({
-          size: 10,
-          page: currentPage.value - 1,
-          property: property,
-          flag: flag,
-          keyWord: keyWord.value,
-        });
-        if (data != null) {
-          if ((data as any).code === 0) {
-            fileList.value = data.data.list;
-            total.value = data.data.total;
-            currentPage.value = 1;
-          }
-        }
-      }
       NProgress.done();
       getsSelectList.value = val;
     };
 
     onMounted(async () => {
-      const data = await fuzzyQuery({
-        size: 10,
-        page: 0,
-        property: "download",
-        flag: false,
-        keyWord: keyWord.value,
-      });
+      //console.log("ff"+jsonData)
+      let jsonDatass = {
+      page : 0,
+      size : 10,
+      keyword: "",
+      tags: [],
+      property:"id",
+      flag: false,
+       };
+       const data =await axios.post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonDatass,
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bXNzIiwiaWQiOiI0MzYwODUxNC1kODMzLTRiNTAtOWE3NC0wOWI2MzhiOTM4OTEiLCJhdmF0YXIiOiIvZmlsZS9hdmF0YXIvMGE4MjhmMWItMDAyNC00ZDViLThlODUtNjQ1MDQwMzlhY2YyLmpwZyIsImV4cCI6MTY2MTczOTg5NCwiZW1haWwiOiIxMjNAcXEuY29tIn0.eLjI6Bh4qa5A7OIA3Q8W8XXFAl8KsvLfNxUUdK3SKWKaGxsT-7fDuiH5XhBpcwnMbUVaQs6urjkhp6uLSzUmsg'}}).
+    then((res) => {
+      console.log("tt",res.data)
+         return res.data
+    })
+       console.log("gg",data.data.list)
       skeletonFlag.value = true;
       if (data != null) {
         if ((data as any).code === 0) {
-          fileList.value = data.data.list;
-          total.value = data.data.total;
+          fileList.value = data.data.list ;
+          total.value = data.data.list.length;
+         
         }
       }
     });

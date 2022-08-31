@@ -1,8 +1,8 @@
 <template>
   <div class="share-file">
     <data-detail-header
-      :name="fileInfo.name"
-      :info="{ watch: fileInfo.watch, download: fileInfo.download }"
+      :name="(fileInfo as any)?.name"
+      :info="{ watch: fileInfo?.watch, download: fileInfo?.download }"
       @activeClick="activeClick"
     ></data-detail-header>
     <div class="main">
@@ -10,7 +10,6 @@
         v-show="active === 1"
         class="detail"
         :fileInfo="fileInfo"
-        :fileMeta="fileMeta"
       ></data-detail>
       <data-statistics v-if="active === 2"></data-statistics>
       <similar-data v-if="active === 3"></similar-data>
@@ -22,6 +21,7 @@
 import { computed, defineComponent, onMounted, ref } from "vue";
 import {
   addWatchCount,
+  getFileInfoAndMetaAndUserInfo
 } from "@/api/request";
 import DataDetailHeader from "@/components/page/DataDetailHeader.vue";
 import DataDetail from "@/components/resourcePages/DataDetail.vue";
@@ -35,26 +35,29 @@ export default defineComponent({
     const fileInfo = computed(() => {
       return router.currentRoute.value.params.fileInfo
     });
-    const fileMeta = computed(() => {
-      return router.currentRoute.value.params.fileMeta
-    });
+
+    // const fileInfo = ref<any>()
+    // const fileMeta = ref<any>()
 
 
     const activeClick = (val: number) => {
       active.value = val;
     };
     onMounted(async () => {
+      console.log(123456)
       if (
         router.currentRoute.value.params.id != null &&
         router.currentRoute.value.params.id != undefined
       ) {
         addWatchCount(router.currentRoute.value.params.id as string);
       }
+      // const data = await getFileInfoAndMetaAndUserInfo(router.currentRoute.value.params.id as string)
+       //fileInfo.value = router.currentRoute.value.params.fileInfo
+      // fileMeta.value = data.data.fileMeta
     });
 
     return {
       fileInfo,
-      fileMeta,
       active,
       activeClick,
     };

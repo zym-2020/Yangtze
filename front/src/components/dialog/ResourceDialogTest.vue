@@ -80,6 +80,7 @@ export default defineComponent({
     const tableData = ref([]);
     const level = ref(0);
     const path = ref<{ name: string; parentId: string; id: string }[]>([]);
+    const fileList=ref<string[]>([])
 
     const date = (time: string) => {
       return dateFormat(time, "yyyy-MM-dd");
@@ -99,7 +100,8 @@ export default defineComponent({
       } else {
         const tempArr = row.name.split(".");
         if (tempArr.length > 1 && tempArr[tempArr.length - 1] === "zip") {
-          context.emit("selectedFile", { file: row, type: props.type });
+          fileList.value.push(row.id)
+          context.emit("selectedFile", { file: fileList.value, type: props.type });
         } else {
           notice("warning", "警告", "请选择zip文件");
         }

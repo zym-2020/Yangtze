@@ -30,6 +30,8 @@
             </div>
           </el-col>
         </el-row>
+
+        <!-- ////////////////////////////////////////////////////////////////// -->
         <div>
           <el-row style="margin-top: 10px">
             <el-col :span="5">
@@ -72,6 +74,7 @@
           </el-row>
         </div>
       </div>
+      <!-- ////////////////////////////////////////////////////////////////// -->
       <el-row>
         <el-col :span="24">
           <div class="basicInfo">
@@ -92,14 +95,14 @@
               <el-col :span="12">
                 <div class="basicInfo-item">
                   <data-description
-                    :data="{ key: '数据时间：', value: fileMeta?.time }"
+                    :data="{ key: '数据时间：', value: fileInfo?.createTime }"
                   ></data-description>
                 </div>
               </el-col>
               <el-col :span="12">
                 <div class="basicInfo-item">
                   <data-description
-                    :data="{ key: '空间位置：', value: fileMeta?.range }"
+                    :data="{ key: '空间位置：', value: fileInfo?.range }"
                   ></data-description>
                 </div>
               </el-col>
@@ -108,7 +111,7 @@
               <el-col :span="12">
                 <div class="basicInfo-item" style="color: #ff8c00">
                   <data-description
-                    :data="{ key: '数据类型：', value: fileMeta?.type }"
+                    :data="{ key: '数据类型：', value: fileInfo?.type }"
                   ></data-description>
                 </div>
               </el-col>
@@ -125,12 +128,13 @@
                 <div class="basicInfo-item">
                   <data-description
                     :data="{
-                    key: '更新时间：',
-                    value: date((fileInfo as any).updateTime),
-                  }"
+                      key: '更新时间：',
+                      value: date(fileInfo?.updateTime),
+                    }"
                   ></data-description>
                 </div>
               </el-col>
+              <!-- ////////////////---------数据大小为所有文件大小相加之和-----///////////////////////////////// -->
               <el-col :span="12">
                 <div class="basicInfo-item">
                   <data-description
@@ -141,6 +145,9 @@
                   ></data-description>
                 </div>
               </el-col>
+              <!-- ////////////////--------------------------///////////////////////////////// -->
+
+              <!-- ///////////////////////////////////////////////////////////////////// -->
             </el-row>
           </div>
         </el-col>
@@ -165,7 +172,7 @@
                   <data-description
                     :data="{
                       key: '作&#12288;&#12288;者：',
-                      value: fileMeta?.provider,
+                      value: fileInfo?.provider,
                     }"
                   ></data-description>
                 </div>
@@ -175,7 +182,7 @@
                   <data-description
                     :data="{
                       key: '电&#12288;&#12288;话：',
-                      value: fileMeta?.provider_phone,
+                      value: fileInfo?.providerPhone,
                     }"
                   ></data-description>
                 </div>
@@ -187,7 +194,7 @@
                   <data-description
                     :data="{
                       key: '邮&#12288;&#12288;箱：',
-                      value: fileMeta?.provider_email,
+                      value: fileInfo?.providerEmail,
                     }"
                   ></data-description>
                 </div>
@@ -197,13 +204,15 @@
                   <data-description
                     :data="{
                       key: '地&#12288;&#12288;址：',
-                      value: fileMeta?.provider_address,
+                      value: fileInfo?.providerAddress,
                     }"
                   ></data-description>
                 </div>
               </el-col>
             </el-row>
           </div>
+
+          <!-- ///////////////////////////////////////////////////////////////////// -->
         </el-col>
         <el-col :span="24">
           <div class="description">
@@ -218,7 +227,6 @@
               </el-col>
               <el-col :span="20">
                 <hr style="margin-top: 12px; color: #696969" />
-                <!-- <el-icon><star-filled /></el-icon> -->
               </el-col>
             </el-row>
             <el-row>
@@ -226,7 +234,7 @@
                 <el-icon><Monitor /></el-icon>
               </el-divider>
             </el-row>
-
+            <!-- ///////////////////////////////////////////////////////////////////// -->
             <el-row>
               <el-col>
                 <div
@@ -236,12 +244,14 @@
                     padding: '20px',
                   }"
                 >
+                  <!-- //////////////-------------fileLis-----------------///////////// -->
                   <el-table
                     :data="fileLis"
                     max-height="800"
                     :style="{ width: 900, height: tableHeight - 40 }"
                     stripe
                   >
+                    <!-- //////////////-------------fileLis-----------------///////////// -->
                     <el-table-column
                       prop="名称"
                       label="文件名称"
@@ -249,44 +259,64 @@
                       alignment="center"
                       :formatter="
                         (row) => {
-                          return row.名称;
+                          return row.fileName;
                         }
                       "
                     />
                     <el-table-column
-                      prop="原始大小"
-                      label="原始大小"
+                      prop="文件大小"
+                      label="文件大小"
                       width="150"
                       alignment="center"
                       :formatter="
                         (row) => {
-                          if (row.原始大小 / 1000 < 1000)
-                            return (row.原始大小 / 1000).toFixed(2) + KB;
-                          else return (row.原始大小 / 1000000).toFixed(2) + MB;
+                          return row.size;
                         }
                       "
                     />
                     <el-table-column
-                      prop="压缩后大小"
-                      label="压缩大小"
+                      prop="文件时间"
+                      label="文件时间"
                       width="150"
                       alignment="center"
                       :formatter="
                         (row) => {
-                          if (row.压缩后大小 / 1000 < 1000)
-                            return (row.压缩后大小 / 1000).toFixed(2) + KB;
+                          return row.time
+
+                        }
+                      "
+                    />
+                    <el-table-column
+                      prop="文件位置"
+                      label="文件位置"
+                      width="150"
+                      alignment="center"
+                      :formatter="
+                        (row) => {
+                          if(row.location)
+                          return row.location
                           else
-                            return (row.压缩后大小 / 1000000).toFixed(2) + MB;
+                          return Yang
                         }
                       "
-                    />
-                    <el-table-column
-                      prop="类型"
-                      label="文件类型"
-                      width="150"
-                      alignment="center"
                     >
                     </el-table-column>
+                    <!-- ------------------------新增功能，单文件下载------------------------ -->
+
+     <el-table-column fixed="right" label="下载" width="80">
+      <template #default="scope">
+        <el-button
+       
+         type="success" 
+         icon="Share"
+         round
+          size="small"
+          @click.prevent="downloadOrigin(scope.$index)"
+        >
+        </el-button>
+      </template>
+    </el-table-column>
+                    <!-- ------------------------新增功能，单文件下载------------------------ -->
                   </el-table>
                   <el-row>
                     <el-col :span="4" :offset="20">
@@ -309,6 +339,7 @@
               </el-divider>
               <el-row> </el-row>
             </el-row>
+            <!-- //////////////-------------shpCheck需要更改-----------------///////////// -->
             <el-row v-if="shpCheck">
               <el-col>
                 <div
@@ -322,12 +353,14 @@
                   >
                     <centerVisualMap
                       mapId="1"
+                      :shpVisualList="shpVisualList"
                       style="width: 950px; height: 900px"
                     ></centerVisualMap>
                   </div>
                 </div>
               </el-col>
             </el-row>
+            <!-- //////////////-------------photoCheck需要更改-----------------///////////// -->
             <el-row v-if="photoCheck">
               <el-col>
                 <div class="detail">
@@ -359,6 +392,7 @@
                 </div>
               </el-col>
             </el-row>
+            <!-- //////////////-------------tableCheck需要更改-----------------///////////// -->
             <el-row v-if="tableCheck">
               <el-col>
                 <div class="detail">
@@ -444,8 +478,10 @@
                 </div>
               </el-col>
             </el-row>
+            <!-- /////////////////////////////////////////////////////////////////// -->
           </div>
         </el-col>
+
         <el-col :span="24">
           <div class="detail">
             <el-row>
@@ -462,10 +498,11 @@
                 <!-- <el-icon><star-filled /></el-icon> -->
               </el-col>
             </el-row>
-            <div class="editor-content-view" v-html="fileMeta?.detail"></div>
+            <div class="editor-content-view" v-html="fileInfo?.detail"></div>
           </div>
         </el-col>
-        <el-col :span="24">
+        <!-- /////////////////////////////////////以下删除//////////////////////////// -->
+        <!-- <el-col :span="24">
           <div class="download">
             <div class="basicInfo">
               <el-row>
@@ -479,7 +516,6 @@
                 </el-col>
                 <el-col :span="20">
                   <hr style="margin-top: 12px; color: #696969" />
-                  <!-- <el-icon><star-filled /></el-icon> -->
                 </el-col>
               </el-row>
             </div>
@@ -555,7 +591,8 @@
               </el-row>
             </div>
           </div>
-        </el-col>
+        </el-col> -->
+        <!-- /////////////////////////////////////以上删除//////////////////////////// -->
       </el-row>
       <el-row>
         <el-col :span="24">
@@ -572,30 +609,14 @@
                 </el-col>
                 <el-col :span="18">
                   <hr style="margin-top: 12px; color: #696969" />
-                  <!-- <el-icon><star-filled /></el-icon> -->
                 </el-col>
               </el-row>
             </div>
             <el-col>
               <el-row>
                 <el-col>
-                  <!-- <div class="scene-wrapper" style="width: 950px; height: 308px">
-                  <div
-                    class="content-wrapper"
-                    style="width: 950px; height: 308px"
-                  >
-                    <chart-container
-                      chartId="3"
-                      order="0"
-                      styleType="3"
-                      style="width: 950px; height: 308px"
-                    ></chart-container>
-                  </div>
-                </div> -->
-
                   <div
                     :style="{
-                      height: '350px',
                       border: '1px solid #8b7e66',
                       padding: '20px',
                       marginLeft: '140px',
@@ -607,17 +628,10 @@
                     <div>
                       <el-table
                         :data="downLoadLis"
-                        :style="{ width: 650, height: 300 }"
+                        max-height="400"
+                        :style="{ width: 650 }"
                         stripe
                       >
-                        <!-- <el-table-column
-                    v-for="(item, key, index) in fileLis[0]"
-                    :key="index"
-                    :prop="key"
-                    :label="key"
-                    width="200"
-                    align="center"
-                  > -->
                         <el-table-column
                           prop="download_time"
                           label="下载时间"
@@ -633,7 +647,7 @@
                         />
                         <el-table-column
                           prop="name"
-                          label="用户姓名"
+                          label="下载用户"
                           width="200"
                           alignment="center"
                           :formatter="
@@ -642,7 +656,8 @@
                             }
                           "
                         />
-                        <el-table-column
+                        <!-- ////////////////////以下删除////////////////////// -->
+                        <!-- <el-table-column
                           prop="data_type"
                           label="数据格式"
                           width="150"
@@ -656,7 +671,25 @@
                                 return '可视化数据';
                             }
                           "
-                        />
+                        /> -->
+                        <!-- ////////////////////以上删除////////////////////// -->
+                        <!-- ///////////////--------新增文件名称-------//////////////////////// -->
+                        <!-- <el-table-column
+                          prop="data_type"
+                          label="文件名称"
+                          width="150"
+                          alignment="center"
+                          :formatter="
+                            (row) => {
+                              if (row.data_type == 'origin') return '原始数据';
+                              else if (row.data_type == 'structed')
+                                return '整合数据';
+                              else if (row.data_type == 'visual')
+                                return '可视化数据';
+                            }
+                          "
+                        /> -->
+                        <!-- ///////////////--------新增文件名称-------//////////////////////// -->
                       </el-table>
                     </div>
                     <div style="bottom: 0">
@@ -667,7 +700,7 @@
                               >共<strong style="color: #ff8c00">{{
                                 downLoadTotal
                               }}</strong
-                              >名用户下载</span
+                              >次下载</span
                             >
                           </div>
                         </el-col>
@@ -690,11 +723,10 @@
           </div>
           <div class="creator">
             <el-avatar :src="avatarUrl" />
-            <div class="name">{{ fileMeta?.name }}</div>
+            <!-- 可能需要调用user接口来根据email查询姓名 -->
+            <div class="name">{{ fileInfo?.creator }}</div>
+            <!-- 可能需要调用user接口来根据email查询姓名 -->
           </div>
-          <!-- <el-divider content-position="center"
-            >{{ date(fileInfo.createTime) }} 创建</el-divider
-          > -->
           <el-divider content-position="center" color="orange"
             >数据缩略图</el-divider
           >
@@ -714,15 +746,19 @@
           <div>
             <div class="scene-wrapper" style="width: 440px; height: 440px">
               <div class="content-wrapper" style="width: 440px; height: 440px">
+                <!-- //////////////  新增父组件传入空间范围值Location ///////////-->
                 <location-map
                   v-if="true"
                   style="width: 440px; height: 440px"
+                  :key="new Date().getTime()"
                 ></location-map>
+                <!--///////////// 新增父组件传入空间范围值Location /////////////-->
               </div>
             </div>
           </div>
         </el-col>
       </el-row>
+      <!-- /////////////////////考虑保留 ////////////////////////-->
       <div class="explain">
         <el-divider content-position="center" color="orange"
           >数据获取</el-divider
@@ -738,9 +774,9 @@
           </el-card>
         </div>
         <el-card shadow="always" style="margin: 10px; margin-left: 60px">
-          <div class="content" v-if="fileMeta?.get_online">在线获取</div>
+          <div class="content" v-if="fileInfo?.get_online">在线获取</div>
 
-          <div class="content" v-if="!fileMeta?.get_online">订单获取</div>
+          <div class="content" v-if="!fileInfo?.get_online">订单获取</div>
         </el-card>
       </div>
       <div class="Process">
@@ -754,13 +790,13 @@
           </el-card>
         </div>
 
-        <div class="online" v-if="fileMeta?.get_online">
+        <div class="online" v-if="fileInfo?.get_online">
           <el-card shadow="always" style="margin: 10px; margin-left: 60px">
             <div class="content">[1]点击下载按钮</div>
           </el-card>
         </div>
 
-        <div class="list" v-if="!fileMeta?.get_online">
+        <div class="list" v-if="!fileInfo?.get_online">
           <el-card shadow="always" style="margin: 10px; margin-left: 60px">
             <div class="title">订单获取</div>
           </el-card>
@@ -774,7 +810,9 @@
             <div class="content">[3] 在线下载数据</div>
           </el-card>
         </div>
+        <!-- /////////////////////考虑保留 ////////////////////////////-->
       </div>
+      <!-- /////////////////////再完善 ////////////////////////////-->
       <div class="body">
         <div class="contributor">
           <!-- <el-divider content-position="center"
@@ -794,10 +832,9 @@
               </div>
             </el-card>
           </div>
-
-          <!-- </div> -->
         </div>
       </div>
+      <!-- /////////////////////再完善 ////////////////////////////-->
     </div>
   </div>
 </template>
@@ -821,9 +858,10 @@ import {
   getDownloadURL,
   getOtherTags,
   getShareFileById,
-  pageQueryDownloadHistory,
+  pagequery,
   ZipEntryPath,
   QueryHeightByName,
+  findFiles,
 } from "@/api/request";
 import "@/assets/css/wangeditor.css";
 import { notice } from "@/utils/notice";
@@ -837,6 +875,7 @@ import ChartContainer from "../scenePart/chartContainer.vue";
 import images from "./components/Images.vue";
 import { List } from "echarts";
 import router from "@/router";
+import axios from "axios"
 import { getTagName } from "@wangeditor/core/dist/core/src/utils/dom";
 
 export default defineComponent({
@@ -856,30 +895,48 @@ export default defineComponent({
     fileInfo: {
       type: Object,
     },
-    fileMeta: {
-      type: Object,
-    },
   },
   setup(props) {
     const store = useStore();
+    //
+    const fileInfoNew = ref();
+    fileInfoNew.value = props.fileInfo;
+    //
     const fileInfo = computed(() => {
       return props.fileInfo;
     });
-    const fileMeta = computed(() => {
-      return props.fileMeta;
-    });
+
     const KB = ref("KB");
     const MB = ref("MB");
+    const Yang =ref("长江区域")
+    //表格初始值
     const getName = ref("一干河站潮位观测成果表");
     const Size = ref("");
     const mapref = ref();
-    const shpCheck = ref(false);
+    const locations=ref<string[]>([])
+    const creator=ref("")
+
+    const shpCheck =   ref(false);
     const photoCheck = ref(false);
-    const tableHeight = ref();
     const tableCheck = ref(false);
+    const rasterCheck= ref(false);
+
+    //记录可用于shp可视化的数组
+    const shpVisualList=ref<any[]>([])
+    //记录可用于excel可视化的数组
+    const excelVisualList =ref<string[]>([])
+    //记录可用于栅格可视化的数组
+    const rasterVisualList =ref<string[]>([])
+    //记录可用于照片可视化的数组
+    const photoVisualList =ref<string[]>([])
+    
+    const tableHeight = ref();
     const i = ref(0);
-    let userId = router.currentRoute.value.params.id;
+    const userId = router.currentRoute.value.params.id;
+    const location = ref<any[]>([]);
     const similiarLis = ref<any[]>([]);
+    const phot = ref<HTMLElement>();
+    const photoList = reactive<String[]>([]);
     const nameTable = reactive([
       "一干河站潮位观测成果表",
       "六滧站潮位观测成果表",
@@ -899,16 +956,17 @@ export default defineComponent({
       "连兴港站潮位观测成果表",
       "青龙港站潮位观测成果表",
     ]);
+    //excel可视
     const changeTableName = () => {
       getName.value = nameTable[i.value];
-      console.log(getName.value);
     };
-    const downLoadLis = ref<any[]>([
-      { download_time: "无", name: "无", data_type: "无" },
-    ]);
-    const fileLis = ref<any[]>([
-      { download_time: "无", name: "无", data_type: "无" },
-    ]);
+    //excel可视
+    //单文件下载
+    //单文件下载
+
+    //三个表 分别为下载列表、文件列表、相似列表
+    const downLoadLis = ref<any[]>([]);
+    const fileLis = ref<any[]>([]);
     const similiarList = computed(() => {
       const lis = [];
       for (let i = 0; i < similiarLis.value.length; i++) {
@@ -917,6 +975,8 @@ export default defineComponent({
       }
       return lis;
     });
+    //三个表 分别为下载列表、文件列表、相似列表
+
     //检查是否为相似数据
     const check = (tag1: Array<String>, tag2: Array<String>): boolean => {
       let interset = tag1.filter(function (v) {
@@ -924,27 +984,9 @@ export default defineComponent({
       }).length;
       return interset >= 2 ? true : false;
     };
-    //照片列表
-    const phot = ref<HTMLElement>();
-    const photoList = reactive<String[]>([]);
-    if (
-      (router.currentRoute.value.params.fileInfo as any).tags.indexOf(
-        "SHAPEFILE"
-      ) != -1
-    )
-      shpCheck.value = true;
+    //检查是否为相似数据
 
-    if (
-      (router.currentRoute.value.params.fileInfo as any).tags.indexOf("照片") !=
-      -1
-    )
-      photoCheck.value = true;
-    if (
-      (router.currentRoute.value.params.fileInfo as any).tags.indexOf(
-        "潮位数据"
-      ) != -1
-    )
-      tableCheck.value = true;
+    ////缩略图与头像前端不需要改，数据库插入需要改
     //缩略图
     const thumbnail = computed(() => {
       if (
@@ -954,13 +996,14 @@ export default defineComponent({
       ) {
         return "http://localhost:8002" + (props.fileInfo as any).thumbnail;
       }
-      ("https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png");
+      else
+      { return "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"};
     });
     //头像
     const avatarUrl = computed(() => {
-      return (props.fileMeta as any).avatar === ""
+      return (props.fileInfo as any).avatar === ""
         ? "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
-        : "http://localhost:8002" + (props.fileMeta as any).avatar;
+        : "http://localhost:8002" + (props.fileInfo as any).avatar;
     });
     const avatar = computed(() => {
       if (
@@ -976,60 +1019,71 @@ export default defineComponent({
           : (props.fileInfo as any).name
       );
     });
+    const srcList: any[] = reactive([`${avatar.value as any as string}`]);
     //规整日期
     const date = (time: string) => {
       return dateFormat(time, "yyyy-MM-dd");
     };
+    //下载
     const downLoadTotal = ref(0);
-    const downloadOrigin = async () => {
-      const data = await getDownloadURL((fileInfo.value as any).id);
+    const downloadOrigin = async (val:number) => {
+      const data = await axios.get(`http://172.21.213.244:8002/file/getDownloadURL/${fileLis.value[val].id}`,
+      {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bXNzIiwiaWQiOiI0MzYwODUxNC1kODMzLTRiNTAtOWE3NC0wOWI2MzhiOTM4OTEiLCJhdmF0YXIiOiIvZmlsZS9hdmF0YXIvMGE4MjhmMWItMDAyNC00ZDViLThlODUtNjQ1MDQwMzlhY2YyLmpwZyIsImV4cCI6MTY2MTczOTg5NCwiZW1haWwiOiIxMjNAcXEuY29tIn0.eLjI6Bh4qa5A7OIA3Q8W8XXFAl8KsvLfNxUUdK3SKWKaGxsT-7fDuiH5XhBpcwnMbUVaQs6urjkhp6uLSzUmsg'}}).then((
+        res)=>{
+          console.log("ganma",res.data)
+          return res.data
+        }
+      );
       if (data != null) {
         if ((data as any).code === 0) {
           window.location.href =
-            "http://localhost:8002/download/downloadShareFile/" +
+            "http://172.21.213.244:8002/file/downloadInList/" +
             store.state.user.id +
             "/" +
-            decrypt(data.data, store.state.user.id);
+            decrypt(data.data, store.state.user.id)+
+            "/"+
+            fileLis.value[val].id
         } else {
           notice("error", "错误", (data as any).msg);
         }
       }
     };
-    const size = computed(() => {
-      let sum = 0;
-      let i = 0;
-      for (; i < fileLis.value.length; i++) {
-        sum = sum + fileLis.value[i].压缩后大小;
-      }
-      return sum / 1024 + "KB";
-    });
+    //计算文件
+    // const size = computed(() => {
+    //   let sum = 0;
+    //   let i = 0;
+    //   for (; i < fileLis.value.length; i++) {
+    //     sum = sum + fileLis.value[i].压缩后大小;
+    //   }
+    //   return sum / 1024 + "KB";
+    // });
 
     //路由跳转，相当于人为刷新界面
     const routeTo = async (item: any, index: number) => {
       const data = await getShareFileById(item.id);
-      const data2 = await getOtherTags(item.id as string);
-      const data3 = await ZipEntryPath(
-        router.currentRoute.value.params.id as any
-      );
-      fileLis.value = data3 as any;
-      tableHeight.value = fileLis.value.length * 40 + 82;
-      const size = computed((): string => {
-        let sum = 0;
-        let i = 0;
-        for (; i < fileLis.value.length; i++) {
-          sum = sum + fileLis.value[i].压缩后大小;
-        }
-        if (sum / 1024 < 1024) return ((sum / 1024).toFixed(2) as string) + KB;
-        else return ((sum / 1048576).toFixed(2) as string) + MB;
+      // const data2 = await getOtherTags(item.id as string);
+      // const data3 = await ZipEntryPath(
+      //   router.currentRoute.value.params.id as any
+      // );
+      // fileLis.value = data3 as any;
+      // tableHeight.value = fileLis.value.length * 40 + 82;
+      // const size = computed((): string => {
+      //   let sum = 0;
+      //   let i = 0;
+      //   for (; i < fileLis.value.length; i++) {
+      //     sum = sum + fileLis.value[i].压缩后大小;
+      //   }
+      //   if (sum / 1024 < 1024) return ((sum / 1024).toFixed(2) as string) + KB;
+      //   else return ((sum / 1048576).toFixed(2) as string) + MB;
 
-        // return (sum / 1000) as any as string;
-      });
-      Size.value = size.value;
-      //       watch(router.currentRoute.value,(newValue,oldValue)=>{
-      //   console.log("路有变化了",newValue,oldValue)},{immediate:true,deep:true}
-      // )
-      //console.log(router.currentRoute.value)
-      similiarLis.value = data2.data.list;
+      //   // return (sum / 1000) as any as string;
+      // });
+      // Size.value = size.value;
+      // //       watch(router.currentRoute.value,(newValue,oldValue)=>{
+      // //   console.log("路有变化了",newValue,oldValue)},{immediate:true,deep:true}
+      // // )
+      // //console.log(router.currentRoute.value)
+      //similiarLis.value = data2.data.list;
       router.push({
         name: "shareFile",
         params: {
@@ -1038,81 +1092,106 @@ export default defineComponent({
         },
       });
     };
-    const srcList: any[] = reactive([`${avatar.value as any as string}`]);
     onBeforeMount(async () => {
       //查询并显示10条历史下载记录
-      const data2 = await pageQueryDownloadHistory(10, 0, userId as string);
+      //pageQueryDownLoadHistoy需要更改
+      const data2 = await pagequery(
+        router.currentRoute.value.params.id as string,
+        10,
+        0
+      );
       if (data2 != null) {
         downLoadLis.value = data2.data.list;
         downLoadTotal.value = data2.data.total;
       } else console.log("nulll");
     });
     onMounted(async () => {
-      //获取压缩文件
-      const data = await ZipEntryPath(
-        router.currentRoute.value.params.id as any
-      );
-      fileLis.value = data as any;
+
+      creator.value=(router.currentRoute.value.params.fileInfo as any).creator
+
+      //获取location空间范围
+      locations.value = (router.currentRoute.value.params.fileInfo as any).location as string[];
+      //  获取file文件
+      const fileData= await findFiles(router.currentRoute.value.params.id as string)
+      fileLis.value=fileData.data
+      //获取file文件的可视化方法
+    for(let i=0;i<fileLis.value.length;i++){
+    if(fileLis.value[i].visualId!=null &&
+       fileLis.value[i].visualId!=undefined &&
+       fileLis.value[i].visualId!=""){
+        if(fileLis.value[i].visualType=="pointVectorTile" ||
+           fileLis.value[i].visualType=="lineVectorTile" ||
+           fileLis.value[i].visualType=="polygonVectorTile" ||
+           fileLis.value[i].visualType=="pointVectorTile3D" ||
+           fileLis.value[i].visualType=="lineVectorTile3D" ||
+           fileLis.value[i].visualType=="polygonVectorTile3D" 
+        ){
+            shpVisualList.value.push({"id":fileLis.value[i].visualId,"type": fileLis.value[i].visualType})
+            shpCheck.value = true;
+        }
+        if(fileLis.value[i].visualType=="表格可视化"){
+            excelVisualList.value.push(fileLis.value[i].visualId)
+            tableCheck.value = true;
+        }
+        if(fileLis.value[i].visualType=="栅格可视化"){
+            rasterVisualList.value.push(fileLis.value[i].visualId)
+            rasterCheck.value=true;
+        }
+        if(fileLis.value[i].visualType=="照片可视化"){
+            photoVisualList.value.push(fileLis.value[i].visualId)
+            photoCheck.value=true;
+        }       
+       }
+}
+/////////////////////////////照片可视方法////////////////////////////
       if (photoCheck.value)
         for (let i = 0; i < fileLis.value.length; i++) {
+          ///修改
           photoList.push(
-            "http://localhost:8002/file/photos/" + fileLis.value[i].名称
+            "http://localhost:8002/visual/getPhoto/" + fileLis.value[i].fileName
           );
+          ///修改
         }
-      //是否为Shp类数据
-      if (
-        (router.currentRoute.value.params.fileInfo as any).tags.indexOf(
-          "SHAPEFILE"
-        ) != -1
-      )
-        if (
-          (router.currentRoute.value.params.fileInfo as any).tags.indexOf(
-            "潮位数据"
-          ) != -1
-        )
-          //是否为潮位类数据
-          tableCheck.value = true;
-      //是否为Photo类数据
-      if (
-        (router.currentRoute.value.params.fileInfo as any).tags.indexOf(
-          "照片"
-        ) != -1
-      )
-        photoCheck.value = true;
+/////////////////////////////照片可视方法////////////////////////////
 
       //动态生成压缩文件表格高度
       tableHeight.value = fileLis.value.length * 40 + 122;
-
-      //const data2= await pageQueryDownloadHistory(10,0,userId as string)
+//////////////////similiarist////////////
       //根据标签获取相似数据
       const data1 = await getOtherTags(userId as string);
       similiarLis.value = data1.data.list;
-      //计算压缩文件大小
+//////////////////similiarist////////////
+//////////////////计算压缩文件大小////////
       const size = computed((): string => {
         let sum = 0;
         let i = 0;
         for (; i < fileLis.value.length; i++) {
-          sum = sum + fileLis.value[i].压缩后大小;
+            if((fileLis.value[i].size as String).substring(0,-2) as string == 'MB')
+                sum = sum + ((fileLis.value[i].size as String).substring(0,-2) as any as number)*1024
+            else
+                sum = sum + ((fileLis.value[i].size as String).substring(0,-2) as any as number)
         }
 
         if (sum / 1024 < 1024)
-          return ((sum / 1024).toFixed(2) as string) + KB.value;
-        else return ((sum / 1048576).toFixed(2) as string) + MB.value;
+            return ((sum / 1024).toFixed(2) as string) + KB.value;
+            else return ((sum / 1048576).toFixed(2) as string) + MB.value;
       });
       Size.value = size.value;
+//////////////////计算压缩文件大小////////
     });
 
     return {
       fileInfo,
-      fileMeta,
       phot,
       i,
+      Yang,
       photoList,
       nameTable,
       date,
       tableCheck,
       avatar,
       downloadOrigin,
+      locations,
       avatarUrl,
       thumbnail,
       similiarList,
@@ -1125,13 +1204,17 @@ export default defineComponent({
       KB,
       MB,
       tableHeight,
-      size,
       Size,
       mapref,
       shpCheck,
       photoCheck,
       getName,
       changeTableName,
+      shpVisualList,
+      excelVisualList,
+      photoVisualList,
+      rasterVisualList
+
     };
   },
 });

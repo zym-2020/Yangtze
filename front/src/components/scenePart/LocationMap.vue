@@ -23,38 +23,15 @@ import router from "@/router";
 const mapName = ref("");
 const coordinates = ref<any[]>();
 
-watch(
-  () => router.currentRoute.value.params.id,
-  async (newValue, oldValue) => {
+
     //避免跳转到其他页面时去调用后台的接口
 if(router.currentRoute.value.fullPath==("/data/"+router.currentRoute.value.params.id)){
-    const data = await QueryCoordinatesByName(
-      (router.currentRoute.value.params.fileInfo as any).name
-    );
-    if (data != undefined && data != null && data.data.length != 0) {
-      if ((data as any).code === 0) {
-        coordinates.value = [
-          [
-            data.data[0].coordinates[0] as number,
-            data.data[0].coordinates[1] as number,
-          ],
-          [
-            data.data[0].coordinates[2] as number,
-            data.data[0].coordinates[3] as number,
-          ],
-          [
-            data.data[0].coordinates[4] as number,
-            data.data[0].coordinates[5] as number,
-          ],
-          [
-            data.data[0].coordinates[6] as number,
-            data.data[0].coordinates[7] as number,
-          ],
-          [
-            data.data[0].coordinates[0] as number,
-            data.data[0].coordinates[1] as number,
-          ],
-        ];
+    const data = (router.currentRoute.value.params.fileInfo as any).location
+   
+
+    if (data != undefined && data != null) {
+      if (data.length==5 ) {
+        coordinates.value = data
       } else {
         coordinates.value = [
           [120.60871093751484, 32.09452444899182],
@@ -65,9 +42,7 @@ if(router.currentRoute.value.fullPath==("/data/"+router.currentRoute.value.param
         ];
       }
     }}
-  },
-  { immediate: true, deep: true }
-);
+
 onMounted(async () => {
   mapboxgl.accessToken =
     "pk.eyJ1IjoiMTY2NTE2OTkzNzYiLCJhIjoiY2ttMDh5amJpMHE2dzJ3cTd5eWZsMGQxZyJ9.XErH3kSOuRC_OWXWCpDLkQ";

@@ -49,63 +49,32 @@
             </el-option-group>
           </el-select>
         </el-form-item>
+        <!-- ///////////需要再设计，更改 ///////////-->
         <el-form-item label="原始数据：" prop="origin">
           <el-button type="primary" plain @click="openFolder('origin')">
             添加<el-icon class="el-icon--right"><Upload /></el-icon>
           </el-button>
+          <div 
+          v-for="(item,index) in fileInDataList" 
+          :key="index"
+          >
           <el-tag
             closable
             v-if="
-              form.origin.name != '' &&
-              form.origin.name != undefined &&
-              form.origin.name != null
+              item.name != '' &&
+              item.name != undefined &&
+              item.name != null
             "
             size="large"
             class="tag"
             type="success"
-            @close="tagClose('origin')"
+            @close="tagClose(index)"
           >
-            {{ form.origin.name }}
+            {{ item.name }}
           </el-tag>
+        </div>
         </el-form-item>
-        <el-form-item label="整合数据：">
-          <el-button type="primary" plain @click="openFolder('struct')">
-            添加<el-icon class="el-icon--right"><Upload /></el-icon>
-          </el-button>
-          <el-tag
-            closable
-            v-if="
-              form.struct.name != '' &&
-              form.struct.name != undefined &&
-              form.struct.name != null
-            "
-            size="large"
-            class="tag"
-            type="success"
-            @close="tagClose('struct')"
-          >
-            {{ form.struct.name }}
-          </el-tag>
-        </el-form-item>
-        <el-form-item label="可视化数据：">
-          <el-button type="primary" plain @click="openFolder('visual')">
-            添加<el-icon class="el-icon--right"><Upload /></el-icon>
-          </el-button>
-          <el-tag
-            closable
-            v-if="
-              form.visual.name != '' &&
-              form.visual.name != undefined &&
-              form.visual.name != null
-            "
-            size="large"
-            class="tag"
-            type="success"
-            @close="tagClose('visual')"
-          >
-            {{ form.visual.name }}
-          </el-tag>
-        </el-form-item>
+
         <el-form-item label="条目封面：">
           <avatar-upload @upload="upload"></avatar-upload>
         </el-form-item>
@@ -118,33 +87,33 @@
       <el-divider />
       <el-form
         label-width="130px"
-        :model="metaForm"
+        :model="form"
         ref="metaRef"
         :rules="metaRules"
       >
         <el-form-item label="数据提供方：" prop="provider">
-          <el-input v-model="metaForm.provider" />
+          <el-input v-model="form.provider" />
         </el-form-item>
         <el-form-item label="联系电话：">
-          <el-input v-model="metaForm.phone" />
+          <el-input v-model="form.provider_phone" />
         </el-form-item>
         <el-form-item label="联系邮箱：">
-          <el-input v-model="metaForm.email" />
+          <el-input v-model="form.provider_email" />
         </el-form-item>
         <el-form-item label="联系地址：">
-          <el-input v-model="metaForm.address" />
+          <el-input v-model="form.provider_address" />
         </el-form-item>
         <el-form-item label="原始数据类型：" prop="type">
-          <el-input v-model="metaForm.type" />
+          <el-input v-model="form.type" />
         </el-form-item>
         <el-form-item label="数据时间：">
-          <el-input v-model="metaForm.time" />
+          <el-input v-model="form.time" />
         </el-form-item>
         <el-form-item label="数据范围：">
-          <el-input v-model="metaForm.range" />
+          <el-input v-model="form.range" />
         </el-form-item>
         <el-form-item label="数据获取方式：" prop="getMode">
-          <el-radio-group v-model="metaForm.getMode">
+          <el-radio-group v-model="form.getMode">
             <el-radio label="在线获取" />
             <el-radio label="订单获取" />
           </el-radio-group>
@@ -159,7 +128,7 @@
             />
             <Editor
               style="height: 320px; overflow-y: hidden"
-              v-model="metaForm.valueHtml"
+              v-model="form.detail"
               :defaultConfig="editorConfig"
               mode="default"
               @onCreated="handleCreated"
@@ -172,6 +141,10 @@
       <el-button type="success" plain @click="commit(fileRef, metaRef)"
         >提交</el-button
       >
+    </div>
+    <div>
+      <FindMap
+      @getCoor="getCoor"></FindMap>
     </div>
 
     <el-dialog v-model="folderFlag" width="700px" :show-close="false">
@@ -199,7 +172,6 @@ import { IDomEditor } from "@wangeditor/editor";
 import PageHeader from "@/components/page/PageHeader.vue";
 import ResourceDialog from "@/components/dialog/ResourceDialog.vue";
 import {
-  addShareFile,
   addMessage,
   examineById,
   getShareFileById,
@@ -208,11 +180,12 @@ import { notice } from "@/utils/notice";
 import type { FormInstance } from "element-plus";
 import AvatarUpload from "@/components/upload/AvatarUpload.vue";
 import ThumbUpload from "@/components/upload/ThumbUpload.vue";
+import FindMap from "@/components/scenePart/FindMap.vue";
 import router from "@/router";
+import axios from "axios";
 import { useStore } from "@/store";
-
 export default defineComponent({
-  components: { PageHeader, Editor, Toolbar, ResourceDialog, AvatarUpload,ThumbUpload },
+  components: { PageHeader, Editor, Toolbar, ResourceDialog, AvatarUpload, ThumbUpload, FindMap },
   setup() {
     const store = useStore();
     const defaultProps = {
@@ -229,11 +202,19 @@ export default defineComponent({
       scroll: true,
       autoFocus: true,
     };
-
+    const fileInDataList =ref<any[]>([])
     const fileRef = ref<HTMLElement>();
     const metaRef = ref<HTMLElement>();
     const avatarFlag = ref(false);
     const thumbFlag =ref(false);
+    const dataListCoor=ref<any[]>([])
+
+    const getCoor=(val:any[])=>{
+      console.log(val)
+      
+      dataListCoor.value=val;
+      (form as any).location=dataListCoor.value
+    }
 
     const handleCreated = (editor: any) => {
       editorRef.value = editor; // 记录 editor 实例，重要！
@@ -244,40 +225,19 @@ export default defineComponent({
       folderFlag.value = true;
     };
 
+////////////////////////////////////////需要再设计
     const selectedFile = (val: any) => {
       folderFlag.value = false;
-      switch (val.type) {
-        case "origin":
-          form.origin.name = val.file.name;
-          form.origin.address = val.file.address;
-          break;
-        case "struct":
-          form.struct.name = val.file.name;
-          form.struct.address = val.file.address;
-          break;
-        case "visual":
-          form.visual.name = val.file.name;
-          form.visual.address = val.file.address;
-          break;
+      fileInDataList.value.push({"name":val.file.name,"address":val.file.address})
       }
-    };
-    const tagClose = (type: string) => {
-      switch (type) {
-        case "origin":
-          form.origin.name = "";
-          form.origin.address = "";
-          break;
-        case "struct":
-          form.struct.name = "";
-          form.struct.address = "";
-          break;
-        case "visual":
-          form.visual.name = "";
-          form.visual.address = "";
-          break;
-      }
-    };
 
+
+    const tagClose = (val: number) => {
+      fileInDataList.value.splice(val)
+          
+      }
+    
+//////////////////////////////////////
     const upload = (val: any) => {
       avatarFlag.value = true;
       form.avatar = val;
@@ -297,28 +257,21 @@ export default defineComponent({
         await formEl2.validate(async (valid2) => {
           if (valid1 && valid2) {
             const jsonData = {
-              meta: {
-                provider: metaForm.provider,
-                time: metaForm.time,
-                range: metaForm.range,
-                detail: metaForm.valueHtml,
-                type: metaForm.type,
-                providerPhone: metaForm.phone,
-                providerEmail: metaForm.email,
-                providerAddress: metaForm.address,
-                getOnline: metaForm.getMode === "在线获取" ? true : false,
-              },
               fileInfo: {
                 name: form.name,
+                loaction : form.location,
                 description: form.description,
-                originAddress: form.origin.address,
-                originName: form.origin.name,
-                visualSource: "",
-                visualType: "",
-                visualName: "",
-                structuredSource: "",
-                structuredName: "",
                 tags: form.tagList,
+                provider: form.provider,
+                time: form.time,
+                range: form.range,
+                //detail: metaForm.valueHtml,
+                type: form.type,
+                providerPhone: form.provider_phone,
+                providerEmail: form.provider_email,
+                providerAddress: form.provider_address,
+                getOnline: form.getMode === "在线获取" ? true : false, 
+                
               },
             };
             const formData = new FormData();
@@ -334,36 +287,40 @@ export default defineComponent({
               formData.append("file2", new Blob());
             }
 
-            const data = await addShareFile(formData);
+             const data =await axios.post("http://172.21.213.244:8002/dataList/fuzzyQuery", formData,
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bXNzIiwiaWQiOiI0MzYwODUxNC1kODMzLTRiNTAtOWE3NC0wOWI2MzhiOTM4OTEiLCJhdmF0YXIiOiIvZmlsZS9hdmF0YXIvMGE4MjhmMWItMDAyNC00ZDViLThlODUtNjQ1MDQwMzlhY2YyLmpwZyIsImV4cCI6MTY2MTczOTg5NCwiZW1haWwiOiIxMjNAcXEuY29tIn0.eLjI6Bh4qa5A7OIA3Q8W8XXFAl8KsvLfNxUUdK3SKWKaGxsT-7fDuiH5XhBpcwnMbUVaQs6urjkhp6uLSzUmsg'}}).
+    then((res) => {
+         return res.data
+    })
             if (data != null) {
               if ((data as any).code === 0) {
                 notice("success", "成功", "请等待管理员审核通过！");
                 
-                const fileID = data.data.list;
-                const dataCacheById = await getShareFileById(fileID);
+                // const fileID = data.data.list;
+                // const dataCacheById = await getShareFileById(fileID);
                
-                tempCache.value = dataCacheById.data.list;
-                const jsonDataById = computed(() => {
-                  return JSON.stringify(tempCache.value as any);
-                }); 
+                // tempCache.value = dataCacheById.data.list;
+                // const jsonDataById = computed(() => {
+                //   return JSON.stringify(tempCache.value as any);
+                // }); 
                           
-                const tempData = await addMessage({
-                  id: "",
-                  dataName: form.name,
-                  dataUploadTime: "",
-                  dataExamineTime: "2012-02-25",
-                  dataCache: jsonDataById.value,
-                  messageRequest: "fff",
-                  reply: false,
-                  fileId: fileID as string,
-                  messageSender: "fgz",
-                  messageReceiver: " ",
-                  messageResponse: "examine",
-                  messageType: "upload",
-                  replyUser: false,
-                });
-                console.log("ffff")
-                await examineById(fileID.value);
+                // const tempData = await addMessage({
+                //   id: "",
+                //   dataName: form.name,
+                //   dataUploadTime: "",
+                //   dataExamineTime: "2012-02-25",
+                //   dataCache: jsonDataById.value,
+                //   messageRequest: "fff",
+                //   reply: false,
+                //   fileId: fileID as string,
+                //   messageSender: "fgz",
+                //   messageReceiver: " ",
+                //   messageResponse: "examine",
+                //   messageType: "upload",
+                //   replyUser: false,
+                // });
+                // console.log("ffff")
+                // await examineById(fileID.value);
                 init();
               } else {
                 notice("error", "错误", "数据公布错误!");
@@ -377,21 +334,16 @@ export default defineComponent({
     const init = () => {
       form.name = "";
       form.description = "";
-      (form.tagList = []), (form.origin.name = "");
-      form.origin.address = "";
-      form.struct.name = "";
-      form.struct.address = "";
-      form.visual.name = "";
-      form.visual.address = "";
-      metaForm.provider = "";
-      metaForm.time = "";
-      metaForm.range = "";
-      metaForm.valueHtml = "";
-      (metaForm.phone = ""),
-        (metaForm.email = ""),
-        (metaForm.address = ""),
-        (metaForm.type = ""),
-        (metaForm.getMode = "");
+      form.location =[] as any;
+      form.tagList = [] as any;
+      form.time = "";
+      form.range = "";
+      form.detail = "";
+      form.type = "";
+      form.provider_phone = "";
+      form.provider_email = "";
+      form.provider_address = "";
+      form.getMode = "";
     };
 
     const options = ref([     {
@@ -714,33 +666,21 @@ export default defineComponent({
       name: "",
       description: "",
       tagList: [],
-      origin: {
-        name: "",
-        address: "",
-      },
-      struct: {
-        name: "",
-        address: "",
-      },
-      visual: {
-        name: "",
-        address: "",
-      },
+      location :[],
       avatar: "",
       thumbnail : "",
-    });
-
-    const metaForm = reactive({
       provider: "",
       time: "",
       range: "",
-      valueHtml: "",
-      phone: "",
-      email: "",
-      address: "",
+      detail:"",
       type: "",
+      provider_phone: "",
+      provider_email: "",
+      provider_address: "",
       getMode: "",
     });
+
+
 
     const validateOrigin = (rule: any, value: any, callback: any) => {
       if (value.name === "" || value.address === "") {
@@ -779,10 +719,10 @@ export default defineComponent({
         router.currentRoute.value.params.originFileAddress != undefined &&
         router.currentRoute.value.params.originFileName != undefined
       ) {
-        form.origin.name = router.currentRoute.value.params
-          .originFileName as string;
-        form.origin.address = router.currentRoute.value.params
-          .originFileAddress as string;
+        // form.name = router.currentRoute.value.params
+        //   .originFileName as string;
+        // form.address = router.currentRoute.value.params
+        //   .originFileAddress as string;
       }
     });
 
@@ -790,12 +730,14 @@ export default defineComponent({
       form,
       defaultProps,
       options,
-      metaForm,
       editorRef,
       toolbarConfig,
+      dataListCoor,
+      getCoor,
       editorConfig,
       handleCreated,
       commit,
+      fileInDataList,
       folderFlag,
       selectedFile,
       tagClose,
@@ -807,6 +749,7 @@ export default defineComponent({
       metaRef,
       upload,
       uploadTh,
+     
     };
   },
 });
@@ -832,6 +775,13 @@ export default defineComponent({
       }
     }
   }
+  :deep(.scene-map-wrapper2){
+    #map {
+    position: absolute;
+    top: 1700px;
+    margin-left:550px
+  }
+}
   .btn {
     text-align: center;
     margin-bottom: 40px;

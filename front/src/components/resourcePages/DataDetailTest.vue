@@ -1191,7 +1191,6 @@ export default defineComponent({
       KB,
       MB,
       tableHeight,
-      size,
       Size,
       mapref,
       shpCheck,
