@@ -5,7 +5,11 @@
         select id, file_name as "fileName", type, content from visual_file where id::text = #{id}
     </select>
 
-    <insert id="addVisualFile" parameterType="njnu.edu.back.pojo.VisualFile">
-        insert into visual_file values (default, #{fileName}, #{type}, #{content})
-    </insert>
+    <select id="addVisualFile" parameterType="njnu.edu.back.pojo.VisualFile" resultType="java.util.Map">
+        insert into visual_file values (default, #{fileName}, #{type}, #{content}) returning *
+    </select>
+
+    <select id="findByFileName" resultType="java.util.Map">
+        select * from visual_file where file_name = #{fileName}
+    </select>
 </mapper>

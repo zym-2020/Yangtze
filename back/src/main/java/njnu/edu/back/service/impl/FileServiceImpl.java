@@ -64,7 +64,9 @@ public class FileServiceImpl implements FileService {
 
     @Autowired
     DownloadHistoryMapper downloadHistoryMapper;
-    
+
+    @Autowired
+    VisualFileMapper visualFileMapper;
 
     @Override
     public String addFile(File file, String email) {
@@ -461,6 +463,17 @@ public class FileServiceImpl implements FileService {
                 String address = path.substring(basePath.length());
                 fileMapper.addFile(new File(null, f.getName(), address, CommonUtils.getFileSize(f.length()), time, "", email, visualType, visualId, ""));
             }
+        }
+    }
+
+    @Override
+    public void importGrid() {
+        List<Map<String, Object>> maps = fileMapper.findListByVisualType("movePng");
+        for(Map<String, Object> map : maps) {
+            String fileName = ((String) map.get("file_name")).substring(0, 15) + "-" + ((String) map.get("address")).charAt(53) + ".png";
+//            System.out.println(fileName);
+            Map<String, Object> visualMap = visualFileMapper.findByFileName(fileName);
+            fileMapper.updateVisualId(map.get("id").toString(), visualMap.get("id").toString());
         }
     }
 }

@@ -19,5 +19,7 @@ import java.util.Map;
 public interface VisualFileMapper {
     Map<String, Object> findById(@Param("id") String id);
 
-    void addVisualFile(VisualFile visualFile);
+    Map<String, Object> addVisualFile(VisualFile visualFile);
+
+    Map<String, Object> findByFileName(@Param("fileName") String fileName);
 }

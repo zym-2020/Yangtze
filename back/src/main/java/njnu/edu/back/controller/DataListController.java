@@ -35,6 +35,7 @@ public class DataListController {
     }
 
     @AuthCheck
+    @CrossOrigin
     @RequestMapping(value = "/updateDataList", method = RequestMethod.PATCH)
     public JsonResult updateDataList(@RequestParam MultipartFile avatar, @RequestParam MultipartFile thumbnail, @RequestParam String jsonString) {
         dataListService.updateList(avatar, thumbnail, jsonString);
@@ -144,6 +145,7 @@ public class DataListController {
     }
 
     @AuthCheck
+    @CrossOrigin
     @RequestMapping(value = "/updateStatusById/{id}/{status}", method = RequestMethod.PATCH)
     public JsonResult updateStatusById(@PathVariable String id, @PathVariable int status) {
         dataListService.updateStatusById(id, status);

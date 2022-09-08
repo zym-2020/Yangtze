@@ -172,4 +172,9 @@ public class FileController {
         return ResultUtils.success();
     }
 
+    @RequestMapping(value = "/importGrid", method = RequestMethod.POST)
+    public JsonResult importGrid() {
+        fileService.importGrid();
+        return ResultUtils.success();
+    }
 }

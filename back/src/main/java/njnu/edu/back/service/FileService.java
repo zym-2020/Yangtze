@@ -51,4 +51,6 @@ public interface FileService {
 //    void compressFile(JSONObject jsonObject, String email);
 
     void importData(String folderPath, String email, String time, String visualType, String visualId);
+
+    void importGrid();
 }

@@ -87,7 +87,8 @@ public class DataListServiceImpl implements DataListService {
         dataList.setWatch(0);
         dataList.setAvatar(avatarStr);
         dataList.setThumbnail(thumbnailStr);
-        dataList.setStatus(0);
+        dataList.setStatus(1);
+        dataList.setLocation(jsonObject.getObject("location", String[].class));
         dataList.setProvider(jsonObject.getString("provider"));
         dataList.setTime(jsonObject.getString("time"));
         dataList.setRange(jsonObject.getString("range"));

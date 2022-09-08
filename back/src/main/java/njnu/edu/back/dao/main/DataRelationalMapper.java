@@ -20,4 +20,6 @@ public interface DataRelationalMapper {
     void batchDeleteFolder(@Param("list") List<String> list);
 
     List<Map<String, Object>> findFilesByDataListId(@Param("dataListId") String dataListId);
+
+    void batchInsert(@Param("list") List<String> list, @Param("dataListId") String dataListId);
 }

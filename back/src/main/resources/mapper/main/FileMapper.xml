@@ -105,4 +105,12 @@
 <!--            #{item}-->
 <!--        </foreach>-->
 <!--    </select>-->
+
+    <select id="findListByVisualType" resultType="java.util.Map">
+        select * from files where visual_type = #{type};
+    </select>
+
+    <update id="updateVisualId">
+        update files set visual_id = #{visualId} where id::text = #{id}
+    </update>
 </mapper>

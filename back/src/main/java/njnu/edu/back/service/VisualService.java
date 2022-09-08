@@ -1,6 +1,7 @@
 package njnu.edu.back.service;
 
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import njnu.edu.back.pojo.VisualFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -25,5 +26,17 @@ public interface VisualService {
 
     void getPngResource(String visualId, HttpServletResponse response);
 
+    JSONObject getTide(String visualId);
+
+    JSONObject getRateDirection(String visualId);
+
+    JSONObject getSandContent(String visualId);
+
+    JSONObject getFlowSand_Z(String visualId);
+
+    JSONObject getSalinity(String visualId);
+
     void addVisualFile(VisualFile visualFile);
+
+    void addSameNameVisualFile(String type, String address);
 }

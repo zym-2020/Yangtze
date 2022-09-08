@@ -18,9 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Map;
 
 /**
@@ -230,7 +228,92 @@ public class VisualServiceImpl implements VisualService {
     }
 
     @Override
+    public JSONObject getTide(String visualId) {
+        return readJson(visualId);
+    }
+
+    @Override
+    public JSONObject getRateDirection(String visualId) {
+        return readJson(visualId);
+    }
+
+    @Override
+    public JSONObject getSandContent(String visualId) {
+        return readJson(visualId);
+    }
+
+    @Override
+    public JSONObject getFlowSand_Z(String visualId) {
+        return readJson(visualId);
+    }
+
+    @Override
+    public JSONObject getSalinity(String visualId) {
+        return readJson(visualId);
+    }
+
+    @Override
     public void addVisualFile(VisualFile visualFile) {
         visualFileMapper.addVisualFile(visualFile);
+    }
+
+    @Override
+    public void addSameNameVisualFile(String type, String address) {
+        File file = new File(address);
+        if(!file.exists()) {
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
+        File[] files = file.listFiles();
+        for(File f : files) {
+            String path = f.getAbsolutePath();
+            String fileName = f.getName().substring(0, f.getName().lastIndexOf(".")) + ".xlsx";
+            Map<String, Object> map = fileMapper.findByFileName(fileName);
+            if (map != null) {
+                Map<String, Object> visualMap = visualFileMapper.addVisualFile(new VisualFile(null, f.getName(), type, path.substring(visualAddress.length())));
+                String visualId = visualMap.get("id").toString();
+                fileMapper.updateVisualId(map.get("id").toString(), visualId);
+            } else {
+                System.out.println(fileName);
+            }
+//            System.out.println(path.substring(visualAddress.length()));
+        }
+    }
+
+    /**
+    * @Description:对于读取json数据的可视化方法，调用此方法
+    * @Author: Yiming
+    * @Date: 2022/9/6
+    */
+    private JSONObject readJson(String visualId) {
+        Map<String, Object> map = visualFileMapper.findById(visualId);
+        String path = visualAddress + map.get("content");
+        File file = new File(path);
+        if(!file.exists()) {
+            throw new MyException(ResultEnum.NO_OBJECT);
+        }
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader(path));
+            String jsonString = "";
+            String line = "";
+            while((line = br.readLine()) != null) {
+                jsonString += line;
+            }
+            br.close();
+            JSONObject jsonObject = JSON.parseObject(jsonString);
+            return jsonObject;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        } finally {
+            try {
+                if(br != null) {
+                    br.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+            }
+        }
     }
 }

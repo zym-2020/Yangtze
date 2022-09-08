@@ -50,4 +50,8 @@ public interface FileMapper {
 //    List<Map<String, Object>> selectFolderPath(@Param("list") List<String> id);
 //
 //    List<Map<String, Object>> selectFilePath(@Param("list") List<String> id);
+
+    List<Map<String, Object>> findListByVisualType(@Param("type") String type);
+
+    void updateVisualId(@Param("id") String id, @Param("visualId") String visualId);
 }

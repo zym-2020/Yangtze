@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.*;
 public class JsonRecordController {
     @Autowired
     JsonRecordMapper jsonRecordMapper;
-@CrossOrigin
+
+    @CrossOrigin
     @AuthCheck
     @RequestMapping(value="/QueryByName/{name}",method= RequestMethod.GET)
     public JsonResult QueryByName(@PathVariable  String name){
