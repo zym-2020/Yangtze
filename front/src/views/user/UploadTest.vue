@@ -135,7 +135,7 @@
       </el-form>
     </div>
     <div class="btn">
-      <el-button type="success" plain @click="commit(fileRef, metaRef)"
+      <el-button type="success" plain @click="commit(fileRef , metaRef)"
         >提交</el-button
       >
     </div>
@@ -168,7 +168,6 @@ import {
   addMessage,
   examineById,
   getShareFileById,
-  addDataList,
 } from "@/api/request";
 import { notice } from "@/utils/notice";
 import type { FormInstance } from "element-plus";
@@ -241,7 +240,7 @@ export default defineComponent({
       formEl2: FormInstance | undefined
     ) => {
       if (!formEl1 || !formEl2) return;
-      await formEl1.validate(async (valid1, fields) => {
+      await formEl1.validate(async (valid1) => {
         await formEl2.validate(async (valid2) => {
           if (valid1 && valid2) {
             const jsonData = {
@@ -276,7 +275,7 @@ export default defineComponent({
             }
 
              const data =await axios.post("http://172.21.213.244:8002/dataList/fuzzyQuery", formData,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bXNzIiwiaWQiOiI0MzYwODUxNC1kODMzLTRiNTAtOWE3NC0wOWI2MzhiOTM4OTEiLCJhdmF0YXIiOiIvZmlsZS9hdmF0YXIvMGE4MjhmMWItMDAyNC00ZDViLThlODUtNjQ1MDQwMzlhY2YyLmpwZyIsImV4cCI6MTY2MTczOTg5NCwiZW1haWwiOiIxMjNAcXEuY29tIn0.eLjI6Bh4qa5A7OIA3Q8W8XXFAl8KsvLfNxUUdK3SKWKaGxsT-7fDuiH5XhBpcwnMbUVaQs6urjkhp6uLSzUmsg'}}).
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).
     then((res) => {
          return res.data
     })

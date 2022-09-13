@@ -449,7 +449,7 @@ const onAddItem = (val:any) => {
       flag: false,
        };
        const data =await axios.post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonData,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bXNzIiwiaWQiOiI0MzYwODUxNC1kODMzLTRiNTAtOWE3NC0wOWI2MzhiOTM4OTEiLCJhdmF0YXIiOiIvZmlsZS9hdmF0YXIvMGE4MjhmMWItMDAyNC00ZDViLThlODUtNjQ1MDQwMzlhY2YyLmpwZyIsImV4cCI6MTY2MTczOTg5NCwiZW1haWwiOiIxMjNAcXEuY29tIn0.eLjI6Bh4qa5A7OIA3Q8W8XXFAl8KsvLfNxUUdK3SKWKaGxsT-7fDuiH5XhBpcwnMbUVaQs6urjkhp6uLSzUmsg'}}).
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).
     then((res) => {
          return res.data
     })

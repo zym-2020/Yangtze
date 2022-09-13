@@ -156,10 +156,10 @@ export default defineComponent({
         offlineFlag.value = true;
         offlineItem.value = fileInfo;
       } else if (param === 3) {
-        const data = await updateStatusById({
-          id: fileInfo.id as string,
-          status: 1,
-        });
+        const data = await updateStatusById(
+         fileInfo.id as string,
+          1,
+        );
         if (data != null) {
           if ((data as any).code === 0) {
             fileList.value[index].status = 1;
@@ -209,10 +209,10 @@ export default defineComponent({
     };
 
     const commitInfo = async (val: any) => {
-      const data = await updateStatusById({
-        id: (offlineItem.value as any).id,
-        status: -1,
-      });
+      const data = await updateStatusById(
+        (offlineItem.value as any).id,
+        -1
+      );
       if (data != null) {
         if ((data as any).code === 0) {
           offlineItem.value.status = -1;

@@ -356,6 +356,7 @@ import {
   onlineById,
   offlineById,
   offlineUserMessage,
+  
   QueryCode,
   QueryShpByName,
   getFilePath,
@@ -583,6 +584,21 @@ export default defineComponent({
     };
     onMounted(async () => {
        avatar.value = imgBase64("哈哈");
+      //  const data = await axios
+      //   .get(
+      //     `http://172.21.213.244:8002/visual/getCoordinates/b8f37201-6722-4e66-8692-389faceea0ce`,
+      //     {
+      //       headers: {
+      //         authorization:
+      //           "Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw",
+      //       },
+      //     }
+      //   )
+      //   .then((res) => {
+      //     console.log("ganma", res.data.data);
+      //     return res.data;
+      //   });
+      //console.log((data as any[]).length)
       // const data = await responseBinary('222');
       // const data2 =await queryByMsi(3333);
       // const TempData=data2.data.list;
