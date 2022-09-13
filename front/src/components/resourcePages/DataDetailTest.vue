@@ -111,7 +111,7 @@
               <el-col :span="12">
                 <div class="basicInfo-item" style="color: #ff8c00">
                   <data-description
-                    :data="{ key: '数据类型：', value: fileInfo?.type }"
+                    :data="{ key: '数据类型：', value: fileMeta?.type }"
                   ></data-description>
                 </div>
               </el-col>
@@ -281,37 +281,33 @@
                       alignment="center"
                       :formatter="
                         (row) => {
-                          return row.time;
+                          return row.time
+
                         }
                       "
                     />
                     <el-table-column
-                      prop="文件位置"
-                      label="文件位置"
+                      prop="类型"
+                      label="文件类型"
                       width="150"
                       alignment="center"
-                      :formatter="
-                        (row) => {
-                          if (row.location) return row.location;
-                          else return Yang;
-                        }
-                      "
                     >
                     </el-table-column>
                     <!-- ------------------------新增功能，单文件下载------------------------ -->
 
-                    <el-table-column fixed="right" label="下载" width="80">
-                      <template #default="scope">
-                        <el-button
-                          type="success"
-                          icon="Share"
-                          round
-                          size="small"
-                          @click.prevent="downloadOrigin(scope.$index)"
-                        >
-                        </el-button>
-                      </template>
-                    </el-table-column>
+     <el-table-column fixed="right" label="下载" width="80">
+      <template #default="scope">
+        <el-button
+          link
+         type="danger" 
+         icon="Delete"
+         round
+          size="small"
+          @click.prevent="downloadFile(scope.$index)"
+        >
+        </el-button>
+      </template>
+    </el-table-column>
                     <!-- ------------------------新增功能，单文件下载------------------------ -->
                   </el-table>
                   <el-row>
@@ -340,16 +336,15 @@
               <el-col>
                 <div
                   v-if="true"
-                  class="scene-wrapper1"
+                  class="scene-wrapper"
                   style="width: 950px; height: 900px"
                 >
                   <div
-                    class="content-wrapper1"
+                    class="content-wrapper"
                     style="width: 950px; height: 900px"
                   >
                     <centerVisualMap
                       mapId="1"
-                      :shpVisualList="shpVisualList"
                       style="width: 950px; height: 900px"
                     ></centerVisualMap>
                   </div>
@@ -407,8 +402,7 @@
                     </el-col>
                   </el-row>
                 </div>
-<!-- ----------------------潮位站观测成果---------------------------- -->
-<div>
+
                 <el-row :gutter="20" justify="center">
                   <el-col :span="8" style="text-align: center">
                     <el-card
@@ -416,7 +410,7 @@
                       shadow="always"
                       @click="
                         i = (i - 1 + nameTable.length) % nameTable.length;
-                        changeTableName('tide');
+                        changeTableName();
                       "
                       style="margin-top: 30px; margin-bottom: 10px"
                     >
@@ -435,7 +429,7 @@
                   <el-col :span="8" style="text-align: center">
                     <el-card
                       shadow="always"
-                      @click="changeTableName('tide')"
+                      @click="changeTableName()"
                       style="
                         margin-top: 10px;
                         margin-bottom: 10px;
@@ -453,7 +447,7 @@
                       shadow="always"
                       @click="
                         i = (i + 1) % nameTable.length;
-                        changeTableName('tide');
+                        changeTableName();
                       "
                       style="margin-top: 30px; margin-bottom: 10px"
                     >
@@ -466,182 +460,16 @@
                     </el-card>
                   </el-col>
                 </el-row>
-                <el-row>
-                  <div style="width: 100%; height: 80%">
-                    <TideStatistics
-                      :getName="getName"
-                      :key="new Date().getTime()"
-                    ></TideStatistics>
-                  </div>
-                </el-row>
 
-<!-- ----------------------分割线------------------------------- -->
-                <el-row>
-                  <el-divider>
-                    <el-icon><Monitor /></el-icon>
-                  </el-divider>
-                </el-row>
-</div>
-<!-- ----------------------含沙量---------------------------- -->
-<div>
-                <el-row :gutter="20" justify="center">
-                  <el-col :span="8" style="text-align: center">
-                    <el-card
-                      class="video"
-                      shadow="always"
-                      @click="
-                        k =
-                          (k - 1 + sandTable.length) % sandTable.length;
-                        changeTableName('sand');
-                      "
-                      style="margin-top: 30px; margin-bottom: 10px"
-                    >
-                      <div class="text">
-                        <el-icon style="margin-top: 5px"
-                          ><ArrowLeftBold
-                        /></el-icon>
-                        <strong>{{
-                          sandTable[
-                            (k - 1 + sandTable.length) %
-                            sandTable.length
-                          ].name
-                        }}</strong>
-                      </div>
-                    </el-card>
-                  </el-col>
-                  <el-col :span="8" style="text-align: center">
-                    <el-card
-                      shadow="always"
-                      @click="changeTableName('sand')"
-                      style="
-                        margin-top: 10px;
-                        margin-bottom: 10px;
-                        background-color: lightgrey;
-                      "
-                    >
-                      <div class="text">
-                        <strong>{{ sandTable[k].name }}</strong>
-                      </div>
-                    </el-card>
-                  </el-col>
-                  <el-col :span="8" style="text-align: center">
-                    <el-card
-                      class="video"
-                      shadow="always"
-                      @click="
-                        k = (k + 1) % sandTable.length;
-                        changeTableName('sand');
-                      "
-                      style="margin-top: 30px; margin-bottom: 10px"
-                    >
-                      <div class="text">
-                        <strong>{{
-                          sandTable[(k + 1) % sandTable.length].name
-                        }}</strong>
-                        <el-icon><ArrowRightBold /></el-icon>
-                      </div>
-                    </el-card>
-                  </el-col>
-                </el-row>
-                <el-row>
-                  <div style="width: 100%; height: 80%">
-                    <!-- <RateAndDirection
-                    :getVeloName="getVeloName"
+                <div style="width: 100%; height: 80%">
+                  <TideStatistics
+                    :getName="getName"
                     :key="new Date().getTime()"
-                    >
-                  </RateAndDirection> -->
-                    <SandContent
-                    :getSandName="getSandName"
-                    :key="new Date().getTime()"
-                    > </SandContent>
-                  </div>
-                </el-row>
-                <el-row>
-<!-------------------------- 分割线 -------------------------------->
-                  <el-divider>
-                    <el-icon><Monitor /></el-icon>
-                  </el-divider>
-                </el-row>
-</div>
-<!-- ---------------------- 流速流向 ------------------------------->
-<div>
-                <el-row :gutter="20" justify="center">
-                  <el-col :span="8" style="text-align: center">
-                    <el-card
-                      class="video"
-                      shadow="always"
-                      @click="
-                        j =
-                          (j - 1 + velocityTable.length) % velocityTable.length;
-                        changeTableName('velocity');
-                      "
-                      style="margin-top: 30px; margin-bottom: 10px"
-                    >
-                      <div class="text">
-                        <el-icon style="margin-top: 5px"
-                          ><ArrowLeftBold
-                        /></el-icon>
-                        <strong>{{
-                          velocityTable[
-                            (j - 1 + velocityTable.length) %
-                              velocityTable.length
-                          ].name
-                        }}</strong>
-                      </div>
-                    </el-card>
-                  </el-col>
-                  <el-col :span="8" style="text-align: center">
-                    <el-card
-                      shadow="always"
-                      @click="changeTableName('velocity')"
-                      style="
-                        margin-top: 10px;
-                        margin-bottom: 10px;
-                        background-color: lightgrey;
-                      "
-                    >
-                      <div class="text">
-                        <strong>{{ velocityTable[j].name }}</strong>
-                      </div>
-                    </el-card>
-                  </el-col>
-                  <el-col :span="8" style="text-align: center">
-                    <el-card
-                      class="video"
-                      shadow="always"
-                      @click="
-                        j = (j + 1) % velocityTable.length;
-                        changeTableName('velocity');
-                      "
-                      style="margin-top: 30px; margin-bottom: 10px"
-                    >
-                      <div class="text">
-                        <strong>{{
-                          velocityTable[(j + 1) % velocityTable.length].name
-                        }}</strong>
-                        <el-icon><ArrowRightBold /></el-icon>
-                      </div>
-                    </el-card>
-                  </el-col>
-                </el-row>
-                <el-row>
-                  <div style="width: 100%; height: 80%">
-                    <!-- <RateAndDirection
-                    :getVeloName="getVeloName"
-                    :key="new Date().getTime()">
-                  </RateAndDirection> -->
-                  <SectionTide>
-                    
-                  </SectionTide>
-                    
-                  </div>
-                </el-row>
-  </div>
-<!-- /////////////////////////////////////////////////////////////////// -->
+                  ></TideStatistics>
+                </div>
               </el-col>
             </el-row>
-
- 
+            <!-- /////////////////////////////////////////////////////////////////// -->
           </div>
         </el-col>
 
@@ -662,11 +490,6 @@
               </el-col>
             </el-row>
             <div class="editor-content-view" v-html="fileInfo?.detail"></div>
-            <!-- <div style="width: 100%; height: 80%">
-                  <RateAndDirection>
-
-                  </RateAndDirection>
-                </div> -->
           </div>
         </el-col>
         <!-- /////////////////////////////////////以下删除//////////////////////////// -->
@@ -915,11 +738,12 @@
             <div class="scene-wrapper" style="width: 440px; height: 440px">
               <div class="content-wrapper" style="width: 440px; height: 440px">
                 <!-- //////////////  新增父组件传入空间范围值Location ///////////-->
-                <location-map
+                <!-- <location-map
                   v-if="true"
                   style="width: 440px; height: 440px"
+                  :location="locations"
                   :key="new Date().getTime()"
-                ></location-map>
+                ></location-map> -->
                 <!--///////////// 新增父组件传入空间范围值Location /////////////-->
               </div>
             </div>
@@ -1030,15 +854,14 @@ import {
   ZipEntryPath,
   QueryHeightByName,
   findFiles,
+  findFilesByDataListId,
+  getFileInfoAndUserInfo,
 } from "@/api/request";
 import "@/assets/css/wangeditor.css";
 import { notice } from "@/utils/notice";
 import DataTable from "../scenePart/dataTable.vue";
 import centerVisualMap from "../scenePart/centerVisualMap.vue";
-import RateAndDirection from "../scenePart/RateAndDirection.vue";
 import TideStatistics from "../resourcePages/components/TideStatistics.vue";
-import SectionTide from "../resourcePages/components/SectionTide.vue";
-import SandContent from "../resourcePages/components/SandContent.vue";
 import LocationMap from "../scenePart/LocationMap.vue";
 import FindMap from "../scenePart/FindMap.vue";
 import chartContainer from "../scenePart/chartContainer.vue";
@@ -1046,7 +869,6 @@ import ChartContainer from "../scenePart/chartContainer.vue";
 import images from "./components/Images.vue";
 import { List } from "echarts";
 import router from "@/router";
-import axios from "axios";
 import { getTagName } from "@wangeditor/core/dist/core/src/utils/dom";
 
 export default defineComponent({
@@ -1061,12 +883,12 @@ export default defineComponent({
     images,
     FindMap,
     TideStatistics,
-    RateAndDirection,
-    SandContent,
-    SectionTide
   },
   props: {
     fileInfo: {
+      type: Object,
+    },
+    fileMeta: {
       type: Object,
     },
   },
@@ -1079,49 +901,40 @@ export default defineComponent({
     const fileInfo = computed(() => {
       return props.fileInfo;
     });
+    const fileMeta = computed(() => {
+      return props.fileMeta;
+    });
 
     const KB = ref("KB");
     const MB = ref("MB");
-    const Yang = ref("长江区域");
     //表格初始值
     const getName = ref("一干河站潮位观测成果表");
-    const getVeloName = ref("fe139257-2ceb-4a37-afb1-ca34f7941d44");
-    const getSandName = ref("f8b40c25-1f69-4539-aa81-88cfa1669d2e")
     const Size = ref("");
     const mapref = ref();
-    const locations = ref<string[]>([]);
-    const creator = ref("");
+    const locations=ref<string[]>([])
+    const creator=ref("")
 
-    const shpCheck = ref(true);
+    const shpCheck =   ref(false);
     const photoCheck = ref(false);
     const tableCheck = ref(false);
-    const rasterCheck = ref(false);
+    const rasterCheck= ref(false);
 
     //记录可用于shp可视化的数组
-    const shpVisualList = ref<any[]>([]);
+    const shpVisualList=ref<string[]>([])
     //记录可用于excel可视化的数组
-    const excelVisualList = ref<string[]>([]);
+    const excelVisualList =ref<string[]>([])
     //记录可用于栅格可视化的数组
-    const rasterVisualList = ref<string[]>([]);
+    const rasterVisualList =ref<string[]>([])
     //记录可用于照片可视化的数组
-    const photoVisualList = ref<string[]>([]);
-
+    const photoVisualList =ref<string[]>([])
+    
     const tableHeight = ref();
     const i = ref(0);
-    const j = ref(0);
-    const k = ref(0)
     const userId = router.currentRoute.value.params.id;
     const location = ref<any[]>([]);
     const similiarLis = ref<any[]>([]);
     const phot = ref<HTMLElement>();
     const photoList = reactive<String[]>([]);
-    const velocityTable = reactive<any>([
-      { name: "福右小潮T800", id: "fe139257-2ceb-4a37-afb1-ca34f7941d44" },
-      { name: "狼山沙东大潮S600", id: "fe8bb325-355c-4752-abd7-faa0bce04e85" },
-      { name: "狼山沙西小潮T2200", id: "febcc7d8-df9b-45ed-9cd1-b56c25407fe7" },
-      { name: "狼左小潮T5200", id: "fedeec9e-52e7-479b-bb1f-e1acc84e2c96" },
-      { name: "断面RZ#_S300", id: "fee7ca71-364f-429b-92ed-279af13c818c" },
-    ]);
     const nameTable = reactive([
       "一干河站潮位观测成果表",
       "六滧站潮位观测成果表",
@@ -1141,25 +954,15 @@ export default defineComponent({
       "连兴港站潮位观测成果表",
       "青龙港站潮位观测成果表",
     ]);
-    const sandTable = reactive<any>([
-      { name: "san_sha_SHXY13#D_small", id: "f293035e-e58f-465e-b560-e761bc8e45d1" },
-      { name: "adcp_LSSD1xPHSL", id: "f41f017f-5a52-46b8-a75b-bccb475c7d5c" },
-      { name: "san_sha_TZSXB_big", id: "f4a16146-68ef-45bf-9830-47f591b5cdf4" },
-      { name: "san_sha_FY3#B_mid", id: "f82fb7f0-39a4-448c-9f1a-c060b97e47b5" },
-      { name: "san_sha_BZK10#A_small", id: "f8b40c25-1f69-4539-aa81-88cfa1669d2e" },
-    ])
     //excel可视
-    const changeTableName = (val: string) => {
-      if (val == "tide") {
-        getName.value = nameTable[i.value];
-      } else if (val == "velocity") {
-        getVeloName.value = velocityTable[j.value].id;
-      } else if (val == "sand") {
-        getSandName.value = sandTable[k.value].id;
-      }
+    const changeTableName = () => {
+      getName.value = nameTable[i.value];
     };
     //excel可视
     //单文件下载
+    const downloadFile=(index:number)=>{
+      console.log(fileLis.value[index])
+    }
     //单文件下载
 
     //三个表 分别为下载列表、文件列表、相似列表
@@ -1193,9 +996,8 @@ export default defineComponent({
         (props.fileInfo as any).thumbnail != null
       ) {
         return "http://localhost:8002" + (props.fileInfo as any).thumbnail;
-      } else {
-        return "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png";
       }
+      ("https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png");
     });
     //头像
     const avatarUrl = computed(() => {
@@ -1224,30 +1026,15 @@ export default defineComponent({
     };
     //下载
     const downLoadTotal = ref(0);
-    const downloadOrigin = async (val: number) => {
-      const data = await axios
-        .get(
-          `http://172.21.213.244:8002/file/getDownloadURL/${fileLis.value[val].id}`,
-          {
-            headers: {
-              authorization:
-                "Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw",
-            },
-          }
-        )
-        .then((res) => {
-          console.log("ganma", res.data);
-          return res.data;
-        });
+    const downloadOrigin = async () => {
+      const data = await getDownloadURL((fileInfo.value as any).id);
       if (data != null) {
         if ((data as any).code === 0) {
           window.location.href =
-            "http://172.21.213.244:8002/file/downloadInList/" +
+            "http://localhost:8002/download/downloadShareFile/" +
             store.state.user.id +
             "/" +
-            decrypt(data.data, store.state.user.id) +
-            "/" +
-            fileLis.value[val].id;
+            decrypt(data.data, store.state.user.id);
         } else {
           notice("error", "错误", (data as any).msg);
         }
@@ -1311,148 +1098,86 @@ export default defineComponent({
       } else console.log("nulll");
     });
     onMounted(async () => {
-      creator.value = (
-        router.currentRoute.value.params.fileInfo as any
-      ).creator;
-      tableCheck.value = true;
+
+      creator.value=(router.currentRoute.value.params.fileInfo as any).creator
 
       //获取location空间范围
-      locations.value = (router.currentRoute.value.params.fileInfo as any)
-        .location as string[];
+      locations.value = (router.currentRoute.value.params.fileInfo as any).location as string[];
       //  获取file文件
-      const fileData = await findFiles(
-        router.currentRoute.value.params.id as string
-      );
-      fileLis.value = fileData.data;
+      const fileData= await findFilesByDataListId(router.currentRoute.value.params.id as string)
+      fileLis.value=fileData as any
       //获取file文件的可视化方法
-      for (let i = 0; i < fileLis.value.length; i++) {
-        if (
-          fileLis.value[i].visualId != null &&
-          fileLis.value[i].visualId != undefined &&
-          fileLis.value[i].visualId != ""
-        ) {
-          if (
-            fileLis.value[i].visualType == "pointVectorTile" ||
-            fileLis.value[i].visualType == "lineVectorTile" ||
-            fileLis.value[i].visualType == "polygonVectorTile" ||
-            fileLis.value[i].visualType == "pointVectorTile3D" ||
-            fileLis.value[i].visualType == "lineVectorTile3D" ||
-            fileLis.value[i].visualType == "polygonVectorTile3D"
-          ) {
-            shpVisualList.value.push({
-              id: fileLis.value[i].visualId,
-              type: fileLis.value[i].visualType,
-            });
+    for(let i=0;i<fileLis.value.length;i++){
+    if(fileLis.value[i].visualId!=null &&
+       fileLis.value[i].visualId!=undefined &&
+       fileLis.value[i].visualId!=""){
+        if(fileLis.value[i].visualType=="矢量可视化"){
+            shpVisualList.value.push(fileLis.value[i].visualId)
             shpCheck.value = true;
-          }
-          if (fileLis.value[i].visualType == "tide") {
-            excelVisualList.value.push(fileLis.value[i].visualId);
-            tableCheck.value = true;
-          }
-          if (fileLis.value[i].visualType == "rasterTile") {
-            //rasterVisualList.value.push(fileLis.value[i].visualId);
-            rasterCheck.value = true;
-            shpVisualList.value.push({
-              id: fileLis.value[i].visualId,
-              type: fileLis.value[i].visualType,
-            });
-            shpCheck.value = true;
-            //tableCheck.value = true;
-            console.log(123);
-          }
-          if (fileLis.value[i].visualType == "photo") {
-            photoVisualList.value.push(fileLis.value[i].visualId);
-            photoCheck.value = true;
-          }
-          if (fileLis.value[i].visualType == "png") {
-            //photoVisualList.value.push(fileLis.value[i].visualId);
-            shpVisualList.value.push({
-              id: fileLis.value[i].visualId,
-              type: fileLis.value[i].visualType,
-            });
-            photoCheck.value = true;
-          }
-          if (fileLis.value[i].visualType == "rateDirection") {
-            velocityTable.value.push({
-              id: fileLis.value[i].visualId,
-              filename: String(fileLis.value[i].visualType).substring(0, -5),
-            });
-          }
-          if (fileLis.value[i].visualType == "sandContent") {
-            sandTable.value.push({
-              id: fileLis.value[i].visualId,
-              filename: String(fileLis.value[i].visualType).substring(0, -5),
-            });
-          }
         }
-      }
-      /////////////////////////////照片可视方法////////////////////////////
+        if(fileLis.value[i].visualType=="表格可视化"){
+            excelVisualList.value.push(fileLis.value[i].visualId)
+            tableCheck.value = true;
+        }
+        if(fileLis.value[i].visualType=="栅格可视化"){
+            rasterVisualList.value.push(fileLis.value[i].visualId)
+            rasterCheck.value=true;
+        }
+        if(fileLis.value[i].visualType=="照片可视化"){
+            photoVisualList.value.push(fileLis.value[i].visualId)
+            photoCheck.value=true;
+        }       
+       }
+}
+/////////////////////////////照片可视方法////////////////////////////
       if (photoCheck.value)
         for (let i = 0; i < fileLis.value.length; i++) {
           ///修改
           photoList.push(
-            "http://172.21.213.244:8002/visual/getPhoto/" +
-              fileLis.value[i].visualId
+            "http://localhost:8002/visual/getPhoto/" + fileLis.value[i].fileName
           );
           ///修改
         }
-      /////////////////////////////照片可视方法////////////////////////////
+/////////////////////////////照片可视方法////////////////////////////
 
       //动态生成压缩文件表格高度
       tableHeight.value = fileLis.value.length * 40 + 122;
-      //////////////////similiarist////////////
+//////////////////similiarist////////////
       //根据标签获取相似数据
       const data1 = await getOtherTags(userId as string);
       similiarLis.value = data1.data.list;
-      //////////////////similiarist////////////
-      //////////////////计算压缩文件大小////////
+//////////////////similiarist////////////
+//////////////////计算压缩文件大小////////
       const size = computed((): string => {
         let sum = 0;
         let i = 0;
         for (; i < fileLis.value.length; i++) {
-          if (
-            ((fileLis.value[i].size as String).substring(0, -2) as string) ==
-            "MB"
-          )
-            sum =
-              sum +
-              ((fileLis.value[i].size as String).substring(
-                0,
-                -2
-              ) as any as number) *
-                1024;
-          else
-            sum =
-              sum +
-              ((fileLis.value[i].size as String).substring(
-                0,
-                -2
-              ) as any as number);
+            if((fileLis.value[i].size as String).substring(0,-2) as string == 'MB')
+                sum = sum + ((fileLis.value[i].size as String).substring(0,-2) as any as number)*1024
+            else
+                sum = sum + ((fileLis.value[i].size as String).substring(0,-2) as any as number)
         }
 
         if (sum / 1024 < 1024)
-          return ((sum / 1024).toFixed(2) as string) + KB.value;
-        else return ((sum / 1048576).toFixed(2) as string) + MB.value;
+            return ((sum / 1024).toFixed(2) as string) + KB.value;
+            else return ((sum / 1048576).toFixed(2) as string) + MB.value;
       });
       Size.value = size.value;
-      //////////////////计算压缩文件大小////////
+//////////////////计算压缩文件大小////////
     });
 
     return {
       fileInfo,
+      fileMeta,
       phot,
       i,
-      j,
-      k,
-      Yang,
       photoList,
       nameTable,
-      velocityTable,
       date,
       tableCheck,
       avatar,
       downloadOrigin,
-      getSandName,
+      downloadFile,
       locations,
       avatarUrl,
       thumbnail,
@@ -1471,13 +1196,7 @@ export default defineComponent({
       shpCheck,
       photoCheck,
       getName,
-      getVeloName,
       changeTableName,
-      shpVisualList,
-      excelVisualList,
-      photoVisualList,
-      rasterVisualList,
-      sandTable,
     };
   },
 });

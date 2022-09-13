@@ -52,12 +52,13 @@ export default defineComponent({
         addWatchCount(router.currentRoute.value.params.id as string);
       }
       // const data = await getFileInfoAndMetaAndUserInfo(router.currentRoute.value.params.id as string)
-       //fileInfo.value = router.currentRoute.value.params.fileInfo
+      // fileInfo.value = data.data.fileInfo
       // fileMeta.value = data.data.fileMeta
     });
 
     return {
       fileInfo,
+
       active,
       activeClick,
     };

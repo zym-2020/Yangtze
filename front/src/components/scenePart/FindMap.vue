@@ -40,6 +40,7 @@ export default defineComponent({
       const updateArea = function (e: any) {
         if (e.type === "draw.create") {
           //图形绘制完成
+          //console.log(e.features[0].geometry.coordinates[0])
           emit("getCoor", e.features[0].geometry.coordinates[0]);
         } else if (e.type === "draw.update") {
           //修改绘制图形后

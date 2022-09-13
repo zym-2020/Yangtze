@@ -1,6 +1,8 @@
 import { RouteLocationNormalized } from 'vue-router'
 import { getFileInfoAndMeta, getFileMetaAndUserInfo, getProjectInfo, getFileInfoAndMetaAndUserInfo } from '@/api/request'
 import { useStore } from '@/store'
+import { reduce } from 'lodash'
+import axios from "axios"
 
 
 const store = useStore()
@@ -8,11 +10,15 @@ const store = useStore()
 export async function toIdPages(to: RouteLocationNormalized) {
     if (to.name === 'updateShare') {
         if (to.params.id != '' && to.params.id != null && to.params.id != undefined) {
-            const data = await getFileInfoAndMeta(to.params.id as string)
+            const id=to.params.id
+            const data = await axios.get(`http://172.21.213.244:8002/dataList/getFileInfoAndUserInfo/${id}`,
+            {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+                console.log("updateShare",res.data)
+            return res.data
+            })
             if (data != null) {
                 if ((data as any).code === 0) {
-                    to.params.fileInfo = data.data.fileInfo
-                    to.params.fileMeta = data.data.fileMeta
+                    to.params.fileInfo = data.data
                     return 1
                 } else {
                     return -1
@@ -26,12 +32,16 @@ export async function toIdPages(to: RouteLocationNormalized) {
 
     } else if (to.name === 'shareFile') {
         if (to.params.id != '' && to.params.id != null && to.params.id != undefined) {
-            const data = await getFileInfoAndMetaAndUserInfo(to.params.id as string)
+            const id=to.params.id
+            const data = await axios.get(`http://172.21.213.244:8002/dataList/getFileInfoAndUserInfo/${id}`,
+            {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+                console.log("detail",res.data)
+            return res.data
+            })
             if (data != null) {
                 if ((data as any).code === 0) {
-                    if (data.data.fileInfo.status === 1 || (data.data.fileInfo.status === -1 && store.state.user.email === data.data.fileInfo.creator)) {
-                        to.params.fileInfo = data.data.fileInfo
-                        to.params.fileMeta = data.data.fileMeta
+                    if (store.state.user.email === data.data.creator) {
+                        to.params.fileInfo = data.data
                         return 1
                     } else {
                         return -1

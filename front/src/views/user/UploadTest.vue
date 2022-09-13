@@ -26,13 +26,14 @@
             :rows="3"
           />
         </el-form-item>
-        <el-form-item label="标签：" prop="tagList">
+        <el-form-item label="标签：" prop="tagList" >
           <el-select
             v-model="form.tagList"
             multiple
             placeholder="标签"
+            
             size="large"
-            style="width: 300px"
+            style="width:300px"
           >
             <el-option-group
               v-for="(group, groupIndex) in options"
@@ -49,33 +50,35 @@
           </el-select>
         </el-form-item>
         <!-- ///////////需要再设计，更改 ///////////-->
-        <!-- <el-form-item label="原始数据：" prop="origin">
+        <el-form-item label="原始数据：" prop="origin">
           <el-button type="primary" plain @click="openFolder('origin')">
             添加<el-icon class="el-icon--right"><Upload /></el-icon>
           </el-button>
-          <div v-for="(item, index) in fileInDataList" :key="index">
-            <el-tag
-              closable
-              v-if="
-                item.name != '' && item.name != undefined && item.name != null
-              "
-              size="large"
-              class="tag"
-              type="success"
-              @close="tagClose(index)"
-            >
-              {{ item.name }}
-            </el-tag>
-          </div>
-        </el-form-item> -->
-
+          <el-tag
+            closable
+            v-if="
+              form.name != '' &&
+              form.name != undefined &&
+              form.name != null
+            "
+            size="large"
+            class="tag"
+            type="success"
+            @close="tagClose('origin')"
+          >
+            {{ form.name }}
+          </el-tag>
+        </el-form-item>
+        <el-form-item label="空间范围">
+          <FindMap></FindMap>
+        </el-form-item>
         <el-form-item label="条目封面：">
           <avatar-upload @upload="upload"></avatar-upload>
         </el-form-item>
 
         <el-form-item label="条目缩略图：">
           <!-- <avatar-upload @upload="uploadTh"></avatar-upload> -->
-          <thumb-upload @uploadTh="uploadTh"></thumb-upload>
+          <thumb-upload  @uploadTh="uploadTh"></thumb-upload>
         </el-form-item>
       </el-form>
       <el-divider />
@@ -132,12 +135,9 @@
       </el-form>
     </div>
     <div class="btn">
-      <el-button type="success" plain @click="commit(fileRef, metaRef)"
+      <el-button type="success" plain @click="commit(fileRef , metaRef)"
         >提交</el-button
       >
-    </div>
-    <div>
-      <FindMap @getCoor="getCoor"></FindMap>
     </div>
 
     <el-dialog v-model="folderFlag" width="700px" :show-close="false">
@@ -164,27 +164,21 @@ import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
 import { IDomEditor } from "@wangeditor/editor";
 import PageHeader from "@/components/page/PageHeader.vue";
 import ResourceDialog from "@/components/dialog/ResourceDialog.vue";
-import { addMessage, examineById, getShareFileById,addRelational } from "@/api/request";
+import {
+  addMessage,
+  examineById,
+  getShareFileById,
+} from "@/api/request";
 import { notice } from "@/utils/notice";
 import type { FormInstance } from "element-plus";
 import AvatarUpload from "@/components/upload/AvatarUpload.vue";
 import ThumbUpload from "@/components/upload/ThumbUpload.vue";
-import FindMap from "@/components/scenePart/FindMap.vue";
+import FindMap from "@/components/resourcePages/scenePart/FindMap.vue";
 import router from "@/router";
 import axios from "axios";
 import { useStore } from "@/store";
-import { uuid } from '@/utils/common';
 export default defineComponent({
-  components: {
-    PageHeader,
-    Editor,
-    Toolbar,
-    ResourceDialog,
-    AvatarUpload,
-    ThumbUpload,
-    FindMap,
-   
-  },
+  components: { PageHeader, Editor, Toolbar, ResourceDialog, AvatarUpload, ThumbUpload, FindMap, FindMap },
   setup() {
     const store = useStore();
     const defaultProps = {
@@ -195,31 +189,17 @@ export default defineComponent({
     const resourceType = ref("");
     const editorRef = shallowRef<IDomEditor>();
     const toolbarConfig = {};
-    const uid= uuid()
     const fileList = ref<any[]>([]);
     const tempCache = ref<any[]>([]);
     const editorConfig = {
       scroll: true,
       autoFocus: true,
     };
-    const fileInDataList = ref<any[]>([]);
-    const fileRef = ref<HTMLElement | undefined>();
-    const metaRef = ref<HTMLElement | undefined>();
+
+    const fileRef = ref<HTMLElement>();
+    const metaRef = ref<HTMLElement>();
     const avatarFlag = ref(false);
-    const thumbFlag = ref(false);
-    const dataListCoor = ref<any[]>([]);
-
-    const getCoor = (val: any[]) => {
-      console.log(val);
-      const dataTemp=[]
-
-      dataListCoor.value = val;
-      for(let i=0;i<dataListCoor.value.length;i++){
-        dataTemp.push(String(dataListCoor.value[i][0] as any) )
-        dataTemp.push(String(dataListCoor.value[i][1] as any) )
-      }
-      (form as any).location =dataTemp;
-    };
+    const thumbFlag =ref(false);
 
     const handleCreated = (editor: any) => {
       editorRef.value = editor; // 记录 editor 实例，重要！
@@ -230,21 +210,21 @@ export default defineComponent({
       folderFlag.value = true;
     };
 
-    ////////////////////////////////////////需要再设计
+////////////////////////////////////////需要再设计
     const selectedFile = (val: any) => {
       folderFlag.value = false;
-      fileInDataList.value.push({
-        name: val.file.name,
-        address: val.file.address,
-        id : val.file.id
-      });
-    };
+          form.name = val.file.name;
+          form.provider_address = val.file.address;
 
-    const tagClose = (val: number) => {
-      fileInDataList.value.splice(val);
-    };
+      }
 
-    //////////////////////////////////////
+
+    const tagClose = (type: string) => {
+          form.name = "";
+          
+      }
+    
+//////////////////////////////////////
     const upload = (val: any) => {
       avatarFlag.value = true;
       form.avatar = val;
@@ -255,19 +235,18 @@ export default defineComponent({
       form.thumbnail = val;
     };
 
-    const commit  = async (
+    const commit = async (
       formEl1: FormInstance | undefined,
       formEl2: FormInstance | undefined
-    )  => {
+    ) => {
       if (!formEl1 || !formEl2) return;
-      await formEl1.validate(async (valid1, fields) => {
+      await formEl1.validate(async (valid1) => {
         await formEl2.validate(async (valid2) => {
           if (valid1 && valid2) {
             const jsonData = {
               fileInfo: {
-                id :uid,
                 name: form.name,
-                location: form.location,
+                loaction : form.location,
                 description: form.description,
                 tags: form.tagList,
                 provider: form.provider,
@@ -278,62 +257,40 @@ export default defineComponent({
                 providerPhone: form.provider_phone,
                 providerEmail: form.provider_email,
                 providerAddress: form.provider_address,
-                getOnline: form.getMode === "在线获取" ? true : false,
-                detail:form.detail
+                getOnline: form.getMode === "在线获取" ? true : false, 
                 
               },
             };
             const formData = new FormData();
-            formData.append("jsonString", JSON.stringify(jsonData.fileInfo));
+            formData.append("jsonString", JSON.stringify(jsonData));
             if (avatarFlag.value) {
-              formData.append("avatar", form.avatar);
+              formData.append("file", form.avatar);
             } else {
-              formData.append("avatar", new Blob());
-            }
+              formData.append("file", new Blob());
+            };
             if (thumbFlag.value) {
-              formData.append("thumbnail", form.thumbnail);
+              formData.append("file2", form.thumbnail);
             } else {
-              formData.append("thumbnail", new Blob());
+              formData.append("file2", new Blob());
             }
-            const fileIdList=[]
-            for(let i=0;i<fileInDataList.value.length;i++){
-              fileIdList.push(fileInDataList.value[i].id)
-            }
-            console.log(fileIdList,"filefile")
 
-            const data = await axios
-              .post(
-                "http://172.21.213.244:8002/dataList/addDataList",
-                formData,
-                {
-                  headers: {
-                    authorization:
-                      "Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw",
-                  },
-                }
-              )
-              .then((res) => {
-                console.log("hhh",res.data)
-                return res.data;
-              });
-                  const RelationalData={
-                  dataListId: uid,
-                  fileIdList : fileIdList
-                }
-              //const data2=await addRelational(RelationalData)
-            if (data != null ) {
-              if ((data as any).code === 0 ) {
-
+             const data =await axios.post("http://172.21.213.244:8002/dataList/fuzzyQuery", formData,
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).
+    then((res) => {
+         return res.data
+    })
+            if (data != null) {
+              if ((data as any).code === 0) {
                 notice("success", "成功", "请等待管理员审核通过！");
-
+                
                 // const fileID = data.data.list;
                 // const dataCacheById = await getShareFileById(fileID);
-
+               
                 // tempCache.value = dataCacheById.data.list;
                 // const jsonDataById = computed(() => {
                 //   return JSON.stringify(tempCache.value as any);
-                // });
-
+                // }); 
+                          
                 // const tempData = await addMessage({
                 //   id: "",
                 //   dataName: form.name,
@@ -364,12 +321,11 @@ export default defineComponent({
     const init = () => {
       form.name = "";
       form.description = "";
-      form.location = [] as any;
-      form.tagList = [] as any;
+      form.location =[];
+      form.tagList = [];
       form.time = "";
       form.range = "";
       form.detail = "";
-      form.provider="南京市水利科学研究院"
       form.type = "";
       form.provider_phone = "";
       form.provider_email = "";
@@ -377,8 +333,7 @@ export default defineComponent({
       form.getMode = "";
     };
 
-    const options = ref([
-      {
+    const options = ref([     {
         title: "一级分类（必选）",
         data: [
           {
@@ -419,85 +374,84 @@ export default defineComponent({
           },
         ],
       },
-      {
+        {
         title: "基础地形数据",
         data: [
           {
             name: "栅格TXT文件",
             count: false,
           },
-          {
+                    {
             name: "栅格ASC文件",
             count: false,
           },
-        ],
-      },
-      {
+        ]
+        },
+                {
         title: "基础水文数据",
         data: [
           {
             name: "潮位数据",
             count: false,
           },
-          {
+                    {
             name: "流速流向数据",
             count: false,
           },
-          {
+                              {
             name: "含沙量数据",
             count: false,
           },
-          {
+                              {
             name: "流量数据",
             count: false,
           },
-          {
+                                        {
             name: "输沙率数据",
             count: false,
           },
           {
             name: "悬移质数据",
             count: false,
-          },
-          {
+          },          {
             name: "冲淤数据",
             count: false,
           },
-          {
+                    {
             name: "深泓线数据",
             count: false,
           },
-          {
+                    {
             name: "沙滩数据",
             count: false,
           },
-          {
+                    {
             name: "床沙数据",
             count: false,
           },
-          {
+              {
             name: "含盐度数据",
             count: false,
           },
-          {
+                        {
             name: "风速风向数据",
             count: false,
           },
-          {
+                                  {
             name: "报告文字数据",
             count: false,
           },
-          {
+                                            {
             name: "水文测验布置",
             count: false,
           },
-        ],
-      },
+        ]
+        },
 
       {
         title: "基础工程数据",
         data: [
-          {
+                    {
             name: "DWG工程文件",
             count: false,
           },
@@ -505,34 +459,33 @@ export default defineComponent({
             name: "码头工程",
             count: false,
           },
-          {
+                    {
             name: "桥梁工程",
             count: false,
           },
-          {
+                              {
             name: "规划未实施工程",
             count: false,
           },
-          {
+                              {
             name: "水利工程",
             count: false,
-          },
+          },   
           {
             name: "护岸工程",
             count: false,
-          },
-          {
+          },      
+                    {
             name: "航道整治工程",
             count: false,
-          },
-          {
-            name: "实施工程",
+          },    
+                              {
+            name: "水利工程",
             count: false,
-          },
-          {
+          },                        {
             name: "航标",
             count: false,
-          },
+          },  
         ],
       },
       {
@@ -546,23 +499,22 @@ export default defineComponent({
             name: "等高线",
             count: false,
           },
-          {
+                    {
             name: "等深线",
             count: false,
           },
-          {
+                    {
             name: "高程点",
             count: false,
           },
-          {
+                    {
             name: "边界",
             count: false,
           },
-          {
+                    {
             name: "TIN",
             count: false,
-          },
-          {
+          },          {
             name: "DEM",
             count: false,
           },
@@ -580,7 +532,7 @@ export default defineComponent({
       {
         title: "整合工程数据",
         data: [
-          {
+                   {
             name: "DWG工程文件",
             count: false,
           },
@@ -588,37 +540,36 @@ export default defineComponent({
             name: "码头工程",
             count: false,
           },
-          {
+                    {
             name: "桥梁工程",
             count: false,
           },
-          {
+                              {
             name: "规划未实施工程",
             count: false,
           },
-          {
+                              {
             name: "水利工程",
             count: false,
-          },
+          },   
           {
             name: "护岸工程",
             count: false,
-          },
-          {
+          },      
+                    {
             name: "航道整治工程",
             count: false,
-          },
-          {
+          },    
+                              {
             name: "水利工程",
             count: false,
-          },
-          {
+          },                        {
             name: "航标",
             count: false,
-          },
+          },  
         ],
       },
-      {
+            {
         title: "数模案例库",
         data: [
           {
@@ -627,26 +578,27 @@ export default defineComponent({
           },
         ],
       },
-      {
+                  {
         title: "物模案例库",
         data: [
           {
             name: "流速",
             count: false,
           },
-          {
+                    {
             name: "泥沙",
             count: false,
           },
-          {
+                    {
             name: "水位",
             count: false,
           },
           {
-            name: "潮汐",
-            conut: false,
+            name:"潮汐",
+            conut:false
+
           },
-          {
+                              {
             name: "视频",
             count: false,
           },
@@ -655,8 +607,8 @@ export default defineComponent({
             count: false,
           },
         ],
-      },
-      {
+      },     
+       {
         title: "影像资料库",
         data: [
           {
@@ -665,59 +617,57 @@ export default defineComponent({
           },
         ],
       },
-      {
+             {
         title: "辅助资料库",
         data: [
           {
             name: "地名数据",
             count: false,
-          },
-          {
+          },          {
             name: "固定断面线",
             count: false,
-          },
-          {
+          },          {
             name: "制导线",
             count: false,
           },
         ],
-      },
-      {
+      },             {
         title: "元数据",
         data: [
           {
             name: "Pdf",
             count: false,
-          },
-          {
+          },          {
             name: "Word",
             count: false,
-          },
-          {
+          },          {
             name: "PPT",
             count: false,
           },
         ],
       },
+     
     ]);
 
     const form = reactive({
       name: "",
       description: "",
       tagList: [],
-      location: [],
+      location :[],
       avatar: "",
-      thumbnail: "",
-      provider: "南京市水利科学研究院",
+      thumbnail : "",
+      provider: "",
       time: "",
       range: "",
-      detail: "",
+      detail:"",
       type: "",
       provider_phone: "",
       provider_email: "",
       provider_address: "",
       getMode: "",
     });
+
+
 
     const validateOrigin = (rule: any, value: any, callback: any) => {
       if (value.name === "" || value.address === "") {
@@ -769,12 +719,9 @@ export default defineComponent({
       options,
       editorRef,
       toolbarConfig,
-      dataListCoor,
-      getCoor,
       editorConfig,
       handleCreated,
       commit,
-      fileInDataList,
       folderFlag,
       selectedFile,
       tagClose,
@@ -809,13 +756,6 @@ export default defineComponent({
       /deep/ .el-popper {
         z-index: 99;
       }
-    }
-  }
-  :deep(.scene-map-wrapper2) {
-    #map {
-      position: absolute;
-      top: 1700px;
-      margin-left: 550px;
     }
   }
   .btn {

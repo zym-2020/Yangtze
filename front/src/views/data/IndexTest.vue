@@ -168,6 +168,7 @@ import FindMap from "@/components/scenePart/FindMap.vue";
 import {dateFormat } from "@/utils/common";
 import axios from "axios";
 import {
+  fuzzyQueryNew,
   fuzzyQueryClassify,
   getShpByCoordinates,
 } from "@/api/request";
@@ -296,11 +297,7 @@ const onAddItem = (val:any) => {
       searchMap.value = !searchMap.value;
       if (searchMap.value == false) {
         jsonData.keyword="download"
-        const data = await axios.post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonData,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).
-    then((res) => {
-         return res.data
-    });
+        const data = await fuzzyQueryNew(jsonData);
         skeletonFlag.value = true;
         if (data != null) {
           if ((data as any).code === 0) {
@@ -354,11 +351,7 @@ const onAddItem = (val:any) => {
           jsonData.flag = false;
           break;
       }
-        const data = await axios.post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonData,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).
-    then((res) => {
-         return res.data
-    });
+        const data = await fuzzyQueryNew(jsonData);
         if (data != null) {
           if ((data as any).code === 0) {
             fileList.value =(data as any).data.list;
@@ -393,11 +386,7 @@ const onAddItem = (val:any) => {
           break;
       }
       jsonData.page=currentPage.value - 1
-        const data = await axios.post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonData,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).
-    then((res) => {
-         return res.data
-    });
+        const data = await fuzzyQueryNew(jsonData);
         if (data != null) {
           if ((data as any).code === 0) {
             fileList.value = (data as any).data.list;
@@ -437,11 +426,7 @@ const onAddItem = (val:any) => {
           break;
       }
       jsonData.page=currentPage.value - 1
-        const data = await axios.post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonData,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).
-    then((res) => {
-         return res.data
-    });
+        const data = await fuzzyQueryNew(jsonData);
         if (data != null) {
           if ((data as any).code === 0) {
             fileList.value = (data as any).data.list;
@@ -454,22 +439,21 @@ const onAddItem = (val:any) => {
     };
 
     onMounted(async () => {
-      //console.log("ff"+jsonData)
-      let jsonDatass = {
+      console.log("ff"+jsonData)
+      let jsonDatas = {
       page : 0,
-      size : 100,
+      size : 10,
       keyword: "",
       tags: [],
       property:"id",
       flag: false,
        };
-       const data =await axios.post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonDatass,
-       {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).
+       const data =await axios.post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonData,
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).
     then((res) => {
-      console.log("tt",res.data)
          return res.data
     })
-      
+       console.log("gg",data.data.list)
       skeletonFlag.value = true;
       if (data != null) {
         if ((data as any).code === 0) {
