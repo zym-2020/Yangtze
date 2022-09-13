@@ -140,6 +140,17 @@ public class VisualController {
         return ResultUtils.success(visualService.getSalinity(visualId));
     }
 
+    /**
+    * @Description:悬移质suspension类型excel数据可视化
+    * @Author: Yiming
+    * @Date: 2022/9/9
+    */
+
+    @RequestMapping(value = "/getSuspension/{visualId}", method = RequestMethod.GET)
+    public JsonResult getSuspension(@PathVariable String visualId) {
+        return ResultUtils.success(visualService.getSuspension(visualId));
+    }
+
 
 
 

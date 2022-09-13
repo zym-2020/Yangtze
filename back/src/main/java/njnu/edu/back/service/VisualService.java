@@ -36,6 +36,8 @@ public interface VisualService {
 
     JSONObject getSalinity(String visualId);
 
+    JSONObject getSuspension(String visualId);
+
     void addVisualFile(VisualFile visualFile);
 
     void addSameNameVisualFile(String type, String address);

@@ -253,6 +253,11 @@ public class VisualServiceImpl implements VisualService {
     }
 
     @Override
+    public JSONObject getSuspension(String visualId) {
+        return readJson(visualId);
+    }
+
+    @Override
     public void addVisualFile(VisualFile visualFile) {
         visualFileMapper.addVisualFile(visualFile);
     }
