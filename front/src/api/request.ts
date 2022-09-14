@@ -1,7 +1,7 @@
 import { get, post, del, patch } from './axios'
 import {
     RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, AddFileJsonData, RenameJsonData, UnPackJsonData, UpdateParentIdAndLevelJsonData, CompressFileJsonData, GetFlushIdJsonData, ComputeContourJsonData,
-    SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData, GetNoUploadJsonData, AddRecordJsonData, AddMessageJsonData, DeleteFilesOrFolders, GetProjectsJsonData, Layer, SectionJsonData, SectionContrastJsonData 
+    SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData, GetNoUploadJsonData, AddRecordJsonData, AddMessageJsonData, DeleteFilesOrFolders, GetProjectsJsonData, Layer, SectionJsonData, SectionContrastJsonData
 } from './type/userType'
 import { Resource, Analyse } from '@/store/resourse/resourceState'
 
@@ -274,10 +274,7 @@ export async function getDownloadURLTemp(id: string) {
     return await get(`/download/getDownloadURL/${id}`)
 }
 
-//========================downloadHistory相关接口=================================
-export async function pageQueryDownloadHistory(size: number, page: number, id: string) {
-    return await get(`/downloadHistory/pageQuery/${id}/${size}/${page}`)
-}
+
 
 //========================browseHistory相关接口=================================
 export async function getDataGroup(dataId: string, number: number) {
@@ -302,7 +299,7 @@ export async function pageQuerys(property: string, flag: boolean, page: number, 
 }
 
 export async function QueryByType(property: string) {
-    return await get(`/admin/message/QueryByType/${property}`,{responseType:'arraybuffer'})
+    return await get(`/admin/message/QueryByType/${property}`, { responseType: 'arraybuffer' })
 }
 
 export async function QueryByUser(property: string, type: string) {
@@ -326,15 +323,15 @@ export async function QueryByUserEmail() {
     return await get(`/admin/message/QueryByUserEmail`)
 }
 
-export async function QueryByUserType(property:string) {
+export async function QueryByUserType(property: string) {
     return await get(`/admin/message/QueryByUserType/${property}`)
 }
 
-export async function offlineMessage(property:string,dataUploadTime:string) {
+export async function offlineMessage(property: string, dataUploadTime: string) {
     return await get(`/admin/message/offlineMessage/${property}/${dataUploadTime}`)
 }
 
-export async function offlineUserMessage(property:string,dataUploadTime:string) {
+export async function offlineUserMessage(property: string, dataUploadTime: string) {
     return await get(`/admin/message/offlineUserMessage/${property}/${dataUploadTime}`)
 }
 
@@ -346,11 +343,11 @@ export async function QueryAllHistoryMessage() {
     return await get(`/admin/message/QueryAllHistoryMessage`)
 }
 
-export async function showMessageDetails(property:string) {
+export async function showMessageDetails(property: string) {
     return await get(`/admin/message/showMessageDetails/${property}`)
 }
 
-export async function responseMessage(response:string,id:string) {
+export async function responseMessage(response: string, id: string) {
     return await get(`/admin/message/responseMessage/${response}/${id}`)
 }
 
@@ -362,7 +359,7 @@ export async function CountUserReply() {
     return await get(`/admin/message/CountUserReply`)
 }
 
-export async function ZipEntryPath(path:string){
+export async function ZipEntryPath(path: string) {
     return await get(`/admin/message/ZipEntryPath/${path}`)
 }
 
@@ -385,8 +382,8 @@ export async function getAreaShip(key: string, scode: string, xy: string) {
 }
 
 export async function QueryCode() {
-    axios.get("http://localhost:8002/ship/QueryCode", { responseType: 'arraybuffer'}).then((res) => {
-        
+    axios.get("http://localhost:8002/ship/QueryCode", { responseType: 'arraybuffer' }).then((res) => {
+
         const dataView = new DataView(res.data)
         // console.log("223",res.data)
         // console.log("123", dataView.byteLength, dataView.getInt32(4))
@@ -396,258 +393,107 @@ export async function QueryCode() {
 }
 //========================JsonRecord相关接口=================================
 
-export async function QueryShpByName(name:string){
+export async function QueryShpByName(name: string) {
     return await get(`/jsonRecord/QueryByName/${name}`)
 
 }
 
 
-export async function QueryShpByNewName(name:string){
+export async function QueryShpByNewName(name: string) {
     return await get(`/jsonRecord/QueryByNewName/${name}`)
 
 }
 
 //========================ShpCoordinates相关接口=================================
 
-export async function QueryCoordinatesByName(name:string){
+export async function QueryCoordinatesByName(name: string) {
     return await get(`/share/QueryCoordinatesByName/${name}`)
 
 }
 
 //========================TideStation相关接口=================================
 
-export async function QueryHeightByName(name:string){
+export async function QueryHeightByName(name: string) {
     return await get(`/share/QueryHeightByName/${name}`)
 
 }
 
+//========================DataRelational相关接口=================================
+export async function addRelational(jsonData: { dataListId: string, fileIdList: string[] }) {
+    return await post(`/relational/addRelational`, jsonData)
+}
+
+
 //========================DataList相关接口=================================
 
-export async function pagequery(dataListId:string,size:number,page:number){
-    return await axios.get(`http://172.21.213.244:8002/downloadHistory/pageQuery/${dataListId}/${size}/${page}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
-        return res.data
-    })
-
-}
-
-
-
-export async function findFiles(dataListId:string){
-    return await axios.get(`http://172.21.213.244:8002/dataList/findFiles/${dataListId}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
-        console.log("wenjian",res.data)
-        return res.data
-    })
-
+export async function findFiles(dataListId: string) {
+    return await get(`/dataList/findFiles/${dataListId}`)
 }
 //浏览量增加
-export async function addWatchCount(id:string){
-    return await axios.patch(`http://172.21.213.244:8002/dataList/addWatchCount/${id}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
-        console.log("wenjian",res.data)
-        return res.data
-    })
-
+export async function addWatchCount(id: string) {
+    return await patch(`/dataList/addWatchCount/${id}`)
 }
 
 
-
-export async function updateStatusById(id:string,status:number){
-    return await axios.patch(`http://172.21.213.244:8002/dataList/updateStatusById/${id}/${status}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
-        console.log("update",res.data)
-        return res.data
-    })
-
-}
-//========================admin接口========
-export async function deleteByAdmin(formData:JsonObject){
-    return await axios.delete(`http://172.21.213.244:8002/dataList/deleteByAdmin/`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
-        console.log("delete",res.data)
-        return res.data
-    })
-
+export async function updateStatusById(id: string, status: number) {
+    return await patch(`/dataList/updateStatusById/${id}/${status}`)
 }
 
-
-export async function deleteAsMember(formData:JsonObject){
-    return await axios.post(`http://172.21.213.244:8002/dataList/deleteAsMember/`,formData,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
-        console.log("wenjian",res.data)
-        return res.data
-    })
-
+export async function deleteAsMember(jsonData: { id: string, size: number, page: number }) {
+    return await del(`/dataList/deleteAsMember`, jsonData)
 }
 
-export async function fuzzyQueryAdmin(formData:JsonObject){
-    return await axios.post(`http://172.21.213.244:8002/dataList/fuzzyQueryAdmin/`,formData,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
-        return res.data
-    })
-
+export async function deleteByAdmin(jsonData: { page: number, size: number, keyword: string, tags: string[], property: string, flag: boolean, status: number, id: string }) {
+    return await del(`/dataList/deleteByAdmin`, jsonData)
 }
 
-//========================DataRelational相关接口=================================
-export async function addRelational(formData:any){
-    return await axios.post(`http://172.21.213.244:8002/relational/addRelational/`,formData,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
-        console.log("接口",res.data)
-        return res.data
-    })
+export async function fuzzyQueryDataList(jsonData: { page: number, size: number, keyword: string, tags: string[], property: string, flag: boolean }) {
+    return await post(`/dataList/fuzzyQuery`, jsonData)
+}
 
+export async function getFileInfoAndUserInfo(id: string) {
+    return await get(`/dataList/getFileInfoAndUserInfo/${id}`)
 }
 
 //============================Visual相关接口====================================
 //获取用户头像，项目头像，缩略图等
-export async function getAvatar(filename:string){
-    return await axios.get(`http://172.21.213.244:8002/visual/getAvatar/${filename}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
-        console.log(res.data)
-        return res.data
-    })
-
+export async function getAvatar(filename: string) {
+    return await get(`/visual/getAvatar/${filename}`)
 }
 
-//已切片栅格可视化
-export async function getRaster(visualId:string){
-    return await axios.get(`http://172.21.213.244:8002/visual/getAvatar/${visualId}/{x}/{y}/{z}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
-        console.log(res.data)
-        return res.data
-    })
-
-}
-
-//pg入库的矢量文件可视化
-export async function getVectorTiles(visualId:string){
-    return await axios.get(`http://172.21.213.244:8002/visual/getVectorTiles/${visualId}/{x}/{y}/{z}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
-        console.log(res.data)
-        return res.data
-    })
-
-}
 
 //获取图片
-export async function getPhoto(fileId:string){
-    return await axios.get(`http://172.21.213.244:8002/visual/getPhoto/${fileId}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
-        console.log("图片",res.data)
-        return res.data
-    })
-
+export async function getPhoto(fileId: string) {
+    return await get(`/visual/getPhoto/${fileId}`)
 }
 
 //地图png可视化，包括两部分，获取坐标、获取png资源
-export async function getCoordinates(visualId:string){
-    return await axios.get(`http://172.21.213.244:8002/visual/getCoordinates/${visualId}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
-        console.log(res.data)
-        return res.data
-    })
-
+export async function getCoordinates(visualId: string) {
+    return await get(`/visual/getCoordinates/${visualId}`)
 }
 
-export async function getPngResource(visualId:string){
-    return await axios.get(`http://172.21.213.244:8002/visual/getPngResource/${visualId}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
-        console.log(res.data)
-        return res.data
-    })
-
+export async function getPngResource(visualId: string) {
+    return await get(`/visual/getPngResource/${visualId}`)
 }
 
-//方便离线插入数据
-export async function addVisualFile(visualFile:JsonObject){
-    return await axios.post(`http://172.21.213.244:8002/visual/addVisualFile/`,visualFile,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
-        console.log(res.data)
-        return res.data
-    })
 
+export async function getRateDirection(id: string) {
+    return await get(`/visual/getRateDirection/${id}`)
 }
 
-export async function getRateDirection(id:string){
-    return await axios.get(`http://172.21.213.244:8002/visual/getRateDirection/${id}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
-        console.log(res.data)
-        return res.data
-    })
-
-}
-
-export async function getSandContent(id:string){
-    return await axios.get(`http://172.21.213.244:8002/visual/getSandContent/${id}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
-        console.log(res.data)
-        return res.data
-    })
-
+export async function getSandContent(id: string) {
+    return await get(`/visual/getSandContent/${id}`)
 }
 
 
 //============================NewFile相关接口====================================
-//上传文件
-export async function uploadFile(formData:JsonObject){
-    return await axios.post(`http://172.21.213.244:8002/file/uploadFile/`,formData,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
-        console.log(res.data)
-        return res.data
-    })
-
-}
-
-//合并文件
-/////////////
-export async function mergeFileTemp(formData:JsonObject){
-    return await axios.post(`http://172.21.213.244:8002/file/mergeFile/`,formData,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
-        console.log(res.data)
-        return res.data
-    })
-}
-
-//
-export async function checkMergeState(key:string){
-    return await axios.get(`http://172.21.213.244:8002/file/checkMergeState/${key}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
-        console.log(res.data)
-        return res.data
-    })
-}
-
-//重命名文件
-export async function rename(jsonData:JsonObject){
-    return await axios.patch(`http://172.21.213.244:8002/file/rename`,jsonData,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
-        console.log(res.data)
-        return res.data
-    })
-}
 
 //获取下载的url
-export async function getDownloadURL(id:string){
-    return await axios.get(`http://172.21.213.244:8002/file/getDownloadURL/{id}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
-        console.log(res.data)
-        return res.data
-    })
+export async function getDownloadURL(id: string) {
+    return await get(`/file/getDownloadURL/${id}`)
 }
-//加密下载，下载条目下的文件
-export async function downLoadInList(userId:string,id:string,dataListId:string){
-    return await axios.get(`http://172.21.213.244:8002/file/downLoadInList/${userId}/${id}/${dataListId}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
-        console.log(res.data)
-        return res.data
-    })
-}
-//单文件下载
-export async function downloadLocalFile(userId:string,id:string){
-    return await axios.get(`http://172.21.213.244:8002/file/downloadLocalFile/${userId}/${id}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
-        console.log(res.data)
-        return res.data
-    })
+
+//========================downloadHistory相关接口=================================
+export async function pageQueryDownloadHistory(size: number, page: number, id: string) {
+    return await get(`/downloadHistory/pageQuery/${id}/${size}/${page}`)
 }

@@ -67,4 +67,14 @@ public class UserController {
         return ResultUtils.success(userService.setUserInfoWithoutAvatar(email, user));
     }
 
+    /**
+    * @Description:获取用户头像
+    * @Author: Yiming
+    * @Date: 2022/9/13
+    */
+    @AuthCheck
+    @RequestMapping(value = "/getAvatarURL/{email}", method = RequestMethod.GET)
+    public JsonResult getAvatarURL(@PathVariable String email) {
+        return ResultUtils.success(userService.getAvatarURL(email));
+    }
 }

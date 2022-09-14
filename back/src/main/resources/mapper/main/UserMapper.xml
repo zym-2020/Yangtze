@@ -29,4 +29,7 @@
         update users set name = #{name}, contact_email = #{contactEmail}, occupation = #{occupation}, department = #{department} where email = #{email} returning *;
     </select>
 
+    <select id="getAvatarURL" resultType="java.lang.String">
+        select avatar from users where email = #{email}
+    </select>
 </mapper>

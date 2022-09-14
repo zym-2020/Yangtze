@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-drawer
+    <!-- <el-drawer
       v-model="drawer"
       title="资源类型的一些介绍！"
       direction="ltr"
@@ -9,8 +9,8 @@
       :append-to-body="true"
       style="overflow: auto"
       ><div style="text-align: center">Hi, there!</div>
-    </el-drawer>
-    <el-collapse @change="handleChange" v-model="activeNames">
+    </el-drawer> -->
+    <el-collapse v-model="activeNames">
       <el-collapse-item
         v-for="(item, indexs) in categoryList"
         :key="indexs"
@@ -18,22 +18,7 @@
         :name="indexs"
         active
       >
-        <!-- <div>
-          <el-card
-            shadow="always"
-            style="margin-left: 50px; margin-top: 5px"
-            class="video"
-            @click="drawer = true"
-          >
-            点我介绍此条目下数据
-          </el-card>
-        </div> -->
-        <!-- <el-card shadow="always" style="margin-top: 10px;margin-bottom:10px; margin-left: 30px; ">
-      <p style="text-align :center;font-weight: bold;font-size: large;">{{desciription[index]}}</p>
-      </el-card> -->
         <div v-for="(dataItem, index) in item.data" :key="index">
-          <!-- :label="dataItem.name + '（' + dataItem.count + '）'"  -->
-
           <el-card
             shadow="always"
             :style="[
@@ -42,17 +27,9 @@
             ]"
             class="video"
           >
-            <el-checkbox
-              :label="dataItem.name"
-              size="default"
-              @change="
-                change(dataItem, index);
-                dataItem.count = !dataItem.count;
-              "
-            />
+            <el-checkbox :label="dataItem.name" size="default" @change="change(indexs, index)" />
           </el-card>
         </div>
-        <!-- <hr style="border-color: #d8d8d8" /> -->
       </el-collapse-item>
     </el-collapse>
   </div>
@@ -64,7 +41,6 @@ export default defineComponent({
   emits: ["selectList"],
   setup(props, context) {
     const activeNames = reactive([0, 1, 2, 3, 4]);
-    const desciription = reactive(["地形数据、水文数据、工程数据"]);
     const categoryList = ref([
       {
         title: "一级分类（必选）",
@@ -107,84 +83,85 @@ export default defineComponent({
           },
         ],
       },
-        {
+      {
         title: "基础地形数据",
         data: [
           {
             name: "栅格TXT文件",
             count: false,
           },
-                    {
+          {
             name: "栅格ASC文件",
             count: false,
           },
-        ]
-        },
-                {
+        ],
+      },
+      {
         title: "基础水文数据",
         data: [
           {
             name: "潮位数据",
             count: false,
           },
-                    {
+          {
             name: "流速流向数据",
             count: false,
           },
-                              {
+          {
             name: "含沙量数据",
             count: false,
           },
-                              {
+          {
             name: "流量数据",
             count: false,
           },
-                                        {
+          {
             name: "输沙率数据",
             count: false,
           },
           {
             name: "悬移质数据",
             count: false,
-          },          {
+          },
+          {
             name: "冲淤数据",
             count: false,
           },
-                    {
+          {
             name: "深泓线数据",
             count: false,
           },
-                    {
+          {
             name: "沙滩数据",
             count: false,
           },
-                    {
+          {
             name: "床沙数据",
             count: false,
           },
-              {
+          {
             name: "含盐度数据",
             count: false,
           },
-                        {
+          {
             name: "风速风向数据",
             count: false,
           },
-                                  {
+          {
             name: "报告文字数据",
             count: false,
           },
-                                            {
+          {
             name: "水文测验布置",
             count: false,
           },
-        ]
-        },
+        ],
+      },
 
       {
         title: "基础工程数据",
         data: [
-                    {
+          {
             name: "DWG工程文件",
             count: false,
           },
@@ -192,33 +169,34 @@ export default defineComponent({
             name: "码头工程",
             count: false,
           },
-                    {
+          {
             name: "桥梁工程",
             count: false,
           },
-                              {
+          {
             name: "规划未实施工程",
             count: false,
           },
-                              {
+          {
             name: "水利工程",
             count: false,
-          },   
+          },
           {
             name: "护岸工程",
             count: false,
-          },      
-                    {
+          },
+          {
             name: "航道整治工程",
             count: false,
-          },    
-                              {
+          },
+          {
             name: "水利工程",
             count: false,
-          },                        {
+          },
+          {
             name: "航标",
             count: false,
-          },  
+          },
         ],
       },
       {
@@ -232,22 +210,23 @@ export default defineComponent({
             name: "等高线",
             count: false,
           },
-                    {
+          {
             name: "等深线",
             count: false,
           },
-                    {
+          {
             name: "高程点",
             count: false,
           },
-                    {
+          {
             name: "边界",
             count: false,
           },
-                    {
+          {
             name: "TIN",
             count: false,
-          },          {
+          },
+          {
             name: "DEM",
             count: false,
           },
@@ -265,7 +244,7 @@ export default defineComponent({
       {
         title: "整合工程数据",
         data: [
-                   {
+          {
             name: "DWG工程文件",
             count: false,
           },
@@ -273,36 +252,37 @@ export default defineComponent({
             name: "码头工程",
             count: false,
           },
-                    {
+          {
             name: "桥梁工程",
             count: false,
           },
-                              {
+          {
             name: "规划未实施工程",
             count: false,
           },
-                              {
+          {
             name: "水利工程",
             count: false,
-          },   
+          },
           {
             name: "护岸工程",
             count: false,
-          },      
-                    {
+          },
+          {
             name: "航道整治工程",
             count: false,
-          },    
-                              {
+          },
+          {
             name: "水利工程",
             count: false,
-          },                        {
+          },
+          {
             name: "航标",
             count: false,
-          },  
+          },
         ],
       },
-            {
+      {
         title: "数模案例库",
         data: [
           {
@@ -311,22 +291,22 @@ export default defineComponent({
           },
         ],
       },
-                  {
+      {
         title: "物模案例库",
         data: [
           {
             name: "流速",
             count: false,
           },
-                    {
+          {
             name: "泥沙",
             count: false,
           },
-                    {
+          {
             name: "水位",
             count: false,
           },
-                              {
+          {
             name: "视频",
             count: false,
           },
@@ -335,8 +315,8 @@ export default defineComponent({
             count: false,
           },
         ],
-      },     
-       {
+      },
+      {
         title: "影像资料库",
         data: [
           {
@@ -345,96 +325,61 @@ export default defineComponent({
           },
         ],
       },
-             {
+      {
         title: "辅助资料库",
         data: [
           {
             name: "地名数据",
             count: false,
-          },          {
+          },
+          {
             name: "固定断面线",
             count: false,
-          },          {
+          },
+          {
             name: "制导线",
             count: false,
           },
         ],
-      },             {
+      },
+      {
         title: "元数据",
         data: [
           {
             name: "Pdf",
             count: false,
-          },          {
+          },
+          {
             name: "Word",
             count: false,
-          },          {
+          },
+          {
             name: "PPT",
             count: false,
           },
         ],
       },
     ]);
-    const selectList = ref<any[]>([]);
-    const drawer = ref(false);
+    const selectList: string[] = [];
 
-    const handleChange = (val: string[]) => {
-      // console.log(val);
-    };
-    const setIconStyle = computed(() => {
-      return "marginTop: 5px; marginLeft: 100px";
-    });
-    const mar = reactive([
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-    ]);
-    const change = (val: any, index: any) => {
-      for (let i = 0; i < selectList.value.length; i++) {
-        if (val.name === selectList.value[i]) {
-          selectList.value.splice(i, 1);
-          context.emit("selectList", selectList.value);
+
+    const change = (indexs: number, index: number) => {
+      const str = categoryList.value[indexs].data[index].name
+      for (let i = 0; i < selectList.length; i++) {
+        if(str === selectList[i]) {
+          selectList.splice(i, 1)
+          context.emit("selectList", selectList)
           return;
         }
       }
-      selectList.value.push(val.name);
-      context.emit("selectList", selectList.value);
+      selectList.push(str)
+      context.emit("selectList", selectList)
     };
 
     return {
       activeNames,
-      desciription,
-      handleChange,
       categoryList,
       change,
-      setIconStyle,
-      mar,
-      drawer,
     };
   },
 });

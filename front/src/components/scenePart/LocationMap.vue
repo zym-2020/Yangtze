@@ -14,34 +14,15 @@ export default {
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { onMounted } from "@vue/runtime-core";
-import { frontData } from "../../frontData";
 import { ref, watch } from "vue";
-import {
-  QueryCoordinatesByName,
-} from "@/api/request";
-import router from "@/router";
-const mapName = ref("");
-const coordinates = ref<any[]>();
 
-
-    //避免跳转到其他页面时去调用后台的接口
-if(router.currentRoute.value.fullPath==("/data/"+router.currentRoute.value.params.id)){
-    const data = (router.currentRoute.value.params.fileInfo as any).location
-   
-
-    if (data != undefined && data != null) {
-      if (data.length==5 ) {
-        coordinates.value = data
-      } else {
-        coordinates.value = [
-          [120.60871093751484, 32.09452444899182],
-          [122.08637207034224, 32.09452444899182],
-          [122.08637207034224, 31.152025646717746],
-          [120.60871093751484, 31.152025646717746],
-          [120.60871093751484, 32.09452444899182],
-        ];
-      }
-    }}
+const coordinates = [
+  [120.60871093751484, 32.09452444899182],
+  [122.08637207034224, 32.09452444899182],
+  [122.08637207034224, 31.152025646717746],
+  [120.60871093751484, 31.152025646717746],
+  [120.60871093751484, 32.09452444899182],
+];
 
 onMounted(async () => {
   mapboxgl.accessToken =
@@ -52,13 +33,6 @@ onMounted(async () => {
     center: [121.18, 31.723],
     zoom: 7,
   });
-  coordinates.value = [
-    [120.60871093751484, 32.09452444899182],
-    [122.08637207034224, 32.09452444899182],
-    [122.08637207034224, 31.152025646717746],
-    [120.60871093751484, 31.152025646717746],
-    [120.60871093751484, 32.09452444899182],
-  ];
   map.on("load", () => {
     map.addSource("someS id", {
       type: "geojson",
@@ -70,7 +44,7 @@ onMounted(async () => {
             properties: {},
             geometry: {
               type: "Polygon",
-              coordinates: [coordinates.value as any[]],
+              coordinates: [coordinates],
             },
           },
         ],
@@ -93,11 +67,6 @@ onMounted(async () => {
 
 <style lang='scss'>
 div.scene-map-wrapper2 {
-  cursor: pointer;
-  background-color: transparent;
-  width: 52%;
-  height: 63%;
-
   div#map2 {
     position: absolute;
     top: 0;
@@ -105,7 +74,6 @@ div.scene-map-wrapper2 {
 
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.2);
   }
 }
 </style>

@@ -95,14 +95,17 @@
               <el-col :span="12">
                 <div class="basicInfo-item">
                   <data-description
-                    :data="{ key: '数据时间：', value: fileInfo?.createTime }"
+                    :data="{
+                      key: '数据时间：',
+                      value: date(fileInfo.createTime),
+                    }"
                   ></data-description>
                 </div>
               </el-col>
               <el-col :span="12">
                 <div class="basicInfo-item">
                   <data-description
-                    :data="{ key: '空间位置：', value: fileInfo?.range }"
+                    :data="{ key: '空间位置：', value: fileInfo.range }"
                   ></data-description>
                 </div>
               </el-col>
@@ -134,20 +137,6 @@
                   ></data-description>
                 </div>
               </el-col>
-              <!-- ////////////////---------数据大小为所有文件大小相加之和-----///////////////////////////////// -->
-              <el-col :span="12">
-                <div class="basicInfo-item">
-                  <data-description
-                    :data="{
-                      key: '数据大小：',
-                      value: Size,
-                    }"
-                  ></data-description>
-                </div>
-              </el-col>
-              <!-- ////////////////--------------------------///////////////////////////////// -->
-
-              <!-- ///////////////////////////////////////////////////////////////////// -->
             </el-row>
           </div>
         </el-col>
@@ -172,7 +161,7 @@
                   <data-description
                     :data="{
                       key: '作&#12288;&#12288;者：',
-                      value: fileInfo?.provider,
+                      value: fileInfo.provider,
                     }"
                   ></data-description>
                 </div>
@@ -182,7 +171,7 @@
                   <data-description
                     :data="{
                       key: '电&#12288;&#12288;话：',
-                      value: fileInfo?.providerPhone,
+                      value: fileInfo.providerPhone,
                     }"
                   ></data-description>
                 </div>
@@ -194,7 +183,7 @@
                   <data-description
                     :data="{
                       key: '邮&#12288;&#12288;箱：',
-                      value: fileInfo?.providerEmail,
+                      value: fileInfo.providerEmail,
                     }"
                   ></data-description>
                 </div>
@@ -204,31 +193,17 @@
                   <data-description
                     :data="{
                       key: '地&#12288;&#12288;址：',
-                      value: fileInfo?.providerAddress,
+                      value: fileInfo.providerAddress,
                     }"
                   ></data-description>
                 </div>
               </el-col>
             </el-row>
           </div>
-
-          <!-- ///////////////////////////////////////////////////////////////////// -->
         </el-col>
+
         <el-col :span="24">
           <div class="description">
-            <el-row>
-              <el-col :span="3">
-                <div class="divider">
-                  <div class="mark"></div>
-                  <div class="text">
-                    <strong>数据可视</strong>
-                  </div>
-                </div>
-              </el-col>
-              <el-col :span="20">
-                <hr style="margin-top: 12px; color: #696969" />
-              </el-col>
-            </el-row>
             <el-row>
               <el-divider>
                 <el-icon><Monitor /></el-icon>
@@ -239,19 +214,16 @@
               <el-col>
                 <div
                   :style="{
-                    height: tableHeight,
                     border: '1px solid #8b7e66',
                     padding: '20px',
                   }"
                 >
-                  <!-- //////////////-------------fileLis-----------------///////////// -->
                   <el-table
-                    :data="fileLis"
+                    :data="fileList"
                     max-height="800"
-                    :style="{ width: 900, height: tableHeight - 40 }"
+                    :style="{ width: 900 }"
                     stripe
                   >
-                    <!-- //////////////-------------fileLis-----------------///////////// -->
                     <el-table-column
                       prop="名称"
                       label="文件名称"
@@ -319,7 +291,7 @@
                       <div style="margin-top: 25px; text-align: right">
                         <span
                           >共<strong style="color: #ff8c00">{{
-                            fileLis.length
+                            fileList.length
                           }}</strong
                           >个文件</span
                         >
@@ -335,57 +307,41 @@
               </el-divider>
               <el-row> </el-row>
             </el-row>
-            <!-- //////////////-------------shpCheck需要更改-----------------///////////// -->
-            <el-row v-if="shpCheck">
-              <el-col>
-                <div
-                  v-if="true"
-                  class="scene-wrapper1"
-                  style="width: 950px; height: 900px"
-                >
-                  <div
-                    class="content-wrapper1"
-                    style="width: 950px; height: 900px"
-                  >
-                    <centerVisualMap
-                      mapId="1"
-                      :shpVisualList="shpVisualList"
-                      style="width: 950px; height: 900px"
-                    ></centerVisualMap>
+            <el-row style="margin-bottom: 20px">
+              <el-col :span="3">
+                <div class="divider">
+                  <div class="mark"></div>
+                  <div class="text">
+                    <strong>数据可视</strong>
                   </div>
                 </div>
               </el-col>
+              <el-col :span="20">
+                <hr style="margin-top: 12px; color: #696969" />
+              </el-col>
             </el-row>
-            <!-- //////////////-------------photoCheck需要更改-----------------///////////// -->
-            <el-row v-if="photoCheck">
+            <el-row v-if="visualSkeleton">
               <el-col>
-                <div class="detail">
-                  <el-row>
-                    <el-col :span="4">
-                      <div class="divider">
-                        <div class="mark"></div>
-                        <div class="text">
-                          <strong>物理模型数据可视</strong>
-                        </div>
-                      </div>
-                    </el-col>
-                    <el-col :span="20">
-                      <hr style="margin-top: 12px; color: #696969" />
-                      <!-- <el-icon><star-filled /></el-icon> -->
-                    </el-col>
-                  </el-row>
+                <div style="width: 950px; height: 500px">
+                  <el-skeleton :rows="5" animated />
                 </div>
-                <div>
-                  <el-carousel
-                    :interval="2000"
-                    type="card"
-                    style="margin-top: 30px"
-                  >
-                    <el-carousel-item v-for="item in photoList" :key="item">
-                      <el-image fit="fill" :src="item" />
-                    </el-carousel-item>
-                  </el-carousel>
+              </el-col>
+            </el-row>
+            <el-row v-if="mapShow">
+              <el-col>
+                <div style="width: 950px; height: 900px">
+                  <map-visual
+                    :shpArray="shpArray"
+                    :movePngArray="movePngArray"
+                    :pngArray="pngArray"
+                    :rasterTileArray="rasterTileArray"
+                  />
                 </div>
+              </el-col>
+            </el-row>
+            <el-row v-if="photoShow">
+              <el-col>
+                <photo-visual :photoList="photoList" />
               </el-col>
             </el-row>
             <!-- //////////////-------------tableCheck需要更改-----------------///////////// -->
@@ -407,241 +363,236 @@
                     </el-col>
                   </el-row>
                 </div>
-<!-- ----------------------潮位站观测成果---------------------------- -->
-<div>
-                <el-row :gutter="20" justify="center">
-                  <el-col :span="8" style="text-align: center">
-                    <el-card
-                      class="video"
-                      shadow="always"
-                      @click="
-                        i = (i - 1 + nameTable.length) % nameTable.length;
-                        changeTableName('tide');
-                      "
-                      style="margin-top: 30px; margin-bottom: 10px"
-                    >
-                      <div class="text">
-                        <el-icon style="margin-top: 5px"
-                          ><ArrowLeftBold
-                        /></el-icon>
-                        <strong>{{
-                          nameTable[
-                            (i - 1 + nameTable.length) % nameTable.length
-                          ]
-                        }}</strong>
-                      </div>
-                    </el-card>
-                  </el-col>
-                  <el-col :span="8" style="text-align: center">
-                    <el-card
-                      shadow="always"
-                      @click="changeTableName('tide')"
-                      style="
-                        margin-top: 10px;
-                        margin-bottom: 10px;
-                        background-color: lightgrey;
-                      "
-                    >
-                      <div class="text">
-                        <strong>{{ nameTable[i] }}</strong>
-                      </div>
-                    </el-card>
-                  </el-col>
-                  <el-col :span="8" style="text-align: center">
-                    <el-card
-                      class="video"
-                      shadow="always"
-                      @click="
-                        i = (i + 1) % nameTable.length;
-                        changeTableName('tide');
-                      "
-                      style="margin-top: 30px; margin-bottom: 10px"
-                    >
-                      <div class="text">
-                        <strong>{{
-                          nameTable[(i + 1) % nameTable.length]
-                        }}</strong>
-                        <el-icon><ArrowRightBold /></el-icon>
-                      </div>
-                    </el-card>
-                  </el-col>
-                </el-row>
-                <el-row>
-                  <div style="width: 100%; height: 80%">
-                    <TideStatistics
-                      :getName="getName"
-                      :key="new Date().getTime()"
-                    ></TideStatistics>
-                  </div>
-                </el-row>
+                <!-- ----------------------潮位站观测成果---------------------------- -->
+                <div>
+                  <el-row :gutter="20" justify="center">
+                    <el-col :span="8" style="text-align: center">
+                      <el-card
+                        class="video"
+                        shadow="always"
+                        @click="
+                          i = (i - 1 + nameTable.length) % nameTable.length;
+                          changeTableName('tide');
+                        "
+                        style="margin-top: 30px; margin-bottom: 10px"
+                      >
+                        <div class="text">
+                          <el-icon style="margin-top: 5px"
+                            ><ArrowLeftBold
+                          /></el-icon>
+                          <strong>{{
+                            nameTable[
+                              (i - 1 + nameTable.length) % nameTable.length
+                            ]
+                          }}</strong>
+                        </div>
+                      </el-card>
+                    </el-col>
+                    <el-col :span="8" style="text-align: center">
+                      <el-card
+                        shadow="always"
+                        @click="changeTableName('tide')"
+                        style="
+                          margin-top: 10px;
+                          margin-bottom: 10px;
+                          background-color: lightgrey;
+                        "
+                      >
+                        <div class="text">
+                          <strong>{{ nameTable[i] }}</strong>
+                        </div>
+                      </el-card>
+                    </el-col>
+                    <el-col :span="8" style="text-align: center">
+                      <el-card
+                        class="video"
+                        shadow="always"
+                        @click="
+                          i = (i + 1) % nameTable.length;
+                          changeTableName('tide');
+                        "
+                        style="margin-top: 30px; margin-bottom: 10px"
+                      >
+                        <div class="text">
+                          <strong>{{
+                            nameTable[(i + 1) % nameTable.length]
+                          }}</strong>
+                          <el-icon><ArrowRightBold /></el-icon>
+                        </div>
+                      </el-card>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <div style="width: 100%; height: 80%">
+                      <TideStatistics
+                        :getName="getName"
+                        :key="new Date().getTime()"
+                      ></TideStatistics>
+                    </div>
+                  </el-row>
 
-<!-- ----------------------分割线------------------------------- -->
-                <el-row>
-                  <el-divider>
-                    <el-icon><Monitor /></el-icon>
-                  </el-divider>
-                </el-row>
-</div>
-<!-- ----------------------含沙量---------------------------- -->
-<div>
-                <el-row :gutter="20" justify="center">
-                  <el-col :span="8" style="text-align: center">
-                    <el-card
-                      class="video"
-                      shadow="always"
-                      @click="
-                        k =
-                          (k - 1 + sandTable.length) % sandTable.length;
-                        changeTableName('sand');
-                      "
-                      style="margin-top: 30px; margin-bottom: 10px"
-                    >
-                      <div class="text">
-                        <el-icon style="margin-top: 5px"
-                          ><ArrowLeftBold
-                        /></el-icon>
-                        <strong>{{
-                          sandTable[
-                            (k - 1 + sandTable.length) %
-                            sandTable.length
-                          ].name
-                        }}</strong>
-                      </div>
-                    </el-card>
-                  </el-col>
-                  <el-col :span="8" style="text-align: center">
-                    <el-card
-                      shadow="always"
-                      @click="changeTableName('sand')"
-                      style="
-                        margin-top: 10px;
-                        margin-bottom: 10px;
-                        background-color: lightgrey;
-                      "
-                    >
-                      <div class="text">
-                        <strong>{{ sandTable[k].name }}</strong>
-                      </div>
-                    </el-card>
-                  </el-col>
-                  <el-col :span="8" style="text-align: center">
-                    <el-card
-                      class="video"
-                      shadow="always"
-                      @click="
-                        k = (k + 1) % sandTable.length;
-                        changeTableName('sand');
-                      "
-                      style="margin-top: 30px; margin-bottom: 10px"
-                    >
-                      <div class="text">
-                        <strong>{{
-                          sandTable[(k + 1) % sandTable.length].name
-                        }}</strong>
-                        <el-icon><ArrowRightBold /></el-icon>
-                      </div>
-                    </el-card>
-                  </el-col>
-                </el-row>
-                <el-row>
-                  <div style="width: 100%; height: 80%">
-                    <!-- <RateAndDirection
+                  <!-- ----------------------分割线------------------------------- -->
+                  <el-row>
+                    <el-divider>
+                      <el-icon><Monitor /></el-icon>
+                    </el-divider>
+                  </el-row>
+                </div>
+                <!-- ----------------------含沙量---------------------------- -->
+                <div>
+                  <el-row :gutter="20" justify="center">
+                    <el-col :span="8" style="text-align: center">
+                      <el-card
+                        class="video"
+                        shadow="always"
+                        @click="
+                          k = (k - 1 + sandTable.length) % sandTable.length;
+                          changeTableName('sand');
+                        "
+                        style="margin-top: 30px; margin-bottom: 10px"
+                      >
+                        <div class="text">
+                          <el-icon style="margin-top: 5px"
+                            ><ArrowLeftBold
+                          /></el-icon>
+                          <strong>{{
+                            sandTable[
+                              (k - 1 + sandTable.length) % sandTable.length
+                            ].name
+                          }}</strong>
+                        </div>
+                      </el-card>
+                    </el-col>
+                    <el-col :span="8" style="text-align: center">
+                      <el-card
+                        shadow="always"
+                        @click="changeTableName('sand')"
+                        style="
+                          margin-top: 10px;
+                          margin-bottom: 10px;
+                          background-color: lightgrey;
+                        "
+                      >
+                        <div class="text">
+                          <strong>{{ sandTable[k].name }}</strong>
+                        </div>
+                      </el-card>
+                    </el-col>
+                    <el-col :span="8" style="text-align: center">
+                      <el-card
+                        class="video"
+                        shadow="always"
+                        @click="
+                          k = (k + 1) % sandTable.length;
+                          changeTableName('sand');
+                        "
+                        style="margin-top: 30px; margin-bottom: 10px"
+                      >
+                        <div class="text">
+                          <strong>{{
+                            sandTable[(k + 1) % sandTable.length].name
+                          }}</strong>
+                          <el-icon><ArrowRightBold /></el-icon>
+                        </div>
+                      </el-card>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <div style="width: 100%; height: 80%">
+                      <!-- <RateAndDirection
                     :getVeloName="getVeloName"
                     :key="new Date().getTime()"
                     >
                   </RateAndDirection> -->
-                    <SandContent
-                    :getSandName="getSandName"
-                    :key="new Date().getTime()"
-                    > </SandContent>
-                  </div>
-                </el-row>
-                <el-row>
-<!-------------------------- 分割线 -------------------------------->
-                  <el-divider>
-                    <el-icon><Monitor /></el-icon>
-                  </el-divider>
-                </el-row>
-</div>
-<!-- ---------------------- 流速流向 ------------------------------->
-<div>
-                <el-row :gutter="20" justify="center">
-                  <el-col :span="8" style="text-align: center">
-                    <el-card
-                      class="video"
-                      shadow="always"
-                      @click="
-                        j =
-                          (j - 1 + velocityTable.length) % velocityTable.length;
-                        changeTableName('velocity');
-                      "
-                      style="margin-top: 30px; margin-bottom: 10px"
-                    >
-                      <div class="text">
-                        <el-icon style="margin-top: 5px"
-                          ><ArrowLeftBold
-                        /></el-icon>
-                        <strong>{{
-                          velocityTable[
+                      <SandContent
+                        :getSandName="getSandName"
+                        :key="new Date().getTime()"
+                      >
+                      </SandContent>
+                    </div>
+                  </el-row>
+                  <el-row>
+                    <!-------------------------- 分割线 -------------------------------->
+                    <el-divider>
+                      <el-icon><Monitor /></el-icon>
+                    </el-divider>
+                  </el-row>
+                </div>
+                <!-- ---------------------- 流速流向 ------------------------------->
+                <div>
+                  <el-row :gutter="20" justify="center">
+                    <el-col :span="8" style="text-align: center">
+                      <el-card
+                        class="video"
+                        shadow="always"
+                        @click="
+                          j =
                             (j - 1 + velocityTable.length) %
-                              velocityTable.length
-                          ].name
-                        }}</strong>
-                      </div>
-                    </el-card>
-                  </el-col>
-                  <el-col :span="8" style="text-align: center">
-                    <el-card
-                      shadow="always"
-                      @click="changeTableName('velocity')"
-                      style="
-                        margin-top: 10px;
-                        margin-bottom: 10px;
-                        background-color: lightgrey;
-                      "
-                    >
-                      <div class="text">
-                        <strong>{{ velocityTable[j].name }}</strong>
-                      </div>
-                    </el-card>
-                  </el-col>
-                  <el-col :span="8" style="text-align: center">
-                    <el-card
-                      class="video"
-                      shadow="always"
-                      @click="
-                        j = (j + 1) % velocityTable.length;
-                        changeTableName('velocity');
-                      "
-                      style="margin-top: 30px; margin-bottom: 10px"
-                    >
-                      <div class="text">
-                        <strong>{{
-                          velocityTable[(j + 1) % velocityTable.length].name
-                        }}</strong>
-                        <el-icon><ArrowRightBold /></el-icon>
-                      </div>
-                    </el-card>
-                  </el-col>
-                </el-row>
-                <el-row>
-                  <div style="width: 100%; height: 80%">
-                    <!-- <RateAndDirection
+                            velocityTable.length;
+                          changeTableName('velocity');
+                        "
+                        style="margin-top: 30px; margin-bottom: 10px"
+                      >
+                        <div class="text">
+                          <el-icon style="margin-top: 5px"
+                            ><ArrowLeftBold
+                          /></el-icon>
+                          <strong>{{
+                            velocityTable[
+                              (j - 1 + velocityTable.length) %
+                                velocityTable.length
+                            ].name
+                          }}</strong>
+                        </div>
+                      </el-card>
+                    </el-col>
+                    <el-col :span="8" style="text-align: center">
+                      <el-card
+                        shadow="always"
+                        @click="changeTableName('velocity')"
+                        style="
+                          margin-top: 10px;
+                          margin-bottom: 10px;
+                          background-color: lightgrey;
+                        "
+                      >
+                        <div class="text">
+                          <strong>{{ velocityTable[j].name }}</strong>
+                        </div>
+                      </el-card>
+                    </el-col>
+                    <el-col :span="8" style="text-align: center">
+                      <el-card
+                        class="video"
+                        shadow="always"
+                        @click="
+                          j = (j + 1) % velocityTable.length;
+                          changeTableName('velocity');
+                        "
+                        style="margin-top: 30px; margin-bottom: 10px"
+                      >
+                        <div class="text">
+                          <strong>{{
+                            velocityTable[(j + 1) % velocityTable.length].name
+                          }}</strong>
+                          <el-icon><ArrowRightBold /></el-icon>
+                        </div>
+                      </el-card>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <div style="width: 100%; height: 80%">
+                      <!-- <RateAndDirection
                     :getVeloName="getVeloName"
                     :key="new Date().getTime()">
                   </RateAndDirection> -->
-                  <SectionTide>
-                    
-                  </SectionTide>
-                    
-                  </div>
-                </el-row>
-  </div>
-<!-- /////////////////////////////////////////////////////////////////// -->
+                      <SectionTide> </SectionTide>
+                    </div>
+                  </el-row>
+                </div>
+                <!-- /////////////////////////////////////////////////////////////////// -->
               </el-col>
             </el-row>
-
- 
           </div>
         </el-col>
 
@@ -658,109 +609,11 @@
               </el-col>
               <el-col :span="20">
                 <hr style="margin-top: 12px; color: #696969" />
-                <!-- <el-icon><star-filled /></el-icon> -->
               </el-col>
             </el-row>
-            <div class="editor-content-view" v-html="fileInfo?.detail"></div>
-            <!-- <div style="width: 100%; height: 80%">
-                  <RateAndDirection>
-
-                  </RateAndDirection>
-                </div> -->
+            <div class="editor-content-view" v-html="fileInfo.detail"></div>
           </div>
         </el-col>
-        <!-- /////////////////////////////////////以下删除//////////////////////////// -->
-        <!-- <el-col :span="24">
-          <div class="download">
-            <div class="basicInfo">
-              <el-row>
-                <el-col :span="3">
-                  <div class="divider">
-                    <div class="mark"></div>
-                    <div class="text">
-                      <strong>数据下载</strong>
-                    </div>
-                  </div>
-                </el-col>
-                <el-col :span="20">
-                  <hr style="margin-top: 12px; color: #696969" />
-                </el-col>
-              </el-row>
-            </div>
-            <div class="type">
-              <el-row>
-                <el-rol
-                  :span="8"
-                  style="margin-left: 101px; margin-right: 101px"
-                >
-                  <div class="type-item">
-                    <div class="type-item-top">
-                      <svg style="width: 20px; height: 20px">
-                        <use xlink:href="#icon-shujuku"></use>
-                      </svg>
-                      <div class="type-item-top-text">原始数据</div>
-                    </div>
-                    <div class="type-item-bottom">
-                      <el-button
-                        size="small"
-                        v-if="fileMeta?.get_online"
-                        @click="downloadOrigin"
-                      >
-                        下载
-                      </el-button>
-                      <el-button size="small" v-else @click="downloadOrigin">
-                        添加订单
-                      </el-button>
-                    </div>
-                  </div>
-                </el-rol>
-                <el-rol
-                  :span="8"
-                  style="margin-left: 101px; margin-right: 101px"
-                >
-                  <div class="type-item">
-                    <div class="type-item-top">
-                      <svg style="width: 20px; height: 20px">
-                        <use xlink:href="#icon-shujuku1"></use>
-                      </svg>
-                      <div class="type-item-top-text">整合数据</div>
-                    </div>
-                    <div class="type-item-bottom">
-                      <el-button size="small" v-if="fileMeta?.get_online">
-                        下载
-                      </el-button>
-                      <el-button size="small" v-else @click="downloadOrigin">
-                        添加订单
-                      </el-button>
-                    </div>
-                  </div>
-                </el-rol>
-                <el-rol
-                  :span="8"
-                  style="margin-left: 101px; margin-right: 101px"
-                >
-                  <div class="type-item">
-                    <div class="type-item-top">
-                      <svg style="width: 20px; height: 20px">
-                        <use xlink:href="#icon-shuju"></use>
-                      </svg>
-                      <div class="type-item-top-text">可视化数据</div>
-                    </div>
-                    <div class="type-item-bottom">
-                      <el-button size="small" v-if="fileMeta?.get_online">
-                        下载
-                      </el-button>
-                      <el-button size="small" v-else @click="downloadOrigin">
-                        添加订单
-                      </el-button>
-                    </div>
-                  </div>
-                </el-rol>
-              </el-row>
-            </div>
-          </div>
-        </el-col> -->
-        <!-- /////////////////////////////////////以上删除//////////////////////////// -->
       </el-row>
       <el-row>
         <el-col :span="24">
@@ -795,21 +648,19 @@
                   >
                     <div>
                       <el-table
-                        :data="downLoadLis"
+                        :data="downLoadList"
                         max-height="400"
                         :style="{ width: 650 }"
                         stripe
                       >
                         <el-table-column
-                          prop="download_time"
+                          prop="downloadTime"
                           label="下载时间"
                           width="300"
                           alignment="center"
                           :formatter="
                             (row) => {
-                              return new Date(
-                                row.download_time
-                              ).toLocaleString();
+                              return date(row.downloadTime);
                             }
                           "
                         />
@@ -824,40 +675,6 @@
                             }
                           "
                         />
-                        <!-- ////////////////////以下删除////////////////////// -->
-                        <!-- <el-table-column
-                          prop="data_type"
-                          label="数据格式"
-                          width="150"
-                          alignment="center"
-                          :formatter="
-                            (row) => {
-                              if (row.data_type == 'origin') return '原始数据';
-                              else if (row.data_type == 'structed')
-                                return '整合数据';
-                              else if (row.data_type == 'visual')
-                                return '可视化数据';
-                            }
-                          "
-                        /> -->
-                        <!-- ////////////////////以上删除////////////////////// -->
-                        <!-- ///////////////--------新增文件名称-------//////////////////////// -->
-                        <!-- <el-table-column
-                          prop="data_type"
-                          label="文件名称"
-                          width="150"
-                          alignment="center"
-                          :formatter="
-                            (row) => {
-                              if (row.data_type == 'origin') return '原始数据';
-                              else if (row.data_type == 'structed')
-                                return '整合数据';
-                              else if (row.data_type == 'visual')
-                                return '可视化数据';
-                            }
-                          "
-                        /> -->
-                        <!-- ///////////////--------新增文件名称-------//////////////////////// -->
                       </el-table>
                     </div>
                     <div style="bottom: 0">
@@ -882,6 +699,7 @@
         </el-col>
       </el-row>
     </div>
+
     <div class="right">
       <div class="body">
         <div class="contributor">
@@ -892,7 +710,7 @@
           <div class="creator">
             <el-avatar :src="avatarUrl" />
             <!-- 可能需要调用user接口来根据email查询姓名 -->
-            <div class="name">{{ fileInfo?.creator }}</div>
+            <div class="name">{{ fileInfo.userName }}</div>
             <!-- 可能需要调用user接口来根据email查询姓名 -->
           </div>
           <el-divider content-position="center" color="orange"
@@ -904,7 +722,6 @@
         <el-col>
           <div style="border: #696969; padding: 20px">
             <images :src="thumbnail"></images>
-            <!-- <images ></images> -->
           </div>
         </el-col>
       </el-row>
@@ -912,21 +729,11 @@
       <el-row>
         <el-col>
           <div>
-            <div class="scene-wrapper" style="width: 440px; height: 440px">
-              <div class="content-wrapper" style="width: 440px; height: 440px">
-                <!-- //////////////  新增父组件传入空间范围值Location ///////////-->
-                <location-map
-                  v-if="true"
-                  style="width: 440px; height: 440px"
-                  :key="new Date().getTime()"
-                ></location-map>
-                <!--///////////// 新增父组件传入空间范围值Location /////////////-->
-              </div>
-            </div>
+            <location-map style="width: 440px; height: 440px"></location-map>
           </div>
         </el-col>
       </el-row>
-      <!-- /////////////////////考虑保留 ////////////////////////-->
+
       <div class="explain">
         <el-divider content-position="center" color="orange"
           >数据获取</el-divider
@@ -978,63 +785,27 @@
             <div class="content">[3] 在线下载数据</div>
           </el-card>
         </div>
-        <!-- /////////////////////考虑保留 ////////////////////////////-->
       </div>
-      <!-- /////////////////////再完善 ////////////////////////////-->
-      <div class="body">
-        <div class="contributor">
-          <!-- <el-divider content-position="center"
-            >{{ date(fileInfo.createTime) }} 创建</el-divider
-          > -->
-          <el-divider content-position="center" color="orange"
-            >相似数据</el-divider
-          >
-          <div v-for="(item, index) in similiarList" :key="index">
-            <el-card
-              shadow="always"
-              style="margin: 10px; background-color: rgba(21, 69, 153, 0.2)"
-              class="video"
-            >
-              <div class="content" @click="routeTo(item, index)">
-                <li>{{ item.name }}</li>
-              </div>
-            </el-card>
-          </div>
-        </div>
-      </div>
-      <!-- /////////////////////再完善 ////////////////////////////-->
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import {
-  computed,
-  defineComponent,
-  onMounted,
-  ref,
-  reactive,
-  onBeforeMount,
-  watch,
-} from "vue";
+import { computed, defineComponent, onMounted, ref, reactive } from "vue";
 import DataDescription from "../page/DataDescription.vue";
 import dataTable from "../scenePart/dataTable.vue";
 import { dateFormat, imgBase64 } from "@/utils/common";
 import { decrypt } from "@/utils/auth";
 import { useStore } from "@/store";
 import {
-  getDownloadURL,
-  getOtherTags,
-  getShareFileById,
-  pagequery,
-  ZipEntryPath,
-  QueryHeightByName,
+  pageQueryDownloadHistory,
+  getCoordinates,
   findFiles,
+  getDownloadURL,
 } from "@/api/request";
 import "@/assets/css/wangeditor.css";
 import { notice } from "@/utils/notice";
 import DataTable from "../scenePart/dataTable.vue";
-import centerVisualMap from "../scenePart/centerVisualMap.vue";
 import RateAndDirection from "../scenePart/RateAndDirection.vue";
 import TideStatistics from "../resourcePages/components/TideStatistics.vue";
 import SectionTide from "../resourcePages/components/SectionTide.vue";
@@ -1044,10 +815,10 @@ import FindMap from "../scenePart/FindMap.vue";
 import chartContainer from "../scenePart/chartContainer.vue";
 import ChartContainer from "../scenePart/chartContainer.vue";
 import images from "./components/Images.vue";
-import { List } from "echarts";
 import router from "@/router";
-import axios from "axios";
-import { getTagName } from "@wangeditor/core/dist/core/src/utils/dom";
+
+import MapVisual from "@/components/visual/MapVisual.vue";
+import PhotoVisual from "@/components/visual/PhotoVisual.vue";
 
 export default defineComponent({
   components: {
@@ -1056,14 +827,15 @@ export default defineComponent({
     DataTable,
     chartContainer,
     ChartContainer,
-    centerVisualMap,
     LocationMap,
     images,
     FindMap,
     TideStatistics,
     RateAndDirection,
     SandContent,
-    SectionTide
+    SectionTide,
+    MapVisual,
+    PhotoVisual,
   },
   props: {
     fileInfo: {
@@ -1072,49 +844,72 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore();
-    //
-    const fileInfoNew = ref();
-    fileInfoNew.value = props.fileInfo;
-    //
+    const visualSkeleton = ref(true)
+    const mapShow = ref(false);
+    const photoShow = ref(false);
+    const shpArray = ref<
+      { visualId: string; type: "line" | "fill" | "circle" }[]
+    >([]);
+    const pngArray = ref<{ visualId: string; coordinates: number[][] }[]>([]);
+    const rasterTileArray = ref<string[]>([]);
+    const movePngArray = ref<{ visualId: string; coordinates: number[][] }[]>(
+      []
+    );
+    const Yang = ref("长江区域");
+    const downLoadList = ref<any[]>([]);
+    const fileList = ref<any[]>([]);
+    const photoList = ref<string[]>([]);
+
+    const downLoadTotal = computed(() => {
+      return props.fileInfo?.download;
+    });
+    const location = computed(() => {
+      return props.fileInfo?.location;
+    });
+
     const fileInfo = computed(() => {
       return props.fileInfo;
     });
 
-    const KB = ref("KB");
-    const MB = ref("MB");
-    const Yang = ref("长江区域");
+    const thumbnail = computed(() => {
+      if ((props.fileInfo as any).thumbnail != "") {
+        return (
+          "http://localhost:8002/visual/getAvatar/" +
+          (props.fileInfo as any).thumbnail
+        );
+      } else {
+        return "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png";
+      }
+    });
+    //头像
+    const avatarUrl = computed(() => {
+      return (props.fileInfo as any).userAvatar === ""
+        ? "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
+        : "http://localhost:8002/visual/getAvatar/" +
+            (props.fileInfo as any).avatar;
+    });
+    const avatar = computed(() => {
+      if ((props.fileInfo as any).avatar != "") {
+        return "http://localhost:8002" + (props.fileInfo as any).avatar;
+      }
+      return imgBase64(
+        (props.fileInfo as any).name === undefined
+          ? ""
+          : (props.fileInfo as any).name
+      );
+    });
+
     //表格初始值
     const getName = ref("一干河站潮位观测成果表");
     const getVeloName = ref("fe139257-2ceb-4a37-afb1-ca34f7941d44");
-    const getSandName = ref("f8b40c25-1f69-4539-aa81-88cfa1669d2e")
-    const Size = ref("");
-    const mapref = ref();
-    const locations = ref<string[]>([]);
-    const creator = ref("");
+    const getSandName = ref("f8b40c25-1f69-4539-aa81-88cfa1669d2e");
 
-    const shpCheck = ref(true);
-    const photoCheck = ref(false);
     const tableCheck = ref(false);
-    const rasterCheck = ref(false);
 
-    //记录可用于shp可视化的数组
-    const shpVisualList = ref<any[]>([]);
-    //记录可用于excel可视化的数组
-    const excelVisualList = ref<string[]>([]);
-    //记录可用于栅格可视化的数组
-    const rasterVisualList = ref<string[]>([]);
-    //记录可用于照片可视化的数组
-    const photoVisualList = ref<string[]>([]);
-
-    const tableHeight = ref();
     const i = ref(0);
     const j = ref(0);
-    const k = ref(0)
-    const userId = router.currentRoute.value.params.id;
-    const location = ref<any[]>([]);
-    const similiarLis = ref<any[]>([]);
-    const phot = ref<HTMLElement>();
-    const photoList = reactive<String[]>([]);
+    const k = ref(0);
+
     const velocityTable = reactive<any>([
       { name: "福右小潮T800", id: "fe139257-2ceb-4a37-afb1-ca34f7941d44" },
       { name: "狼山沙东大潮S600", id: "fe8bb325-355c-4752-abd7-faa0bce04e85" },
@@ -1142,12 +937,18 @@ export default defineComponent({
       "青龙港站潮位观测成果表",
     ]);
     const sandTable = reactive<any>([
-      { name: "san_sha_SHXY13#D_small", id: "f293035e-e58f-465e-b560-e761bc8e45d1" },
+      {
+        name: "san_sha_SHXY13#D_small",
+        id: "f293035e-e58f-465e-b560-e761bc8e45d1",
+      },
       { name: "adcp_LSSD1xPHSL", id: "f41f017f-5a52-46b8-a75b-bccb475c7d5c" },
       { name: "san_sha_TZSXB_big", id: "f4a16146-68ef-45bf-9830-47f591b5cdf4" },
       { name: "san_sha_FY3#B_mid", id: "f82fb7f0-39a4-448c-9f1a-c060b97e47b5" },
-      { name: "san_sha_BZK10#A_small", id: "f8b40c25-1f69-4539-aa81-88cfa1669d2e" },
-    ])
+      {
+        name: "san_sha_BZK10#A_small",
+        id: "f8b40c25-1f69-4539-aa81-88cfa1669d2e",
+      },
+    ]);
     //excel可视
     const changeTableName = (val: string) => {
       if (val == "tide") {
@@ -1158,289 +959,129 @@ export default defineComponent({
         getSandName.value = sandTable[k.value].id;
       }
     };
-    //excel可视
-    //单文件下载
-    //单文件下载
 
-    //三个表 分别为下载列表、文件列表、相似列表
-    const downLoadLis = ref<any[]>([]);
-    const fileLis = ref<any[]>([]);
-    const similiarList = computed(() => {
-      const lis = [];
-      for (let i = 0; i < similiarLis.value.length; i++) {
-        if (check((props.fileInfo as any).tags, similiarLis.value[i].tags))
-          lis.push(similiarLis.value[i]);
-      }
-      return lis;
-    });
-    //三个表 分别为下载列表、文件列表、相似列表
-
-    //检查是否为相似数据
-    const check = (tag1: Array<String>, tag2: Array<String>): boolean => {
-      let interset = tag1.filter(function (v) {
-        return tag2.indexOf(v) > -1;
-      }).length;
-      return interset >= 2 ? true : false;
-    };
-    //检查是否为相似数据
-
-    ////缩略图与头像前端不需要改，数据库插入需要改
-    //缩略图
-    const thumbnail = computed(() => {
-      if (
-        (props.fileInfo as any).thumbnail != "" &&
-        (props.fileInfo as any).thumbnail != undefined &&
-        (props.fileInfo as any).thumbnail != null
-      ) {
-        return "http://localhost:8002" + (props.fileInfo as any).thumbnail;
-      } else {
-        return "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png";
-      }
-    });
-    //头像
-    const avatarUrl = computed(() => {
-      return (props.fileInfo as any).avatar === ""
-        ? "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
-        : "http://localhost:8002" + (props.fileInfo as any).avatar;
-    });
-    const avatar = computed(() => {
-      if (
-        (props.fileInfo as any).avatar != "" &&
-        (props.fileInfo as any).avatar != undefined &&
-        (props.fileInfo as any).avatar != null
-      ) {
-        return "http://localhost:8002" + (props.fileInfo as any).avatar;
-      }
-      return imgBase64(
-        (props.fileInfo as any).name === undefined
-          ? ""
-          : (props.fileInfo as any).name
-      );
-    });
     const srcList: any[] = reactive([`${avatar.value as any as string}`]);
     //规整日期
     const date = (time: string) => {
       return dateFormat(time, "yyyy-MM-dd");
     };
+
     //下载
-    const downLoadTotal = ref(0);
     const downloadOrigin = async (val: number) => {
-      const data = await axios
-        .get(
-          `http://172.21.213.244:8002/file/getDownloadURL/${fileLis.value[val].id}`,
-          {
-            headers: {
-              authorization:
-                "Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw",
-            },
-          }
-        )
-        .then((res) => {
-          console.log("ganma", res.data);
-          return res.data;
-        });
+      const data = await getDownloadURL(fileList.value[val].id);
       if (data != null) {
         if ((data as any).code === 0) {
           window.location.href =
-            "http://172.21.213.244:8002/file/downloadInList/" +
+            "http://localhost:8002/file/downloadInList/" +
             store.state.user.id +
             "/" +
             decrypt(data.data, store.state.user.id) +
             "/" +
-            fileLis.value[val].id;
+            fileInfo.value?.id;
         } else {
           notice("error", "错误", (data as any).msg);
         }
       }
     };
-    //计算文件
-    // const size = computed(() => {
-    //   let sum = 0;
-    //   let i = 0;
-    //   for (; i < fileLis.value.length; i++) {
-    //     sum = sum + fileLis.value[i].压缩后大小;
-    //   }
-    //   return sum / 1024 + "KB";
-    // });
 
-    //路由跳转，相当于人为刷新界面
-    const routeTo = async (item: any, index: number) => {
-      const data = await getShareFileById(item.id);
-      // const data2 = await getOtherTags(item.id as string);
-      // const data3 = await ZipEntryPath(
-      //   router.currentRoute.value.params.id as any
-      // );
-      // fileLis.value = data3 as any;
-      // tableHeight.value = fileLis.value.length * 40 + 82;
-      // const size = computed((): string => {
-      //   let sum = 0;
-      //   let i = 0;
-      //   for (; i < fileLis.value.length; i++) {
-      //     sum = sum + fileLis.value[i].压缩后大小;
-      //   }
-      //   if (sum / 1024 < 1024) return ((sum / 1024).toFixed(2) as string) + KB;
-      //   else return ((sum / 1048576).toFixed(2) as string) + MB;
-
-      //   // return (sum / 1000) as any as string;
-      // });
-      // Size.value = size.value;
-      // //       watch(router.currentRoute.value,(newValue,oldValue)=>{
-      // //   console.log("路有变化了",newValue,oldValue)},{immediate:true,deep:true}
-      // // )
-      // //console.log(router.currentRoute.value)
-      //similiarLis.value = data2.data.list;
-      router.push({
-        name: "shareFile",
-        params: {
-          id: item.id,
-          fileInfo: JSON.stringify(data.data.list),
-        },
-      });
-    };
-    onBeforeMount(async () => {
-      //查询并显示10条历史下载记录
-      //pageQueryDownLoadHistoy需要更改
-      const data2 = await pagequery(
-        router.currentRoute.value.params.id as string,
-        10,
-        0
-      );
-      if (data2 != null) {
-        downLoadLis.value = data2.data.list;
-        downLoadTotal.value = data2.data.total;
-      } else console.log("nulll");
-    });
-    onMounted(async () => {
-      creator.value = (
-        router.currentRoute.value.params.fileInfo as any
-      ).creator;
-      tableCheck.value = true;
-
-      //获取location空间范围
-      locations.value = (router.currentRoute.value.params.fileInfo as any)
-        .location as string[];
+    const initVisual = async () => {
       //  获取file文件
       const fileData = await findFiles(
         router.currentRoute.value.params.id as string
       );
-      fileLis.value = fileData.data;
+      if (fileData != null && (fileData as any).code === 0) {
+        fileList.value = fileData.data;
+      }
       //获取file文件的可视化方法
-      for (let i = 0; i < fileLis.value.length; i++) {
-        if (
-          fileLis.value[i].visualId != null &&
-          fileLis.value[i].visualId != undefined &&
-          fileLis.value[i].visualId != ""
-        ) {
+      let MapFlag = false;
+      let photoFlag = false;
+      for (let i = 0; i < fileList.value.length; i++) {
+        if (fileList.value[i].visualType != "") {
           if (
-            fileLis.value[i].visualType == "pointVectorTile" ||
-            fileLis.value[i].visualType == "lineVectorTile" ||
-            fileLis.value[i].visualType == "polygonVectorTile" ||
-            fileLis.value[i].visualType == "pointVectorTile3D" ||
-            fileLis.value[i].visualType == "lineVectorTile3D" ||
-            fileLis.value[i].visualType == "polygonVectorTile3D"
+            fileList.value[i].visualType === "lineVectorTile3D" ||
+            fileList.value[i].visualType === "lineVectorTile"
           ) {
-            shpVisualList.value.push({
-              id: fileLis.value[i].visualId,
-              type: fileLis.value[i].visualType,
+            shpArray.value.push({
+              visualId: fileList.value[i].visualId,
+              type: "line",
             });
-            shpCheck.value = true;
+            MapFlag = true;
           }
-          if (fileLis.value[i].visualType == "tide") {
-            excelVisualList.value.push(fileLis.value[i].visualId);
-            tableCheck.value = true;
-          }
-          if (fileLis.value[i].visualType == "rasterTile") {
-            //rasterVisualList.value.push(fileLis.value[i].visualId);
-            rasterCheck.value = true;
-            shpVisualList.value.push({
-              id: fileLis.value[i].visualId,
-              type: fileLis.value[i].visualType,
+          if (
+            fileList.value[i].visualType === "pointVectorTile" ||
+            fileList.value[i].visualType === "pointVectorTile3D"
+          ) {
+            shpArray.value.push({
+              visualId: fileList.value[i].visualId,
+              type: "circle",
             });
-            shpCheck.value = true;
-            //tableCheck.value = true;
-            console.log(123);
+            MapFlag = true;
           }
-          if (fileLis.value[i].visualType == "photo") {
-            photoVisualList.value.push(fileLis.value[i].visualId);
-            photoCheck.value = true;
-          }
-          if (fileLis.value[i].visualType == "png") {
-            //photoVisualList.value.push(fileLis.value[i].visualId);
-            shpVisualList.value.push({
-              id: fileLis.value[i].visualId,
-              type: fileLis.value[i].visualType,
+          if (
+            fileList.value[i].visualType === "polygonVectorTile" ||
+            fileList.value[i].visualType === "polygonVectorTile3D"
+          ) {
+            shpArray.value.push({
+              visualId: fileList.value[i].visualId,
+              type: "fill",
             });
-            photoCheck.value = true;
+            MapFlag = true;
           }
-          if (fileLis.value[i].visualType == "rateDirection") {
-            velocityTable.value.push({
-              id: fileLis.value[i].visualId,
-              filename: String(fileLis.value[i].visualType).substring(0, -5),
-            });
+          if (fileList.value[i].visualType == "rasterTile") {
+            rasterTileArray.value.push(fileList.value[i].visualId);
+            MapFlag = true;
           }
-          if (fileLis.value[i].visualType == "sandContent") {
-            sandTable.value.push({
-              id: fileLis.value[i].visualId,
-              filename: String(fileLis.value[i].visualType).substring(0, -5),
-            });
+          if (fileList.value[i].visualType == "png") {
+            const coordinates = await getCoordinates(
+              fileList.value[i].visualId
+            );
+            if (coordinates != null && (coordinates as any).code === 0) {
+              pngArray.value.push({
+                visualId: fileList.value[i].visualId,
+                coordinates: coordinates.data,
+              });
+            }
+            MapFlag = true;
+          }
+          if (fileList.value[i].visualType == "movePng") {
+            const coordinates = await getCoordinates(
+              fileList.value[i].visualId
+            );
+            if (coordinates != null && (coordinates as any).code === 0) {
+              movePngArray.value.push({
+                visualId: fileList.value[i].visualId,
+                coordinates: coordinates.data,
+              });
+            }
+            MapFlag = true;
+          }
+          if (fileList.value[i].visualType === "photo") {
+            photoList.value.push(
+              `http://localhost:8002/visual/getPhoto/${fileList.value[i].id}`
+            );
+            photoFlag = true;
           }
         }
       }
-      /////////////////////////////照片可视方法////////////////////////////
-      if (photoCheck.value)
-        for (let i = 0; i < fileLis.value.length; i++) {
-          ///修改
-          photoList.push(
-            "http://172.21.213.244:8002/visual/getPhoto/" +
-              fileLis.value[i].visualId
-          );
-          ///修改
-        }
-      /////////////////////////////照片可视方法////////////////////////////
+      mapShow.value = MapFlag;
+      photoShow.value = photoFlag;
+      visualSkeleton.value = false
+    };
 
-      //动态生成压缩文件表格高度
-      tableHeight.value = fileLis.value.length * 40 + 122;
-      //////////////////similiarist////////////
-      //根据标签获取相似数据
-      const data1 = await getOtherTags(userId as string);
-      similiarLis.value = data1.data.list;
-      //////////////////similiarist////////////
-      //////////////////计算压缩文件大小////////
-      const size = computed((): string => {
-        let sum = 0;
-        let i = 0;
-        for (; i < fileLis.value.length; i++) {
-          if (
-            ((fileLis.value[i].size as String).substring(0, -2) as string) ==
-            "MB"
-          )
-            sum =
-              sum +
-              ((fileLis.value[i].size as String).substring(
-                0,
-                -2
-              ) as any as number) *
-                1024;
-          else
-            sum =
-              sum +
-              ((fileLis.value[i].size as String).substring(
-                0,
-                -2
-              ) as any as number);
-        }
+    const initDownloadHistory = async () => {
+      const data = await pageQueryDownloadHistory(10, 0, props.fileInfo?.id);
+      if (data != null && (data as any).code === 0) {
+        downLoadList.value = data.data.list;
+      }
+    };
 
-        if (sum / 1024 < 1024)
-          return ((sum / 1024).toFixed(2) as string) + KB.value;
-        else return ((sum / 1048576).toFixed(2) as string) + MB.value;
-      });
-      Size.value = size.value;
-      //////////////////计算压缩文件大小////////
+    onMounted(async () => {
+      await initVisual();
+      await initDownloadHistory();
     });
 
     return {
       fileInfo,
-      phot,
       i,
       j,
       k,
@@ -1453,31 +1094,24 @@ export default defineComponent({
       avatar,
       downloadOrigin,
       getSandName,
-      locations,
+      location,
       avatarUrl,
       thumbnail,
-      similiarList,
-      similiarLis,
-      downLoadLis,
-      fileLis,
-      routeTo,
+      downLoadList,
+      fileList,
       srcList,
       downLoadTotal,
-      KB,
-      MB,
-      tableHeight,
-      Size,
-      mapref,
-      shpCheck,
-      photoCheck,
+      visualSkeleton,
+      mapShow,
+      photoShow,
       getName,
       getVeloName,
       changeTableName,
-      shpVisualList,
-      excelVisualList,
-      photoVisualList,
-      rasterVisualList,
       sandTable,
+      shpArray,
+      pngArray,
+      movePngArray,
+      rasterTileArray,
     };
   },
 });

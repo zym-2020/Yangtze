@@ -38,7 +38,7 @@
     <select id="getFileInfoAndUserInfo" resultType="java.util.Map">
         select d.id as id, d.name as name, location, description, tags, creator, create_time as "createTime", update_time as "updateTime", download, watch, d.avatar as avatar, status,
                provider, time, range, type, provider_phone as "providerPhone", provider_email as "providerEmail", provider_address as "providerAddress", get_online as "getOnline", detail, thumbnail,
-               u.name as "userName", email, u.avatar as "userAvatar"
+               u.name as "userName", u.avatar as "userAvatar"
         from data_list d, users u
         where d.id::text = #{id} and creator = email
     </select>
@@ -52,28 +52,26 @@
     </update>
 
     <select id="fuzzyQuery" resultType="java.util.Map">
-        select id, name, location, description, tags, creator, create_time as "createTime", update_time as "updateTime", download, watch, avatar, status,
-               provider, time, range, type, provider_phone as "providerPhone", provider_email as "providerEmail", provider_address as "providerAddress", get_online as "getOnline", detail, thumbnail
-        from data_list
+        select data_list.id as "id", data_list.name as "name", location, description, tags, creator, create_time as "createTime", update_time as "updateTime", download, watch, data_list.avatar as "avatar", status,
+               provider, time, range, type, provider_phone as "providerPhone", provider_email as "providerEmail", provider_address as "providerAddress", get_online as "getOnline", detail, thumbnail, users.avatar as "userAvatar", users.name as "userName"
+        from data_list, users
         where
-            <if test="status == 2">
-                (status = 1 or status = 0 or status = -1)
-            </if>
-            <if test="status != 2">
-                status = #{status}
+            users.email = data_list.creator
+            <if test="status == -1 or status == 0 or status == 1">
+                and status = #{status}
             </if>
             <if test="keyword != ''">
-                and name like #{keyword}
+                and data_list.name like #{keyword}
             </if>
             <if test="tags.length > 0">
                 and tags @> #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}::text[]
             </if>
             <if test="flag">
-                order by ${property} asc
+                order by ${property} asc, data_list.id asc
                 limit #{size} offset #{start};
             </if>
             <if test="!flag">
-                order by ${property} desc
+                order by ${property} desc, data_list.id desc
                 limit #{size} offset #{start};
             </if>
     </select>

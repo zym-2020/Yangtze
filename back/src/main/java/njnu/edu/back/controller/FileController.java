@@ -6,6 +6,7 @@ import njnu.edu.back.common.resolver.JwtTokenParser;
 import njnu.edu.back.common.result.JsonResult;
 import njnu.edu.back.common.result.ResultUtils;
 import njnu.edu.back.common.utils.ZipOperate;
+import njnu.edu.back.pojo.File;
 import njnu.edu.back.pojo.dto.AddFileDTO;
 import njnu.edu.back.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,20 +38,14 @@ public class FileController {
 
     @AuthCheck
     @RequestMapping(value = "/addFile", method = RequestMethod.POST)
-    public JsonResult addFile(@RequestBody AddFileDTO addFileDTO, @JwtTokenParser("email") String email) {
-        return ResultUtils.success(fileService.addFile(addFileDTO, email));
+    public JsonResult addFile(@RequestBody File file, @JwtTokenParser("email") String email) {
+        return ResultUtils.success(fileService.addFile(file, email));
     }
 
     @AuthCheck
-    @RequestMapping(value = "/findByLevel/{level}", method = RequestMethod.GET)
-    public JsonResult findByLevel(@PathVariable int level, @JwtTokenParser("email") String email) {
-        return ResultUtils.success(fileService.findByLevel(level, email));
-    }
-
-    @AuthCheck
-    @RequestMapping(value = "/findByParentId/{parentId}", method = RequestMethod.GET)
-    public JsonResult findByParentId(@PathVariable String parentId, @JwtTokenParser("email") String email) {
-        return ResultUtils.success(fileService.findByParentId(parentId, email));
+    @RequestMapping(value = "/findByFolderId/{folderId}", method = RequestMethod.GET)
+    public JsonResult findByParentId(@PathVariable String folderId, @JwtTokenParser("email") String email) {
+        return ResultUtils.success(fileService.findByFolderId(folderId, email));
     }
 
     @AuthCheck
@@ -57,9 +53,9 @@ public class FileController {
     public JsonResult getNoUpload(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
         String MD5 = jsonObject.getStr("MD5");
         int total = jsonObject.getInt("total");
-        JSONObject metaData = jsonObject.getJSONObject("meta");
-        return ResultUtils.success(fileService.getNoUpload(MD5, email, total, metaData));
+        return ResultUtils.success(fileService.getNoUpload(MD5, email, total));
     }
+
     @CrossOrigin
     @AuthCheck
     @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
@@ -67,6 +63,7 @@ public class FileController {
         fileService.uploadFile(file, MD5, email, name);
         return ResultUtils.success();
     }
+
     @CrossOrigin
     @AuthCheck
     @RequestMapping(value = "/mergeFile", method = RequestMethod.POST)
@@ -88,7 +85,7 @@ public class FileController {
     @AuthCheck
     @RequestMapping(value = "/rename", method = RequestMethod.PATCH)
     public JsonResult rename(@RequestBody JSONObject jsonObject) {
-        fileService.rename(jsonObject.getStr("id"), jsonObject.getStr("name"));
+        fileService.rename(jsonObject.getStr("id"), jsonObject.getStr("fileName"));
         return ResultUtils.success();
     }
 
@@ -100,57 +97,74 @@ public class FileController {
         return ResultUtils.success();
     }
 
-    @CrossOrigin
-    @RequestMapping(value = "/avatar/{pictureName}", method = RequestMethod.GET)
-    public void getAvatar(@PathVariable String pictureName, HttpServletResponse response) {
-        fileService.getAvatar(pictureName, response);
-    }
-
-    @CrossOrigin
-    @RequestMapping(value = "/thumbnail/{pictureName}", method = RequestMethod.GET)
-    public void getThumbnail(@PathVariable String pictureName, HttpServletResponse response) {
-        fileService.getThumbnail(pictureName, response);
-    }
-
-    @CrossOrigin
-    @RequestMapping(value = "/photos/{pictureName}", method = RequestMethod.GET)
-    public void getPhotos(@PathVariable String pictureName, HttpServletResponse response) {
-        fileService.getPhotos(pictureName, response);
-    }
-
     @AuthCheck
-    @CrossOrigin
     @RequestMapping(value = "/getDownloadURL/{id}", method = RequestMethod.GET)
     public JsonResult getDownloadURL(@PathVariable String id, @JwtTokenParser("id") String userId) {
         return ResultUtils.success(fileService.getDownloadURL(id, userId));
     }
 
-    @AuthCheck
-    @RequestMapping(value = "/getTree", method = RequestMethod.GET)
-    public JsonResult getTree(@JwtTokenParser("email") String email) {
-        return ResultUtils.success(fileService.getFolderTree(email));
+    /**
+     * @Description:加密下载，下载条目下的文件
+     * @Author: Yiming
+     * @Date: 2022/8/20
+     */
+
+    @CrossOrigin
+    @RequestMapping(value = "/downloadInList/{userId}/{id}/{dataListId}", method = RequestMethod.GET)
+    public void downloadInList(@PathVariable String userId, @PathVariable String id, @PathVariable String dataListId, HttpServletResponse response, HttpServletRequest request) {
+        fileService.downloadInList(userId, id, dataListId, response, request);
     }
 
-    @AuthCheck
-    @RequestMapping(value = "/updateParentIdAndLevel", method = RequestMethod.POST)
-    public JsonResult updateParentIdAndLevel(@RequestBody JSONObject jsonObject) {
-
-        fileService.updateParentIdAndLevel(jsonObject);
-        return ResultUtils.success();
+    @CrossOrigin
+    @RequestMapping(value = "/downloadLocalFile/{userId}/{id}", method = RequestMethod.GET)
+    public void downloadLocalFile(@PathVariable String userId, @PathVariable String id, HttpServletResponse response) {
+        fileService.downloadLocalFile(userId, id, response);
     }
 
-    @AuthCheck
-    @RequestMapping(value = "/compressFile", method = RequestMethod.POST)
-    public JsonResult compressFile(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
-        fileService.compressFile(jsonObject, email);
-        return ResultUtils.success();
-    }
+
 
     /**
-    * @Description:方便录入数据的接口
-    * @Author: Yiming
-    * @Date: 2022/8/23
-    */
+     * @Description:这部分代码后期再重新整理
+     * @Author: Yiming
+     * @Date: 2022/8/19
+     */
+
+//    @AuthCheck
+//    @RequestMapping(value = "/unPack", method = RequestMethod.POST)
+//    public JsonResult unPack(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
+//        String id = jsonObject.getStr("id");
+//        String parentId = jsonObject.getStr("parentId");
+//        int level = jsonObject.getInt("level");
+//        fileService.unPack(id, parentId, level, email);
+//        return ResultUtils.success();
+//    }
+//
+//    @AuthCheck
+//    @RequestMapping(value = "/getTree", method = RequestMethod.GET)
+//    public JsonResult getTree(@JwtTokenParser("email") String email) {
+//        return ResultUtils.success(fileService.getFolderTree(email));
+//    }
+//
+//    @AuthCheck
+//    @RequestMapping(value = "/updateParentIdAndLevel", method = RequestMethod.POST)
+//    public JsonResult updateParentIdAndLevel(@RequestBody JSONObject jsonObject) {
+//
+//        fileService.updateParentIdAndLevel(jsonObject);
+//        return ResultUtils.success();
+//    }
+//
+//    @AuthCheck
+//    @RequestMapping(value = "/compressFile", method = RequestMethod.POST)
+//    public JsonResult compressFile(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
+//        fileService.compressFile(jsonObject, email);
+//        return ResultUtils.success();
+//    }
+
+    /**
+     * @Description:方便录入数据的接口
+     * @Author: Yiming
+     * @Date: 2022/8/23
+     */
     @RequestMapping(value = "/importData", method = RequestMethod.POST)
     public JsonResult importData(@RequestBody JSONObject jsonObject) {
         fileService.importData(jsonObject.getStr("path"), jsonObject.getStr("email"), jsonObject.getStr("time"), jsonObject.getStr("visualType"), jsonObject.getStr("visualId"));

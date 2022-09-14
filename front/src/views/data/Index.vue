@@ -18,60 +18,63 @@
         </div>
 
         <div class="right">
-          <div v-if="searchMap">
-            <FindMap
-              @getCoor="getCoor"
-              style="width: 600px; height: 800px; margin: 10px"
-            ></FindMap>
+          <div v-if="searchMap" style="height: 600px">
+            <FindMap @getCoor="getCoor"></FindMap>
           </div>
-            <div v-if="searchSet"
+          <!-- <div v-if="searchSet">
+            <div
+              style="
+                margin: 10px;
+                padding: 5px;
+                width: auto;
+                border: 1px solid #8b7e66;
+              "
             >
-            <div style="margin:10px
-            ;padding:5px
-            ;width:auto;
-            border: 1px solid #8b7e66">
-  <el-table
-    ref="multipleTableRef"
-    :data="tableData"
-    style="width: 100%"
-    @selection-change="handleSelectionChange"
-    @row-dblclick="ddd"
-    :row-style="tableStyleName"
-    :row-class-name="tableRowClassName"
-  >
-    <el-table-column type="selection" width="40" />
-    <el-table-column label="时间" width="150">
-      <template #default="scope">{{ scope.row.date }}</template>
-    </el-table-column>
-    <el-table-column property="name" label="名称" width="400" />
-    <el-table-column property="address" label="描述" show-overflow-tooltip  />
-    <el-table-column fixed="right" label="删除" width="100">
-      <template #default="scope">
-        <el-button
-          link
-         type="danger" 
-         icon="Delete"
-         round
-          size="small"
-          @click.prevent="deleteRow(scope.$index)"
-        >
-        </el-button>
-      </template>
-    </el-table-column>
-  </el-table>
-  </div>
-  <div>
-  <el-button class="mt-4" style="width: 100% ;margin-top:20px" @click="onAddItem"
-    >Add Item</el-button
-  >
-  </div>
-          </div>
+              <el-table
+                ref="multipleTableRef"
+                :data="tableData"
+                style="width: 100%"
+                @selection-change="handleSelectionChange"
+                @row-dblclick="ddd"
+                :row-style="tableStyleName"
+                :row-class-name="tableRowClassName"
+              >
+                <el-table-column type="selection" width="40" />
+                <el-table-column label="时间" width="150">
+                  <template #default="scope">{{ scope.row.date }}</template>
+                </el-table-column>
+                <el-table-column property="name" label="名称" width="400" />
+                <el-table-column
+                  property="address"
+                  label="描述"
+                  show-overflow-tooltip
+                />
+                <el-table-column fixed="right" label="删除" width="100">
+                  <template #default="scope">
+                    <el-button
+                      link
+                      type="danger"
+                      icon="Delete"
+                      round
+                      size="small"
+                      @click.prevent="deleteRow(scope.$index)"
+                    >
+                    </el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+            <div>
+              <el-button
+                class="mt-4"
+                style="width: 100%; margin-top: 20px"
+                @click="onAddItem"
+                >Add Item</el-button
+              >
+            </div>
+          </div> -->
           <div class="list">
-            <el-input
-              v-model="input"
-              placeholder="请输入关键字"
-              @keyup.enter="search"
-            >
+            <el-input v-model="input" placeholder="请输入关键字">
               <template #append>
                 <el-button @click="search"
                   ><el-icon><Search /></el-icon
@@ -101,11 +104,7 @@
                 <data-card
                   :fileInfo="item"
                   class="card"
-                  @clickName="toDetail(index)"
-                  @getDataSet="getDataSet"
-                  :dataSelect="tableData"
-                  :key="new Date().getTime()"
-
+                  @toDetail="toDetail(index)"
                 ></data-card>
               </div>
             </div>
@@ -119,9 +118,9 @@
                 :page-size="10"
                 layout="prev, pager, next"
                 :total="total"
-                @current-page="currentPage"
+                v-model:current-page="currentPage"
                 @current-change="pageChange"
-                hide-on-single-page="false"
+                :hide-on-single-page="true"
               />
             </div>
           </div>
@@ -140,7 +139,7 @@
               >空间位置查询
             </el-card>
           </div>
-          <div>
+          <!-- <div>
             <el-card
               shadow="always"
               :style="[
@@ -152,7 +151,7 @@
               @click="isSet"
               >资源融合
             </el-card>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
@@ -160,34 +159,20 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref,reactive } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import PageHeader from "@/components/page/PageHeader.vue";
 import DataCollapse from "@/components/page/DataCollapse.vue";
 import DataCard from "@/components/cards/DataCard.vue";
 import FindMap from "@/components/scenePart/FindMap.vue";
-import {dateFormat } from "@/utils/common";
-import axios from "axios";
-import {
-  fuzzyQueryClassify,
-  getShpByCoordinates,
-} from "@/api/request";
+import { fuzzyQueryDataList, getShpByCoordinates } from "@/api/request";
 import router from "@/router";
-import { ElTable } from 'element-plus'
-import {
-  Check,
-  Delete,
-  Edit,
-  Message,
-  Search,
-  Star,
-} from '@element-plus/icons-vue'
-import dayjs from 'dayjs'
+
 import NProgress from "nprogress";
 NProgress.configure({ showSpinner: false });
 interface User {
-  date: string
-  name: string
-  address: string
+  date: string;
+  name: string;
+  address: string;
 }
 export default defineComponent({
   components: {
@@ -196,7 +181,7 @@ export default defineComponent({
     DataCard,
     FindMap,
   },
-  
+
   setup() {
     const skeletonFlag = ref(false);
     const input = ref("");
@@ -204,20 +189,12 @@ export default defineComponent({
     const selectValue = ref("download");
     const fileList = ref<any[]>([]);
     const coorList = ref<any[]>([]);
-    const classify = ref<any[]>([]);
+    let classify: string[] = [];
     const total = ref(0);
     const currentPage = ref(1);
-    const getsSelectList = ref<any[]>([]);
     const searchMap = ref(false);
     const searchSet = ref(false);
-    const jsonData = reactive({
-      page : 0,
-      size : 10,
-      keyword: "",
-      tags: [],
-      property:"id",
-      flag: false,
-    });
+
     const options = ref<{ label: string; value: string }[]>([
       {
         label: "下载量",
@@ -236,176 +213,178 @@ export default defineComponent({
         value: "name",
       },
     ]);
-    const now = new Date()
-const tableStyleName = (row:any,rowIndex:any)=>{
-        // console.log(row.row.date )
-        // console.log(multipleSelection.value[0]?.date)
-        for(let i =0;i<multipleSelection.value.length;i++){
-        if(multipleSelection.value[i]?.date==row.row.date)
-         return 'background-color:rgba(21,69,153,0.3)'
-        }
-         return ''
-}
-const tableRowClassName = (row:any,rowIndex:any)=>{
-  return ''
-}
-const tableData = ref([
-  {
-    date: '2016-05-03',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '2016-05-02',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '2016-05-04',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
 
-])
-const multipleSelection = ref<User[]>([])
-const handleSelectionChange = (val: User[]) => {
-  multipleSelection.value = val
+    const tableStyleName = (row: any, rowIndex: any) => {
+      // console.log(row.row.date )
+      // console.log(multipleSelection.value[0]?.date)
+      for (let i = 0; i < multipleSelection.value.length; i++) {
+        if (multipleSelection.value[i]?.date == row.row.date)
+          return "background-color:rgba(21,69,153,0.3)";
+      }
+      return "";
+    };
+    const tableRowClassName = (row: any, rowIndex: any) => {
+      return "";
+    };
+    // const tableData = ref([
+    //   {
+    //     date: "2016-05-03",
+    //     name: "Tom",
+    //     address: "No. 189, Grove St, Los Angeles",
+    //   },
+    //   {
+    //     date: "2016-05-02",
+    //     name: "Tom",
+    //     address: "No. 189, Grove St, Los Angeles",
+    //   },
+    //   {
+    //     date: "2016-05-04",
+    //     name: "Tom",
+    //     address: "No. 189, Grove St, Los Angeles",
+    //   },
+    // ]);
+    const multipleSelection = ref<User[]>([]);
+    const handleSelectionChange = (val: User[]) => {
+      multipleSelection.value = val;
+    };
 
-}
-
-
-const deleteRow = (index: number) => {
-  tableData.value.splice(index, 1)
-}
-const ddd=(row:any)=>{
-}
-const onAddItem = (val:any) => {
-  //此处val为fileInfo
-  now.setDate(now.getDate() + 1)
-  tableData.value.push({
-    date: dateFormat(
-        val.createTime,
-        "yyyy年MM月dd日"
-      ),
-    name: val.name,
-    address: val.watch,
-  })
-}
+    // const deleteRow = (index: number) => {
+    //   tableData.value.splice(index, 1);
+    // };
+    // const ddd = (row: any) => {};
+    // const onAddItem = (val: any) => {
+    //   //此处val为fileInfo
+    //   now.setDate(now.getDate() + 1);
+    //   tableData.value.push({
+    //     date: dateFormat(val.createTime, "yyyy年MM月dd日"),
+    //     name: val.name,
+    //     address: val.watch,
+    //   });
+    // };
     //空间查询
     const isCoor = async () => {
+      const jsonData = {
+        keyword: "",
+      };
       searchMap.value = !searchMap.value;
-      if (searchMap.value == false) {
-        jsonData.keyword="download"
-        const data = await axios.post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonData,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).
-    then((res) => {
-         return res.data
-    });
-        skeletonFlag.value = true;
-        if (data != null) {
-          if ((data as any).code === 0) {
-            fileList.value = (data as any).data.list;
-            total.value = (data as any).data.total;
-          }
-        }
-      }
+      // if (searchMap.value == false) {
+      //   jsonData.keyword = "download";
+      //   const data = await axios
+      //     .post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonData, {
+      //       headers: {
+      //         authorization:
+      //           "Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw",
+      //       },
+      //     })
+      //     .then((res) => {
+      //       return res.data;
+      //     });
+      //   skeletonFlag.value = true;
+      //   if (data != null) {
+      //     if ((data as any).code === 0) {
+      //       fileList.value = (data as any).data.list;
+      //       total.value = (data as any).data.total;
+      //     }
+      //   }
+      // }
     };
     const isSet = async () => {
       searchSet.value = !searchSet.value;
     };
-    const getDataSet= (val:any)=>{
-
-      onAddItem(val)
-    }
-    const getCoor = async (val: any[]) => {
-      let arr = [];
-      for (let i = 0; i < val.length; i++) {
-        arr.push(val[i][0]);
-        arr.push(val[i][1]);
-      }
-      coorList.value = arr;
-      const data = await getShpByCoordinates(coorList.value.toString());
-      if (data != null) {
-        if ((data as any).code === 0) {
-          fileList.value = data.data;
-          total.value = data.data.length;
-          currentPage.value = 1;
-        }
-      }
+    // const getDataSet = (val: any) => {
+    //   onAddItem(val);
+    // };
+    const getCoor = async (val: Array<number[]>) => {
+      console.log(val);
+      // let arr = [];
+      // for (let i = 0; i < val.length; i++) {
+      //   arr.push(val[i][0]);
+      //   arr.push(val[i][1]);
+      // }
+      // coorList.value = arr;
+      // const data = await getShpByCoordinates(coorList.value.toString());
+      // if (data != null) {
+      //   if ((data as any).code === 0) {
+      //     fileList.value = data.data;
+      //     total.value = data.data.length;
+      //     currentPage.value = 1;
+      //   }
+      // }
     };
+
     const search = async () => {
       NProgress.start();
       keyWord.value = input.value;
+      const jsonData = {
+        page: 0,
+        size: 10,
+        keyword: keyWord.value,
+        tags: classify,
+        property: "",
+        flag: true,
+      };
+
       switch (selectValue.value) {
         case "download":
           jsonData.property = "download";
-          jsonData.flag = false;
           break;
         case "watch":
           jsonData.property = "watch";
-          jsonData.flag = false;
           break;
         case "update":
           jsonData.property = "update_time";
-          jsonData.flag = false;
           break;
         case "name":
           jsonData.property = "name";
-          jsonData.flag = false;
           break;
       }
-        const data = await axios.post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonData,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).
-    then((res) => {
-         return res.data
-    });
-        if (data != null) {
-          if ((data as any).code === 0) {
-            fileList.value =(data as any).data.list;
-            total.value = (data as any).data.total;
-            currentPage.value = 1;
-          }
+      const data = await fuzzyQueryDataList(jsonData);
+      if (data != null) {
+        if ((data as any).code === 0) {
+          fileList.value = (data as any).data.list;
+          total.value = (data as any).data.total;
+          currentPage.value = 1;
         }
+      }
       NProgress.done();
     };
 
-    const pageChange = async (val: any) => {
-      //classify记录了分类的项目
-      classify.value = getsSelectList.value;
+    const pageChange = async () => {
+      const jsonData = {
+        page: currentPage.value - 1,
+        size: 10,
+        keyword: keyWord.value,
+        tags: classify,
+        property: "",
+        flag: true,
+      };
+
       NProgress.start();
-      currentPage.value = val;
       switch (selectValue.value) {
         case "download":
           jsonData.property = "download";
-          jsonData.flag = false;
           break;
         case "watch":
           jsonData.property = "watch";
-          jsonData.flag = false;
           break;
         case "update":
           jsonData.property = "update_time";
-          jsonData.flag = false;
           break;
         case "name":
           jsonData.property = "name";
-          jsonData.flag = false;
           break;
       }
-      jsonData.page=currentPage.value - 1
-        const data = await axios.post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonData,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).
-    then((res) => {
-         return res.data
-    });
-        if (data != null) {
-          if ((data as any).code === 0) {
-            fileList.value = (data as any).data.list;
-            total.value = (data as any).data.total;
-          }
+      const data = await fuzzyQueryDataList(jsonData);
+      console.log(data);
+      if (data != null) {
+        if ((data as any).code === 0) {
+          fileList.value = (data as any).data.list;
+          total.value = (data as any).data.total;
         }
+      }
       NProgress.done();
     };
+
     const toDetail = (index: number) => {
       router.push({
         name: "shareFile",
@@ -415,67 +394,60 @@ const onAddItem = (val:any) => {
         },
       });
     };
-    const getSelectList = async (val: any[]) => {
-      classify.value = val;
+
+    const getSelectList = async (val: string[]) => {
       NProgress.start();
+      classify = val;
+      const jsonData = {
+        page: 0,
+        size: 10,
+        keyword: keyWord.value,
+        tags: classify,
+        property: "",
+        flag: true,
+      };
+
       switch (selectValue.value) {
         case "download":
           jsonData.property = "download";
-          jsonData.flag = false;
           break;
         case "watch":
           jsonData.property = "watch";
-          jsonData.flag = false;
           break;
         case "update":
           jsonData.property = "update_time";
-          jsonData.flag = false;
           break;
         case "name":
           jsonData.property = "name";
-          jsonData.flag = false;
           break;
       }
-      jsonData.page=currentPage.value - 1
-        const data = await axios.post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonData,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).
-    then((res) => {
-         return res.data
-    });
-        if (data != null) {
-          if ((data as any).code === 0) {
-            fileList.value = (data as any).data.list;
-            total.value = (data as any).data.total;
-            currentPage.value = 1;
-          }
+      const data = await fuzzyQueryDataList(jsonData);
+      if (data != null) {
+        if ((data as any).code === 0) {
+          fileList.value = data.data.list;
+          total.value = data.data.total;
+          currentPage.value = 1;
         }
+      }
       NProgress.done();
-      getsSelectList.value = val;
     };
 
     onMounted(async () => {
-      //console.log("ff"+jsonData)
-      let jsonDatass = {
-      page : 0,
-      size : 100,
-      keyword: "",
-      tags: [],
-      property:"id",
-      flag: false,
-       };
-       const data =await axios.post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonDatass,
-       {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).
-    then((res) => {
-      console.log("tt",res.data)
-         return res.data
-    })
-      
+      let jsonData = {
+        page: currentPage.value - 1,
+        size: 10,
+        keyword: keyWord.value,
+        tags: classify,
+        property: "download",
+        flag: false,
+      };
+      const data = await fuzzyQueryDataList(jsonData);
+
       skeletonFlag.value = true;
       if (data != null) {
         if ((data as any).code === 0) {
-          fileList.value = data.data.list ;
-          total.value = data.data.list.length;
-         
+          fileList.value = data.data.list;
+          total.value = data.data.total;
         }
       }
     });
@@ -486,24 +458,24 @@ const onAddItem = (val:any) => {
       searchMap,
       searchSet,
       options,
-      ddd,
+      // ddd,
       selectValue,
       fileList,
       total,
       coorList,
       toDetail,
       currentPage,
-      getDataSet,
-      deleteRow,
+      // getDataSet,
+      // deleteRow,
       tableRowClassName,
-      onAddItem,
+      // onAddItem,
       tableStyleName,
       pageChange,
       search,
       getSelectList,
       handleSelectionChange,
       getCoor,
-      tableData,
+      // tableData,
       isCoor,
       isSet,
     };
@@ -512,12 +484,11 @@ const onAddItem = (val:any) => {
 </script>
 
 <style lang="scss" scoped>
-
 .warning-row {
-  background: #0C90b8;
+  background: #0c90b8;
 }
 .success-row {
-  background: #0C90b8;
+  background: #0c90b8;
 }
 
 .video2 {
@@ -532,6 +503,7 @@ const onAddItem = (val:any) => {
   // -webkit-animation适配-webkit内核的浏览器
   // -webkit-animation: ripple 1s linear infinite;
   //animation: ripple 1s linear infinite;
+  cursor: pointer;
 }
 
 .video2:hover {

@@ -26,4 +26,6 @@ public interface UserService {
 
     String setUserInfoWithoutAvatar(String email, User user);
 
+    String getAvatarURL(String email);
+
 }

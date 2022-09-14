@@ -1,7 +1,7 @@
 import SparkMD5 from 'spark-md5'
 import { getToken } from './auth'
 import axios from 'axios';
-import { checkMergeState } from '@/api/request'
+import { checkMergeStateTemp } from '@/api/request'
 import { useStore } from '@/store';
 import { notice } from './notice';
 
@@ -123,6 +123,6 @@ export async function checkStatus(key: string, id: string, callback: () => void)
 }
 
 export async function checkMerge(key: string) {
-    const state = await checkMergeState(key)
+    const state = await checkMergeStateTemp(key)
     return state.data
 }

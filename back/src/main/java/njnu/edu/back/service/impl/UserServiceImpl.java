@@ -109,4 +109,9 @@ public class UserServiceImpl implements UserService {
         redisService.del(email);
         return token;
     }
+
+    @Override
+    public String getAvatarURL(String email) {
+        return userMapper.getAvatarURL(email);
+    }
 }

@@ -10,7 +10,7 @@ import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import mapBoxGl from "mapbox-gl";
 import mapboxgl from "mapbox-gl";
-import { emit } from "process";
+
 export default defineComponent({
   name: "FindMap",
   setup(props, { emit }) {
@@ -62,18 +62,14 @@ export default defineComponent({
 <style lang="scss" scoped>
 div.scene-map-wrapper2 {
   cursor: pointer;
-  background-color: transparent;
-  width: 52%;
-  height: 63%;
+  // background-color: transparent;
+  height: 100%;
+  width: 100%;
+  padding: 0px 20px;
 
   div#map {
-    position: absolute;
-    top: 200px;
-    bottom: 0;
-
-    width: 50%;
-    height: 80%;
-    background: rgba(255, 255, 255, 0.2);
+    height: 100%;
+    width: calc(100% - 40px);
   }
 }
 </style>

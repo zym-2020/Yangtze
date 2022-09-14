@@ -260,6 +260,7 @@ public class FileServiceImpl implements FileService {
             sos.flush();
             sos.close();
             in.close();
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new MyException(ResultEnum.DEFAULT_EXCEPTION);

@@ -75,7 +75,7 @@ import {
   deleteByAdmin,
 } from "@/api/request";
 import { notice } from "@/utils/notice";
-import axios from "axios"
+import axios from "axios";
 import DataCard from "@/components/cards/DataCard.vue";
 import { ElMessageBox } from "element-plus";
 import router from "@/router";
@@ -95,7 +95,7 @@ export default defineComponent({
             id: info.id,
           },
         });
-       // console.log(router.currentRoute.value.fullPath)
+        // console.log(router.currentRoute.value.fullPath)
       } else if (number === 2) {
         ElMessageBox.confirm(
           "您确定要下线条目吗？下线后若想重新上线需要管理员审核",
@@ -107,7 +107,7 @@ export default defineComponent({
           }
         )
           .then(async () => {
-            const data = await updateStatusById(info.id,-1);
+            const data = await updateStatusById(info.id, -1);
             if (data != null) {
               if ((data as any).code === 0) {
                 fileList.value.forEach((item) => {
@@ -147,7 +147,7 @@ export default defineComponent({
           //   replyUser:false,
           // });
           //console.log(info.id)
-          await updateStatusById(info.id,1);
+          await updateStatusById(info.id, 1);
         });
       } else if (number === 4) {
         ElMessageBox.confirm("您确定要删除该条目吗？", "警告", {
@@ -157,15 +157,15 @@ export default defineComponent({
         })
           .then(async () => {
             const data = await deleteByAdmin({
-              id:info.id ,
-              size:10,
-              page:currentPage.value - 1,
-              tags:info.tagList  ,
-              property:"id",
-              flag:"true",
-              keyword:"",
-              status :-1,
-          });
+              id: info.id,
+              size: 10,
+              page: currentPage.value - 1,
+              tags: info.tagList,
+              property: "id",
+              flag: true,
+              keyword: "",
+              status: -1,
+            });
             if ((data as any).code === 0) {
               fileList.value = data.data;
               notice("success", "成功", "删除成功！");
@@ -189,19 +189,24 @@ export default defineComponent({
 
     onMounted(async () => {
       let jsonDatass = {
-      page : 0,
-      size : 10,
-      keyword: "",
-      tags: [],
-      property:"id",
-      flag: false,
-       };
-       const data =await axios.post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonDatass,
-       {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).
-    then((res) => {
-      console.log("tt",res.data)
-         return res.data
-    })
+        page: 0,
+        size: 10,
+        keyword: "",
+        tags: [],
+        property: "id",
+        flag: false,
+      };
+      const data = await axios
+        .post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonDatass, {
+          headers: {
+            authorization:
+              "Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw",
+          },
+        })
+        .then((res) => {
+          console.log("tt", res.data);
+          return res.data;
+        });
       if (data != null) {
         if ((data as any).code === 0) {
           fileList.value = data.data.list;

@@ -122,7 +122,7 @@ import { defineComponent, onMounted, ref } from "vue";
 import UserFolderContextMenu from "@/components/contextMenu/UserFolderContextMenu.vue";
 import UploadDialog from "./UploadDialog.vue";
 import FolderDialog from "./FolderDialog.vue";
-import { findByLevel, addFile, findByParentId, rename } from "@/api/request";
+import { findByLevel, addFile, findByParentId, renameTemp } from "@/api/request";
 import { dateFormat } from "@/utils/common";
 import { notice } from "@/utils/notice";
 import MoveDialog from "./MoveDialog.vue";
@@ -158,10 +158,11 @@ export default defineComponent({
       folderFlag.value = true;
 
       contextMenuInstance.value = row;
-      if(path.value.length > 0) {
-        contextMenuInstance.value.parentName = path.value[path.value.length - 1].name
+      if (path.value.length > 0) {
+        contextMenuInstance.value.parentName =
+          path.value[path.value.length - 1].name;
       } else {
-        contextMenuInstance.value.parentName = 'user'
+        contextMenuInstance.value.parentName = "user";
       }
 
       const menu: any = document.querySelector(".user-folder-context-menu");
@@ -310,7 +311,7 @@ export default defineComponent({
 
     const enterHandle = async () => {
       if (oldName != renameValue.value) {
-        const data = await rename({
+        const data = await renameTemp({
           id: (contextMenuInstance.value as any).id,
           name: renameValue.value,
         });

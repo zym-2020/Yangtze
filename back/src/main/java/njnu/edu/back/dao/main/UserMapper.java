@@ -22,4 +22,6 @@ public interface UserMapper {
     User updateUserInfo(User user);
 
     User updateUserInfoWithoutAvatar(User user);
+
+    String getAvatarURL(@Param("email") String email);
 }

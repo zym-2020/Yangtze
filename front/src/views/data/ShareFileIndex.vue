@@ -1,8 +1,8 @@
 <template>
   <div class="share-file">
     <data-detail-header
-      :name="(fileInfo as any)?.name"
-      :info="{ watch: fileInfo?.watch, download: fileInfo?.download }"
+      :name="fileInfo.name"
+      :info="{ watch: fileInfo.watch, download: fileInfo.download }"
       @activeClick="activeClick"
     ></data-detail-header>
     <div class="main">
@@ -19,10 +19,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref } from "vue";
-import {
-  addWatchCount,
-  getFileInfoAndMetaAndUserInfo
-} from "@/api/request";
+import { addWatchCount } from "@/api/request";
 import DataDetailHeader from "@/components/page/DataDetailHeader.vue";
 import DataDetail from "@/components/resourcePages/DataDetail.vue";
 import DataStatistics from "@/components/resourcePages/DataStatistics.vue";
@@ -33,27 +30,20 @@ export default defineComponent({
   setup() {
     const active = ref(1);
     const fileInfo = computed(() => {
-      return router.currentRoute.value.params.fileInfo
+      return router.currentRoute.value.params.fileInfo;
     });
-
-    // const fileInfo = ref<any>()
-    // const fileMeta = ref<any>()
-
 
     const activeClick = (val: number) => {
       active.value = val;
     };
+
     onMounted(async () => {
-      console.log(123456)
       if (
         router.currentRoute.value.params.id != null &&
         router.currentRoute.value.params.id != undefined
       ) {
         addWatchCount(router.currentRoute.value.params.id as string);
       }
-      // const data = await getFileInfoAndMetaAndUserInfo(router.currentRoute.value.params.id as string)
-       //fileInfo.value = router.currentRoute.value.params.fileInfo
-      // fileMeta.value = data.data.fileMeta
     });
 
     return {
@@ -67,10 +57,9 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .share-file {
-  overflow-y:hidden ;
+  overflow-y: hidden;
   .main {
     width: 100%;
-
   }
 }
 </style>

@@ -56,7 +56,6 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 path: '',
                 name: 'DataList',
                 redirect: '/data/list'
-
             },
             {
                 path: 'list',

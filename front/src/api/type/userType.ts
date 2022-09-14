@@ -1,4 +1,3 @@
-import internal from "stream"
 
 export interface LoginJsonData {
     email: string,

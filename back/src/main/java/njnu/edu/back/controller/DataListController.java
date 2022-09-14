@@ -82,7 +82,7 @@ public class DataListController {
     }
 
     @AuthCheck
-    @RequestMapping(value = "/deleteAsMember", method = RequestMethod.POST)
+    @RequestMapping(value = "/deleteAsMember", method = RequestMethod.DELETE)
     public JsonResult deleteAsMember(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
         String id = jsonObject.getString("id");
         int size = jsonObject.getIntValue("size");
@@ -103,7 +103,6 @@ public class DataListController {
     }
 
     @AuthCheck
-    @CrossOrigin
     @RequestMapping(value = "/findFiles/{dataListId}", method = RequestMethod.GET)
     public JsonResult findFiles(@PathVariable String dataListId) {
         return ResultUtils.success(dataListService.findFiles(dataListId));
@@ -145,7 +144,6 @@ public class DataListController {
     }
 
     @AuthCheck
-    @CrossOrigin
     @RequestMapping(value = "/updateStatusById/{id}/{status}", method = RequestMethod.PATCH)
     public JsonResult updateStatusById(@PathVariable String id, @PathVariable int status) {
         dataListService.updateStatusById(id, status);
