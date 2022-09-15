@@ -19,7 +19,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref } from "vue";
-import { addWatchCount } from "@/api/request";
+import { addWatchCount, addBrowseHistory } from "@/api/request";
 import DataDetailHeader from "@/components/page/DataDetailHeader.vue";
 import DataDetail from "@/components/resourcePages/DataDetail.vue";
 import DataStatistics from "@/components/resourcePages/DataStatistics.vue";
@@ -37,12 +37,13 @@ export default defineComponent({
       active.value = val;
     };
 
-    onMounted(async () => {
+    onMounted(() => {
       if (
         router.currentRoute.value.params.id != null &&
         router.currentRoute.value.params.id != undefined
       ) {
         addWatchCount(router.currentRoute.value.params.id as string);
+        addBrowseHistory(router.currentRoute.value.params.id as string)
       }
     });
 

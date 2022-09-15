@@ -15,15 +15,11 @@
 import { defineComponent, onMounted, ref } from "vue";
 import BrowseStatistics from "./components/BrowseStatistics.vue";
 import DownloadStatistics from "./components/DownloadStatistics.vue";
-import TideStatistics from "./components/TideStatistics.vue";
-import DownloadSta2 from "./components/DownSta2.vue";
 
 export default defineComponent({
   components: {
     DownloadStatistics,
     BrowseStatistics,
-    DownloadSta2,
-    TideStatistics,
   },
   setup() {},
 });

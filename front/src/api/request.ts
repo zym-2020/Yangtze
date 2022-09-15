@@ -276,12 +276,6 @@ export async function getDownloadURLTemp(id: string) {
 }
 
 
-
-//========================browseHistory相关接口=================================
-export async function getDataGroup(dataId: string, number: number) {
-    return await get(`/browseHistory/getDataGroup/${dataId}/${number}`)
-}
-
 //========================uploadRecord相关接口=================================
 export async function getRecords(number: number) {
     return await get(`/uploadRecord/getRecords/${number}`)
@@ -509,4 +503,13 @@ export async function getDownloadURL(id: string) {
 //========================downloadHistory相关接口=================================
 export async function pageQueryDownloadHistory(size: number, page: number, id: string) {
     return await get(`/downloadHistory/pageQuery/${id}/${size}/${page}`)
+}
+
+//========================browseHistory相关接口=================================
+export async function getDataGroup(dataId: string, number: number) {
+    return await get(`/browseHistory/getDataGroup/${dataId}/${number}`)
+}
+
+export async function addBrowseHistory(dataListId: string) {
+    return await post(`/browseHistory/addHistory/${dataListId}`)
 }
