@@ -18,8 +18,8 @@ export default defineComponent({
 
     let option: any = {};
 
-    const initData = async () => {
-      const data = await getSandContent(props.visualId as string);
+    const initData = async (visualId: string) => {
+      const data = await getSandContent(visualId);
       if (data != null) {
         if ((data as any).code == 0) {
           const sandData = data.data;
@@ -191,14 +191,20 @@ export default defineComponent({
       }
     };
 
+    const refreshData = async (visualId: string) => {
+      await initData(visualId);
+      myChart.setOption(option);
+    };
+
     onMounted(async () => {
-      await initData();
+      await initData(props.visualId as string);
       myChart = echarts.init(SCChart.value as HTMLElement);
       myChart.setOption(option);
     });
 
     return {
       SCChart,
+      refreshData,
     };
   },
 });
@@ -206,7 +212,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .SCChart {
-  width: 900px;
+  width: 100%;
   height: 400px;
 }
 </style>

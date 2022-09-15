@@ -344,254 +344,18 @@
                 <photo-visual :photoList="photoList" />
               </el-col>
             </el-row>
-            <!-- //////////////-------------tableCheck需要更改-----------------///////////// -->
-            <el-row v-if="tableCheck">
-              <el-col>
-                <div class="detail">
-                  <el-row>
-                    <el-col :span="4">
-                      <div class="divider">
-                        <div class="mark"></div>
-                        <div class="text">
-                          <strong>测站可视化图表</strong>
-                        </div>
-                      </div>
-                    </el-col>
-                    <el-col :span="20">
-                      <hr style="margin-top: 12px; color: #696969" />
-                      <!-- <el-icon><star-filled /></el-icon> -->
-                    </el-col>
-                  </el-row>
-                </div>
-                <!-- ----------------------潮位站观测成果---------------------------- -->
-                <div>
-                  <el-row :gutter="20" justify="center">
-                    <el-col :span="8" style="text-align: center">
-                      <el-card
-                        class="video"
-                        shadow="always"
-                        @click="
-                          i = (i - 1 + nameTable.length) % nameTable.length;
-                          changeTableName('tide');
-                        "
-                        style="margin-top: 30px; margin-bottom: 10px"
-                      >
-                        <div class="text">
-                          <el-icon style="margin-top: 5px"
-                            ><ArrowLeftBold
-                          /></el-icon>
-                          <strong>{{
-                            nameTable[
-                              (i - 1 + nameTable.length) % nameTable.length
-                            ]
-                          }}</strong>
-                        </div>
-                      </el-card>
-                    </el-col>
-                    <el-col :span="8" style="text-align: center">
-                      <el-card
-                        shadow="always"
-                        @click="changeTableName('tide')"
-                        style="
-                          margin-top: 10px;
-                          margin-bottom: 10px;
-                          background-color: lightgrey;
-                        "
-                      >
-                        <div class="text">
-                          <strong>{{ nameTable[i] }}</strong>
-                        </div>
-                      </el-card>
-                    </el-col>
-                    <el-col :span="8" style="text-align: center">
-                      <el-card
-                        class="video"
-                        shadow="always"
-                        @click="
-                          i = (i + 1) % nameTable.length;
-                          changeTableName('tide');
-                        "
-                        style="margin-top: 30px; margin-bottom: 10px"
-                      >
-                        <div class="text">
-                          <strong>{{
-                            nameTable[(i + 1) % nameTable.length]
-                          }}</strong>
-                          <el-icon><ArrowRightBold /></el-icon>
-                        </div>
-                      </el-card>
-                    </el-col>
-                  </el-row>
-                  <el-row>
-                    <div style="width: 100%; height: 80%">
-                      <TideStatistics
-                        :getName="getName"
-                        :key="new Date().getTime()"
-                      ></TideStatistics>
-                    </div>
-                  </el-row>
 
-                  <!-- ----------------------分割线------------------------------- -->
-                  <el-row>
-                    <el-divider>
-                      <el-icon><Monitor /></el-icon>
-                    </el-divider>
-                  </el-row>
-                </div>
-                <!-- ----------------------含沙量---------------------------- -->
-                <div>
-                  <el-row :gutter="20" justify="center">
-                    <el-col :span="8" style="text-align: center">
-                      <el-card
-                        class="video"
-                        shadow="always"
-                        @click="
-                          k = (k - 1 + sandTable.length) % sandTable.length;
-                          changeTableName('sand');
-                        "
-                        style="margin-top: 30px; margin-bottom: 10px"
-                      >
-                        <div class="text">
-                          <el-icon style="margin-top: 5px"
-                            ><ArrowLeftBold
-                          /></el-icon>
-                          <strong>{{
-                            sandTable[
-                              (k - 1 + sandTable.length) % sandTable.length
-                            ].name
-                          }}</strong>
-                        </div>
-                      </el-card>
-                    </el-col>
-                    <el-col :span="8" style="text-align: center">
-                      <el-card
-                        shadow="always"
-                        @click="changeTableName('sand')"
-                        style="
-                          margin-top: 10px;
-                          margin-bottom: 10px;
-                          background-color: lightgrey;
-                        "
-                      >
-                        <div class="text">
-                          <strong>{{ sandTable[k].name }}</strong>
-                        </div>
-                      </el-card>
-                    </el-col>
-                    <el-col :span="8" style="text-align: center">
-                      <el-card
-                        class="video"
-                        shadow="always"
-                        @click="
-                          k = (k + 1) % sandTable.length;
-                          changeTableName('sand');
-                        "
-                        style="margin-top: 30px; margin-bottom: 10px"
-                      >
-                        <div class="text">
-                          <strong>{{
-                            sandTable[(k + 1) % sandTable.length].name
-                          }}</strong>
-                          <el-icon><ArrowRightBold /></el-icon>
-                        </div>
-                      </el-card>
-                    </el-col>
-                  </el-row>
-                  <el-row>
-                    <div style="width: 100%; height: 80%">
-                      <!-- <RateAndDirection
-                    :getVeloName="getVeloName"
-                    :key="new Date().getTime()"
-                    >
-                  </RateAndDirection> -->
-                      <SandContent
-                        :getSandName="getSandName"
-                        :key="new Date().getTime()"
-                      >
-                      </SandContent>
-                    </div>
-                  </el-row>
-                  <el-row>
-                    <!-------------------------- 分割线 -------------------------------->
-                    <el-divider>
-                      <el-icon><Monitor /></el-icon>
-                    </el-divider>
-                  </el-row>
-                </div>
-                <!-- ---------------------- 流速流向 ------------------------------->
-                <div>
-                  <el-row :gutter="20" justify="center">
-                    <el-col :span="8" style="text-align: center">
-                      <el-card
-                        class="video"
-                        shadow="always"
-                        @click="
-                          j =
-                            (j - 1 + velocityTable.length) %
-                            velocityTable.length;
-                          changeTableName('velocity');
-                        "
-                        style="margin-top: 30px; margin-bottom: 10px"
-                      >
-                        <div class="text">
-                          <el-icon style="margin-top: 5px"
-                            ><ArrowLeftBold
-                          /></el-icon>
-                          <strong>{{
-                            velocityTable[
-                              (j - 1 + velocityTable.length) %
-                                velocityTable.length
-                            ].name
-                          }}</strong>
-                        </div>
-                      </el-card>
-                    </el-col>
-                    <el-col :span="8" style="text-align: center">
-                      <el-card
-                        shadow="always"
-                        @click="changeTableName('velocity')"
-                        style="
-                          margin-top: 10px;
-                          margin-bottom: 10px;
-                          background-color: lightgrey;
-                        "
-                      >
-                        <div class="text">
-                          <strong>{{ velocityTable[j].name }}</strong>
-                        </div>
-                      </el-card>
-                    </el-col>
-                    <el-col :span="8" style="text-align: center">
-                      <el-card
-                        class="video"
-                        shadow="always"
-                        @click="
-                          j = (j + 1) % velocityTable.length;
-                          changeTableName('velocity');
-                        "
-                        style="margin-top: 30px; margin-bottom: 10px"
-                      >
-                        <div class="text">
-                          <strong>{{
-                            velocityTable[(j + 1) % velocityTable.length].name
-                          }}</strong>
-                          <el-icon><ArrowRightBold /></el-icon>
-                        </div>
-                      </el-card>
-                    </el-col>
-                  </el-row>
-                  <el-row>
-                    <div style="width: 100%; height: 80%">
-                      <!-- <RateAndDirection
-                    :getVeloName="getVeloName"
-                    :key="new Date().getTime()">
-                  </RateAndDirection> -->
-                      <SectionTide> </SectionTide>
-                    </div>
-                  </el-row>
-                </div>
-                <!-- /////////////////////////////////////////////////////////////////// -->
-              </el-col>
+            <el-row v-if="excelShow">
+              <div style="width: 950px">
+                <excel-visual
+                  :tableNameList="tableNameList"
+                  :sandContentList="sandContentList"
+                  :suspensionList="suspensionList"
+                  :rateDirectionList="rateDirectionList"
+                  :salinityList="salinityList"
+                  :flowSandZList="flowSandZList"
+                />
+              </div>
             </el-row>
           </div>
         </el-col>
@@ -819,6 +583,7 @@ import router from "@/router";
 
 import MapVisual from "@/components/visual/MapVisual.vue";
 import PhotoVisual from "@/components/visual/PhotoVisual.vue";
+import ExcelVisual from "@/components/visual/ExcelVisual.vue";
 
 export default defineComponent({
   components: {
@@ -836,6 +601,7 @@ export default defineComponent({
     SectionTide,
     MapVisual,
     PhotoVisual,
+    ExcelVisual,
   },
   props: {
     fileInfo: {
@@ -844,9 +610,10 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore();
-    const visualSkeleton = ref(true)
+    const visualSkeleton = ref(true);
     const mapShow = ref(false);
     const photoShow = ref(false);
+    const excelShow = ref(false);
     const shpArray = ref<
       { visualId: string; type: "line" | "fill" | "circle" }[]
     >([]);
@@ -855,10 +622,16 @@ export default defineComponent({
     const movePngArray = ref<{ visualId: string; coordinates: number[][] }[]>(
       []
     );
+    const photoList = ref<string[]>([]);
+    const tableNameList = ref<string[]>([]);
+    const sandContentList = ref<string[]>([]);
+    const suspensionList = ref<string[]>([]);
+    const rateDirectionList = ref<string[]>([]);
+    const salinityList = ref<string[]>([]);
+    const flowSandZList = ref<string[]>([]);
     const Yang = ref("长江区域");
     const downLoadList = ref<any[]>([]);
     const fileList = ref<any[]>([]);
-    const photoList = ref<string[]>([]);
 
     const downLoadTotal = computed(() => {
       return props.fileInfo?.download;
@@ -899,67 +672,6 @@ export default defineComponent({
       );
     });
 
-    //表格初始值
-    const getName = ref("一干河站潮位观测成果表");
-    const getVeloName = ref("fe139257-2ceb-4a37-afb1-ca34f7941d44");
-    const getSandName = ref("f8b40c25-1f69-4539-aa81-88cfa1669d2e");
-
-    const tableCheck = ref(false);
-
-    const i = ref(0);
-    const j = ref(0);
-    const k = ref(0);
-
-    const velocityTable = reactive<any>([
-      { name: "福右小潮T800", id: "fe139257-2ceb-4a37-afb1-ca34f7941d44" },
-      { name: "狼山沙东大潮S600", id: "fe8bb325-355c-4752-abd7-faa0bce04e85" },
-      { name: "狼山沙西小潮T2200", id: "febcc7d8-df9b-45ed-9cd1-b56c25407fe7" },
-      { name: "狼左小潮T5200", id: "fedeec9e-52e7-479b-bb1f-e1acc84e2c96" },
-      { name: "断面RZ#_S300", id: "fee7ca71-364f-429b-92ed-279af13c818c" },
-    ]);
-    const nameTable = reactive([
-      "一干河站潮位观测成果表",
-      "六滧站潮位观测成果表",
-      "吴淞口站潮位观测成果表",
-      "天生港灰场站潮位观测成果表",
-      "天生港站潮位观测成果表",
-      "太字圩港站潮位观测成果表",
-      "如皋港站潮位观测成果表",
-      "崇头站潮位观测成果表",
-      "徐六泾站潮位观测成果表",
-      "望虞河站潮位观测成果表",
-      "杨林站潮位观测成果表",
-      "江海油库码头站潮位观测成果表",
-      "江阴站潮位观测成果表",
-      "白茆站潮位观测成果表",
-      "营船港站潮位观测成果表",
-      "连兴港站潮位观测成果表",
-      "青龙港站潮位观测成果表",
-    ]);
-    const sandTable = reactive<any>([
-      {
-        name: "san_sha_SHXY13#D_small",
-        id: "f293035e-e58f-465e-b560-e761bc8e45d1",
-      },
-      { name: "adcp_LSSD1xPHSL", id: "f41f017f-5a52-46b8-a75b-bccb475c7d5c" },
-      { name: "san_sha_TZSXB_big", id: "f4a16146-68ef-45bf-9830-47f591b5cdf4" },
-      { name: "san_sha_FY3#B_mid", id: "f82fb7f0-39a4-448c-9f1a-c060b97e47b5" },
-      {
-        name: "san_sha_BZK10#A_small",
-        id: "f8b40c25-1f69-4539-aa81-88cfa1669d2e",
-      },
-    ]);
-    //excel可视
-    const changeTableName = (val: string) => {
-      if (val == "tide") {
-        getName.value = nameTable[i.value];
-      } else if (val == "velocity") {
-        getVeloName.value = velocityTable[j.value].id;
-      } else if (val == "sand") {
-        getSandName.value = sandTable[k.value].id;
-      }
-    };
-
     const srcList: any[] = reactive([`${avatar.value as any as string}`]);
     //规整日期
     const date = (time: string) => {
@@ -995,6 +707,7 @@ export default defineComponent({
       //获取file文件的可视化方法
       let MapFlag = false;
       let photoFlag = false;
+      let excelFlag = false;
       for (let i = 0; i < fileList.value.length; i++) {
         if (fileList.value[i].visualType != "") {
           if (
@@ -1061,11 +774,37 @@ export default defineComponent({
             );
             photoFlag = true;
           }
+          if (fileList.value[i].visualType === "sandContent") {
+            sandContentList.value.push(fileList.value[i].visualId);
+            tableNameList.value.push(fileList.value[i].fileName);
+            excelFlag = true;
+          }
+          if (fileList.value[i].visualType === "suspension") {
+            suspensionList.value.push(fileList.value[i].visualId);
+            tableNameList.value.push(fileList.value[i].fileName);
+            excelFlag = true;
+          }
+          if (fileList.value[i].visualType === "rateDirection") {
+            rateDirectionList.value.push(fileList.value[i].visualId);
+            tableNameList.value.push(fileList.value[i].fileName);
+            excelFlag = true;
+          }
+          if (fileList.value[i].visualType === "salinity") {
+            salinityList.value.push(fileList.value[i].visualId);
+            tableNameList.value.push(fileList.value[i].fileName);
+            excelFlag = true;
+          }
+          if (fileList.value[i].visualType === "flowSand_Z") {
+            flowSandZList.value.push(fileList.value[i].visualId);
+            tableNameList.value.push(fileList.value[i].fileName);
+            excelFlag = true;
+          }
         }
       }
       mapShow.value = MapFlag;
       photoShow.value = photoFlag;
-      visualSkeleton.value = false
+      excelShow.value = excelFlag;
+      visualSkeleton.value = false;
     };
 
     const initDownloadHistory = async () => {
@@ -1082,34 +821,30 @@ export default defineComponent({
 
     return {
       fileInfo,
-      i,
-      j,
-      k,
       Yang,
       photoList,
-      nameTable,
-      velocityTable,
       date,
-      tableCheck,
       avatar,
       downloadOrigin,
-      getSandName,
       location,
       avatarUrl,
       thumbnail,
       downLoadList,
       fileList,
       srcList,
+      sandContentList,
+      suspensionList,
+      rateDirectionList,
+      salinityList,
+      flowSandZList,
       downLoadTotal,
       visualSkeleton,
       mapShow,
       photoShow,
-      getName,
-      getVeloName,
-      changeTableName,
-      sandTable,
+      excelShow,
       shpArray,
       pngArray,
+      tableNameList,
       movePngArray,
       rasterTileArray,
     };

@@ -7,6 +7,7 @@ import { Resource, Analyse } from '@/store/resourse/resourceState'
 
 import axios from 'axios'
 import { JsonObject } from 'type-fest'
+import { idID } from 'naive-ui'
 
 //========================User相关接口=================================
 export async function login(jsonData: LoginJsonData) {
@@ -483,6 +484,18 @@ export async function getRateDirection(id: string) {
 
 export async function getSandContent(id: string) {
     return await get(`/visual/getSandContent/${id}`)
+}
+
+export async function getSuspension(id: string) {
+    return await get(`/visual/getSuspension/${id}`)
+}
+
+export async function getSalinity(id: string) {
+    return await get(`/visual/getSalinity/${id}`)
+}
+
+export async function getFlowSand_Z(id: string) {
+    return await get(`/visual/getFlowSand_Z/${id}`)
 }
 
 
