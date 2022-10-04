@@ -24,49 +24,65 @@
               style="width: 600px; height: 800px; margin: 10px"
             ></FindMap>
           </div>
-            <div v-if="searchSet"
+          <div v-if="searchSet">
+            <div
+              style="
+                margin: 10px;
+                padding: 5px;
+                width: auto;
+                border: 1px solid #8b7e66;
+              "
             >
-            <div style="margin:10px
-            ;padding:5px
-            ;width:auto;
-            border: 1px solid #8b7e66">
-  <el-table
-    ref="multipleTableRef"
-    :data="tableData"
-    style="width: 100%"
-    @selection-change="handleSelectionChange"
-    @row-dblclick="ddd"
-    :row-style="tableStyleName"
-    :row-class-name="tableRowClassName"
-  >
-    <el-table-column type="selection" width="40" />
-    <el-table-column label="时间" width="150">
-      <template #default="scope">{{ scope.row.date }}</template>
-    </el-table-column>
-    <el-table-column property="name" label="名称" width="400" />
-    <el-table-column property="address" label="描述" show-overflow-tooltip  />
-    <el-table-column fixed="right" label="删除" width="100">
-      <template #default="scope">
-        <el-button
-          link
-         type="danger" 
-         icon="Delete"
-         round
-          size="small"
-          @click.prevent="deleteRow(scope.$index)"
-        >
-        </el-button>
-      </template>
-    </el-table-column>
-  </el-table>
-  </div>
-  <div>
-  <el-button class="mt-4" style="width: 100% ;margin-top:20px" @click="onAddItem"
-    >Add Item</el-button
-  >
-  </div>
+              <el-table
+                ref="multipleTableRef"
+                :data="tableData"
+                style="width: 100%"
+                @selection-change="handleSelectionChange"
+                @row-dblclick="ddd"
+                :row-style="tableStyleName"
+                :row-class-name="tableRowClassName"
+              >
+                <el-table-column type="selection" width="40" />
+                <el-table-column label="时间" width="150">
+                  <template #default="scope">{{ scope.row.date }}</template>
+                </el-table-column>
+                <el-table-column property="name" label="名称" width="400" />
+                <el-table-column
+                  property="address"
+                  label="描述"
+                  show-overflow-tooltip
+                />
+                <el-table-column fixed="right" label="删除" width="100">
+                  <template #default="scope">
+                    <el-button
+                      link
+                      type="danger"
+                      icon="Delete"
+                      round
+                      size="small"
+                      @click.prevent="deleteRow(scope.$index)"
+                    >
+                    </el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+            <div>
+              <el-button
+                class="mt-4"
+                style="width: 100%; margin-top: 20px"
+                @click="onAddItem"
+                >Add Item</el-button
+              >
+            </div>
           </div>
           <div class="list">
+            <div class="nav">
+              <div class="home" @click="toHome">首页</div>
+              <div class="Separator">/</div>
+              <div>基础地形数据</div>
+            </div>
+            <div>
             <el-input
               v-model="input"
               placeholder="请输入关键字"
@@ -78,6 +94,7 @@
                 ></el-button>
               </template>
             </el-input>
+          </div>
             <div class="statistics">
               <div class="result">
                 共<span>{{ total }}</span
@@ -105,7 +122,6 @@
                   @getDataSet="getDataSet"
                   :dataSelect="tableData"
                   :key="new Date().getTime()"
-
                 ></data-card>
               </div>
             </div>
@@ -160,19 +176,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref,reactive } from "vue";
+import { defineComponent, onMounted, ref, reactive } from "vue";
 import PageHeader from "@/components/page/PageHeader.vue";
 import DataCollapse from "@/components/page/DataCollapse.vue";
 import DataCard from "@/components/cards/DataCard.vue";
 import FindMap from "@/components/scenePart/FindMap.vue";
-import {dateFormat } from "@/utils/common";
+import { dateFormat } from "@/utils/common";
 import axios from "axios";
-import {
-  fuzzyQueryClassify,
-  getShpByCoordinates,
-} from "@/api/request";
+import { fuzzyQueryClassify, getShpByCoordinates } from "@/api/request";
 import router from "@/router";
-import { ElTable } from 'element-plus'
+import { ElTable } from "element-plus";
 import {
   Check,
   Delete,
@@ -180,14 +193,14 @@ import {
   Message,
   Search,
   Star,
-} from '@element-plus/icons-vue'
-import dayjs from 'dayjs'
+} from "@element-plus/icons-vue";
+import dayjs from "dayjs";
 import NProgress from "nprogress";
 NProgress.configure({ showSpinner: false });
 interface User {
-  date: string
-  name: string
-  address: string
+  date: string;
+  name: string;
+  address: string;
 }
 export default defineComponent({
   components: {
@@ -196,7 +209,7 @@ export default defineComponent({
     DataCard,
     FindMap,
   },
-  
+
   setup() {
     const skeletonFlag = ref(false);
     const input = ref("");
@@ -211,11 +224,11 @@ export default defineComponent({
     const searchMap = ref(false);
     const searchSet = ref(false);
     const jsonData = reactive({
-      page : 0,
-      size : 10,
+      page: 0,
+      size: 10,
       keyword: "",
       tags: [],
-      property:"id",
+      property: "id",
       flag: false,
     });
     const options = ref<{ label: string; value: string }[]>([
@@ -236,71 +249,69 @@ export default defineComponent({
         value: "name",
       },
     ]);
-    const now = new Date()
-const tableStyleName = (row:any,rowIndex:any)=>{
-        // console.log(row.row.date )
-        // console.log(multipleSelection.value[0]?.date)
-        for(let i =0;i<multipleSelection.value.length;i++){
-        if(multipleSelection.value[i]?.date==row.row.date)
-         return 'background-color:rgba(21,69,153,0.3)'
-        }
-         return ''
-}
-const tableRowClassName = (row:any,rowIndex:any)=>{
-  return ''
-}
-const tableData = ref([
-  {
-    date: '2016-05-03',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '2016-05-02',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '2016-05-04',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
+    const now = new Date();
+    const tableStyleName = (row: any, rowIndex: any) => {
+      // console.log(row.row.date )
+      // console.log(multipleSelection.value[0]?.date)
+      for (let i = 0; i < multipleSelection.value.length; i++) {
+        if (multipleSelection.value[i]?.date == row.row.date)
+          return "background-color:rgba(21,69,153,0.3)";
+      }
+      return "";
+    };
+    const tableRowClassName = (row: any, rowIndex: any) => {
+      return "";
+    };
+    const tableData = ref([
+      {
+        date: "2016-05-03",
+        name: "Tom",
+        address: "No. 189, Grove St, Los Angeles",
+      },
+      {
+        date: "2016-05-02",
+        name: "Tom",
+        address: "No. 189, Grove St, Los Angeles",
+      },
+      {
+        date: "2016-05-04",
+        name: "Tom",
+        address: "No. 189, Grove St, Los Angeles",
+      },
+    ]);
+    const multipleSelection = ref<User[]>([]);
+    const handleSelectionChange = (val: User[]) => {
+      multipleSelection.value = val;
+    };
 
-])
-const multipleSelection = ref<User[]>([])
-const handleSelectionChange = (val: User[]) => {
-  multipleSelection.value = val
-
-}
-
-
-const deleteRow = (index: number) => {
-  tableData.value.splice(index, 1)
-}
-const ddd=(row:any)=>{
-}
-const onAddItem = (val:any) => {
-  //此处val为fileInfo
-  now.setDate(now.getDate() + 1)
-  tableData.value.push({
-    date: dateFormat(
-        val.createTime,
-        "yyyy年MM月dd日"
-      ),
-    name: val.name,
-    address: val.watch,
-  })
-}
+    const deleteRow = (index: number) => {
+      tableData.value.splice(index, 1);
+    };
+    const ddd = (row: any) => {};
+    const onAddItem = (val: any) => {
+      //此处val为fileInfo
+      now.setDate(now.getDate() + 1);
+      tableData.value.push({
+        date: dateFormat(val.createTime, "yyyy年MM月dd日"),
+        name: val.name,
+        address: val.watch,
+      });
+    };
     //空间查询
     const isCoor = async () => {
       searchMap.value = !searchMap.value;
       if (searchMap.value == false) {
-        jsonData.keyword="download"
-        const data = await axios.post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonData,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).
-    then((res) => {
-         return res.data
-    });
+        jsonData.keyword = "download";
+        const data = await axios
+          .post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonData, {
+            headers: {
+              authorization:
+                "Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg",
+            },
+          })
+          .then((res) => {
+            return res.data;
+          });
         skeletonFlag.value = true;
         if (data != null) {
           if ((data as any).code === 0) {
@@ -313,10 +324,9 @@ const onAddItem = (val:any) => {
     const isSet = async () => {
       searchSet.value = !searchSet.value;
     };
-    const getDataSet= (val:any)=>{
-
-      onAddItem(val)
-    }
+    const getDataSet = (val: any) => {
+      onAddItem(val);
+    };
     const getCoor = async (val: any[]) => {
       let arr = [];
       for (let i = 0; i < val.length; i++) {
@@ -354,18 +364,23 @@ const onAddItem = (val:any) => {
           jsonData.flag = false;
           break;
       }
-        const data = await axios.post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonData,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).
-    then((res) => {
-         return res.data
-    });
-        if (data != null) {
-          if ((data as any).code === 0) {
-            fileList.value =(data as any).data.list;
-            total.value = (data as any).data.total;
-            currentPage.value = 1;
-          }
+      const data = await axios
+        .post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonData, {
+          headers: {
+            authorization:
+              "Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg",
+          },
+        })
+        .then((res) => {
+          return res.data;
+        });
+      if (data != null) {
+        if ((data as any).code === 0) {
+          fileList.value = (data as any).data.list;
+          total.value = (data as any).data.total;
+          currentPage.value = 1;
         }
+      }
       NProgress.done();
     };
 
@@ -392,19 +407,27 @@ const onAddItem = (val:any) => {
           jsonData.flag = false;
           break;
       }
-      jsonData.page=currentPage.value - 1
-        const data = await axios.post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonData,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).
-    then((res) => {
-         return res.data
-    });
-        if (data != null) {
-          if ((data as any).code === 0) {
-            fileList.value = (data as any).data.list;
-            total.value = (data as any).data.total;
-          }
+      jsonData.page = currentPage.value - 1;
+      const data = await axios
+        .post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonData, {
+          headers: {
+            authorization:
+              "Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg",
+          },
+        })
+        .then((res) => {
+          return res.data;
+        });
+      if (data != null) {
+        if ((data as any).code === 0) {
+          fileList.value = (data as any).data.list;
+          total.value = (data as any).data.total;
         }
+      }
       NProgress.done();
+    };
+    const toHome = () => {
+      router.push({ path: "/" });
     };
     const toDetail = (index: number) => {
       router.push({
@@ -417,6 +440,7 @@ const onAddItem = (val:any) => {
     };
     const getSelectList = async (val: any[]) => {
       classify.value = val;
+      console.log(val);
       NProgress.start();
       switch (selectValue.value) {
         case "download":
@@ -436,19 +460,24 @@ const onAddItem = (val:any) => {
           jsonData.flag = false;
           break;
       }
-      jsonData.page=currentPage.value - 1
-        const data = await axios.post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonData,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).
-    then((res) => {
-         return res.data
-    });
-        if (data != null) {
-          if ((data as any).code === 0) {
-            fileList.value = (data as any).data.list;
-            total.value = (data as any).data.total;
-            currentPage.value = 1;
-          }
+      jsonData.page = currentPage.value - 1;
+      const data = await axios
+        .post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonData, {
+          headers: {
+            authorization:
+              "Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg",
+          },
+        })
+        .then((res) => {
+          return res.data;
+        });
+      if (data != null) {
+        if ((data as any).code === 0) {
+          fileList.value = (data as any).data.list;
+          total.value = (data as any).data.total;
+          currentPage.value = 1;
         }
+      }
       NProgress.done();
       getsSelectList.value = val;
     };
@@ -456,26 +485,30 @@ const onAddItem = (val:any) => {
     onMounted(async () => {
       //console.log("ff"+jsonData)
       let jsonDatass = {
-      page : 0,
-      size : 100,
-      keyword: "",
-      tags: [],
-      property:"id",
-      flag: false,
-       };
-       const data =await axios.post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonDatass,
-       {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).
-    then((res) => {
-      console.log("tt",res.data)
-         return res.data
-    })
-      
+        page: 0,
+        size: 100,
+        keyword: "",
+        tags: [],
+        property: "id",
+        flag: false,
+      };
+      const data = await axios
+        .post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonDatass, {
+          headers: {
+            authorization:
+              "Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg",
+          },
+        })
+        .then((res) => {
+          console.log("tt", res.data);
+          return res.data;
+        });
+
       skeletonFlag.value = true;
       if (data != null) {
         if ((data as any).code === 0) {
-          fileList.value = data.data.list ;
+          fileList.value = data.data.list;
           total.value = data.data.list.length;
-         
         }
       }
     });
@@ -506,18 +539,18 @@ const onAddItem = (val:any) => {
       tableData,
       isCoor,
       isSet,
+      toHome,
     };
   },
 });
 </script>
 
 <style lang="scss" scoped>
-
 .warning-row {
-  background: #0C90b8;
+  background: #0c90b8;
 }
 .success-row {
-  background: #0C90b8;
+  background: #0c90b8;
 }
 
 .video2 {
@@ -571,7 +604,7 @@ const onAddItem = (val:any) => {
       margin-top: 10px;
       display: flex;
       .left {
-        width: 400px;
+        width: 300px;
         background: #f6f7fa;
         min-height: calc(100vh - 170px);
         .content {
@@ -626,7 +659,7 @@ const onAddItem = (val:any) => {
 }
 
 .video {
-  width: 366px;
+  width: 250px;
   height: 61px;
   border-radius: 10px;
   background-color: rgba(255, 255, 255, 0.6);
@@ -663,6 +696,20 @@ const onAddItem = (val:any) => {
   100% {
     box-shadow: 0 0 0 10px rgb(255, 255, 255 / 25%),
       0 0 0 20px rgb(255, 255, 255 / 25%), 0 0 0 40px rgba(50, 100, 245, 0);
+  }
+}
+
+.nav {
+  display: flex;
+  height: 40px;
+  line-height: 40px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  .Separator {
+    margin: 0 5px;
+  }
+  .home {
+    color: #4f71bc;
   }
 }
 </style>

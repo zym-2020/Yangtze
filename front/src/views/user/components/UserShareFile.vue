@@ -67,8 +67,6 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import {
-  pageQueryByEmail,
-  offlineById,
   updateStatusById,
   deleteShareFileAsMember,
   deleteAsMember,
@@ -197,7 +195,7 @@ export default defineComponent({
       flag: false,
        };
        const data =await axios.post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonDatass,
-       {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).
+       {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg'}}).
     then((res) => {
       console.log("tt",res.data)
          return res.data

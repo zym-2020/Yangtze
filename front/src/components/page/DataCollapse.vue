@@ -10,13 +10,19 @@
       style="overflow: auto"
       ><div style="text-align: center">Hi, there!</div>
     </el-drawer>
-    <el-collapse @change="handleChange" v-model="activeNames">
+    <el-collapse
+      @change="handleChange"
+      v-model="activeNames"
+      accordion
+      
+    >
       <el-collapse-item
         v-for="(item, indexs) in categoryList"
         :key="indexs"
         :title="item.title"
         :name="indexs"
         active
+
       >
         <!-- <div>
           <el-card
@@ -37,7 +43,7 @@
           <el-card
             shadow="always"
             :style="[
-              { marginLeft: dataItem.count == false ? '110px' : '50px' },
+              { marginLeft: dataItem.count == false ? '50px' : '0px' },
               { marginTop: '5px' },
             ]"
             class="video"
@@ -107,84 +113,85 @@ export default defineComponent({
           },
         ],
       },
-        {
-        title: "基础地形数据",
+      {
+        title: "基础地理数据",
         data: [
           {
-            name: "栅格TXT文件",
+            name: "地形数据",
             count: false,
           },
-                    {
-            name: "栅格ASC文件",
+          {
+            name: "水文数据",
             count: false,
           },
-        ]
-        },
-                {
-        title: "基础水文数据",
+        ],
+      },
+      {
+        title: "工程数据",
         data: [
           {
             name: "潮位数据",
             count: false,
           },
-                    {
+          {
             name: "流速流向数据",
             count: false,
           },
-                              {
+          {
             name: "含沙量数据",
             count: false,
           },
-                              {
+          {
             name: "流量数据",
             count: false,
           },
-                                        {
+          {
             name: "输沙率数据",
             count: false,
           },
           {
             name: "悬移质数据",
             count: false,
-          },          {
+          },
+          {
             name: "冲淤数据",
             count: false,
           },
-                    {
+          {
             name: "深泓线数据",
             count: false,
           },
-                    {
+          {
             name: "沙滩数据",
             count: false,
           },
-                    {
+          {
             name: "床沙数据",
             count: false,
           },
-              {
+          {
             name: "含盐度数据",
             count: false,
           },
-                        {
+          {
             name: "风速风向数据",
             count: false,
           },
-                                  {
+          {
             name: "报告文字数据",
             count: false,
           },
-                                            {
+          {
             name: "水文测验布置",
             count: false,
           },
-        ]
-        },
+        ],
+      },
 
       {
-        title: "基础工程数据",
+        title: "Excel数据",
         data: [
-                    {
+          {
             name: "DWG工程文件",
             count: false,
           },
@@ -192,118 +199,38 @@ export default defineComponent({
             name: "码头工程",
             count: false,
           },
-                    {
+          {
             name: "桥梁工程",
             count: false,
           },
-                              {
+          {
             name: "规划未实施工程",
             count: false,
           },
-                              {
+          {
             name: "水利工程",
             count: false,
-          },   
+          },
           {
             name: "护岸工程",
             count: false,
-          },      
-                    {
+          },
+          {
             name: "航道整治工程",
             count: false,
-          },    
-                              {
+          },
+          {
             name: "水利工程",
             count: false,
-          },                        {
+          },
+          {
             name: "航标",
             count: false,
-          },  
-        ],
-      },
-      {
-        title: "整合地形数据",
-        data: [
-          {
-            name: "SHAPEFILE",
-            count: false,
-          },
-          {
-            name: "等高线",
-            count: false,
-          },
-                    {
-            name: "等深线",
-            count: false,
-          },
-                    {
-            name: "高程点",
-            count: false,
-          },
-                    {
-            name: "边界",
-            count: false,
-          },
-                    {
-            name: "TIN",
-            count: false,
-          },          {
-            name: "DEM",
-            count: false,
           },
         ],
       },
       {
-        title: "整合水文数据",
-        data: [
-          {
-            name: "MDB关系数据库",
-            count: false,
-          },
-        ],
-      },
-      {
-        title: "整合工程数据",
-        data: [
-                   {
-            name: "DWG工程文件",
-            count: false,
-          },
-          {
-            name: "码头工程",
-            count: false,
-          },
-                    {
-            name: "桥梁工程",
-            count: false,
-          },
-                              {
-            name: "规划未实施工程",
-            count: false,
-          },
-                              {
-            name: "水利工程",
-            count: false,
-          },   
-          {
-            name: "护岸工程",
-            count: false,
-          },      
-                    {
-            name: "航道整治工程",
-            count: false,
-          },    
-                              {
-            name: "水利工程",
-            count: false,
-          },                        {
-            name: "航标",
-            count: false,
-          },  
-        ],
-      },
-            {
-        title: "数模案例库",
+        title: "模型数据",
         data: [
           {
             name: "流场",
@@ -311,32 +238,7 @@ export default defineComponent({
           },
         ],
       },
-                  {
-        title: "物模案例库",
-        data: [
-          {
-            name: "流速",
-            count: false,
-          },
-                    {
-            name: "泥沙",
-            count: false,
-          },
-                    {
-            name: "水位",
-            count: false,
-          },
-                              {
-            name: "视频",
-            count: false,
-          },
-          {
-            name: "照片",
-            count: false,
-          },
-        ],
-      },     
-       {
+      {
         title: "影像资料库",
         data: [
           {
@@ -345,31 +247,19 @@ export default defineComponent({
           },
         ],
       },
-             {
+      {
         title: "辅助资料库",
         data: [
           {
             name: "地名数据",
             count: false,
-          },          {
+          },
+          {
             name: "固定断面线",
             count: false,
-          },          {
-            name: "制导线",
-            count: false,
           },
-        ],
-      },             {
-        title: "元数据",
-        data: [
           {
-            name: "Pdf",
-            count: false,
-          },          {
-            name: "Word",
-            count: false,
-          },          {
-            name: "PPT",
+            name: "制导线",
             count: false,
           },
         ],
@@ -377,9 +267,15 @@ export default defineComponent({
     ]);
     const selectList = ref<any[]>([]);
     const drawer = ref(false);
-
+    const itemChosen =ref(false)
     const handleChange = (val: string[]) => {
-      // console.log(val);
+      itemChosen.value=!itemChosen.value
+      // if(itemChosen.value == true)
+      // document.getElementsByTagName('body')[0].style.setProperty('--test', '#859ecc');
+      // else
+      // document.getElementsByTagName('body')[0].style.setProperty('--test', '#358b5c');
+      //  console.log(val);
+      //  console.log(itemChosen.value)
     };
     const setIconStyle = computed(() => {
       return "marginTop: 5px; marginLeft: 100px";
@@ -435,22 +331,32 @@ export default defineComponent({
       setIconStyle,
       mar,
       drawer,
+      itemChosen,
     };
   },
 });
 </script>
 
 <style lang="scss" scoped>
+//用var来盛放--test变量名，用于js做动态修改，这里将后面的默认值去掉了后才可达到效果
+$fontColor: var(--test);
 .el-collapse /deep/ .el-collapse-item__header {
   background: #f6f7fa;
-  font-size: 16px;
+  font-size: 19px;
+  font-weight: bold;
+  color:$fontColor
+}
+.el-collapse /deep/ .el-collapse-item__header.is-active {
+  color:#358b5c
 }
 .el-collapse /deep/ .el-collapse-item__wrap {
   background: #f6f7fa;
 }
 
+
+
 .video {
-  width: 319px;
+  width: 250px;
   height: 60px;
   border-radius: 10px;
   background-color: rgb(255, 255, 255);

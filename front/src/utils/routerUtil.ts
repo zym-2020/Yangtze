@@ -12,7 +12,7 @@ export async function toIdPages(to: RouteLocationNormalized) {
         if (to.params.id != '' && to.params.id != null && to.params.id != undefined) {
             const id=to.params.id
             const data = await axios.get(`http://172.21.213.244:8002/dataList/getFileInfoAndUserInfo/${id}`,
-            {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+            {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg'}}).then((res)=>{
                 console.log("updateShare",res.data)
             return res.data
             })
@@ -34,7 +34,7 @@ export async function toIdPages(to: RouteLocationNormalized) {
         if (to.params.id != '' && to.params.id != null && to.params.id != undefined) {
             const id=to.params.id
             const data = await axios.get(`http://172.21.213.244:8002/dataList/getFileInfoAndUserInfo/${id}`,
-            {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+            {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg'}}).then((res)=>{
                 console.log("detail",res.data)
             return res.data
             })

@@ -425,7 +425,7 @@ export async function QueryHeightByName(name:string){
 
 export async function pagequery(dataListId:string,size:number,page:number){
     return await axios.get(`http://172.21.213.244:8002/downloadHistory/pageQuery/${dataListId}/${size}/${page}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg'}}).then((res)=>{
         return res.data
     })
 
@@ -435,7 +435,7 @@ export async function pagequery(dataListId:string,size:number,page:number){
 
 export async function findFiles(dataListId:string){
     return await axios.get(`http://172.21.213.244:8002/dataList/findFiles/${dataListId}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg'}}).then((res)=>{
         console.log("wenjian",res.data)
         return res.data
     })
@@ -444,7 +444,7 @@ export async function findFiles(dataListId:string){
 //浏览量增加
 export async function addWatchCount(id:string){
     return await axios.patch(`http://172.21.213.244:8002/dataList/addWatchCount/${id}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg'}}).then((res)=>{
         console.log("wenjian",res.data)
         return res.data
     })
@@ -455,7 +455,7 @@ export async function addWatchCount(id:string){
 
 export async function updateStatusById(id:string,status:number){
     return await axios.patch(`http://172.21.213.244:8002/dataList/updateStatusById/${id}/${status}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg'}}).then((res)=>{
         console.log("update",res.data)
         return res.data
     })
@@ -464,7 +464,7 @@ export async function updateStatusById(id:string,status:number){
 //========================admin接口========
 export async function deleteByAdmin(formData:JsonObject){
     return await axios.delete(`http://172.21.213.244:8002/dataList/deleteByAdmin/`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg'}}).then((res)=>{
         console.log("delete",res.data)
         return res.data
     })
@@ -474,7 +474,7 @@ export async function deleteByAdmin(formData:JsonObject){
 
 export async function deleteAsMember(formData:JsonObject){
     return await axios.post(`http://172.21.213.244:8002/dataList/deleteAsMember/`,formData,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg'}}).then((res)=>{
         console.log("wenjian",res.data)
         return res.data
     })
@@ -483,7 +483,7 @@ export async function deleteAsMember(formData:JsonObject){
 
 export async function fuzzyQueryAdmin(formData:JsonObject){
     return await axios.post(`http://172.21.213.244:8002/dataList/fuzzyQueryAdmin/`,formData,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg'}}).then((res)=>{
         return res.data
     })
 
@@ -492,7 +492,7 @@ export async function fuzzyQueryAdmin(formData:JsonObject){
 //========================DataRelational相关接口=================================
 export async function addRelational(formData:any){
     return await axios.post(`http://172.21.213.244:8002/relational/addRelational/`,formData,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg'}}).then((res)=>{
         console.log("接口",res.data)
         return res.data
     })
@@ -503,7 +503,7 @@ export async function addRelational(formData:any){
 //获取用户头像，项目头像，缩略图等
 export async function getAvatar(filename:string){
     return await axios.get(`http://172.21.213.244:8002/visual/getAvatar/${filename}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg'}}).then((res)=>{
         console.log(res.data)
         return res.data
     })
@@ -513,7 +513,7 @@ export async function getAvatar(filename:string){
 //已切片栅格可视化
 export async function getRaster(visualId:string){
     return await axios.get(`http://172.21.213.244:8002/visual/getAvatar/${visualId}/{x}/{y}/{z}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg'}}).then((res)=>{
         console.log(res.data)
         return res.data
     })
@@ -523,7 +523,7 @@ export async function getRaster(visualId:string){
 //pg入库的矢量文件可视化
 export async function getVectorTiles(visualId:string){
     return await axios.get(`http://172.21.213.244:8002/visual/getVectorTiles/${visualId}/{x}/{y}/{z}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg'}}).then((res)=>{
         console.log(res.data)
         return res.data
     })
@@ -533,7 +533,7 @@ export async function getVectorTiles(visualId:string){
 //获取图片
 export async function getPhoto(fileId:string){
     return await axios.get(`http://172.21.213.244:8002/visual/getPhoto/${fileId}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg'}}).then((res)=>{
         console.log("图片",res.data)
         return res.data
     })
@@ -543,7 +543,7 @@ export async function getPhoto(fileId:string){
 //地图png可视化，包括两部分，获取坐标、获取png资源
 export async function getCoordinates(visualId:string){
     return await axios.get(`http://172.21.213.244:8002/visual/getCoordinates/${visualId}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg'}}).then((res)=>{
         console.log(res.data)
         return res.data
     })
@@ -552,7 +552,7 @@ export async function getCoordinates(visualId:string){
 
 export async function getPngResource(visualId:string){
     return await axios.get(`http://172.21.213.244:8002/visual/getPngResource/${visualId}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg'}}).then((res)=>{
         console.log(res.data)
         return res.data
     })
@@ -562,7 +562,7 @@ export async function getPngResource(visualId:string){
 //方便离线插入数据
 export async function addVisualFile(visualFile:JsonObject){
     return await axios.post(`http://172.21.213.244:8002/visual/addVisualFile/`,visualFile,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg'}}).then((res)=>{
         console.log(res.data)
         return res.data
     })
@@ -571,7 +571,7 @@ export async function addVisualFile(visualFile:JsonObject){
 
 export async function getRateDirection(id:string){
     return await axios.get(`http://172.21.213.244:8002/visual/getRateDirection/${id}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg'}}).then((res)=>{
         console.log(res.data)
         return res.data
     })
@@ -580,7 +580,7 @@ export async function getRateDirection(id:string){
 
 export async function getSandContent(id:string){
     return await axios.get(`http://172.21.213.244:8002/visual/getSandContent/${id}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg'}}).then((res)=>{
         console.log(res.data)
         return res.data
     })
@@ -592,7 +592,7 @@ export async function getSandContent(id:string){
 //上传文件
 export async function uploadFile(formData:JsonObject){
     return await axios.post(`http://172.21.213.244:8002/file/uploadFile/`,formData,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg'}}).then((res)=>{
         console.log(res.data)
         return res.data
     })
@@ -603,7 +603,7 @@ export async function uploadFile(formData:JsonObject){
 /////////////
 export async function mergeFileTemp(formData:JsonObject){
     return await axios.post(`http://172.21.213.244:8002/file/mergeFile/`,formData,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg'}}).then((res)=>{
         console.log(res.data)
         return res.data
     })
@@ -612,7 +612,7 @@ export async function mergeFileTemp(formData:JsonObject){
 //
 export async function checkMergeState(key:string){
     return await axios.get(`http://172.21.213.244:8002/file/checkMergeState/${key}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg'}}).then((res)=>{
         console.log(res.data)
         return res.data
     })
@@ -621,7 +621,7 @@ export async function checkMergeState(key:string){
 //重命名文件
 export async function rename(jsonData:JsonObject){
     return await axios.patch(`http://172.21.213.244:8002/file/rename`,jsonData,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg'}}).then((res)=>{
         console.log(res.data)
         return res.data
     })
@@ -630,7 +630,7 @@ export async function rename(jsonData:JsonObject){
 //获取下载的url
 export async function getDownloadURL(id:string){
     return await axios.get(`http://172.21.213.244:8002/file/getDownloadURL/{id}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg'}}).then((res)=>{
         console.log(res.data)
         return res.data
     })
@@ -638,7 +638,7 @@ export async function getDownloadURL(id:string){
 //加密下载，下载条目下的文件
 export async function downLoadInList(userId:string,id:string,dataListId:string){
     return await axios.get(`http://172.21.213.244:8002/file/downLoadInList/${userId}/${id}/${dataListId}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg'}}).then((res)=>{
         console.log(res.data)
         return res.data
     })
@@ -646,7 +646,7 @@ export async function downLoadInList(userId:string,id:string,dataListId:string){
 //单文件下载
 export async function downloadLocalFile(userId:string,id:string){
     return await axios.get(`http://172.21.213.244:8002/file/downloadLocalFile/${userId}/${id}`,
-    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw'}}).then((res)=>{
+    {headers:{'authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiYXZhdGFyIjoiIiwiZXhwIjoxNjY1MTk0NjQwLCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.DhIC267e5dRCBklRCVlUxDuD-tGNe3iNFlHCcchnjWwo-IiDHIUiffe9XnV9V7dwemKnSI4hNKALwt1tvVa0lg'}}).then((res)=>{
         console.log(res.data)
         return res.data
     })
