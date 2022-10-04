@@ -105,7 +105,11 @@
                   :fileInfo="item"
                   class="card"
                   @toDetail="toDetail(index)"
-                ></data-card>
+                >
+                  <template #border>
+                    <hr style="border-color: #d8d8d8" />
+                  </template>
+                </data-card>
               </div>
             </div>
             <div v-else>

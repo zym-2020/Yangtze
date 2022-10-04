@@ -166,12 +166,12 @@ public class DataListServiceImpl implements DataListService {
     }
 
     @Override
-    public Map<String, Object> fuzzyQueryAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag, int status) {
+    public Map<String, Object> fuzzyQueryAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag) {
         if(!keyword.equals("")) {
             keyword = "%" + keyword + "%";
         }
-        int total = dataListMapper.countFuzzyQuery(keyword, tags, status);
-        List<Map<String, Object>> list = dataListMapper.fuzzyQuery(size * page, size, keyword, tags, property, flag, status);
+        int total = dataListMapper.countFuzzyQuery(keyword, tags, 2);
+        List<Map<String, Object>> list = dataListMapper.fuzzyQuery(size * page, size, keyword, tags, property, flag, 2);
         Map<String, Object> result = new HashMap<>();
         result.put("total", total);
         result.put("list", list);
@@ -179,9 +179,9 @@ public class DataListServiceImpl implements DataListService {
     }
 
     @Override
-    public Map<String, Object> deleteByAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag, int status, String id) {
+    public Map<String, Object> deleteByAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag, String id) {
         dataListMapper.deleteById(id);
-        return fuzzyQueryAdmin(page, size, keyword, tags, property, flag, status);
+        return fuzzyQueryAdmin(page, size, keyword, tags, property, flag);
     }
 
     @Override

@@ -53,4 +53,6 @@ public interface FileService {
     void importData(String folderPath, String email, String time, String visualType, String visualId);
 
     void importGrid();
+
+    List<String> check(String path);
 }

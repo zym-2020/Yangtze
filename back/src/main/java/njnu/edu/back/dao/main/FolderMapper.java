@@ -19,7 +19,9 @@ public interface FolderMapper {
 
     void batchDelete(@Param("list") List<String> list);
 
-    List<Map<String, Object>> findByParentId(@Param("parentId") String parentId);
+    List<Map<String, Object>> findByParentId(@Param("parentId") String parentId, @Param("email") String email);
 
     Map<String, Object> findById(@Param("id") String id);
+
+    Map<String, Object> addFolder(@Param("parentId") String parentId, @Param("folderName") String folderName, @Param("email") String email, @Param("address") String address);
 }

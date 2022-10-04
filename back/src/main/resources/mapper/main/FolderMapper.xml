@@ -2,24 +2,34 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="njnu.edu.back.dao.main.FolderMapper">
     <select id="findListById">
-        select id, folder_name as "folderName", parent_id as "parentId", address from folders
+        select id, folder_name as "folderName", parent_id as "parentId", uploader from folder
         <foreach collection="list" item="item" open="where id::text in (" close=")" separator=",">
             #{item}
         </foreach>
     </select>
 
     <delete id="batchDelete">
-        delete from folders
+        delete from folder
         <foreach collection="list" item="item" open="where id::text in (" close=")" separator=",">
             #{item}
         </foreach>
     </delete>
 
     <select id="findByParentId" resultType="java.util.Map">
-        select id, folder_name as "folderName", parent_id as "parentId", address from folders where parent_id = #{parentId}
+        select id, folder_name as "folderName", parent_id as "parentId" from folder
+        <if test="parentId == ''">
+            where parent_id = #{parentId} and uploader = #{email}
+        </if>
+        <if test="parentId != ''">
+            where parent_id = #{parentId}
+        </if>
     </select>
 
     <select id="findById" resultType="java.util.Map">
-        select id, folder_name as "folderName", parent_id as "parentId", address from folders where id::text = #{id}
+        select id, folder_name as "folderName", parent_id as "parentId", uploader, address from folder where id::text = #{id}
+    </select>
+
+    <select id="addFolder" resultType="java.util.Map">
+        insert into folder values(default, #{folderName}, #{parentId}, #{email}, #{address}) returning id, folder_name as "folderName", parent_id as "parentId", uploader
     </select>
 </mapper>

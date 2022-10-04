@@ -30,9 +30,6 @@ export async function setUserInfo(formData: FormData) {
     return await patch(`/user/setUserInfo`, formData)
 }
 
-export async function setUserInfoWithoutAvatar(jsonData: SetUserInfoWithoutAvatarJsonData) {
-    return await patch(`/user/setUserInfoWithoutAvatar`, jsonData)
-}
 
 //========================VectorTile相关接口=================================
 
@@ -211,9 +208,6 @@ export async function fuzzyQueryClassify(jsonData: FuzzyQueryClassifyJsonData) {
     return await post(`/share/fuzzyQueryClassify`, jsonData)
 }
 
-export async function pageQueryByEmail(page: number, size: number) {
-    return await get(`/share/pageQueryByEmail/${page}/${size}`)
-}
 
 //这里懒得写了，字段太多
 export async function updateShareFileNoAvatar(jsonData: any) {
@@ -263,12 +257,6 @@ export async function getShpByCoordinates(arrayString: string) {
 }
 
 
-
-//========================fileMeta相关接口=================================
-
-export async function getFileMetaAndUserInfo(id: string, email: string) {
-    return await get(`/fileMeta/getFileMetaAndUserInfo/${id}/${email}`)
-}
 
 //========================download相关接口=================================
 export async function getDownloadURLTemp(id: string) {
@@ -438,7 +426,7 @@ export async function deleteAsMember(jsonData: { id: string, size: number, page:
     return await del(`/dataList/deleteAsMember`, jsonData)
 }
 
-export async function deleteByAdmin(jsonData: { page: number, size: number, keyword: string, tags: string[], property: string, flag: boolean, status: number, id: string }) {
+export async function deleteByAdmin(jsonData: { page: number, size: number, keyword: string, tags: string[], property: string, flag: boolean, id: string }) {
     return await del(`/dataList/deleteByAdmin`, jsonData)
 }
 
@@ -450,12 +438,23 @@ export async function getFileInfoAndUserInfo(id: string) {
     return await get(`/dataList/getFileInfoAndUserInfo/${id}`)
 }
 
+export async function fuzzyQueryAdmin(jsonData: { page: number, size: number, keyword: string, tags: string[], property: string, flag: boolean }) {
+    return await post(`/dataList/fuzzyQueryAdmin`, jsonData)
+}
+
+export async function addDataList(formData: FormData) {
+    return await post(`/dataList/addDataList`, formData)
+}
+
+export async function pageQueryByEmail(page: number, size: number) {
+    return await get(`/dataList/pageQueryByEmail/${page}/${size}`)
+}
+
 //============================Visual相关接口====================================
 //获取用户头像，项目头像，缩略图等
 export async function getAvatar(filename: string) {
     return await get(`/visual/getAvatar/${filename}`)
 }
-
 
 //获取图片
 export async function getPhoto(fileId: string) {
@@ -492,12 +491,20 @@ export async function getFlowSand_Z(id: string) {
     return await get(`/visual/getFlowSand_Z/${id}`)
 }
 
+//========================folder相关接口=================================
+export async function addFolder(jsonData: { folderName: string, parentId: string }) {
+    return await post(`/folder/addFolder`, jsonData)
+}
 
 //============================NewFile相关接口====================================
 
 //获取下载的url
 export async function getDownloadURL(id: string) {
     return await get(`/file/getDownloadURL/${id}`)
+}
+
+export async function findByFolderId(folderId: string) {
+    return await get(`/file/findByFolderId/${folderId}`)
 }
 
 //========================downloadHistory相关接口=================================

@@ -52,7 +52,9 @@ axiosInstance.interceptors.request.use(
                 let url: string = config.baseURL as string + config.url
                 e(url)
             }
-            requestList.has(config.url + JSON.stringify(config.data)) ? cancelRequest() : requestList.add(config.url + JSON.stringify(config.data))
+            if(JSON.stringify(config.data) != '{}') {
+                requestList.has(config.url + JSON.stringify(config.data)) ? cancelRequest() : requestList.add(config.url + JSON.stringify(config.data))
+            }
         })
         return config
     }

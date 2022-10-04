@@ -61,11 +61,6 @@ public class UserController {
         return ResultUtils.success(userService.setUserInfo(email, name, contactEmail,occupation, department, avatar));
     }
 
-    @AuthCheck
-    @RequestMapping(value = "/setUserInfoWithoutAvatar", method = RequestMethod.PATCH)
-    public JsonResult setUserInfoWithoutAvatar(@JwtTokenParser("email") String email, @RequestBody User user) {
-        return ResultUtils.success(userService.setUserInfoWithoutAvatar(email, user));
-    }
 
     /**
     * @Description:获取用户头像

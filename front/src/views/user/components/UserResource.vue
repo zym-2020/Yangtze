@@ -11,9 +11,7 @@
         </div>
       </div>
       <div class="btn">
-        <el-button size="small" @click="dialogCreateFolder = true"
-          >创建文件夹</el-button
-        >
+        <el-button size="small" @click="openCreateFolder">创建文件夹</el-button>
         <el-button size="small" @click="flushed">刷新</el-button>
         <el-button type="info" size="small" @click="dialogUpload = true"
           >上传</el-button
@@ -24,7 +22,6 @@
       :data="tableData"
       style="width: 100%"
       height="calc(80vh - 23px)"
-      :default-sort="{ prop: 'name', order: 'ascending' }"
       @row-contextmenu="contextMenuClick"
       @cell-dblclick="dblclick"
       @selection-change="handleChange"
@@ -36,7 +33,7 @@
         prop="name"
         label="名称"
         sortable
-        :sort-by="['folder', 'name']"
+        :sort-method="sortNameMethod"
       >
         <template #default="scope">
           <div v-if="renameId === scope.row.id">
@@ -49,31 +46,23 @@
           </div>
           <div style="display: flex; align-items: center" v-else>
             <svg style="width: 20px; height: 20px" @click="open">
-              <use
-                :xlink:href="getIcon(scope.row.folder, scope.row.name)"
-              ></use>
+              <use :xlink:href="getIcon(scope.row)"></use>
             </svg>
-            <span style="margin-left: 10px">{{ scope.row.name }}</span>
+            <span style="margin-left: 10px">{{ getName(scope.row) }}</span>
           </div>
         </template>
       </el-table-column>
 
       <el-table-column
-        prop="create_time"
-        label="上传时间"
-        sortable
-        :sort-by="['folder', 'create_time']"
-      >
-        <template #default="scope">
-          <span>{{ date(scope.row.create_time) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
         prop="size"
         label="大小"
         sortable
-        :sort-by="['folder', 'size']"
-      />
+        :sort-method="sortSizeMethod"
+      >
+        <template #default="scope">
+          <span>{{ getSize(scope.row) }}</span>
+        </template>
+      </el-table-column>
     </el-table>
 
     <el-dialog
@@ -85,7 +74,7 @@
       <folder-dialog
         @createFolder="createFolder"
         v-if="dialogCreateFolder"
-        :tableData="tableData"
+        :folderNames="folderNames"
       ></folder-dialog>
     </el-dialog>
 
@@ -118,12 +107,27 @@
 </template>
 
 <script lang="ts">
+type Folder = {
+  id: string;
+  folderName: string;
+  parentId: string;
+};
+type File = {
+  id: string;
+  fileName: string;
+  visualType: string;
+  size: string;
+  uploader: string;
+  location: string;
+  time: string;
+  folderId: string;
+  visualId: string;
+};
 import { defineComponent, onMounted, ref } from "vue";
 import UserFolderContextMenu from "@/components/contextMenu/UserFolderContextMenu.vue";
 import UploadDialog from "./UploadDialog.vue";
 import FolderDialog from "./FolderDialog.vue";
-import { findByLevel, addFile, findByParentId, renameTemp } from "@/api/request";
-import { dateFormat } from "@/utils/common";
+import { findByFolderId, addFolder, renameTemp } from "@/api/request";
 import { notice } from "@/utils/notice";
 import MoveDialog from "./MoveDialog.vue";
 import NProgress from "nprogress";
@@ -140,7 +144,7 @@ export default defineComponent({
     const folderFlag = ref(false);
     const moveFlag = ref(false);
     const renameId = ref("");
-    const tableData = ref<any[]>([]);
+    const tableData = ref<(Folder | File)[]>([]);
     const path = ref<{ name: string; parentId: string; id: string }[]>([]);
     const dialogUpload = ref(false);
     const dialogCreateFolder = ref(false);
@@ -149,6 +153,7 @@ export default defineComponent({
     const moveItemList = ref<any[]>([]);
     const selectTables = ref<any[]>([]);
     const renameValue = ref("");
+    const folderNames = ref<string[]>([]);
 
     let oldName = "";
 
@@ -197,41 +202,71 @@ export default defineComponent({
       document.addEventListener("click", closeMenu);
     };
 
-    const getIcon = (folder: boolean, fileName: string) => {
-      if (folder) {
-        return "#icon-wenjianjia";
+    const getIcon = (item: Folder | File) => {
+      if ("fileName" in item) {
+        return "#icon-wenjian";
       } else {
-        const fileExtName = fileName.substring(
-          fileName.lastIndexOf("."),
-          fileName.length
-        );
-        if (
-          fileExtName === ".zip" ||
-          fileExtName === ".7z" ||
-          fileExtName === ".tar" ||
-          fileExtName === ".rar"
-        ) {
-          return "#icon-zip";
-        } else {
-          return "#icon-wenjian";
-        }
+        return "#icon-wenjianjia";
       }
     };
 
-    const dblclick = async (row: any) => {
-      if (row.folder) {
+    const getName = (item: Folder | File) => {
+      if ("fileName" in item) {
+        return item.fileName;
+      } else {
+        return item.folderName;
+      }
+    };
+
+    const getSize = (item: Folder | File) => {
+      if ("fileName" in item) {
+        return item.size;
+      } else {
+        return "";
+      }
+    };
+
+    const sortNameMethod = (a: Folder | File, b: Folder | File) => {
+      if ("fileName" in a && "fileName" in b) {
+        return a.fileName.localeCompare(b.fileName) > 0;
+      }
+      if ("folderName" in a && "folderName" in b) {
+        return a.folderName.localeCompare(b.folderName) > 0;
+      }
+      if ("fileName" in a && "folderName" in b) {
+        return false;
+      }
+      if ("folderName" in a && "fileName" in b) {
+        return true;
+      }
+    };
+
+    const sortSizeMethod = (a: Folder | File, b: Folder | File) => {
+      if ("fileName" in a && "fileName" in b) {
+        return a.size.localeCompare(b.size) > 0;
+      }
+      if ("folderName" in a && "folderName" in b) {
+        return a.folderName.localeCompare(b.folderName) > 0;
+      }
+      if ("fileName" in a && "folderName" in b) {
+        return false;
+      }
+      if ("folderName" in a && "fileName" in b) {
+        return true;
+      }
+    };
+
+    const dblclick = async (row: Folder | File) => {
+      if ("folderName" in row) {
         NProgress.start();
-        const dataList = await findByParentId(row.id);
-        if (dataList != null) {
-          if ((dataList as any).code === 0) {
-            tableData.value = dataList.data;
-            path.value.push({
-              name: row.name,
-              parentId: row.parent_id,
-              id: row.id,
-            });
-            level.value = level.value + 1;
-          }
+        const data = await findByFolderId(row.id);
+        if (data != null && (data as any).code === 0) {
+          tableData.value = data.data;
+          path.value.push({
+            id: row.id,
+            name: row.folderName,
+            parentId: row.parentId,
+          });
         }
         NProgress.done();
       }
@@ -240,20 +275,17 @@ export default defineComponent({
     const backClick = async () => {
       if (path.value.length > 0) {
         NProgress.start();
-        const dataList = await findByParentId(
-          path.value[path.value.length - 1].parentId
-        );
+        let parentId: string = "-1";
+        if (path.value[path.value.length - 1].parentId != "") {
+          parentId = path.value[path.value.length - 1].parentId;
+        }
+        const dataList = await findByFolderId(parentId);
         if (dataList != null && (dataList as any).code === 0) {
           tableData.value = dataList.data;
           path.value.pop();
-          level.value = level.value - 1;
         }
         NProgress.done();
       }
-    };
-
-    const date = (time: string) => {
-      return dateFormat(time, "yyyy-MM-dd");
     };
 
     const handleChange = (selection: any) => {
@@ -261,31 +293,33 @@ export default defineComponent({
       selectTables.value = selection;
     };
 
-    const createFolder = async (val: string) => {
-      const data = await addFile({
-        id: "",
-        name: val,
-        address: "",
-        fileName: "",
-        level: level.value,
-        parentId:
-          path.value.length > 0 ? path.value[path.value.length - 1].id : "-1",
-        meta: "",
-        folder: true,
+    const openCreateFolder = () => {
+      tableData.value.forEach((item) => {
+        if ("folderName" in item) {
+          folderNames.value.push(item.folderName);
+          dialogCreateFolder.value = true;
+        }
       });
-      dialogCreateFolder.value = false;
+    };
+
+    const createFolder = async (val: string) => {
+      const jsonData = {
+        folderName: val,
+        parentId:
+          path.value.length > 0 ? path.value[path.value.length - 1].id : "",
+      };
+      const data = await addFolder(jsonData);
       if (data != null && (data as any).code === 0) {
         tableData.value.push({
-          id: data.data,
-          name: val,
-          level: level.value,
-          parent_id:
-            path.value.length > 0 ? path.value[path.value.length - 1].id : "-1",
-          folder: true,
-          create_time: date(new Date().toString()),
+          id: data.data.id,
+          folderName: data.data.folderName,
+          parentId: data.data.parentId,
+          uploader: data.data.uploader,
         });
+        notice("success", "成功", "文件夹创建成功！");
+        dialogCreateFolder.value = false
       } else {
-        notice("error", "错误", "创建文件失败！");
+        notice("error", "错误", "文件夹创建失败！");
       }
     };
 
@@ -310,21 +344,21 @@ export default defineComponent({
     };
 
     const enterHandle = async () => {
-      if (oldName != renameValue.value) {
-        const data = await renameTemp({
-          id: (contextMenuInstance.value as any).id,
-          name: renameValue.value,
-        });
-        if (data != null && (data as any).code === 0) {
-          tableData.value.forEach((item) => {
-            if (item.id === (contextMenuInstance.value as any).id) {
-              item.name = renameValue.value;
-            }
-          });
-          notice("success", "成功", "重命名成功");
-        }
-      }
-      renameId.value = "";
+      // if (oldName != renameValue.value) {
+      //   const data = await renameTemp({
+      //     id: (contextMenuInstance.value as any).id,
+      //     name: renameValue.value,
+      //   });
+      //   if (data != null && (data as any).code === 0) {
+      //     tableData.value.forEach((item) => {
+      //       if (item.id === (contextMenuInstance.value as any).id) {
+      //         item.name = renameValue.value;
+      //       }
+      //     });
+      //     notice("success", "成功", "重命名成功");
+      //   }
+      // }
+      // renameId.value = "";
     };
 
     const flushed = async () => {
@@ -335,11 +369,9 @@ export default defineComponent({
       } else {
         id = path.value[path.value.length - 1].id;
       }
-      const data = await findByParentId(id);
-      if (data != null) {
-        if ((data as any).code === 0) {
-          tableData.value = data.data;
-        }
+      const data = await findByFolderId(id);
+      if (data != null && (data as any).code === 0) {
+        tableData.value = data.data;
       }
       NProgress.done();
     };
@@ -365,14 +397,16 @@ export default defineComponent({
     };
 
     onMounted(async () => {
-      const tableList = await findByLevel(level.value);
+      const tableList = await findByFolderId("-1");
       if (tableList != null && (tableList as any).code === 0) {
+        console.log(tableList.data);
         tableData.value = tableList.data;
       }
     });
 
     return {
       tableData,
+      folderNames,
       path,
       contextMenuClick,
       dblclick,
@@ -380,8 +414,8 @@ export default defineComponent({
       folderFlag,
       dialogUpload,
       dialogCreateFolder,
+      openCreateFolder,
       createFolder,
-      date,
       level,
       contextMenuInstance,
       delSuccess,
@@ -391,6 +425,10 @@ export default defineComponent({
       blurHandle,
       enterHandle,
       getIcon,
+      getName,
+      getSize,
+      sortNameMethod,
+      sortSizeMethod,
       flushed,
       contextUnpack,
       move,

@@ -3,12 +3,11 @@
     <el-scrollbar height="80vh" :always="false" v-if="fileList.length > 0">
       <div v-for="(item, index) in fileList" :key="index">
         <div class="card">
-          <data-card :fileInfo="item" @clickName="toShareFile(index)">
+          <data-card :fileInfo="item">
             <template #status>
               <div v-if="item.status === 1" class="online">
                 <el-tag type="success">Online</el-tag>
               </div>
-
               <div v-else class="offline">
                 <el-tag type="info">Offline</el-tag>
               </div>
@@ -40,6 +39,9 @@
                         <el-dropdown-item @click="operate(4, item)"
                           >删除</el-dropdown-item
                         >
+                        <el-dropdown-item @click="operate(5, item, index)"
+                          >跳转</el-dropdown-item
+                        >
                       </el-dropdown-menu>
                     </template>
                   </el-dropdown>
@@ -57,7 +59,7 @@
       background
       layout="prev, pager, next"
       :total="total"
-      :current-page="currentPage"
+      v-model:current-page="currentPage"
       @current-change="currentChange"
       :hide-on-single-page="true"
     />
@@ -68,18 +70,13 @@
 import { defineComponent, onMounted, ref } from "vue";
 import {
   pageQueryByEmail,
-  offlineById,
   updateStatusById,
-  deleteShareFileAsMember,
-  deleteAsMember,
   deleteByAdmin,
 } from "@/api/request";
 import { notice } from "@/utils/notice";
-import axios from "axios";
 import DataCard from "@/components/cards/DataCard.vue";
 import { ElMessageBox } from "element-plus";
 import router from "@/router";
-import { addMessage, QueryByTime, examineById } from "@/api/request";
 export default defineComponent({
   components: { DataCard },
   setup() {
@@ -87,7 +84,7 @@ export default defineComponent({
     const total = ref(0);
     const currentPage = ref(1);
 
-    const operate = async (number: number, info: any) => {
+    const operate = async (number: number, info: any, index: number) => {
       if (number === 1) {
         router.push({
           name: "updateShare",
@@ -95,7 +92,6 @@ export default defineComponent({
             id: info.id,
           },
         });
-        // console.log(router.currentRoute.value.fullPath)
       } else if (number === 2) {
         ElMessageBox.confirm(
           "您确定要下线条目吗？下线后若想重新上线需要管理员审核",
@@ -130,23 +126,6 @@ export default defineComponent({
           }
         ).then(async () => {
           const jsonCache = JSON.stringify(info);
-          // 暂缓进行重构
-          // const data = await addMessage({
-          //   id: "",
-          //   dataName: info.name,
-          //   dataUploadTime: "",
-          //   dataExamineTime: "2012-02-25",
-          //   dataCache: jsonCache,
-          //   messageRequest: "fff",
-          //   reply: false,
-          //   fileId: info.id,
-          //   messageSender: "fgz",
-          //   messageReceiver: " ",
-          //   messageResponse: "examine",
-          //   messageType: "online",
-          //   replyUser:false,
-          // });
-          //console.log(info.id)
           await updateStatusById(info.id, 1);
         });
       } else if (number === 4) {
@@ -164,7 +143,6 @@ export default defineComponent({
               property: "id",
               flag: true,
               keyword: "",
-              status: -1,
             });
             if ((data as any).code === 0) {
               fileList.value = data.data;
@@ -172,48 +150,31 @@ export default defineComponent({
             }
           })
           .catch(() => {});
+      } else if (number === 5) {
+        router.push({
+          name: "shareFile",
+          params: {
+            id: fileList.value[index].id,
+            fileInfo: JSON.stringify(fileList.value[index]),
+          },
+        });
       }
     };
 
-    const currentChange = () => {};
-
-    const toShareFile = (index: number) => {
-      router.push({
-        name: "shareFile",
-        params: {
-          id: fileList.value[index].id,
-          fileInfo: JSON.stringify(fileList.value[index]),
-        },
-      });
+    const currentChange = async (val: number) => {
+      console.log(val);
+      const data = await pageQueryByEmail(val - 1, 10);
+      if (data != null && (data as any).code === 0) {
+        fileList.value = data.data.list;
+        total.value = data.data.total;
+      }
     };
 
     onMounted(async () => {
-      let jsonDatass = {
-        page: 0,
-        size: 10,
-        keyword: "",
-        tags: [],
-        property: "id",
-        flag: false,
-      };
-      const data = await axios
-        .post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonDatass, {
-          headers: {
-            authorization:
-              "Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw",
-          },
-        })
-        .then((res) => {
-          console.log("tt", res.data);
-          return res.data;
-        });
-      if (data != null) {
-        if ((data as any).code === 0) {
-          fileList.value = data.data.list;
-          total.value = data.data.total;
-        } else {
-          notice("error", "失败", (data as any).msg);
-        }
+      const data = await pageQueryByEmail(0, 10);
+      if (data != null && (data as any).code === 0) {
+        fileList.value = data.data.list;
+        total.value = data.data.total;
       }
     });
 
@@ -223,7 +184,6 @@ export default defineComponent({
       total,
       currentPage,
       currentChange,
-      toShareFile,
     };
   },
 });

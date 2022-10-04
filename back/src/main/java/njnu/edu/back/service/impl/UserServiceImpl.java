@@ -1,5 +1,6 @@
 package njnu.edu.back.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.common.utils.CommonUtils;
@@ -31,8 +32,11 @@ import java.util.UUID;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Value("${basedir}")
-    String baseDir;
+    @Value("${basePath}")
+    String basePath;
+
+    @Value("${pictureAddress}")
+    String pictureAddress;
 
     @Autowired
     UserMapper userMapper;
@@ -66,7 +70,7 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.getUserByEmail(addUserDTO.getEmail());
         if(user == null) {
             addUserDTO.setPassword(Encrypt.md5(addUserDTO.getPassword()));
-            LocalUploadUtil.createUserFolder(baseDir, addUserDTO.getEmail());
+            LocalUploadUtil.createUserFolder(basePath, addUserDTO.getEmail());
             return userMapper.addUser(addUserDTO);
         } else {
             throw new MyException(ResultEnum.EXIST_OBJECT);
@@ -74,40 +78,46 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByEmail(String email) {
+    public Map<String, Object> getUserByEmail(String email) {
         User user = (User) redisService.get(email);
         if(user != null)
-            return user;
+            return formatUser(user);
         else {
             user = userMapper.getUserByEmail(email);
             redisService.set(email, user, 60*24*7l);
-            return user;
+            return formatUser(user);
         }
+    }
+
+    private Map<String, Object> formatUser(User user) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", user.getId());
+        map.put("avatar", user.getAvatar());
+        map.put("contactEmail", user.getContactEmail());
+        map.put("department", user.getDepartment());
+        map.put("email", user.getEmail());
+        map.put("name", user.getName());
+        map.put("occupation", user.getOccupation());
+        return map;
     }
 
     @Override
     public Map<String, String> setUserInfo(String email, String name, String contactEmail, String occupation, String department, MultipartFile avatar) {
-        User user = new User(null, name, email, null, null, contactEmail, null, occupation, department);
-        String uuid = UUID.randomUUID().toString();
-        String suffix = avatar.getOriginalFilename().substring(avatar.getOriginalFilename().lastIndexOf(".") + 1);
-        String path = baseDir + "other\\avatar\\" + uuid + "." + suffix;
-        LocalUploadUtil.uploadAvatar(path, avatar);
-        String ip = CommonUtils.getIp();
-        user.setAvatar("http://" + ip + ":8002/file/avatar/" + uuid + "." + suffix);
-        String token = JwtTokenUtil.generateTokenByUser(userMapper.updateUserInfo(user));
-        redisService.del(email);
+        User user = new User(null, name, email, null, null, contactEmail, "", occupation, department);
         Map<String, String> result = new HashMap<>();
-        result.put("token", token);
-        result.put("avatar", "http://" + ip + ":8002/file/avatar/" + uuid + "." + suffix);
-        return result;
-    }
-
-    @Override
-    public String setUserInfoWithoutAvatar(String email, User user) {
-        user.setEmail(email);
-        String token = JwtTokenUtil.generateTokenByUser(userMapper.updateUserInfoWithoutAvatar(user));
+        if(!avatar.isEmpty()) {
+            String uuid = UUID.randomUUID().toString();
+            String suffix = avatar.getOriginalFilename().substring(avatar.getOriginalFilename().lastIndexOf(".") + 1);
+            String path = pictureAddress + uuid + "." + suffix;
+            LocalUploadUtil.uploadAvatar(path, avatar);
+            user.setAvatar(uuid + "." + suffix);
+        }
+        User resultUser = userMapper.updateUserInfo(user);
+        String token = JwtTokenUtil.generateTokenByUser(resultUser);
         redisService.del(email);
-        return token;
+        result.put("token", token);
+        result.put("avatar", resultUser.getAvatar());
+        return result;
     }
 
     @Override

@@ -80,7 +80,13 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public List<Map<String, Object>> findByFolderId(String folderId, String email) {
-        return fileMapper.findByFolderId(folderId, email);
+        List<Map<String, Object>> result = new ArrayList<>();
+        if(folderId.equals("-1")) {
+            folderId = "";
+        }
+        result.addAll(folderMapper.findByParentId(folderId, email));
+        result.addAll(fileMapper.findByFolderId(folderId, email));
+        return result;
     }
 
     @Override
@@ -476,5 +482,19 @@ public class FileServiceImpl implements FileService {
             Map<String, Object> visualMap = visualFileMapper.findByFileName(fileName);
             fileMapper.updateVisualId(map.get("id").toString(), visualMap.get("id").toString());
         }
+    }
+
+    @Override
+    public List<String> check(String path) {
+        java.io.File file = new java.io.File(path);
+        String[] fileList = file.list();
+        for(int i = 0; i < fileList.length; i++) {
+//            System.out.println(path.substring(16) + "\\" + fileList[i]);
+            Map<String, Object> map = fileMapper.findByAddress(path.substring(16) + "\\" + fileList[i]);
+            if(map == null) {
+                System.out.println(fileList[i]);
+            }
+        }
+        return null;
     }
 }

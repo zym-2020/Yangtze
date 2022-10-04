@@ -17,7 +17,14 @@
 
 
     <select id="findByFolderId" resultType="java.util.HashMap">
-        select * from files where uploader = #{email} and folder_id = #{folderId};
+        select id, file_name as "fileName", size, time, location, uploader, visual_type as "visualType", visual_id as "visualId", folder_id as "folderId"
+        from files
+        <if test="folderId == ''">
+            where uploader = #{email} and folder_id = #{folderId};
+        </if>
+        <if test="folderId != ''">
+            where folder_id = #{folderId}
+        </if>
     </select>
 
     <update id="rename">
@@ -33,12 +40,12 @@
 
     <delete id="batchDeleteFolder">
         with recursive temp_folder as (
-            select * from folders
+            select * from folder
             <foreach collection="list" item="item" open="where id::text in (" close=")" separator=",">
                 #{item}
             </foreach>
             union
-            select f.* from folders f
+            select f.* from folder f
             inner join temp_folder on temp_folder.id::text = f.parent_id
         ) delete from files where folder_id in (select id from temp_files);
     </delete>
@@ -113,4 +120,8 @@
     <update id="updateVisualId">
         update files set visual_id = #{visualId} where id::text = #{id}
     </update>
+
+    <select id="findByAddress" resultType="java.util.Map">
+        select * from files where address = #{address}
+    </select>
 </mapper>

@@ -77,7 +77,7 @@
             </el-col>
           </el-row>
         </div>
-        <div v-show="shsta" style="width: 100%; height: 80%">
+        <div v-if="shsta" style="width: 100%; height: 300px">
           <DownLoadSta2 :id="id"></DownLoadSta2>
         </div>
       </div>
@@ -124,12 +124,13 @@
         </el-col>
       </el-row>
     </div>
-    <hr style="border-color: #d8d8d8" />
+    <slot name="border"></slot>
+    
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from "vue";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import { imgBase64, generateColorByText, dateFormat } from "@/utils/common";
 import BrowseStatistics from "../resourcePages/components/BrowseStatistics.vue";
 import DownLoadSta2 from "../resourcePages/components/DownSta2.vue";
@@ -164,10 +165,10 @@ export default defineComponent({
       return imgBase64(name.value);
     });
     const userAvatar = computed(() => {
-      if ((props.fileInfo as any).avatar != "") {
+      if ((props.fileInfo as any).userAvatar != "") {
         return (
           "http://localhost:8002/visual/getAvatar/" +
-          (props.fileInfo as any).avatar
+          (props.fileInfo as any).userAvatar
         );
       } else {
         return "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png";
@@ -220,6 +221,7 @@ export default defineComponent({
       context.emit("toDetail");
     };
 
+
     // const fits = ["fill", "contain", "cover", "none", "scale-down"];
     // const url =
     //   "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg";
@@ -246,7 +248,6 @@ export default defineComponent({
     return {
       shdes,
       shsta,
-      // checkInData,
       id,
       avatar,
       userAvatar,
@@ -261,8 +262,6 @@ export default defineComponent({
       toDetail,
       showDes,
       showSta,
-      // fits,
-      // url,
       creator,
     };
   },

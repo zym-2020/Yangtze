@@ -659,7 +659,7 @@ export default defineComponent({
       return (props.fileInfo as any).userAvatar === ""
         ? "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
         : "http://localhost:8002/visual/getAvatar/" +
-            (props.fileInfo as any).avatar;
+            (props.fileInfo as any).userAvatar;
     });
     const avatar = computed(() => {
       if ((props.fileInfo as any).avatar != "") {

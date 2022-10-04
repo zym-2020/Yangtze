@@ -19,7 +19,7 @@ import { notice } from "@/utils/notice";
 export default defineComponent({
   emits: ["createFolder"],
   props: {
-    tableData: {
+    folderNames: {
       type: Array,
     },
   },
@@ -28,8 +28,8 @@ export default defineComponent({
     const inputFocus = ref<HTMLElement>();
     const commit = () => {
       let flag = true;
-      props.tableData?.forEach((item) => {
-        if ((item as any).name === input.value) {
+      props.folderNames?.forEach((item) => {
+        if (item === input.value) {
           flag = false;
         }
       });

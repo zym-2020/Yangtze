@@ -22,7 +22,11 @@
     </insert>
 
     <select id="updateUserInfo" parameterType="njnu.edu.back.pojo.User" resultMap="UserResultMap">
-        update users set name = #{name}, contact_email = #{contactEmail}, occupation = #{occupation}, department = #{department}, avatar=#{avatar} where email = #{email} returning *;
+        update users set name = #{name}, contact_email = #{contactEmail}, occupation = #{occupation}, department = #{department}
+                       <if test="avatar != ''">
+                           , avatar=#{avatar}
+                       </if>
+                        where email = #{email} returning *;
     </select>
 
     <select id="updateUserInfoWithoutAvatar" parameterType="njnu.edu.back.pojo.User" resultMap="UserResultMap">

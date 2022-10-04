@@ -18,5 +18,6 @@ public class Folder {
     String id;
     String folderName;
     String parentId;
+    String uploader;
     String address;
 }

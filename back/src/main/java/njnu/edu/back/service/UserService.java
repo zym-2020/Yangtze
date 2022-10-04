@@ -20,11 +20,9 @@ public interface UserService {
 
     int register(AddUserDTO addUserDTO);
 
-    User getUserByEmail(String email);
+    Map<String, Object> getUserByEmail(String email);
 
     Map<String, String> setUserInfo(String email, String name, String contactEmail, String occupation, String department, MultipartFile avatar);
-
-    String setUserInfoWithoutAvatar(String email, User user);
 
     String getAvatarURL(String email);
 

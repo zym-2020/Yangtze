@@ -10,12 +10,12 @@
 
     <delete id="batchDeleteFolder">
         with recursive temp_folder as (
-        select * from folders
+        select * from folder
         <foreach collection="list" item="item" open="where id::text in (" close=")" separator=",">
             #{item}
         </foreach>
         union
-        select f.* from folders f
+        select f.* from folder f
         inner join temp_folder on temp_folder.id::text = f.parent_id
         ) delete from data_relational where file_id in (select id from temp_files);
     </delete>

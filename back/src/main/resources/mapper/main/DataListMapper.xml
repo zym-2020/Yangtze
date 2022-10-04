@@ -98,9 +98,10 @@
     </delete>
 
     <select id="pageQueryByEmail" resultType="java.util.Map">
-        select id, name, location, description, tags, creator, create_time as "createTime", update_time as "updateTime", download, watch, avatar, status,
-               provider, time, range, type, provider_phone as "providerPhone", provider_email as "providerEmail", provider_address as "providerAddress", get_online as "getOnline", detail, thumbnail
-        from data_list where creator = #{email}
+        select data_list.id as "id", data_list.name as "name", location, description, tags, creator, create_time as "createTime", update_time as "updateTime", download, watch, data_list.avatar as "avatar", status,
+               provider, time, range, type, provider_phone as "providerPhone", provider_email as "providerEmail", provider_address as "providerAddress", get_online as "getOnline", detail, thumbnail, users.avatar as "userAvatar", users.name as "userName"
+        from data_list, users
+        where creator = #{email} and users.email = data_list.creator
         order by create_time asc
         limit #{size} offset #{start};
     </select>

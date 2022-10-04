@@ -8,7 +8,7 @@
     <div class="body">
       <div v-for="(item, index) in fileList" :key="index">
         <div class="card">
-          <data-card :fileInfo="updateKeys(item)">
+          <data-card :fileInfo="item">
             <template #status>
               <div v-if="item.status === 1" class="online">
                 <el-tag type="success">Online</el-tag>
@@ -19,9 +19,6 @@
             </template>
             <template #creator>
               <div class="creator">
-                <div style="line-height: 40px"><strong>创建人：</strong></div>
-                <el-avatar :size="25" :src="getUserAvatar(item.userAvatar)" />
-                <div class="name">{{ item.userName }}</div>
                 <div class="btn">
                   <el-dropdown trigger="click">
                     <el-button size="small">
@@ -49,6 +46,9 @@
                         <el-dropdown-item @click="operate(4, item)"
                           >删除</el-dropdown-item
                         >
+                        <el-dropdown-item @click="operate(5, item, index)"
+                          >跳转</el-dropdown-item
+                        >
                       </el-dropdown-menu>
                     </template>
                   </el-dropdown>
@@ -63,7 +63,7 @@
           background
           layout="prev, pager, next"
           :total="total"
-          :current-page="currentPage"
+          v-model:current-page="currentPage"
           @current-change="currentChange"
           :hide-on-single-page="true"
         />
@@ -80,8 +80,8 @@ import { computed, defineComponent, onMounted, ref } from "vue";
 import DataCard from "@/components/cards/DataCard.vue";
 import router from "@/router";
 import {
-  pageQueryByAdmin,
-  deleteShareFileById,
+  fuzzyQueryAdmin,
+  deleteByAdmin,
   updateStatusById,
 } from "@/api/request";
 import { useStore } from "@/store";
@@ -91,8 +91,8 @@ import { notice } from "@/utils/notice";
 export default defineComponent({
   components: { DataCard, OfflineDialog },
   setup() {
-    const activeName = ref("first");
     const search = ref("");
+    const keyword = ref("");
     const fileList = ref<any[]>([]);
     const store = useStore();
     const email = computed(() => {
@@ -106,60 +106,20 @@ export default defineComponent({
     const offlineFlag = ref(false);
     const offlineItem = ref<any>();
 
-    const getUserAvatar = (url: string) => {
-      return url != undefined && url != undefined && url != ""
-        ? "http://localhost:8002" + url
-        : "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png";
-    };
-
-    const updateKeys = (object: any) => {
-      const keyMap = {
-        create_time: "createTime",
-        origin_address: "originAddress",
-        structured_source: "structuredSource",
-        update_time: "updateTime",
-        visual_source: "visualSource",
-        visual_type: "visualType",
-        origin_name: "originName",
-        visual_name: "visualName",
-        structured_name: "structuredName",
-      };
-      Object.keys(object).map((key) => {
-        if (
-          key === "create_time" ||
-          key === "origin_address" ||
-          key === "structured_source" ||
-          key === "update_time" ||
-          key === "visual_source" ||
-          key === "visual_type" ||
-          key === "origin_name" ||
-          key === "visual_name" ||
-          key === "structured_name"
-        ) {
-          const newKey = keyMap[key];
-          object[newKey] = object[key];
-          delete object[key];
-        }
-      });
-      return object;
-    };
-
     const operate = async (param: number, fileInfo: any, index: number) => {
       if (param === 1) {
         router.push({
           name: "updateShare",
           params: {
             id: fileInfo.id,
+            fileInfo: JSON.stringify(fileInfo),
           },
         });
       } else if (param === 2) {
         offlineFlag.value = true;
         offlineItem.value = fileInfo;
       } else if (param === 3) {
-        const data = await updateStatusById(
-         fileInfo.id as string,
-          1,
-        );
+        const data = await updateStatusById(fileInfo.id as string, 1);
         if (data != null) {
           if ((data as any).code === 0) {
             fileList.value[index].status = 1;
@@ -167,52 +127,78 @@ export default defineComponent({
           }
         }
       } else if (param === 4) {
-        ElMessageBox.confirm("这将删除数据条目及条目下的数据！", "警告", {
+        ElMessageBox.confirm("确定删除该数据条目？", "警告", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
         })
           .then(async () => {
-            const data = await deleteShareFileById({
+            const data = await deleteByAdmin({
               size: 10,
               page: currentPage.value - 1,
-              keyWord: search.value,
+              keyword: keyword.value,
               property: "update_time",
               id: fileInfo.id,
+              flag: true,
+              tags: [],
             });
             if (data != null) {
               if ((data as any).code === 0) {
                 fileList.value = data.data;
-                total.value = total.value - 1;
+                total.value = total.value;
               }
             }
           })
           .catch(() => {});
+      } else if (param === 5) {
+        router.push({
+          name: "shareFile",
+          params: {
+            id: fileList.value[index].id,
+            fileInfo: JSON.stringify(fileList.value[index]),
+          },
+        });
       }
     };
 
-    const currentChange = () => {};
-
-    const searchFile = async () => {
-      const data = await pageQueryByAdmin({
+    const currentChange = async (val: number) => {
+      const data = await fuzzyQueryAdmin({
         property: "update_time",
         flag: true,
-        keyWord: search.value,
+        keyword: keyword.value,
+        tags: [],
+        page: val - 1,
+        size: 10,
+      });
+      if (data != null) {
+        if ((data as any).code === 0) {
+          fileList.value = data.data.list;
+          total.value = data.data.total;
+          search.value = keyword.value;
+        }
+      }
+    };
+
+    const searchFile = async () => {
+      keyword.value = search.value;
+      const data = await fuzzyQueryAdmin({
+        property: "update_time",
+        flag: true,
+        keyword: keyword.value,
+        tags: [],
         page: 0,
         size: 10,
       });
       if (data != null) {
         if ((data as any).code === 0) {
           fileList.value = data.data.list;
+          total.value = data.data.total;
         }
       }
     };
 
     const commitInfo = async (val: any) => {
-      const data = await updateStatusById(
-        (offlineItem.value as any).id,
-        -1
-      );
+      const data = await updateStatusById((offlineItem.value as any).id, -1);
       if (data != null) {
         if ((data as any).code === 0) {
           offlineItem.value.status = -1;
@@ -223,10 +209,11 @@ export default defineComponent({
     };
 
     onMounted(async () => {
-      const data = await pageQueryByAdmin({
+      const data = await fuzzyQueryAdmin({
         property: "update_time",
         flag: true,
-        keyWord: "",
+        keyword: "",
+        tags: [],
         page: 0,
         size: 10,
       });
@@ -239,12 +226,9 @@ export default defineComponent({
     });
 
     return {
-      activeName,
       search,
       toAdd,
       fileList,
-      getUserAvatar,
-      updateKeys,
       email,
       operate,
       searchFile,
@@ -272,6 +256,7 @@ export default defineComponent({
   margin-left: 20px;
   margin-right: 20px;
   .card {
+    cursor: pointer;
     border: 1px solid #dcdfe6;
     box-sizing: border-box;
     border-radius: 6px;

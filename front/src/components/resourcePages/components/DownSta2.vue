@@ -1,22 +1,18 @@
 <template>
-  <div>
-    <div ref="chart" class="chart"></div>
-  </div>
+  <div ref="chart" class="chart"></div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, nextTick, onMounted, ref } from "vue";
 import * as echarts from "echarts";
 import { getLastOrNextFewDateBy } from "@/utils/common";
-import { getDataGroup } from '@/api/request'
-import router from '@/router'
+import { getDataGroup } from "@/api/request";
 export default defineComponent({
-  props:['id'],
+  props: ["id"],
   setup(props) {
     const chart = ref<HTMLElement>();
 
     const chartInit = (dateList: any[], valueList: any[]) => {
-
       const option = {
         visualMap: [
           {
@@ -55,34 +51,33 @@ export default defineComponent({
           },
         ],
       };
-      const myChart = echarts.init(chart.value as HTMLElement, undefined, {
-        height: 302,
-        width: 910,
-      });
+      const myChart = echarts.init(chart.value as HTMLElement);
       myChart.setOption(option);
     };
 
     onMounted(async () => {
-      //console.log(props.id)
       let values: any[];
-      const data = await getDataGroup((props as any).id, -29)
-      if(data != null) {
-        if((data as any).code === 0) {
-          values = data.data
+      const data = await getDataGroup((props as any).id, -29);
+      if (data != null) {
+        if ((data as any).code === 0) {
+          values = data.data;
         }
       }
-      const nowDate = new Date()
-      const dataList = getLastOrNextFewDateBy(nowDate.toLocaleDateString(), -30)
-      const valueList:any[] = []
+      const nowDate = new Date();
+      const dataList = getLastOrNextFewDateBy(
+        nowDate.toLocaleDateString(),
+        -30
+      );
+      const valueList: any[] = [];
       dataList.forEach((item, index) => {
-        for(let i = 0;i < values?.length;i++) {
-          if(item === values[i].date) {
-            valueList.push(values[i].sum)
-            return
+        for (let i = 0; i < values?.length; i++) {
+          if (item === values[i].date) {
+            valueList.push(values[i].sum);
+            return;
           }
         }
-        valueList.push(0)
-      })
+        valueList.push(0);
+      });
       chartInit(dataList, valueList);
     });
 
@@ -98,5 +93,7 @@ export default defineComponent({
   border: 1px solid #dcdfe6;
   border-radius: 8px;
   background: rgba($color: #d5e2fd, $alpha: 0.5);
+  height: 100%;
+  width: 100%;
 }
 </style>

@@ -176,4 +176,15 @@ public class FileController {
         fileService.importGrid();
         return ResultUtils.success();
     }
+
+    /**
+    * @Description:检查文件完整性
+    * @Author: Yiming
+    * @Date: 2022/10/4
+    */
+
+    @RequestMapping(value = "/check", method = RequestMethod.POST)
+    public JsonResult check(@RequestBody JSONObject jsonObject) {
+        return ResultUtils.success(fileService.check(jsonObject.getStr("path")));
+    }
 }
