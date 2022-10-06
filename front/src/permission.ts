@@ -16,11 +16,11 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
             next({ path: '/' })
             NProgress.done()
         } else {
-            if (store.state.user.roles.length === 0) {
+            if (store.state.user.role === '') {
                 try {
                     await store.dispatch("getUserInfo", undefined)
-                    const roles = store.state.user.roles
-                    store.dispatch("generateRoutes", roles)
+                    const role = store.state.user.role
+                    store.dispatch("generateRoutes", role)
                     store.state.permission.addRouters.forEach(item => {
                         router.addRoute(item)
                     })

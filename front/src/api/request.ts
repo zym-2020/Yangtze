@@ -406,6 +406,10 @@ export async function addRelational(jsonData: { dataListId: string, fileIdList: 
     return await post(`/relational/addRelational`, jsonData)
 }
 
+export async function updateRelational(jsonData: { dataListId: string, fileIdList: string[] }) {
+    return await patch(`/relational/updateRelational`, jsonData)
+}
+
 
 //========================DataList相关接口=================================
 
@@ -446,8 +450,12 @@ export async function addDataList(formData: FormData) {
     return await post(`/dataList/addDataList`, formData)
 }
 
-export async function pageQueryByEmail(page: number, size: number) {
-    return await get(`/dataList/pageQueryByEmail/${page}/${size}`)
+export async function updateDataList(formData: FormData) {
+    return await patch(`/dataList/updateDataList`, formData)
+}
+
+export async function pageQueryByEmail(jsonData: { page: number, size: number, keyword: string }) {
+    return await post(`/dataList/pageQueryByEmail`, jsonData)
 }
 
 //============================Visual相关接口====================================

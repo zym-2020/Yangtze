@@ -1,7 +1,6 @@
 import { RouteLocationNormalized } from 'vue-router'
-import { getProjectInfo, getFileInfoAndUserInfo } from '@/api/request'
+import { getProjectInfo, getFileInfoAndUserInfo, findFiles } from '@/api/request'
 import { useStore } from '@/store'
-import axios from "axios"
 
 
 const store = useStore()
@@ -12,9 +11,11 @@ export async function toIdPages(to: RouteLocationNormalized) {
             if (to.params.fileInfo === undefined) {
                 const id = to.params.id
                 const data = await getFileInfoAndUserInfo(id as string)
-                if (data != null) {
-                    if ((data as any).code === 0) {
+                const files = await findFiles(id as string)
+                if (data != null && files != null) {
+                    if ((data as any).code === 0 && (files as any).code === 0) {
                         to.params.fileInfo = data.data
+                        to.params.files = files.data
                         return 1
                     } else {
                         return -1
@@ -22,9 +23,20 @@ export async function toIdPages(to: RouteLocationNormalized) {
                 } else {
                     return 0
                 }
+
             } else {
-                to.params.fileInfo = JSON.parse(to.params.fileInfo as string)
-                return 1
+                const files = await findFiles(to.params.id as string)
+                if (files != null) {
+                    if ((files as any).code === 0) {
+                        to.params.fileInfo = JSON.parse(to.params.fileInfo as string)
+                        return 1
+                    } else {
+                        return -1
+                    }
+                } else {
+                    return 0
+                }
+
             }
         } else {
             return -1

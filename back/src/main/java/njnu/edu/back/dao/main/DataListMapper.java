@@ -34,9 +34,9 @@ public interface DataListMapper {
 
     void deleteById(@Param("id") String id);
 
-    List<Map<String, Object>> pageQueryByEmail(@Param("email") String email, @Param("size") int size, @Param("start") int start);
+    List<Map<String, Object>> pageQueryByEmail(@Param("email") String email, @Param("size") int size, @Param("start") int start, @Param("keyword") String keyword);
 
-    int countPageQueryByEmail(@Param("email") String email);
+    int countPageQueryByEmail(@Param("email") String email, @Param("keyword") String keyword);
 
     void updateStatusById(@Param("id") String id, @Param("status") int status);
 }

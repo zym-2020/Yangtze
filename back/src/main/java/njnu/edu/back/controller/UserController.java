@@ -6,7 +6,6 @@ import njnu.edu.back.common.resolver.JwtTokenParser;
 import njnu.edu.back.common.result.JsonResult;
 import njnu.edu.back.common.result.ResultUtils;
 import njnu.edu.back.pojo.User;
-import njnu.edu.back.pojo.dto.AddUserDTO;
 import njnu.edu.back.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -33,18 +32,18 @@ public class UserController {
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public JsonResult register(@RequestBody AddUserDTO addUserDTO) {
-        return ResultUtils.success(userService.register(addUserDTO));
+    public JsonResult register(@RequestBody User user) {
+        return ResultUtils.success(userService.register(user));
     }
 
     @AuthCheck
     @RequestMapping(value = "/getUserInfoByToken", method = RequestMethod.GET)
-    public JsonResult getUserInfoByToken(@JwtTokenParser("id") String id, @JwtTokenParser(value = "name") String name, @JwtTokenParser(value = "email") String email, @JwtTokenParser(value = "roles") String[] roles, @JwtTokenParser("avatar") String avatar) {
+    public JsonResult getUserInfoByToken(@JwtTokenParser("id") String id, @JwtTokenParser(value = "name") String name, @JwtTokenParser(value = "email") String email, @JwtTokenParser(value = "role") String role, @JwtTokenParser("avatar") String avatar) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.putOnce("id", id);
         jsonObject.putOnce("name", name);
         jsonObject.putOnce("email", email);
-        jsonObject.putOnce("roles", roles);
+        jsonObject.putOnce("role", role);
         jsonObject.putOnce("avatar", avatar);
         return ResultUtils.success(jsonObject);
     }

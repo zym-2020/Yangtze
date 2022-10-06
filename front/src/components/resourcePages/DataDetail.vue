@@ -663,7 +663,7 @@ export default defineComponent({
     });
     const avatar = computed(() => {
       if ((props.fileInfo as any).avatar != "") {
-        return "http://localhost:8002" + (props.fileInfo as any).avatar;
+        return "http://localhost:8002/visual/getAvatar/" + (props.fileInfo as any).avatar;
       }
       return imgBase64(
         (props.fileInfo as any).name === undefined

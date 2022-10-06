@@ -31,9 +31,9 @@ public interface DataListService {
 
     Map<String, Object> deleteByAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag, String id);
 
-    Map<String, Object> pageQueryByEmail(String email, int size, int page);
+    Map<String, Object> pageQueryByEmail(String email, int size, int page, String keyword);
 
-    void updateStatusById(String id, int status);
+    void updateStatusById(String id, int status, String role, String email);
 
     Map<String, Object> deleteAsMember(String id, String email, int page, int size);
 

@@ -1,7 +1,6 @@
 package njnu.edu.back.dao.main;
 
 import njnu.edu.back.pojo.User;
-import njnu.edu.back.pojo.dto.AddUserDTO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -17,7 +16,7 @@ import org.springframework.stereotype.Repository;
 public interface UserMapper {
     User getUserByEmail(@Param("email") String email);
 
-    int addUser(AddUserDTO addUserDTO);
+    int addUser(@Param("user") User user);
 
     User updateUserInfo(User user);
 

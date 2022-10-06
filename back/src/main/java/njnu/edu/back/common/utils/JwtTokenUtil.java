@@ -128,7 +128,7 @@ public class JwtTokenUtil {
         claims.put("id", user.getId());
         claims.put("name", user.getName());
         claims.put("email", user.getEmail());
-        claims.put("roles", JSON.toJSONString(user.getRoles()));
+        claims.put("role", user.getRole());
         claims.put("avatar", user.getAvatar());
         return generateToken(claims);
 
@@ -162,7 +162,7 @@ public class JwtTokenUtil {
         map.put("id", claims.get("id"));
         map.put("name", claims.get("name"));
         map.put("email", claims.get("email"));
-        map.put("roles", claims.get("roles"));
+        map.put("role", claims.get("role"));
         return generateToken(map);
     }
 }

@@ -98,6 +98,10 @@
           <div ref="container" class="container"></div>
         </el-form-item>
 
+        <el-form-item label="数据绑定：">
+          <data-bind @changeData="changeData" ref="dataBind" />
+        </el-form-item>
+
         <el-form-item label="数据获取方式：" prop="getOnline">
           <el-radio-group v-model="form.getOnline">
             <el-radio :label="true">在线获取</el-radio>
@@ -133,6 +137,7 @@
 
 <script lang="ts">
 type Form = {
+  id: string;
   name: string;
   description: string;
   tags: string[];
@@ -160,14 +165,16 @@ import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
 import { IDomEditor } from "@wangeditor/editor";
 import PageHeader from "@/components/page/PageHeader.vue";
 import ResourceDialog from "@/components/dialog/ResourceDialog.vue";
-import { addDataList } from "@/api/request";
+import { addDataList, addRelational } from "@/api/request";
 import { notice } from "@/utils/notice";
 import type { FormInstance } from "element-plus";
 import AvatarUpload from "@/components/upload/AvatarUpload.vue";
+import DataBind from "./components/DataBind.vue";
 
 import mapBoxGl, { AnySourceData } from "mapbox-gl";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
+import { uuid } from "@/utils/common";
 export default defineComponent({
   components: {
     PageHeader,
@@ -175,6 +182,7 @@ export default defineComponent({
     Toolbar,
     ResourceDialog,
     AvatarUpload,
+    DataBind,
   },
   setup() {
     const defaultProps = {
@@ -182,7 +190,9 @@ export default defineComponent({
       label: "label",
     };
     const container = ref<HTMLElement>();
+    const dataBind = ref();
     const form: Form = reactive({
+      id: uuid(),
       name: "",
       description: "",
       tags: [],
@@ -208,7 +218,7 @@ export default defineComponent({
       scroll: true,
       autoFocus: true,
     };
-    const fileInDataList = ref<any[]>([]);
+    const fileList = ref<string[]>([]);
     const fileRef = ref<HTMLElement | undefined>();
     const metaRef = ref<HTMLElement | undefined>();
 
@@ -224,6 +234,23 @@ export default defineComponent({
 
     const uploadTh = (val: any) => {
       thumbnail.value = val;
+    };
+
+    const changeData = (
+      val: {
+        id: string;
+        name: string;
+        folder: boolean;
+        size: string[];
+        flag: boolean;
+        parentId: string;
+      }[]
+    ) => {
+      console.log(val);
+      fileList.value = [];
+      val.forEach((item) => {
+        fileList.value.push(item.id);
+      });
     };
 
     const commit = async (
@@ -247,8 +274,18 @@ export default defineComponent({
             } else {
               formData.append("thumbnail", new Blob());
             }
+
             const data = await addDataList(formData);
-            if (data != null && (data as any).code === 0) {
+            const data1 = await addRelational({
+              dataListId: form.id,
+              fileIdList: fileList.value,
+            });
+            if (
+              data != null &&
+              (data as any).code === 0 &&
+              data1 != null &&
+              (data1 as any).code === 0
+            ) {
               notice("success", "成功", "请等待管理员审核通过！");
               init();
             }
@@ -258,6 +295,7 @@ export default defineComponent({
     };
 
     const init = () => {
+      form.id = uuid();
       form.name = "";
       form.description = "";
       form.location = [] as string[];
@@ -274,6 +312,7 @@ export default defineComponent({
 
       avatarUpload.value.initPicture();
       thumbUpload.value.initPicture();
+      dataBind.value?.clearData();
     };
 
     const options = ref([
@@ -687,7 +726,6 @@ export default defineComponent({
       editorConfig,
       handleCreated,
       commit,
-      fileInDataList,
       fileRules,
       metaRules,
       fileRef,
@@ -696,6 +734,8 @@ export default defineComponent({
       uploadTh,
       avatarUpload,
       thumbUpload,
+      changeData,
+      dataBind,
     };
   },
 });

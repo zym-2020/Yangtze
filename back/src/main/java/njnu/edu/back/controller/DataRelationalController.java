@@ -31,4 +31,12 @@ public class DataRelationalController {
         dataRelationalService.addRelational(dataListId, fileIdList);
         return ResultUtils.success();
     }
+
+    @RequestMapping(value = "/updateRelational", method = RequestMethod.PATCH)
+    public JsonResult updateRelational(@RequestBody JSONObject jsonObject) {
+        String dataListId = jsonObject.getString("dataListId");
+        List<String> fileIdList = jsonObject.getObject("fileIdList", List.class);
+        dataRelationalService.updateRelational(dataListId, fileIdList);
+        return ResultUtils.success();
+    }
 }

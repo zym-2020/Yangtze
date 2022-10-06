@@ -10,14 +10,14 @@ type AugmentedActionContext = {
 } & Omit<ActionContext<PermissionState, RootState>, 'commit'>
 
 export type Actions = {
-    generateRoutes({ commit }: AugmentedActionContext, roles: string[]): void
+    generateRoutes({ commit }: AugmentedActionContext, role: string): void
     clearRouters({ commit }: AugmentedActionContext): void
 }
 
 export const permissionActions: ActionTree<PermissionState, RootState> & Actions = {
-    generateRoutes({ commit }: AugmentedActionContext, roles: string[]) {
+    generateRoutes({ commit }: AugmentedActionContext, role: string) {
         const temp = JSON.parse(JSON.stringify(asyncRouters))
-        const result = filterAsyncRoutes(asyncRouters, roles)
+        const result = filterAsyncRoutes(asyncRouters, role)
         commit('SET_ROUTERS', result)
     },
     clearRouters({ commit }: AugmentedActionContext) {
@@ -25,13 +25,13 @@ export const permissionActions: ActionTree<PermissionState, RootState> & Actions
     }
 }
 
-const filterAsyncRoutes = (asyncRouters: RouteRecordRaw[], roles: string[]) => {
+const filterAsyncRoutes = (asyncRouters: RouteRecordRaw[], role: string) => {
     const result: RouteRecordRaw[] = []
     asyncRouters.forEach(item => {
         const r = { ...item }
-        if(hasPermission(r, roles)) {
+        if(hasPermission(r, role)) {
             if(r.children) {
-                r.children = filterAsyncRoutes(r.children, roles)
+                r.children = filterAsyncRoutes(r.children, role)
             }
             result.push(r)
         }
@@ -39,13 +39,14 @@ const filterAsyncRoutes = (asyncRouters: RouteRecordRaw[], roles: string[]) => {
     return result
 }
 
-const hasPermission = function (router: RouteRecordRaw, roles: string[]) {
-    if (router.meta != undefined && router.meta.roles != undefined) {
-        return roles.some(role => {
-            if (router.meta?.roles != undefined) {
-                return (router.meta.roles as string[]).includes(role)
+const hasPermission = function (router: RouteRecordRaw, role: string) {
+    if (router.meta != undefined && router.meta.role != undefined) {
+        for(let i = 0; i < (router.meta.role as string[]).length; i++) {
+            if((router.meta.role as string[])[i] === role) {
+                return true
             }
-        })
+        }
+        return false
 
     } else {
         return true

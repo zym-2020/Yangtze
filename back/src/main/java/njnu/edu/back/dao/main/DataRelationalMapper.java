@@ -21,5 +21,9 @@ public interface DataRelationalMapper {
 
     List<Map<String, Object>> findFilesByDataListId(@Param("dataListId") String dataListId);
 
+    List<Map<String, Object>> findFileIdByDataListId(@Param("dataListId") String dataListId);
+
     void batchInsert(@Param("list") List<String> list, @Param("dataListId") String dataListId);
+
+    void batchDelete(@Param("list") List<String> list, @Param("dataListId") String dataListId);
 }

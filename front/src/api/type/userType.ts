@@ -8,7 +8,6 @@ export interface RegisterJsonData {
     email: string,
     name: string,
     password: string,
-    roles: string[]
 }
 
 export interface ProjectJsonData {

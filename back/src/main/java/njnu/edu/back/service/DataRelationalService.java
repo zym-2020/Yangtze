@@ -11,4 +11,6 @@ import java.util.List;
  */
 public interface DataRelationalService {
     void addRelational(String dataListId, List<String> fileIdList);
+
+    void updateRelational(String dataListId, List<String> fileList);
 }

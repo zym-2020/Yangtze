@@ -29,10 +29,6 @@ public class TokenResolver implements HandlerMethodArgumentResolver {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String token = (request.getHeader("authorization")).substring(this.tokenHead.length());
         JwtTokenParser jwtTokenParser = parameter.getParameterAnnotation(JwtTokenParser.class);
-        Object temp = JwtTokenUtil.getUserInfoByToken(jwtTokenParser.value(), token);
-        if(jwtTokenParser.value().equals("roles")) {
-            return JSON.parseObject((String) temp, String[].class);
-        }
         return JwtTokenUtil.getUserInfoByToken(jwtTokenParser.value(), token);
     }
 }

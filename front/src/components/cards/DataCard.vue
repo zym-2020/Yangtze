@@ -125,7 +125,6 @@
       </el-row>
     </div>
     <slot name="border"></slot>
-    
   </div>
 </template>
 
@@ -220,7 +219,6 @@ export default defineComponent({
     const toDetail = () => {
       context.emit("toDetail");
     };
-
 
     // const fits = ["fill", "contain", "cover", "none", "scale-down"];
     // const url =

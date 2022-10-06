@@ -23,25 +23,28 @@
                       :src="
                         avatarUrl === ''
                           ? 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
-                          : 'http://localhost:8002/visual/getAvatar/' + avatarUrl
+                          : 'http://localhost:8002/visual/getAvatar/' +
+                            avatarUrl
                       "
                       :size="40"
                     />
                   </el-badge>
                 </div>
                 <template #dropdown>
-                  <el-dropdown-menu :router="true" :default-active="$route.path">
+                  <el-dropdown-menu
+                    :router="true"
+                    :default-active="$route.path"
+                  >
                     <el-dropdown-item command="1">个人空间</el-dropdown-item>
                     <el-dropdown-item v-if="adminFlag" command="2"
                       >admin界面</el-dropdown-item
                     >
 
-                    
                     <el-dropdown-item command="3">上传记录</el-dropdown-item>
-                    <el-dropdown-item command="4" :index="path">消息
+                    <el-dropdown-item command="4" :index="path"
+                      >消息
                       <!-- <router-link :to="{name:UserChild}"></router-link> -->
                     </el-dropdown-item>
-
 
                     <el-dropdown-item command="5">退出</el-dropdown-item>
                   </el-dropdown-menu>
@@ -65,7 +68,7 @@ export default defineComponent({
   emits: ["openUploadList"],
   setup(_, context) {
     const store = useStore();
-    const path =ref("/user/space")
+    const path = ref("/user/space");
     const login = computed(() => {
       if (getToken() === null) {
         return false;
@@ -77,13 +80,11 @@ export default defineComponent({
       return store.state.user.avatar;
     });
     const adminFlag = computed(() => {
-      let flag = false;
-      store.state.user.roles.forEach((item) => {
-        if (item === "admin") {
-          flag = true;
-        }
-      });
-      return flag;
+      if (store.state.user.role === "admin") {
+        return true;
+      } else {
+        return false;
+      }
     });
     const dotFlag = computed(() => {
       return store.state.other.uploadDotFlag;
@@ -96,11 +97,9 @@ export default defineComponent({
         router.push({ path: "/user/admin" });
       } else if (param === "5") {
         store.dispatch("logout", undefined);
-      } 
-       else if (param === "4") {
-        router.push({ path: "/user/space" , query:{id:3}});
-      }
-       else if (param === "3") {
+      } else if (param === "4") {
+        router.push({ path: "/user/space", query: { id: 3 } });
+      } else if (param === "3") {
         store.commit("SET_UPLOAD_DOT_FLAG", false);
         context.emit("openUploadList");
       }
@@ -130,7 +129,7 @@ export default defineComponent({
       login,
       avatarUrl,
       dotFlag,
-      path
+      path,
     };
   },
 });

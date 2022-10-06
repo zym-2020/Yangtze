@@ -18,10 +18,10 @@
     <update id="updateDataList">
         update data_list
         set name = #{dataList.name}, location = #{dataList.location, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}, description = #{dataList.description}, tags = #{dataList.tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler},
-            update_time = #{dataList.updateTime}, provider = #{dataList.provider}, time = #{dataList.time}, range = #{dataList.range}, type = #{dataList.type}, provider_phone = #{dataList.providerPhone}, provider_email = #{dataList.providerEmail},
+            update_time = now(), provider = #{dataList.provider}, time = #{dataList.time}, range = #{dataList.range}, type = #{dataList.type}, provider_phone = #{dataList.providerPhone}, provider_email = #{dataList.providerEmail},
             provider_address = #{dataList.providerAddress}, get_online = #{dataList.getOnline}, detail = #{dataList.detail}
             <if test="dataList.avatar != ''">
-                ,avatar = #{dataList.avatar},
+                ,avatar = #{dataList.avatar}
             </if>
             <if test="dataList.thumbnail != ''">
                 ,thumbnail = #{dataList.thumbnail}
@@ -102,12 +102,18 @@
                provider, time, range, type, provider_phone as "providerPhone", provider_email as "providerEmail", provider_address as "providerAddress", get_online as "getOnline", detail, thumbnail, users.avatar as "userAvatar", users.name as "userName"
         from data_list, users
         where creator = #{email} and users.email = data_list.creator
+        <if test="keyword != ''">
+            and data_list.name like #{keyword}
+        </if>
         order by create_time asc
         limit #{size} offset #{start};
     </select>
 
     <select id="countPageQueryByEmail" resultType="java.lang.Integer">
         select count(*) from data_list where creator = #{email}
+        <if test="keyword != ''">
+            and data_list.name like #{keyword}
+        </if>
     </select>
 
     <update id="updateStatusById">

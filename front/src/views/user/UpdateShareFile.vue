@@ -58,7 +58,7 @@
 
         <el-form-item label="条目缩略图：">
           <avatar-upload
-            @uploadTh="uploadTh"
+            @upload="uploadTh"
             :pictureName="thumbName"
           ></avatar-upload>
         </el-form-item>
@@ -94,6 +94,9 @@
         <el-form-item label="数据条目定位：">
           <div ref="container" class="container"></div>
         </el-form-item>
+        <el-form-item label="数据绑定：">
+          <data-bind @changeData="changeData" />
+        </el-form-item>
         <el-form-item label="数据获取方式：" prop="getOnline">
           <el-radio-group v-model="form.getOnline">
             <el-radio :label="true">在线获取</el-radio>
@@ -128,6 +131,14 @@
 </template>
 
 <script lang="ts">
+type TableDataType = {
+  id: string;
+  name: string;
+  folder: boolean;
+  size: string;
+  flag: boolean;
+  parentId: string;
+};
 import {
   defineComponent,
   reactive,
@@ -140,15 +151,15 @@ import "@wangeditor/editor/dist/css/style.css"; // 引入 css
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
 import { IDomEditor } from "@wangeditor/editor";
 import PageHeader from "@/components/page/PageHeader.vue";
-
+import DataBind from "./components/DataBind.vue";
 import type { FormInstance } from "element-plus";
 import AvatarUpload from "@/components/upload/AvatarUpload.vue";
-
 import mapBoxGl, { AnySourceData } from "mapbox-gl";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
-
+import { updateDataList, updateRelational } from "@/api/request";
 import router from "@/router";
+import { notice } from "@/utils/notice";
 
 export default defineComponent({
   components: {
@@ -156,6 +167,7 @@ export default defineComponent({
     Editor,
     Toolbar,
     AvatarUpload,
+    DataBind,
   },
   setup() {
     const defaultProps = {
@@ -165,7 +177,7 @@ export default defineComponent({
 
     const editorRef = shallowRef<IDomEditor>();
     const toolbarConfig = {};
-
+    const tableData = ref<TableDataType[]>([]);
     const editorConfig = {
       scroll: true,
       autoFocus: true,
@@ -179,6 +191,7 @@ export default defineComponent({
     const thumbName = ref<string>(
       (router.currentRoute.value.params.fileInfo as any).thumbnail
     );
+    const fileList = ref<string[]>([]);
 
     let map: mapBoxGl.Map;
     const container = ref<HTMLElement>();
@@ -195,7 +208,26 @@ export default defineComponent({
     };
 
     const uploadTh = (val: any) => {
+      console.log("123");
       thumbnail.value = val;
+    };
+
+    const changeData = (val: TableDataType[]) => {
+      fileList.value = [];
+      val.forEach((item) => {
+        fileList.value.push(item.id);
+      });
+    };
+
+    const getCoordinates = (location: string[]) => {
+      const coordinates = [];
+      for (let i = 0; i + 1 < location.length; i = i + 2) {
+        coordinates.push([
+          parseFloat(location[i]),
+          parseFloat(location[i + 1]),
+        ]);
+      }
+      return coordinates;
     };
 
     const commit = async (
@@ -206,6 +238,32 @@ export default defineComponent({
       await formEl1.validate(async (valid1, fields) => {
         await formEl2.validate(async (valid2) => {
           if (valid1 && valid2) {
+            console.log("1", avatar.value, thumbnail.value);
+            const formData = new FormData();
+            formData.append("jsonString", JSON.stringify(form));
+            if (avatar.value != undefined) {
+              formData.append("avatar", avatar.value);
+            } else {
+              formData.append("avatar", new Blob());
+            }
+            if (thumbnail.value != undefined) {
+              formData.append("thumbnail", thumbnail.value);
+            } else {
+              formData.append("thumbnail", new Blob());
+            }
+            const data = await updateDataList(formData);
+            const data1 = await updateRelational({
+              dataListId: form.id,
+              fileIdList: fileList.value,
+            });
+            if (
+              data != null &&
+              (data as any).code === 0 &&
+              data1 != null &&
+              (data1 as any).code === 0
+            ) {
+              notice("success", "成功", "更新成功！");
+            }
           }
         });
       });
@@ -535,6 +593,7 @@ export default defineComponent({
     ]);
 
     const form = reactive({
+      id: (router.currentRoute.value.params.fileInfo as any).id,
       name: (router.currentRoute.value.params.fileInfo as any).name,
       description: (router.currentRoute.value.params.fileInfo as any)
         .description,
@@ -620,28 +679,22 @@ export default defineComponent({
       map.on("draw.delete", updateArea);
       map.on("draw.update", updateArea);
       map.on("load", () => {
-        // if (
-        //   (router.currentRoute.value.params.fileInfo as any).location.length > 0
-        // ) {
-
-        // }
-        console.log(1);
-        polygonDraw.add({
-          type: "Feature",
-          properties: {},
-          geometry: {
-            type: "Polygon",
-            coordinates: [
-              [
-                [121.034395, 31.835539],
-                [120.973451, 31.744312],
-                [121.236154, 31.741041],
-                [121.034395, 31.835539],
+        if (
+          (router.currentRoute.value.params.fileInfo as any).location.length > 0
+        ) {
+          polygonDraw.add({
+            type: "Feature",
+            properties: {},
+            geometry: {
+              type: "Polygon",
+              coordinates: [
+                getCoordinates(
+                  (router.currentRoute.value.params.fileInfo as any).location
+                ),
               ],
-            ],
-          },
-        });
-        console.log(polygonDraw.getAll());
+            },
+          });
+        }
       });
     };
 
@@ -652,8 +705,11 @@ export default defineComponent({
       editor.destroy();
     });
 
-    onMounted(() => {
+    onMounted(async () => {
       initMap();
+      (router.currentRoute.value.params.files as any[]).forEach((item) => {
+        fileList.value.push(item.id);
+      });
     });
 
     return {
@@ -674,6 +730,8 @@ export default defineComponent({
       uploadTh,
       thumbName,
       avatarName,
+      changeData,
+      tableData,
     };
   },
 });

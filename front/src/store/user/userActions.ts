@@ -41,7 +41,7 @@ export const userActions: ActionTree<UserState, RootState> & Actions = {
                 commit("SET_ID", data.data.id)
                 commit("SET_EMAIL", data.data.email)
                 commit("SET_NAME", data.data.name)
-                commit("SET_ROLES", data.data.roles)
+                commit("SET_ROLES", data.data.role)
                 commit("SET_AVATAR", data.data.avatar)
             } else {
                 notice('error', '错误', '获取用户信息错误!')
@@ -55,7 +55,7 @@ export const userActions: ActionTree<UserState, RootState> & Actions = {
         commit("SET_ID", "")
         commit("SET_EMAIL", "")
         commit("SET_NAME", "")
-        commit("SET_ROLES", [])
+        commit("SET_ROLES", "")
         clearRouter()
         router.push({ path: '/login' })
     },

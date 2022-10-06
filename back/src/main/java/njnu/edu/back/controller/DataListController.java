@@ -76,9 +76,12 @@ public class DataListController {
     }
 
     @AuthCheck
-    @RequestMapping(value = "/pageQueryByEmail/{page}/{size}", method = RequestMethod.GET)
-    public JsonResult pageQueryByEmail(@JwtTokenParser("email") String email, @PathVariable int page, @PathVariable int size) {
-        return ResultUtils.success(dataListService.pageQueryByEmail(email, size, page));
+    @RequestMapping(value = "/pageQueryByEmail", method = RequestMethod.POST)
+    public JsonResult pageQueryByEmail(@JwtTokenParser("email") String email, @RequestBody JSONObject jsonObject) {
+        int size = jsonObject.getIntValue("size");
+        int page = jsonObject.getIntValue("page");
+        String keyword = jsonObject.getString("keyword");
+        return ResultUtils.success(dataListService.pageQueryByEmail(email, size, page, keyword));
     }
 
     @AuthCheck
@@ -106,6 +109,13 @@ public class DataListController {
     @RequestMapping(value = "/findFiles/{dataListId}", method = RequestMethod.GET)
     public JsonResult findFiles(@PathVariable String dataListId) {
         return ResultUtils.success(dataListService.findFiles(dataListId));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/updateStatusById/{id}/{status}", method = RequestMethod.PATCH)
+    public JsonResult updateStatusById(@PathVariable String id, @PathVariable int status, @JwtTokenParser("role") String role, @JwtTokenParser("email") String email) {
+        dataListService.updateStatusById(id, status, role, email);
+        return ResultUtils.success();
     }
 
 
@@ -140,13 +150,5 @@ public class DataListController {
         String id = jsonObject.getString("id");
         return ResultUtils.success(dataListService.deleteByAdmin(page, size, keyword, tags, property, flag, id));
     }
-
-    @AuthCheck
-    @RequestMapping(value = "/updateStatusById/{id}/{status}", method = RequestMethod.PATCH)
-    public JsonResult updateStatusById(@PathVariable String id, @PathVariable int status) {
-        dataListService.updateStatusById(id, status);
-        return ResultUtils.success();
-    }
-
 
 }

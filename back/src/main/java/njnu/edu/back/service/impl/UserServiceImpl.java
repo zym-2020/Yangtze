@@ -1,15 +1,12 @@
 package njnu.edu.back.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
-import njnu.edu.back.common.utils.CommonUtils;
 import njnu.edu.back.common.utils.Encrypt;
 import njnu.edu.back.common.utils.JwtTokenUtil;
 import njnu.edu.back.common.utils.LocalUploadUtil;
 import njnu.edu.back.dao.main.UserMapper;
 import njnu.edu.back.pojo.User;
-import njnu.edu.back.pojo.dto.AddUserDTO;
 import njnu.edu.back.service.RedisService;
 import njnu.edu.back.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -66,12 +62,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int register(@Valid AddUserDTO addUserDTO) {
-        User user = userMapper.getUserByEmail(addUserDTO.getEmail());
-        if(user == null) {
-            addUserDTO.setPassword(Encrypt.md5(addUserDTO.getPassword()));
-            LocalUploadUtil.createUserFolder(basePath, addUserDTO.getEmail());
-            return userMapper.addUser(addUserDTO);
+    public int register(User user) {
+        User temp = userMapper.getUserByEmail(user.getEmail());
+        if(temp == null) {
+            user.setPassword(Encrypt.md5(user.getPassword()));
+            LocalUploadUtil.createUserFolder(basePath, user.getEmail());
+            user.setRole("member");
+            return userMapper.addUser(user);
         } else {
             throw new MyException(ResultEnum.EXIST_OBJECT);
         }

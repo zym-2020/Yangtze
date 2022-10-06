@@ -2,7 +2,6 @@ package njnu.edu.back.service;
 
 
 import njnu.edu.back.pojo.User;
-import njnu.edu.back.pojo.dto.AddUserDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
@@ -18,7 +17,7 @@ import java.util.Map;
 public interface UserService {
     String login(String email, String password);
 
-    int register(AddUserDTO addUserDTO);
+    int register(User user);
 
     Map<String, Object> getUserByEmail(String email);
 

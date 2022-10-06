@@ -325,7 +325,7 @@ export default defineComponent({
         keyword: keyWord.value,
         tags: classify,
         property: "",
-        flag: true,
+        flag: false,
       };
 
       switch (selectValue.value) {
@@ -360,7 +360,7 @@ export default defineComponent({
         keyword: keyWord.value,
         tags: classify,
         property: "",
-        flag: true,
+        flag: false,
       };
 
       NProgress.start();
@@ -408,7 +408,7 @@ export default defineComponent({
         keyword: keyWord.value,
         tags: classify,
         property: "",
-        flag: true,
+        flag: false,
       };
 
       switch (selectValue.value) {

@@ -70,7 +70,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 name: 'shareFile',
                 component: () => import('@/views/data/ShareFileIndex.vue'),
                 meta: {
-                    roles: ['member', 'admin']
+                    role: ['member', 'admin']
                 }
             }
         ]
@@ -91,7 +91,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 path: 'scenarioOne',
                 component: () => import('@/views/scenario/realTimeMap.vue'),
                 meta: {
-                    roles: ['member', 'admin'],
+                    role: ['member', 'admin'],
                     keepAlive: true
                 }
             }, 
@@ -99,21 +99,21 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 path: 'scenarioTwo',
                 component: () => import('@/views/scenario/TheMap.vue'),
                 meta: {
-                    roles: ['member', 'admin']
+                    role: ['member', 'admin']
                 }
             }, 
             {
                 path: 'scenarioThree',
                 component: () => import('@/views/scenario/shipMap.vue'),
                 meta: {
-                    roles: ['member', 'admin']
+                    role: ['member', 'admin']
                 }
             }, 
             {
                 path: 'scenarioFour',
                 component: () => import('@/views/scenario/projectMap.vue'),
                 meta: {
-                    roles: ['member', 'admin']
+                    role: ['member', 'admin']
                 }
             }, 
         ]
@@ -136,7 +136,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 name: 'AnalyzeList',
                 component: () => import('@/views/analyze/Index.vue'),
                 meta: {
-                    roles: ['member', 'admin'],
+                    role: ['member', 'admin'],
                     keepAlive: true
                 }
             },
@@ -145,7 +145,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 name: 'project',
                 component: () => import('@/views/analyze/Project.vue'),
                 meta: {
-                    roles: ['member', 'admin']
+                    role: ['member', 'admin']
                 }
             }
         ]
@@ -168,7 +168,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 name: 'UserSpace',
                 component: () => import('@/views/user/Index.vue'),
                 meta: {
-                    roles: ['member', 'admin'],
+                    role: ['member', 'admin'],
                     keepAlive: true
                 }
             },
@@ -177,7 +177,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 name: 'share',
                 component: () => import('@/views/user/UploadShareFile.vue'),
                 meta: {
-                    roles: ['member', 'admin']
+                    role: ['member', 'admin']
                 }
             },
             {
@@ -185,7 +185,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 name: 'updateShare',
                 component: () => import('@/views/user/UpdateShareFile.vue'),
                 meta: {
-                    roles: ['member', 'admin'],
+                    role: ['member', 'admin'],
                     keepAlive: true
                 }
             },
@@ -194,7 +194,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 name: 'UserAdmin',
                 component: () => import('@/views/user/Admin.vue'),
                 meta: {
-                    roles: ['admin']
+                    role: ['admin']
                 },
                 children: [
                     {
@@ -207,7 +207,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                         name: 'UserAdminResource',
                         component: () => import('@/views/user/views/ResourceManage.vue'),
                         meta: {
-                            roles: ['admin'],
+                            role: ['admin'],
                             keepAlive: true
                         }
                     },
@@ -216,7 +216,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                         name: 'UserAdminScenario',
                         component: () => import('@/views/user/views/ScenarioManage.vue'),
                         meta: {
-                            roles: ['admin']
+                            role: ['admin']
                         }
                     },
                     {
@@ -224,7 +224,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                         name: 'UserAdminProject',
                         component: () => import('@/views/user/views/ProjectManage.vue'),
                         meta: {
-                            roles: ['admin'],
+                            role: ['admin'],
                             keepAlive: true
                         }
                     },
@@ -233,21 +233,21 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                         name: 'UserAdminMessage',
                         component: () => import('@/views/user/views/MessageManage.vue'),
                         meta: {
-                            roles: ['admin']
+                            role: ['admin']
                         }
                     },
                     {
                         path: 'msuess',
                         component: () => import('@/views/user/views/MsuessManage.vue'),
                         meta: {
-                            roles: ['admin']
+                            role: ['admin']
                         }
                     },
                     {
                         path: 'mfail',
                         component: () => import('@/views/user/views/MfailManage.vue'),
                         meta: {
-                            roles: ['admin']
+                            role: ['admin']
                         }
 
 
@@ -256,7 +256,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                         path: 'mexamine',
                         component: () => import('@/views/user/views/MexamineManage.vue'),
                         meta: {
-                            roles: ['admin']
+                            role: ['admin']
                         }
 
 
@@ -265,7 +265,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                         path: 'muploadfail',
                         component: () => import('@/views/user/views/MuploadfailManage.vue'),
                         meta: {
-                            roles: ['admin']
+                            role: ['admin']
                         }
 
 
@@ -274,7 +274,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                         path: 'mweclome',
                         component: () => import('@/views/user/views/MweclomeManage.vue'),
                         meta: {
-                            roles: ['admin']
+                            role: ['admin']
                         }
 
 
@@ -282,7 +282,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                         path: 'mdownloadfail',
                         component: () => import('@/views/user/views/MdownloadfailManage.vue'),
                         meta: {
-                            roles: ['admin']
+                            role: ['admin']
                         }
 
 

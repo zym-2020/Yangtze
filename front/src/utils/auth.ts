@@ -1,6 +1,5 @@
 import { resetRouter } from "@/router"
 import { useStore } from "@/store"
-import router from '@/router'
 
 
 
@@ -16,16 +15,7 @@ export function clear(): void {
     localStorage.clear()
 }
 
-export function hasPermission(roles: string[], routeRoles: string[]): boolean {
-    for(let i = 0;i < roles.length;i++) {
-        for(let j = 0;j < routeRoles.length;j++) {
-            if(roles[i] === routeRoles[j]) {
-                return true
-            }
-        }
-    }
-    return false
-}
+
 
 
 //清空路由

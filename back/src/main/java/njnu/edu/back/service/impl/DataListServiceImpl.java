@@ -103,8 +103,10 @@ public class DataListServiceImpl implements DataListService {
 
     @Override
     public void updateList(MultipartFile avatar, MultipartFile thumbnail, String jsonString) {
-        String avatarStr = "";
-        String thumbnailStr = "";
+        JSONObject jsonObject = JSON.parseObject(jsonString);
+        Map<String, Object> map = dataListMapper.getFileInfo(jsonObject.getString("id"));
+        String avatarStr = (String) map.get("avatar");
+        String thumbnailStr = (String) map.get("thumbnail");
         if(!avatar.isEmpty()) {
             String uuid = UUID.randomUUID().toString();
             String suffix = avatar.getOriginalFilename().substring(avatar.getOriginalFilename().lastIndexOf(".") + 1);
@@ -117,7 +119,7 @@ public class DataListServiceImpl implements DataListService {
             LocalUploadUtil.uploadAvatar(pictureAddress + uuid + "." + suffix, thumbnail);
             thumbnailStr = uuid + "." +suffix;
         }
-        JSONObject jsonObject = JSON.parseObject(jsonString);
+
         DataList dataList = new DataList();
         dataList.setName(jsonObject.getString("name"));
         dataList.setDescription(jsonObject.getString("description"));
@@ -125,6 +127,7 @@ public class DataListServiceImpl implements DataListService {
         dataList.setAvatar(avatarStr);
         dataList.setThumbnail(thumbnailStr);
         dataList.setProvider(jsonObject.getString("provider"));
+        dataList.setLocation(jsonObject.getObject("location", String[].class));
         dataList.setTime(jsonObject.getString("time"));
         dataList.setRange(jsonObject.getString("range"));
         dataList.setType(jsonObject.getString("type"));
@@ -185,9 +188,12 @@ public class DataListServiceImpl implements DataListService {
     }
 
     @Override
-    public Map<String, Object> pageQueryByEmail(String email, int size, int page) {
-        List<Map<String, Object>> list = dataListMapper.pageQueryByEmail(email, size, size * page);
-        int count = dataListMapper.countPageQueryByEmail(email);
+    public Map<String, Object> pageQueryByEmail(String email, int size, int page, String keyword) {
+        if(!keyword.equals("")) {
+            keyword = "%" + keyword + "%";
+        }
+        List<Map<String, Object>> list = dataListMapper.pageQueryByEmail(email, size, size * page, keyword);
+        int count = dataListMapper.countPageQueryByEmail(email, keyword);
         Map<String, Object> map = new HashMap<>();
         map.put("list", list);
         map.put("total", count);
@@ -195,8 +201,18 @@ public class DataListServiceImpl implements DataListService {
     }
 
     @Override
-    public void updateStatusById(String id, int status) {
-        dataListMapper.updateStatusById(id, status);
+    public void updateStatusById(String id, int status, String role, String email) {
+        if(role.equals("admin")) {
+            dataListMapper.updateStatusById(id, status);
+        } else {
+            Map<String, Object> map = dataListMapper.getFileInfo(id);
+            if(email.equals(map.get("creator")) && status == -1) {
+                dataListMapper.updateStatusById(id, status);
+            } else {
+                throw new MyException(-99, "没有权限！");
+            }
+        }
+
     }
 
     @Override
@@ -206,7 +222,7 @@ public class DataListServiceImpl implements DataListService {
             throw new MyException(-99, "没有权限！");
         }
         dataListMapper.deleteById(id);
-        return pageQueryByEmail(email, size, page);
+        return pageQueryByEmail(email, size, page, "");
     }
 
     @Override
