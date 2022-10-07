@@ -7,7 +7,7 @@ minio:
 spring:
   datasource:
     main:
-      jdbc-url: jdbc:postgresql://localhost:5432/testdb?stringtype=unspecified
+      jdbc-url: jdbc:postgresql://localhost:5432/dataset?stringtype=unspecified
       username: postgres
       password: 123
       driver-class-name: org.postgresql.Driver

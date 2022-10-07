@@ -13,18 +13,41 @@ export default {
 <script setup lang='ts'>
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { onMounted } from "@vue/runtime-core";
-import { ref, watch } from "vue";
+import { computed, onMounted } from "@vue/runtime-core";
+import router from "@/router";
 
-const coordinates = [
-  [120.60871093751484, 32.09452444899182],
-  [122.08637207034224, 32.09452444899182],
-  [122.08637207034224, 31.152025646717746],
-  [120.60871093751484, 31.152025646717746],
-  [120.60871093751484, 32.09452444899182],
-];
+const coordinates = computed(() => {
+  if ((router.currentRoute.value.params.fileInfo as any).location.length > 0) {
+    const result: number[][] = [];
+    for (
+      let i = 0;
+      i + 1 <
+      (router.currentRoute.value.params.fileInfo as any).location.length;
+      i = i + 2
+    ) {
+      result.push([
+        parseFloat(
+          (router.currentRoute.value.params.fileInfo as any).location[i]
+        ),
+        parseFloat(
+          (router.currentRoute.value.params.fileInfo as any).location[i + 1]
+        ),
+      ]);
+    }
+    return result;
+  } else {
+    return [
+      [120.60871093751484, 32.09452444899182],
+      [122.08637207034224, 32.09452444899182],
+      [122.08637207034224, 31.152025646717746],
+      [120.60871093751484, 31.152025646717746],
+      [120.60871093751484, 32.09452444899182],
+    ];
+  }
+});
 
 onMounted(async () => {
+  console.log();
   mapboxgl.accessToken =
     "pk.eyJ1IjoiMTY2NTE2OTkzNzYiLCJhIjoiY2ttMDh5amJpMHE2dzJ3cTd5eWZsMGQxZyJ9.XErH3kSOuRC_OWXWCpDLkQ";
   const map = new mapboxgl.Map({
@@ -44,7 +67,7 @@ onMounted(async () => {
             properties: {},
             geometry: {
               type: "Polygon",
-              coordinates: [coordinates],
+              coordinates: [coordinates.value],
             },
           },
         ],

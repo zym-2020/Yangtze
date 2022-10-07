@@ -98,7 +98,7 @@ export default defineComponent({
       } else if (param === "5") {
         store.dispatch("logout", undefined);
       } else if (param === "4") {
-        router.push({ path: "/user/space", query: { id: 3 } });
+        router.push({ path: "/message" });
       } else if (param === "3") {
         store.commit("SET_UPLOAD_DOT_FLAG", false);
         context.emit("openUploadList");

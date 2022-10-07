@@ -105,7 +105,7 @@
               <el-col :span="12">
                 <div class="basicInfo-item">
                   <data-description
-                    :data="{ key: '空间位置：', value: fileInfo.range }"
+                    :data="{ key: '空间描述：', value: fileInfo.range }"
                   ></data-description>
                 </div>
               </el-col>

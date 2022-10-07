@@ -94,28 +94,28 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                     role: ['member', 'admin'],
                     keepAlive: true
                 }
-            }, 
+            },
             {
                 path: 'scenarioTwo',
                 component: () => import('@/views/scenario/TheMap.vue'),
                 meta: {
                     role: ['member', 'admin']
                 }
-            }, 
+            },
             {
                 path: 'scenarioThree',
                 component: () => import('@/views/scenario/shipMap.vue'),
                 meta: {
                     role: ['member', 'admin']
                 }
-            }, 
+            },
             {
                 path: 'scenarioFour',
                 component: () => import('@/views/scenario/projectMap.vue'),
                 meta: {
                     role: ['member', 'admin']
                 }
-            }, 
+            },
         ]
     },
     {
@@ -288,6 +288,20 @@ export const asyncRouters: Array<RouteRecordRaw> = [
 
                     },
                 ]
+            }
+        ]
+    },
+    {
+        path: "/message",
+        name: "Message",
+        component: shallowRef(Layout),
+        meta: {
+            title: "消息"
+        },
+        children: [
+            {
+                path: '',
+                component: () => import('@/views/message/Index.vue')
             }
         ]
     },
