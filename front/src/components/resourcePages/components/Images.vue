@@ -7,7 +7,7 @@
           class="large"
           :style="[
             {
-              backgroundImage: 'url('+ $props.src+ ')',
+              backgroundImage: 'url(' + $props.src + ')',
               backgroundPositionX: position.backgroundPositionX,
               backgroundPositionY: position.backgroundPositionY,
             },
@@ -19,7 +19,7 @@
     <el-row>
       <div class="middle" ref="target">
         <div>
-          <img :src="$props.src"  style="width: 100%; height: 100%"/>
+          <img :src="$props.src" style="width: 100%; height: 100%" />
         </div>
         <!-- 蒙层容器 -->
         <div
@@ -33,22 +33,26 @@
 </template>
  
 <script  lang="ts">
-import { onMounted, reactive, ref, watch, defineComponent,computed} from "vue";
+import {
+  onMounted,
+  reactive,
+  ref,
+  watch,
+  defineComponent,
+  computed,
+} from "vue";
 import { useMouseInElement } from "@vueuse/core";
 export default defineComponent({
   name: "Images",
-  props:{
-    src:{
-      type: String
-    }
+  props: {
+    src: {
+      type: String,
+    },
   },
 
   setup(props, context) {
     const curId = ref(0);
     const target = ref(null);
-    const htp = ref(
-      "http://localhost:8002/file/thumbnail/0eb06e91-c65c-4e88-af9c-0f8c36036a60.png"
-    );
     // elementX: 鼠标距离左侧的偏移值
     // elementY：表表距离顶部的偏移值
     // isOutside: 是否在容器外部  外部true  内部 false
@@ -58,16 +62,15 @@ export default defineComponent({
     const isShow = ref(false); // 显示大图和蒙层图的显示和隐藏
     const position = reactive({
       // 大图显示的位置,默认是0
-      backgroundPositionX  : "0px",
-      backgroundPositionY : "0px",
+      backgroundPositionX: "0px",
+      backgroundPositionY: "0px",
     });
-    const thumbnail= computed(()=>{
-      if(!props.src){
-        return ""
-      };
-      return props.src });
-
-
+    const thumbnail = computed(() => {
+      if (!props.src) {
+        return "";
+      }
+      return props.src;
+    });
 
     watch(
       // 监听的对象
@@ -76,31 +79,32 @@ export default defineComponent({
         if (elementX.value < 100) {
           // 左侧最小距离
           left.value = 0;
-        };
+        }
         if (elementX.value > 300) {
           left.value = 200;
-        };
+        }
         if (elementX.value > 100 && elementX.value < 300) {
           left.value = elementX.value - 100;
-        };
+        }
         if (elementY.value < 100) {
           // 左侧最小距离
           top.value = 0;
-        };
+        }
         if (elementY.value > 300) {
           top.value = 200;
-        };
+        }
         if (elementY.value > 100 && elementY.value < 300) {
           top.value = elementY.value - 100;
-        };
+        }
         // 控制背景图移动
         // 1. 蒙层移动的方向和大图背景移动的方向是相反的
         // 2. 蒙层和大图由于面积大小是1:2的 蒙层每移动一个像素  大图移动俩个像素
         // backgrondPosition：x,y;
-        position.backgroundPositionX  = (-left.value * 2) as any as string +"px" ;
-        position.backgroundPositionY    = (-top.value * 2) as any as string + "px" ;
+        position.backgroundPositionX =
+          ((-left.value * 2) as any as string) + "px";
+        position.backgroundPositionY =
+          ((-top.value * 2) as any as string) + "px";
         //position.backgroundPositionX  =  position.backgroundPositionX.toString()   + "px";
-
 
         // 当isOutside的值发生变化的时候,立刻取反赋值给isShow
         // isOutside: 是否在容器外部  外部true  内部 false
@@ -109,10 +113,6 @@ export default defineComponent({
       {}
     );
 
-    onMounted(() => {
-      // console.log(props.src);
-      // console.log(thumbnail.value);
-    });
     return {
       curId,
       target,
@@ -120,8 +120,7 @@ export default defineComponent({
       top,
       position,
       isShow,
-      htp,
-      thumbnail
+      thumbnail,
     };
   },
 });

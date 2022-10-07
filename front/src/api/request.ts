@@ -109,24 +109,6 @@ export async function checkAddRegion(key: string) {
     return await get(`/project/checkAddRegion/${key}`)
 }
 
-//========================vectorRelationship相关接口=================================
-export async function vectorPageQuery(size: number, start: number) {
-    return await get(`/vectorRelationship/pageQuery/${size}/${start}`)
-}
-
-export async function newShape(jsonData: NewShapeJsonData) {
-    return await post(`/vectorRelationship/newShape`, jsonData)
-}
-
-export async function checkState(uuid: string) {
-    return await get(`/vectorRelationship/checkState/${uuid}`)
-}
-
-//========================rasterRelationship相关接口=================================
-export async function rasterPageQuery(size: number, start: number) {
-    return await get(`/rasterRelationship/pageQuery/${size}/${start}`)
-}
-
 //========================file相关接口=================================
 export async function getNoUpload(jsonData: GetNoUploadJsonData) {
     return await post(`/file/getNoUpload`, jsonData)
@@ -180,89 +162,16 @@ export async function getFilePath(path: string) {
     return await get(`/file/getFilePath/${path}`)
 }
 //========================share_file相关接口=================================
-export async function addShareFile(formData: FormData) {
-    return await post(`/share/addShareFile`, formData)
-}
-
-export async function pageQueryByAdmin(jsonData: FuzzyQueryClassifyJsonData) {
-    return await post(`/share/pageQueryByAdmin`, jsonData)
-}
-
-export async function getFileInfoAndMeta(id: string) {
-    return await get(`/share/getFileInfoAndMeta/${id}`)
-}
-
-export async function getFileInfoAndMetaAndUserInfo(id: string) {
-    return await get(`/share/getFileInfoAndMetaAndUserInfo/${id}`)
-}
-
-export async function addWatchCountTemp(id: string) {
-    return await patch(`/share/addWatchCount/${id}`)
-}
-
-export async function fuzzyQuery(jsonData: FuzzyQueryClassifyJsonData) {
-    return await post(`/share/fuzzyQuery`, jsonData)
-}
-
-export async function fuzzyQueryClassify(jsonData: FuzzyQueryClassifyJsonData) {
-    return await post(`/share/fuzzyQueryClassify`, jsonData)
-}
-
-
-//这里懒得写了，字段太多
-export async function updateShareFileNoAvatar(jsonData: any) {
-    return await patch(`/share/updateShareFileNoAvatar`, jsonData)
-}
-
-//这个也是一样，懒得写了
-export async function updateShareFile(formData: FormData) {
-    return await patch(`/share/updateShareFile`, formData)
-}
-
-export async function deleteShareFileById(jsonData: DeleteShareFileByIdJsonDaya) {
-    return await del(`/share/deleteShareFileById`, jsonData)
-}
-
-export async function updateStatusByIdTemp(jsonData: UpdateStatusByIdJsonData) {
-    return await patch(`/share/updateStatusById`, jsonData)
-}
 
 export async function offlineById(id: string) {
     return await patch(`/share/offlineById/${id}`)
 }
-
-export async function examineById(id: string) {
-    return await patch(`/share/examineById/${id}`)
-}
-
 export async function onlineById(id: string) {
     return await patch(`/share/onlineById/${id}`)
 }
-
-export async function deleteShareFileAsMember(id: string, page: number, size: number) {
-    return await del(`/share/deleteShareFileAsMember/${id}/${page}/${size}`)
-}
-
-export async function getShareFileById(id: string) {
-    return await patch(`/share/getShareFileById/${id}`)
-}
-
-export async function getOtherTags(id: string) {
-    return await patch(`/share/getOtherTags/${id}`)
-}
-
-
 export async function getShpByCoordinates(arrayString: string) {
     return await get(`/share/getShpByCoordinates/${arrayString}`)
 }
-
-
-
-//========================download相关接口=================================
-export async function getDownloadURLTemp(id: string) {
-    return await get(`/download/getDownloadURL/${id}`)
-}
-
 
 //========================uploadRecord相关接口=================================
 export async function getRecords(number: number) {
@@ -381,11 +290,6 @@ export async function QueryShpByName(name: string) {
 
 }
 
-
-export async function QueryShpByNewName(name: string) {
-    return await get(`/jsonRecord/QueryByNewName/${name}`)
-
-}
 
 //========================ShpCoordinates相关接口=================================
 

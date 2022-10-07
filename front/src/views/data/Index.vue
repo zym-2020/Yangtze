@@ -18,61 +18,6 @@
         </div>
 
         <div class="right">
-          <div v-if="searchMap" style="height: 600px">
-            <FindMap @getCoor="getCoor"></FindMap>
-          </div>
-          <!-- <div v-if="searchSet">
-            <div
-              style="
-                margin: 10px;
-                padding: 5px;
-                width: auto;
-                border: 1px solid #8b7e66;
-              "
-            >
-              <el-table
-                ref="multipleTableRef"
-                :data="tableData"
-                style="width: 100%"
-                @selection-change="handleSelectionChange"
-                @row-dblclick="ddd"
-                :row-style="tableStyleName"
-                :row-class-name="tableRowClassName"
-              >
-                <el-table-column type="selection" width="40" />
-                <el-table-column label="时间" width="150">
-                  <template #default="scope">{{ scope.row.date }}</template>
-                </el-table-column>
-                <el-table-column property="name" label="名称" width="400" />
-                <el-table-column
-                  property="address"
-                  label="描述"
-                  show-overflow-tooltip
-                />
-                <el-table-column fixed="right" label="删除" width="100">
-                  <template #default="scope">
-                    <el-button
-                      link
-                      type="danger"
-                      icon="Delete"
-                      round
-                      size="small"
-                      @click.prevent="deleteRow(scope.$index)"
-                    >
-                    </el-button>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </div>
-            <div>
-              <el-button
-                class="mt-4"
-                style="width: 100%; margin-top: 20px"
-                @click="onAddItem"
-                >Add Item</el-button
-              >
-            </div>
-          </div> -->
           <div class="list">
             <el-input v-model="input" placeholder="请输入关键字">
               <template #append>
@@ -133,29 +78,12 @@
           <div>
             <el-card
               shadow="always"
-              :style="[
-                { marginTop: searchMap == false ? '110px' : '250px' },
-                { backgroundColor: searchMap == false ? '' : '#859ecc' },
-                { transform: searchMap == false ? '' : 'scale(1.2)' },
-              ]"
+              style="margin-top: 110px"
               class="video2"
               @click="isCoor"
               >空间位置查询
             </el-card>
           </div>
-          <!-- <div>
-            <el-card
-              shadow="always"
-              :style="[
-                { marginTop: searchSet == false ? '10px' : '150px' },
-                { backgroundColor: searchSet == false ? '' : '#859ecc' },
-                { transform: searchSet == false ? '' : 'scale(1.2)' },
-              ]"
-              class="video2"
-              @click="isSet"
-              >资源融合
-            </el-card>
-          </div> -->
         </div>
       </div>
     </div>
@@ -167,23 +95,16 @@ import { defineComponent, onMounted, ref } from "vue";
 import PageHeader from "@/components/page/PageHeader.vue";
 import DataCollapse from "@/components/page/DataCollapse.vue";
 import DataCard from "@/components/cards/DataCard.vue";
-import FindMap from "@/components/scenePart/FindMap.vue";
 import { fuzzyQueryDataList, getShpByCoordinates } from "@/api/request";
 import router from "@/router";
 
 import NProgress from "nprogress";
 NProgress.configure({ showSpinner: false });
-interface User {
-  date: string;
-  name: string;
-  address: string;
-}
 export default defineComponent({
   components: {
     PageHeader,
     DataCollapse,
     DataCard,
-    FindMap,
   },
 
   setup() {
@@ -192,12 +113,10 @@ export default defineComponent({
     const keyWord = ref("");
     const selectValue = ref("download");
     const fileList = ref<any[]>([]);
-    const coorList = ref<any[]>([]);
     let classify: string[] = [];
     const total = ref(0);
     const currentPage = ref(1);
     const searchMap = ref(false);
-    const searchSet = ref(false);
 
     const options = ref<{ label: string; value: string }[]>([
       {
@@ -218,102 +137,11 @@ export default defineComponent({
       },
     ]);
 
-    const tableStyleName = (row: any, rowIndex: any) => {
-      // console.log(row.row.date )
-      // console.log(multipleSelection.value[0]?.date)
-      for (let i = 0; i < multipleSelection.value.length; i++) {
-        if (multipleSelection.value[i]?.date == row.row.date)
-          return "background-color:rgba(21,69,153,0.3)";
-      }
-      return "";
-    };
-    const tableRowClassName = (row: any, rowIndex: any) => {
-      return "";
-    };
-    // const tableData = ref([
-    //   {
-    //     date: "2016-05-03",
-    //     name: "Tom",
-    //     address: "No. 189, Grove St, Los Angeles",
-    //   },
-    //   {
-    //     date: "2016-05-02",
-    //     name: "Tom",
-    //     address: "No. 189, Grove St, Los Angeles",
-    //   },
-    //   {
-    //     date: "2016-05-04",
-    //     name: "Tom",
-    //     address: "No. 189, Grove St, Los Angeles",
-    //   },
-    // ]);
-    const multipleSelection = ref<User[]>([]);
-    const handleSelectionChange = (val: User[]) => {
-      multipleSelection.value = val;
-    };
-
-    // const deleteRow = (index: number) => {
-    //   tableData.value.splice(index, 1);
-    // };
-    // const ddd = (row: any) => {};
-    // const onAddItem = (val: any) => {
-    //   //此处val为fileInfo
-    //   now.setDate(now.getDate() + 1);
-    //   tableData.value.push({
-    //     date: dateFormat(val.createTime, "yyyy年MM月dd日"),
-    //     name: val.name,
-    //     address: val.watch,
-    //   });
-    // };
-    //空间查询
-    const isCoor = async () => {
-      const jsonData = {
-        keyword: "",
-      };
+    const isCoor = () => {
       searchMap.value = !searchMap.value;
-      // if (searchMap.value == false) {
-      //   jsonData.keyword = "download";
-      //   const data = await axios
-      //     .post("http://172.21.213.244:8002/dataList/fuzzyQuery", jsonData, {
-      //       headers: {
-      //         authorization:
-      //           "Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6IltcImFkbWluXCJdIiwibmFtZSI6Inp5bSIsImlkIjoiNDM2MDg1MTQtZDgzMy00YjUwLTlhNzQtMDliNjM4YjkzODkxIiwiZXhwIjoxNjYyNzI4NTM4LCJlbWFpbCI6IjEyM0BxcS5jb20ifQ.UK366cK1dP0bZqCmaZKGmYDz1XndpmUh0tdxWFZ-9y-bT54_gqOAGRW0UopFKyf36mSZJWc_CInYiYq1-WF2vw",
-      //       },
-      //     })
-      //     .then((res) => {
-      //       return res.data;
-      //     });
-      //   skeletonFlag.value = true;
-      //   if (data != null) {
-      //     if ((data as any).code === 0) {
-      //       fileList.value = (data as any).data.list;
-      //       total.value = (data as any).data.total;
-      //     }
-      //   }
-      // }
-    };
-    const isSet = async () => {
-      searchSet.value = !searchSet.value;
-    };
-    // const getDataSet = (val: any) => {
-    //   onAddItem(val);
-    // };
-    const getCoor = async (val: Array<number[]>) => {
-      console.log(val);
-      // let arr = [];
-      // for (let i = 0; i < val.length; i++) {
-      //   arr.push(val[i][0]);
-      //   arr.push(val[i][1]);
-      // }
-      // coorList.value = arr;
-      // const data = await getShpByCoordinates(coorList.value.toString());
-      // if (data != null) {
-      //   if ((data as any).code === 0) {
-      //     fileList.value = data.data;
-      //     total.value = data.data.length;
-      //     currentPage.value = 1;
-      //   }
-      // }
+      router.push({
+        path: "/data/spaceSearch",
+      });
     };
 
     const search = async () => {
@@ -460,28 +288,17 @@ export default defineComponent({
       skeletonFlag,
       input,
       searchMap,
-      searchSet,
       options,
-      // ddd,
       selectValue,
       fileList,
       total,
-      coorList,
       toDetail,
       currentPage,
-      // getDataSet,
-      // deleteRow,
-      tableRowClassName,
-      // onAddItem,
-      tableStyleName,
+
       pageChange,
       search,
       getSelectList,
-      handleSelectionChange,
-      getCoor,
-      // tableData,
       isCoor,
-      isSet,
     };
   },
 });

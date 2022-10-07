@@ -25,11 +25,6 @@
               </div>
             </div>
           </el-col>
-          <!-- <el-col :span="4" style="margin-top: 10px">
-        <el-button @click="getDataSet()" style="margin-right: 20px">{{
-          checkInData
-        }}</el-button>
-      </el-col> -->
           <el-col :span="2" style="margin-top: 10px">
             <div style="text-align: right">
               <el-tooltip content="公开" placement="left-start" effect="light">

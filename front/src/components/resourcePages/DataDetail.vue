@@ -575,7 +575,7 @@ import TideStatistics from "../resourcePages/components/TideStatistics.vue";
 import SectionTide from "../resourcePages/components/SectionTide.vue";
 import SandContent from "../resourcePages/components/SandContent.vue";
 import LocationMap from "../scenePart/LocationMap.vue";
-import FindMap from "../scenePart/FindMap.vue";
+
 import chartContainer from "../scenePart/chartContainer.vue";
 import ChartContainer from "../scenePart/chartContainer.vue";
 import images from "./components/Images.vue";
@@ -594,7 +594,6 @@ export default defineComponent({
     ChartContainer,
     LocationMap,
     images,
-    FindMap,
     TideStatistics,
     RateAndDirection,
     SandContent,

@@ -54,7 +54,6 @@ export const asyncRouters: Array<RouteRecordRaw> = [
         children: [
             {
                 path: '',
-                name: 'DataList',
                 redirect: '/data/list'
             },
             {
@@ -64,6 +63,11 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 meta: {
                     keepAlive: true
                 }
+            },
+            {
+                path: "spaceSearch",
+                name: 'SpaceSearch',
+                component: () => import('@/views/data/SpaceSearch.vue')
             },
             {
                 path: ':id',
@@ -129,7 +133,6 @@ export const asyncRouters: Array<RouteRecordRaw> = [
             {
                 path: '',
                 redirect: '/analyze/list'
-
             },
             {
                 path: 'list',
