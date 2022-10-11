@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "5379903",
+      "name": "info",
+      "font_class": "info",
+      "unicode": "e705",
+      "unicode_decimal": 59141
+    },
+    {
+      "icon_id": "5318218",
+      "name": "地图",
+      "font_class": "ditu",
+      "unicode": "e68b",
+      "unicode_decimal": 59019
+    },
+    {
+      "icon_id": "22236022",
+      "name": "添加应用",
+      "font_class": "tianjiayingyong",
+      "unicode": "e658",
+      "unicode_decimal": 58968
+    },
+    {
       "icon_id": "1040940",
       "name": "圆形小颗粒",
       "font_class": "1301",

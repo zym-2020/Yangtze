@@ -169,9 +169,6 @@ export async function offlineById(id: string) {
 export async function onlineById(id: string) {
     return await patch(`/share/onlineById/${id}`)
 }
-export async function getShpByCoordinates(arrayString: string) {
-    return await get(`/share/getShpByCoordinates/${arrayString}`)
-}
 
 //========================uploadRecord相关接口=================================
 export async function getRecords(number: number) {

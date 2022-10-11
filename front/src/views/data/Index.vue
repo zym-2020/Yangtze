@@ -95,7 +95,7 @@ import { defineComponent, onMounted, ref } from "vue";
 import PageHeader from "@/components/page/PageHeader.vue";
 import DataCollapse from "@/components/page/DataCollapse.vue";
 import DataCard from "@/components/cards/DataCard.vue";
-import { fuzzyQueryDataList, getShpByCoordinates } from "@/api/request";
+import { fuzzyQueryDataList } from "@/api/request";
 import router from "@/router";
 
 import NProgress from "nprogress";
