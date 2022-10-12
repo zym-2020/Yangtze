@@ -6,20 +6,20 @@
           <strong>{{ projectInfo.projectName }}</strong>
         </div>
       </template>
-      <div class="des" title="哈哈哈">
-        <strong>简介：</strong>
-        <div class="des-text">{{ projectInfo?.description }}</div>
-      </div>
+
       <div class="img">
         <el-avatar
           shape="square"
           fit="cover"
-          v-if="
-            projectInfo?.avatar === '' || projectInfo?.avatar === null
-          "
+          v-if="projectInfo.avatar === ''"
           >{{ projectInfo.projectName }}</el-avatar
         >
-        <img :src="'http://localhost:8002/file/avatar/' + projectInfo.avatar" alt="" width="248" height="180" v-else />
+        <img
+          :src="'http://localhost:8002/visual/getAvatar/' + projectInfo.avatar"
+          width="248"
+          height="180"
+          v-else
+        />
       </div>
       <div class="foot">
         <div class="time" :title="getDate(projectInfo.createTime)">
@@ -28,11 +28,11 @@
           </svg>
           <strong class="text">{{ getDate(projectInfo.createTime) }}</strong>
         </div>
-        <div class="user" :title="projectInfo.creatorName">
+        <div class="user" :title="projectInfo.userName">
           <svg style="width: 20px; height: 20px; margin-top: 5px">
             <use xlink:href="#icon-nickname"></use>
           </svg>
-          <strong class="text">{{ projectInfo.creatorName }}</strong>
+          <strong class="text">{{ projectInfo.userName }}</strong>
         </div>
       </div>
     </el-card>

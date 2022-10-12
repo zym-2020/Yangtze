@@ -28,9 +28,9 @@ public interface DataListMapper {
 
     void addDownloadCount(@Param("id") String id);
 
-    List<Map<String, Object>> fuzzyQuery(@Param("start") int start, @Param("size") int size, @Param("keyword") String keyword, @Param("tags") String[] tags, @Param("property") String property, @Param("flag") Boolean flag, @Param("status") int status);
+    List<Map<String, Object>> fuzzyQuery(@Param("start") int start, @Param("size") int size, @Param("keyword") String keyword, @Param("tags") String[] tags, @Param("property") String property, @Param("flag") Boolean flag, @Param("status") int status, @Param("type") String type);
 
-    int countFuzzyQuery(@Param("keyword") String keyword, @Param("tags") String[] tags, @Param("status") int status);
+    int countFuzzyQuery(@Param("keyword") String keyword, @Param("tags") String[] tags, @Param("status") int status, @Param("type") String type);
 
     void deleteById(@Param("id") String id);
 

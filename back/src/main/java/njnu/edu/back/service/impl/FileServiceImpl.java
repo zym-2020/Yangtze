@@ -209,8 +209,9 @@ public class FileServiceImpl implements FileService {
             in = new FileInputStream(file);
             sos = response.getOutputStream();
             byte[] b = new byte[1024];
-            while(in.read(b) > 0) {
-                sos.write(b);
+            int len;
+            while((len = in.read(b)) > 0) {
+                sos.write(b, 0, len);
             }
             sos.flush();
             sos.close();
@@ -260,8 +261,9 @@ public class FileServiceImpl implements FileService {
             in = new FileInputStream(file);
             sos = response.getOutputStream();
             byte[] b = new byte[1024];
-            while(in.read(b) > 0) {
-                sos.write(b);
+            int len;
+            while((len = in.read(b)) > 0) {
+                sos.write(b, 0, len);
             }
             sos.flush();
             sos.close();

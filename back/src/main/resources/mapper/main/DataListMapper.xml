@@ -63,6 +63,9 @@
             <if test="keyword != ''">
                 and data_list.name like #{keyword}
             </if>
+            <if test="type != ''">
+                and data_list.type = #{type}
+            </if>
             <if test="tags.length > 0">
                 and tags @> #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}::text[]
             </if>
@@ -84,6 +87,9 @@
             </if>
             <if test="status != 2">
                 status = #{status}
+            </if>
+            <if test="type != ''">
+                and type = #{type}
             </if>
             <if test="keyword != ''">
                 and name like #{keyword}

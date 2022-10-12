@@ -73,13 +73,9 @@ export async function getSectionContrast(projectId: string, layerId: string) {
     return await get(`/project/getSectionContrast/${projectId}/${layerId}`)
 }
 
-export async function getAll(jsonData: { page: number, size: number, keyWord: string }) {
-    return await post(`/project/getAll`, jsonData)
-}
 
-export async function getProjectInfo(projectId: string) {
-    return await get(`/project/getProjectInfo/${projectId}`)
-}
+
+
 
 export async function checkLayerState(projectId: string, sectionId: string) {
     return await get(`/project/checkState/${projectId}/${sectionId}`)
@@ -107,6 +103,31 @@ export async function getRegionLayer(projectId: string, layerId: string) {
 
 export async function checkAddRegion(key: string) {
     return await get(`/project/checkAddRegion/${key}`)
+}
+
+//========================new project相关接口=================================
+export async function getAll(jsonData: { page: number, size: number, keyword: string }) {
+    return await post(`/project/getAll`, jsonData)
+}
+
+export async function getProjectInfo(projectId: string) {
+    return await get(`/project/getProjectInfo/${projectId}`)
+}
+
+export async function addProjectData(jsonData: { projectId: string, list: { fileId: string, dataListId: string }[] }) {
+    return await post(`/project/addData`, jsonData)
+}
+
+export async function getData(projectId: string) {
+    return await get(`/project/getData/${projectId}`)
+}
+
+export async function delData(projectId: string, dataListId: string, fileId: string) {
+    return await del(`/project/delData/${projectId}/${dataListId}/${fileId}`)
+}
+
+export async function updateLayer(projectId: string, list: string[]) {
+    return await post(`/project/updateLayer/${projectId}`, list)
 }
 
 //========================file相关接口=================================
@@ -331,11 +352,11 @@ export async function deleteAsMember(jsonData: { id: string, size: number, page:
     return await del(`/dataList/deleteAsMember`, jsonData)
 }
 
-export async function deleteByAdmin(jsonData: { page: number, size: number, keyword: string, tags: string[], property: string, flag: boolean, id: string }) {
+export async function deleteByAdmin(jsonData: { page: number, size: number, keyword: string, tags: string[], property: string, flag: boolean, id: string, type: string }) {
     return await del(`/dataList/deleteByAdmin`, jsonData)
 }
 
-export async function fuzzyQueryDataList(jsonData: { page: number, size: number, keyword: string, tags: string[], property: string, flag: boolean }) {
+export async function fuzzyQueryDataList(jsonData: { page: number, size: number, keyword: string, tags: string[], property: string, flag: boolean, type: string }) {
     return await post(`/dataList/fuzzyQuery`, jsonData)
 }
 
@@ -343,7 +364,7 @@ export async function getFileInfoAndUserInfo(id: string) {
     return await get(`/dataList/getFileInfoAndUserInfo/${id}`)
 }
 
-export async function fuzzyQueryAdmin(jsonData: { page: number, size: number, keyword: string, tags: string[], property: string, flag: boolean }) {
+export async function fuzzyQueryAdmin(jsonData: { page: number, size: number, keyword: string, tags: string[], property: string, flag: boolean, type: string }) {
     return await post(`/dataList/fuzzyQueryAdmin`, jsonData)
 }
 

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="njnu.edu.back.dao.main.ProjectFileMapper">
+    <insert id="addRecord">
+        insert into project_file values
+        <foreach collection="list" separator="," item="item">
+            (default, #{projectId}, #{item.fileId}, #{item.dataListId})
+        </foreach>
+    </insert>
+
+    <select id="getData" resultType="java.util.Map">
+        select file_id as "fileId", data_list_id as "dataListId", file_name as "fileName", name as "dataListName", visual_type as "visualType" from project_file p, files f, data_list d
+        where p.project_id = #{projectId} and f.id::text = p.file_id and d.id::text = p.data_list_id
+        order by p.id desc
+    </select>
+
+    <delete id="delData">
+        delete from project_file where project_id = #{projectId} and file_id = #{fileId} and data_list_id = #{dataListId}
+    </delete>
+</mapper>

@@ -1,37 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="njnu.edu.back.dao.main.ProjectMapper">
-
-    <select id="addProject" parameterType="njnu.edu.back.pojo.dto.AddProject" resultType="java.util.HashMap">
-        insert into projects values(default, #{projectName}, #{creator}, #{description}, now(), #{result}, #{avatar}) returning *;
+    <select id="addProject" resultType="java.lang.String">
+        insert into project values(default, #{projectName}, #{email}, now(), #{avatar}, #{layerManage, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}) returning id::text
     </select>
 
-    <select id="getResult" resultType="java.lang.String">
-        select result from projects where id::text = #{id}
-    </select>
-    
-    <select id="getProjectsByEmail" resultType="java.util.HashMap">
-        select id, project_name as "projectName", description as des, create_time as "createTime", avatar, result from projects where creator = #{email} order by create_time;
+    <select id="fuzzyQuery" resultType="java.util.Map">
+        select p.id as "id", project_name as "projectName", creator, create_time as "createTime", p.avatar as "avatar", layer_manage as "layerManage", name as "userName", u.avatar as "userAvatar"
+        from project p, users u
+        where u.email = p.creator
+        <if test="keyword != ''">
+            and project_name like #{keyword}
+        </if>
+        order by create_time asc
+        limit #{size} offset #{start}
     </select>
 
-    <update id="setResult">
-        update projects set result = #{result} where id::text = #{id};
+    <select id="fuzzyCount" resultType="java.lang.Integer">
+        select count(*) from project
+        <if test="keyword != ''">
+            where project_name like #{keyword}
+        </if>
+    </select>
+
+    <select id="getProjectInfo" resultType="java.util.Map">
+        select p.id as "id", project_name as "projectName", creator, create_time as "createTime", p.avatar as "avatar", layer_manage as "layerManage", name as "userName", u.avatar as "userAvatar"
+        from project p, users u
+        where p.id::text = #{projectId}
+    </select>
+
+    <update id="updateLayer">
+        update project set layer_manage = #{layers, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler} where id::text = #{projectId}
     </update>
-
-    <select id="getResultByEmailAndProjectName" resultType="java.lang.String">
-        select result from projects where creator = #{email} and project_name = #{projectName};
-    </select>
-
-    <select id="pageQuery" resultType="java.util.HashMap">
-        select projects.*, users.name from projects, users where projects.creator=users.email and project_name like #{keyWord} order by projects.create_time desc limit #{size} offset #{start};
-    </select>
-
-    <select id="findProjectById" resultType="java.util.HashMap">
-        select * from projects where id::text = #{id};
-    </select>
-
-    <select id="countAll" resultType="java.lang.Integer">
-        select count(*) from projects where project_name like #{keyWord};
-    </select>
-
 </mapper>

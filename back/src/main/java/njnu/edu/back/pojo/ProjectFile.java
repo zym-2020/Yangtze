@@ -3,29 +3,22 @@ package njnu.edu.back.pojo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import njnu.edu.back.pojo.support.Layer;
-import njnu.edu.back.pojo.support.NameCount;
 import org.springframework.data.annotation.Id;
-
-import java.util.Date;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
  *
  * @Author: Yiming
- * @Date: 2022/04/06/19:13
+ * @Date: 2022/10/12/10:33
  * @Description:
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Project {
+public class ProjectFile {
     @Id
     String id;
-    String projectName;
-    String creator;
-    Date createTime;
-    String avatar;
-    String[] LayerManage;
+    String projectId;
+    String fileId;
+    String dataListId;
 }

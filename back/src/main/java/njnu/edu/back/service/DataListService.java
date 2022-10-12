@@ -25,11 +25,11 @@ public interface DataListService {
 
     void addWatchCount(String id);
 
-    Map<String, Object> fuzzyQuery(int page, int size, String keyword, String[] tags, String property, Boolean flag);
+    Map<String, Object> fuzzyQuery(int page, int size, String keyword, String[] tags, String property, Boolean flag, String type);
 
-    Map<String, Object> fuzzyQueryAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag);
+    Map<String, Object> fuzzyQueryAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag, String type);
 
-    Map<String, Object> deleteByAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag, String id);
+    Map<String, Object> deleteByAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag, String id, String type);
 
     Map<String, Object> pageQueryByEmail(String email, int size, int page, String keyword);
 

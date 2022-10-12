@@ -9,7 +9,17 @@
         <div class="scroll">
           <el-scrollbar>
             <div>
-              1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+              <el-tree :data="treeData" :props="defaultProps">
+                <template #default="{ data }">
+                  <div class="custom">
+                    <el-checkbox
+                      v-model="data.flag"
+                      :label="data.label"
+                      size="large"
+                    />
+                  </div>
+                </template>
+              </el-tree>
             </div>
           </el-scrollbar>
         </div>
@@ -22,15 +32,44 @@
 </template>
 
 <script lang="ts">
+type Tree = {
+  id: string;
+  label: string;
+  visualType: string;
+  flag: boolean;
+  children: Tree[];
+};
 import { defineComponent, ref } from "vue";
 import { Search } from "@element-plus/icons-vue";
 export default defineComponent({
   setup() {
+    const defaultProps = {
+      children: "children",
+      label: "label",
+    };
     const serach = ref("");
+    const treeData = ref<Tree[]>([]);
+
+    const addLayer = (val: {
+      id: string;
+      name: string;
+      visualType: string;
+    }) => {
+      treeData.value.unshift({
+        id: val.id,
+        label: val.name,
+        visualType: val.visualType,
+        children: [],
+        flag: true,
+      });
+    };
 
     return {
       Search,
       serach,
+      treeData,
+      defaultProps,
+      addLayer,
     };
   },
 });
@@ -60,6 +99,12 @@ export default defineComponent({
       height: calc(100% - 90px);
       .scroll {
         height: 100%;
+        .el-tree {
+          background: none;
+          /deep/ .el-tree-node__content {
+            height: 40px;
+          }
+        }
       }
     }
     .bottom {

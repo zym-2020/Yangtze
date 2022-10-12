@@ -141,6 +141,7 @@ export default defineComponent({
               id: fileInfo.id,
               flag: true,
               tags: [],
+              type: "",
             });
             if (data != null) {
               if ((data as any).code === 0) {
@@ -169,6 +170,7 @@ export default defineComponent({
         tags: [],
         page: val - 1,
         size: 10,
+        type: "",
       });
       if (data != null) {
         if ((data as any).code === 0) {
@@ -188,6 +190,7 @@ export default defineComponent({
         tags: [],
         page: 0,
         size: 10,
+        type: "",
       });
       if (data != null) {
         if ((data as any).code === 0) {
@@ -216,6 +219,7 @@ export default defineComponent({
         tags: [],
         page: 0,
         size: 10,
+        type: "",
       });
       if (data != null) {
         if ((data as any).code === 0) {

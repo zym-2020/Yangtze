@@ -57,8 +57,9 @@ public class VisualServiceImpl implements VisualService {
             in = new FileInputStream(pictureAddress + fileName);
             sos = response.getOutputStream();
             byte[] bytes = new byte[1024];
-            while((in.read(bytes)) > -1) {
-                sos.write(bytes);
+            int len;
+            while((len = in.read(bytes)) > -1) {
+                sos.write(bytes, 0, len);
             }
             sos.flush();
             sos.close();
@@ -98,8 +99,9 @@ public class VisualServiceImpl implements VisualService {
                 in = new FileInputStream(path);
             }
             byte[] bytes = new byte[1024];
-            while((in.read(bytes)) > -1) {
-                sos.write(bytes);
+            int len;
+            while((len = in.read(bytes)) > -1) {
+                sos.write(bytes, 0, len);
             }
             sos.flush();
             sos.close();
@@ -158,8 +160,9 @@ public class VisualServiceImpl implements VisualService {
             in = new FileInputStream(basePath + map.get("address"));
             sos = response.getOutputStream();
             byte[] bytes = new byte[1024];
-            while((in.read(bytes)) > -1) {
-                sos.write(bytes);
+            int len;
+            while((len = in.read(bytes)) > -1) {
+                sos.write(bytes, 0, len);
             }
             sos.flush();
             sos.close();
@@ -203,8 +206,9 @@ public class VisualServiceImpl implements VisualService {
             sos = response.getOutputStream();
             response.setContentType("image/png");
             byte[] bytes = new byte[1024];
-            while((in.read(bytes)) > -1) {
-                sos.write(bytes);
+            int len;
+            while((len = in.read(bytes)) > -1) {
+                sos.write(bytes, 0, len);
             }
             sos.flush();
             sos.close();

@@ -154,6 +154,7 @@ export default defineComponent({
         tags: classify,
         property: "",
         flag: false,
+        type: "",
       };
 
       switch (selectValue.value) {
@@ -189,6 +190,7 @@ export default defineComponent({
         tags: classify,
         property: "",
         flag: false,
+        type: "",
       };
 
       NProgress.start();
@@ -237,6 +239,7 @@ export default defineComponent({
         tags: classify,
         property: "",
         flag: false,
+        type: "",
       };
 
       switch (selectValue.value) {
@@ -272,6 +275,7 @@ export default defineComponent({
         tags: classify,
         property: "download",
         flag: false,
+        type: "",
       };
       const data = await fuzzyQueryDataList(jsonData);
 

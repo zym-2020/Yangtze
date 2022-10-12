@@ -23,43 +23,53 @@ import java.util.Map;
  */
 public interface ProjectService {
 
-    Project addProject(Project project, String email);
+    String addProject(String projectName, MultipartFile file, String email);
 
-    Project addProject(String jsonString, MultipartFile file, String email);
+    Map<String, Object> getAll(String keyword, int page, int size);
 
-    void addLayer(Layer layer, String projectId);
+    Map<String, Object> getProjectInfo(String projectId);
 
-    Project addLayers(List<Layer> layers, String projectId);
+    void addData(String projectId, List<Map<String, String>> list);
 
-    Layer addSection(Layer layer, String projectId, String email);
+    List<Map<String, Object>> getData(String projectId);
 
-    List<Map<String, Object>> getSectionValue(String sectionId, String projectId, String email, List<String> valueIds);
+    void delData(String projectId, String dataListId, String fileId);
 
-    Project getProjectInfo(String projectId);
+    void updateLayer(String projectId, List<String> list);
 
-    Page<Project> getAll(int page, int size, String keyWord);
-
-    List<Project> getProjectsByEmail(String email);
-
-    int checkState(String projectId, String layerId);
-
-    void delLayer(String projectId, String layerId, String email);
-
-    String getFlushId(String projectId, String benchmark, String reference, String name);
-
-    String computeContour(String projectId, String demId, String email, String interval, String shpName, String srid);
-
-    int checkContourState(String uid);
-
-    void sortLayer(String projectId, List<Layer> layers);
-
-    String addRegion(String projectId, JSONArray jsonArray, String demId, String email);
-
-    Layer getRegionLayer(String projectId, String layerId);
-
-    int checkAddRegion(String key);
-
-    void getRegion(String projectId, String layerId, String Email, HttpServletResponse response);
-    
-    void getRegion(String pngName ,String Email, HttpServletResponse response);
+//    void addLayer(Layer layer, String projectId);
+//
+//    Project addLayers(List<Layer> layers, String projectId);
+//
+//    Layer addSection(Layer layer, String projectId, String email);
+//
+//    List<Map<String, Object>> getSectionValue(String sectionId, String projectId, String email, List<String> valueIds);
+//
+//    Project getProjectInfo(String projectId);
+//
+//    Page<Project> getAll(int page, int size, String keyWord);
+//
+//    List<Project> getProjectsByEmail(String email);
+//
+//    int checkState(String projectId, String layerId);
+//
+//    void delLayer(String projectId, String layerId, String email);
+//
+//    String getFlushId(String projectId, String benchmark, String reference, String name);
+//
+//    String computeContour(String projectId, String demId, String email, String interval, String shpName, String srid);
+//
+//    int checkContourState(String uid);
+//
+//    void sortLayer(String projectId, List<Layer> layers);
+//
+//    String addRegion(String projectId, JSONArray jsonArray, String demId, String email);
+//
+//    Layer getRegionLayer(String projectId, String layerId);
+//
+//    int checkAddRegion(String key);
+//
+//    void getRegion(String projectId, String layerId, String Email, HttpServletResponse response);
+//
+//    void getRegion(String pngName ,String Email, HttpServletResponse response);
 }

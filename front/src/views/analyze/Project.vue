@@ -3,8 +3,12 @@
     <top-tool @returnFileList="returnFileList"></top-tool>
     <div class="body">
       <div class="left" ref="left">
-        <data-manage class="top" ref="dataManage"></data-manage>
-        <layer-manage class="bottom"></layer-manage>
+        <data-manage
+          class="top"
+          ref="dataManage"
+          @addLayer="addLayer"
+        ></data-manage>
+        <layer-manage class="bottom" ref="layerManage"></layer-manage>
         <div class="left-resize" ref="leftResize"></div>
       </div>
       <right-visual ref="rightMap"></right-visual>
@@ -25,6 +29,7 @@ export default defineComponent({
     const left = ref<HTMLElement>();
     const rightMap = ref();
     const dataManage = ref();
+    const layerManage = ref();
 
     const dropSize = () => {
       const bodyHeight = document.body.scrollHeight;
@@ -86,6 +91,14 @@ export default defineComponent({
       dataManage.value.addData(val);
     };
 
+    const addLayer = (val: {
+      id: string;
+      name: string;
+      visualType: string;
+    }) => {
+      layerManage.value.addLayer(val);
+    };
+
     nextTick(() => {
       dropSize();
     });
@@ -96,6 +109,8 @@ export default defineComponent({
       rightMap,
       returnFileList,
       dataManage,
+      addLayer,
+      layerManage,
     };
   },
 });

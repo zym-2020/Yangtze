@@ -18,19 +18,13 @@ import java.util.UUID;
  */
 @Repository
 public interface ProjectMapper {
-    Map<String, Object> addProject(AddProject addProject);
+    String addProject(@Param("projectName") String projectName, @Param("email") String email, @Param("avatar") String avatar, @Param("layerManage") String[] layerManage);
 
-    String getResult(@Param("id") String id);
+    List<Map<String, Object>> fuzzyQuery(@Param("keyword") String keyword, @Param("size") int size, @Param("start") int start);
 
-    List<Map<String, Object>> getProjectsByEmail(@Param("email") String email);
+    int fuzzyCount(@Param("keyword") String keyword);
 
-    int setResult(@Param("result") String result, @Param("id") String id);
+    Map<String, Object> getProjectInfo(@Param("projectId") String projectId);
 
-    String getResultByEmailAndProjectName(@Param("email") String email, @Param("projectName") String projectName);
-
-    List<Map<String, Object>> pageQuery(@Param("size") int size, @Param("start") int start, @Param("keyWord") String keyWord);
-
-    Map<String, Object> findProjectById(@Param("id") String id);
-
-    int countAll(@Param("keyWord") String keyWord);
+    void updateLayer(@Param("projectId") String projectId, @Param("layers") String[] layers);
 }

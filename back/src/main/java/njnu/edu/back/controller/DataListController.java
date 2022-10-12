@@ -72,7 +72,8 @@ public class DataListController {
         String[] tags = jsonObject.getObject("tags", String[].class);
         String property = jsonObject.getString("property");
         Boolean flag = jsonObject.getBoolean("flag");
-        return ResultUtils.success(dataListService.fuzzyQuery(page, size, keyword, tags, property, flag));
+        String type = jsonObject.getString("type");
+        return ResultUtils.success(dataListService.fuzzyQuery(page, size, keyword, tags, property, flag, type));
     }
 
     @AuthCheck
@@ -135,7 +136,8 @@ public class DataListController {
         String[] tags = jsonObject.getObject("tags", String[].class);
         String property = jsonObject.getString("property");
         Boolean flag = jsonObject.getBoolean("flag");
-        return ResultUtils.success(dataListService.fuzzyQueryAdmin(page, size, keyword, tags, property, flag));
+        String type = jsonObject.getString("type");
+        return ResultUtils.success(dataListService.fuzzyQueryAdmin(page, size, keyword, tags, property, flag, type));
     }
 
     @AuthCheck
@@ -148,7 +150,8 @@ public class DataListController {
         String property = jsonObject.getString("property");
         Boolean flag = jsonObject.getBoolean("flag");
         String id = jsonObject.getString("id");
-        return ResultUtils.success(dataListService.deleteByAdmin(page, size, keyword, tags, property, flag, id));
+        String type = jsonObject.getString("type");
+        return ResultUtils.success(dataListService.deleteByAdmin(page, size, keyword, tags, property, flag, id, type));
     }
 
 }

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-show="dataListShow">
-      <el-skeleton :rows="5" animated v-if="skeletonFlag"/>
+      <el-skeleton :rows="5" animated v-if="skeletonFlag" />
       <div class="add-data-dialog" v-else>
         <div class="tree">
           <el-tree :data="treeData" :props="defaultProps" />
@@ -93,11 +93,13 @@ type SelectFileType = {
   dataListId: string;
   fileName: string;
   dataListName: string;
+  visualType: string;
 };
 import { defineComponent, nextTick, onMounted, ref } from "vue";
 import { Search, ArrowLeft } from "@element-plus/icons-vue";
 import { fuzzyQueryDataList, findFiles } from "@/api/request";
 import { imgBase64 } from "@/utils/common";
+
 export default defineComponent({
   emits: ["returnData"],
   setup(_, context) {
@@ -147,7 +149,7 @@ export default defineComponent({
     const selectDataList = ref<DataListType>({ id: "", name: "", avatar: "" });
     const tableData = ref<TableDataType[]>([]);
     const fileList = ref<SelectFileType[]>([]);
-    const skeletonFlag = ref(true)
+    const skeletonFlag = ref(true);
 
     const getAvatar = (avatar: string, name: string) => {
       if (avatar === "") {
@@ -201,6 +203,7 @@ export default defineComponent({
         tags: [],
         property: "update_time",
         flag: false,
+        type: "",
       };
       const data = await fuzzyQueryDataList(jsonData);
       if (data != null && (data as any).code === 0) {
@@ -223,6 +226,7 @@ export default defineComponent({
           fileName: val.name,
           dataListId: selectDataList.value.id,
           dataListName: selectDataList.value.name,
+          visualType: val.visualType,
         });
       } else {
         for (let i = 0; i < fileList.value.length; i++) {
@@ -239,7 +243,7 @@ export default defineComponent({
     };
 
     onMounted(async () => {
-      skeletonFlag.value = true
+      skeletonFlag.value = true;
       const jsonData = {
         page: 0,
         size: 8,
@@ -247,12 +251,13 @@ export default defineComponent({
         tags: [],
         property: "update_time",
         flag: false,
+        type: "",
       };
       const data = await fuzzyQueryDataList(jsonData);
       if (data != null && (data as any).code === 0) {
         formatData(data.data.list);
         total.value = data.data.total;
-        skeletonFlag.value = false
+        skeletonFlag.value = false;
       }
     });
 
@@ -273,7 +278,7 @@ export default defineComponent({
       tableData,
       checkboxChange,
       commit,
-      skeletonFlag
+      skeletonFlag,
     };
   },
 });

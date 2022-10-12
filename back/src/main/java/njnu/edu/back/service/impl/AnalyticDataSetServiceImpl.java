@@ -68,15 +68,17 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
                 in = new FileInputStream(file);
                 sos = response.getOutputStream();
                 byte[] b = new byte[1024];
-                while(in.read(b) != -1) {
-                    sos.write(b);
+                int len;
+                while((len = in.read(b)) != -1) {
+                    sos.write(b, 0, len);
                 }
             } else {
                 in = new FileInputStream(new File(baseDir + "123@qq.com\\upload\\raster\\color.dem\\tiles\\9\\428\\304.png"));
                 sos = response.getOutputStream();
                 byte[] b = new byte[1024];
-                while(in.read(b) != -1) {
-                    sos.write(b);
+                int len;
+                while((len = in.read(b)) != -1) {
+                    sos.write(b, 0, len);
                 }
                 sos.flush();
             }
@@ -111,15 +113,17 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
                 in = new FileInputStream(file);
                 sos = response.getOutputStream();
                 byte[] b = new byte[1024];
-                while(in.read(b) != -1) {
-                    sos.write(b);
+                int len;
+                while((len = in.read(b)) != -1) {
+                    sos.write(b, 0, len);
                 }
             } else {
                 in = new FileInputStream(new File(baseDir + "123@qq.com\\upload\\raster\\color.dem\\tiles\\9\\428\\304.png"));
                 sos = response.getOutputStream();
                 byte[] b = new byte[1024];
-                while(in.read(b) != -1) {
-                    sos.write(b);
+                int len;
+                while((len = in.read(b)) != -1) {
+                    sos.write(b, 0, len);
                 }
                 sos.flush();
                 sos.close();
