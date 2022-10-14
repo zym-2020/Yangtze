@@ -14,9 +14,13 @@
                   <div class="custom">
                     <el-checkbox
                       v-model="data.flag"
-                      :label="data.label"
                       size="large"
-                    />
+                      @change="changeClick(data)"
+                      >{{ data.label }}</el-checkbox
+                    >
+                    <div class="close" @click="closeClick(data.id)">
+                      <el-icon><CircleClose /></el-icon>
+                    </div>
                   </div>
                 </template>
               </el-tree>
@@ -36,13 +40,18 @@ type Tree = {
   id: string;
   label: string;
   visualType: string;
+  visualId: string;
   flag: boolean;
   children: Tree[];
 };
-import { defineComponent, ref } from "vue";
-import { Search } from "@element-plus/icons-vue";
+import { defineComponent, onMounted, ref } from "vue";
+import { Search, Delete } from "@element-plus/icons-vue";
+import { updateLayer, getLayersInfo } from "@/api/request";
+import router from "@/router";
+import { notice } from "@/utils/notice";
 export default defineComponent({
-  setup() {
+  emits: ["closeLayer", "hideLayer"],
+  setup(_, context) {
     const defaultProps = {
       children: "children",
       label: "label",
@@ -50,19 +59,94 @@ export default defineComponent({
     const serach = ref("");
     const treeData = ref<Tree[]>([]);
 
-    const addLayer = (val: {
+    const addLayer = async (val: {
       id: string;
       name: string;
       visualType: string;
+      visualId: string;
     }) => {
+      for (let i = 0; i < treeData.value.length; i++) {
+        if (treeData.value[i].id === val.id) {
+          return;
+        }
+      }
       treeData.value.unshift({
         id: val.id,
         label: val.name,
         visualType: val.visualType,
         children: [],
         flag: true,
+        visualId: val.visualId,
       });
+      const list: string[] = [];
+      treeData.value.forEach((item) => {
+        list.push(item.id);
+      });
+      const data = await updateLayer(
+        router.currentRoute.value.params.id as string,
+        list
+      );
     };
+
+    const closeClick = async (id: string) => {
+      for (let i = 0; i < treeData.value.length; i++) {
+        if (treeData.value[i].id === id) {
+          treeData.value.splice(i, 1);
+          const list: string[] = [];
+          treeData.value.forEach((item) => {
+            list.push(item.id);
+          });
+          const data = await updateLayer(
+            router.currentRoute.value.params.id as string,
+            list
+          );
+          if (data != null && (data as any).code === 0) {
+            notice("success", "成功", "已移除图层");
+          }
+          context.emit("closeLayer", id);
+          return;
+        }
+      }
+    };
+
+    const delLayer = async (param: string) => {
+      for (let i = 0; i < treeData.value.length; i++) {
+        if (treeData.value[i].id === param) {
+          treeData.value.splice(i, 1);
+          const list: string[] = [];
+          treeData.value.forEach((item) => {
+            list.push(item.id);
+          });
+          await updateLayer(
+            router.currentRoute.value.params.id as string,
+            list
+          );
+          return;
+        }
+      }
+    };
+
+    const changeClick = (val: Tree) => {
+      context.emit("hideLayer", { flag: val.flag, id: val.id });
+    };
+
+    onMounted(async () => {
+      const data = await getLayersInfo(
+        router.currentRoute.value.params.id as string
+      );
+      if (data != null && (data as any).code === 0) {
+        (data.data as any[]).forEach((item) => {
+          treeData.value.push({
+            id: item.id,
+            label: item.fileName,
+            visualType: item.visualType,
+            flag: true,
+            children: [],
+            visualId: item.visualId,
+          });
+        });
+      }
+    });
 
     return {
       Search,
@@ -70,6 +154,10 @@ export default defineComponent({
       treeData,
       defaultProps,
       addLayer,
+      Delete,
+      closeClick,
+      changeClick,
+      delLayer,
     };
   },
 });
@@ -99,10 +187,41 @@ export default defineComponent({
       height: calc(100% - 90px);
       .scroll {
         height: 100%;
+        /deep/ .el-scrollbar__wrap {
+          overflow-x: hidden;
+        }
+        /deep/.el-scrollbar__bar.is-horizontal {
+          display: none;
+        }
+        .custom {
+          position: relative;
+          width: 100%;
+          .el-checkbox {
+            width: 100%;
+            /deep/ .el-checkbox__label {
+              width: calc(100% - 60px);
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+            }
+          }
+
+          .close {
+            position: absolute;
+            right: 10px;
+            top: 13px;
+          }
+        }
         .el-tree {
+          width: 100%;
           background: none;
           /deep/ .el-tree-node__content {
             height: 40px;
+            width: 100%;
+          }
+          /deep/ .el-tree-node__label {
+            width: 100%;
+            overflow: hidden;
           }
         }
       }

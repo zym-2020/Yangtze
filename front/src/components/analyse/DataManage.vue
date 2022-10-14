@@ -11,6 +11,7 @@
               :data="treeData"
               :props="defaultProps"
               @node-contextmenu="rightClick"
+              default-expand-all
             >
               <template #default="{ data }">
                 <div class="custom">
@@ -34,11 +35,18 @@
     </div>
     <div v-show="showRightMenu">
       <ul class="right-menu" ref="menu">
-        <li class="menu-item" @click="addLayer">
+        <li
+          :class="!isLayerVisual ? 'menu-item disabled' : 'menu-item'"
+          @click="operateLayer('add')"
+        >
           <span>添加至图层</span>
         </li>
-        <li class="menu-item"><span>可视化</span></li>
-        <li class="menu-item"><span>删除</span></li>
+        <li :class="isLayerVisual ? 'menu-item disabled' : 'menu-item'">
+          <span>可视化</span>
+        </li>
+        <li class="menu-item" @click="operateLayer('del')">
+          <span>删除</span>
+        </li>
       </ul>
     </div>
   </div>
@@ -51,13 +59,15 @@ type Tree = {
   label: string;
   children: Tree[];
   visualType?: string;
+  visualId?: string;
 };
 import router from "@/router";
 import { defineComponent, ref, onMounted, computed } from "vue";
 import { Search } from "@element-plus/icons-vue";
-import { addProjectData, getData } from "@/api/request";
+import { addProjectData, getData, delData } from "@/api/request";
+import { notice } from "@/utils/notice";
 export default defineComponent({
-  emits: ["addLayer"],
+  emits: ["operateLayer"],
   setup(_, context) {
     const serach = ref("");
 
@@ -69,6 +79,7 @@ export default defineComponent({
     const showRightMenu = ref(false);
     const menu = ref<HTMLElement>();
     const selectedData = ref<Tree>();
+    const parentId = ref("");
 
     const addData = async (
       param: {
@@ -76,6 +87,8 @@ export default defineComponent({
         fileName: string;
         dataListId: string;
         dataListName: string;
+        visualId: string;
+        visualType: string;
       }[]
     ) => {
       const jsonData: {
@@ -102,6 +115,8 @@ export default defineComponent({
                 label: item.fileName,
                 flag: false,
                 children: [],
+                visualType: item.visualType,
+                visualId: item.visualId,
               });
               jsonData.list.push({
                 fileId: item.fileId,
@@ -124,6 +139,8 @@ export default defineComponent({
             label: item.fileName,
             flag: false,
             children: [],
+            visualType: item.visualType,
+            visualId: item.visualId,
           });
           jsonData.list.push({
             fileId: item.fileId,
@@ -134,12 +151,46 @@ export default defineComponent({
       await addProjectData(jsonData);
     };
 
-    const addLayer = () => {
-      context.emit("addLayer", {
-        id: selectedData.value?.id,
-        name: selectedData.value?.label,
-        visualType: selectedData.value?.visualType,
+    const operateLayer = async (keyword: string) => {
+      context.emit("operateLayer", {
+        content: {
+          id: selectedData.value?.id,
+          name: selectedData.value?.label,
+          visualType: selectedData.value?.visualType,
+          visualId: selectedData.value?.visualId,
+        },
+        type: keyword,
       });
+      if (keyword === "del") {
+        const data = await delData(
+          router.currentRoute.value.params.id as string,
+          parentId.value,
+          selectedData.value?.id as string
+        );
+        if (data != null && (data as any).code === 0) {
+          for (let i = 0; i < treeData.value.length; i++) {
+            if (treeData.value[i].id === parentId.value) {
+              if (
+                treeData.value[i].children.length === 0 ||
+                treeData.value[i].children.length === 1
+              ) {
+                treeData.value.splice(i, 1);
+                return;
+              } else {
+                for (let j = 0; j < treeData.value[i].children.length; j++) {
+                  if (
+                    treeData.value[i].children[j].id === selectedData.value?.id
+                  ) {
+                    treeData.value[i].children.splice(j, 1);
+                    return;
+                  }
+                }
+              }
+            }
+          }
+          notice("success", "成功", "数据删除成功!");
+        }
+      }
     };
 
     const rightClick = (event: any, data: Tree, node: any, obj: any) => {
@@ -151,6 +202,7 @@ export default defineComponent({
         showRightMenu.value = false;
         showRightMenu.value = true;
         selectedData.value = data;
+        parentId.value = node.parent.data.id;
         menu.value.style.left = event.clientX - 15 + "px";
         menu.value.style.top = event.clientY - 125 + "px";
         document.addEventListener("click", closeRightMenu);
@@ -188,6 +240,7 @@ export default defineComponent({
                 flag: false,
                 children: [],
                 visualType: item.visualType,
+                visualId: item.visualId,
               });
               flag = false;
             }
@@ -205,6 +258,7 @@ export default defineComponent({
               flag: false,
               children: [],
               visualType: item.visualType,
+              visualId: item.visualId,
             });
           }
         });
@@ -215,7 +269,7 @@ export default defineComponent({
       serach,
       Search,
       addData,
-      addLayer,
+      operateLayer,
       defaultProps,
       rightClick,
       showRightMenu,
@@ -243,20 +297,43 @@ export default defineComponent({
       height: calc(100% - 90px);
       .scroll {
         height: 100%;
+        /deep/ .el-scrollbar__wrap {
+          overflow-x: hidden;
+        }
+        /deep/.el-scrollbar__bar.is-horizontal {
+          display: none;
+        }
         .el-tree {
+          width: 100%;
           background: none;
           /deep/ .el-tree-node__content {
             height: 40px;
+            width: 100%;
+          }
+          /deep/ .el-tree-node__children {
+            .el-tree-node__content {
+              width: calc(100% - 18px);
+              overflow: hidden;
+            }
+          }
+          /deep/ .el-tree-node__label {
+            width: 100%;
+            overflow: hidden;
           }
         }
         .custom {
           display: flex;
           .icon {
+            width: 15px;
             margin-top: 12px;
             margin-right: 5px;
           }
           .text {
             line-height: 40px;
+            width: calc(100% - 20px);
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
           }
         }
       }
@@ -280,6 +357,10 @@ export default defineComponent({
     border: 1px solid #ccc;
     background-color: white;
     cursor: pointer;
+    li:hover {
+      background-color: #edf6ff;
+      color: #606266;
+    }
     .menu-item {
       line-height: 25px;
       height: 25px;
@@ -291,9 +372,13 @@ export default defineComponent({
         margin-left: 5px;
       }
     }
-    li:hover {
-      background-color: #edf6ff;
-      color: #606266;
+    .disabled {
+      background: white;
+      color: #c7d0dc;
+      &:hover {
+        background: white;
+        color: #c7d0dc;
+      }
     }
   }
 }

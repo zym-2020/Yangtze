@@ -6,9 +6,14 @@
         <data-manage
           class="top"
           ref="dataManage"
-          @addLayer="addLayer"
+          @operateLayer="operateLayer"
         ></data-manage>
-        <layer-manage class="bottom" ref="layerManage"></layer-manage>
+        <layer-manage
+          class="bottom"
+          ref="layerManage"
+          @closeLayer="closeLayer"
+          @hideLayer="hideLayer"
+        ></layer-manage>
         <div class="left-resize" ref="leftResize"></div>
       </div>
       <right-visual ref="rightMap"></right-visual>
@@ -86,17 +91,38 @@ export default defineComponent({
         fileName: string;
         dataListId: string;
         dataListName: string;
+        visualType: string;
+        visualId: string;
       }[]
     ) => {
       dataManage.value.addData(val);
     };
 
-    const addLayer = (val: {
-      id: string;
-      name: string;
-      visualType: string;
+    const operateLayer = (val: {
+      type: string;
+      content: {
+        id: string;
+        name: string;
+        visualType: string;
+        visualId: string;
+      };
     }) => {
-      layerManage.value.addLayer(val);
+      if (val.type === "add") {
+        layerManage.value.addLayer(val.content);
+        rightMap.value.addMapLayer(val.content);
+      } else if (val.type === "del") {
+        console.log(val, val.content);
+        layerManage.value.delLayer(val.content.id);
+        rightMap.value.removeLayer(val.content.id);
+      }
+    };
+
+    const closeLayer = (val: string) => {
+      rightMap.value.removeLayer(val);
+    };
+
+    const hideLayer = (val: { id: string; flag: boolean }) => {
+      rightMap.value.changeLayerState(val);
     };
 
     nextTick(() => {
@@ -109,8 +135,10 @@ export default defineComponent({
       rightMap,
       returnFileList,
       dataManage,
-      addLayer,
+      operateLayer,
       layerManage,
+      closeLayer,
+      hideLayer,
     };
   },
 });

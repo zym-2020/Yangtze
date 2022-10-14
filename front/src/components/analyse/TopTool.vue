@@ -41,6 +41,8 @@ export default defineComponent({
         fileName: string;
         dataListId: string;
         dataListName: string;
+        visualType: string;
+        visualId: string;
       }[]
     ) => {
       dialogAddData.value = false;

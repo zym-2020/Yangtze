@@ -32,4 +32,13 @@
     <update id="updateLayer">
         update project set layer_manage = #{layers, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler} where id::text = #{projectId}
     </update>
+
+    <select id="getLayersInfo" resultType="java.util.Map">
+        select id, file_name as "fileName", visual_type as "visualType", visual_id as "visualId" from files
+        where id::text in
+        <foreach collection="list" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+
 </mapper>

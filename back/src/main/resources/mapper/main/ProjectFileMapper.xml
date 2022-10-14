@@ -9,7 +9,7 @@
     </insert>
 
     <select id="getData" resultType="java.util.Map">
-        select file_id as "fileId", data_list_id as "dataListId", file_name as "fileName", name as "dataListName", visual_type as "visualType" from project_file p, files f, data_list d
+        select file_id as "fileId", data_list_id as "dataListId", file_name as "fileName", name as "dataListName", visual_type as "visualType", visual_id as "visualId" from project_file p, files f, data_list d
         where p.project_id = #{projectId} and f.id::text = p.file_id and d.id::text = p.data_list_id
         order by p.id desc
     </select>

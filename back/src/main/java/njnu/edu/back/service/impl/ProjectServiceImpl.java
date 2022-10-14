@@ -116,6 +116,19 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public void delData(String projectId, String dataListId, String fileId) {
+        Map<String, Object> map = projectMapper.getProjectInfo(projectId);
+        List<String> list = Arrays.asList((String[]) map.get("layerManage"));
+        boolean flag = false;
+        for(String id : list) {
+            if(id.equals(projectId)) {
+                list.remove(id);
+                flag = true;
+                break;
+            }
+        }
+        if(flag) {
+            projectMapper.updateLayer(projectId, list.toArray(new String[]{}));
+        }
         projectFileMapper.delData(projectId, dataListId, fileId);
     }
 
@@ -124,6 +137,26 @@ public class ProjectServiceImpl implements ProjectService {
         String[] layers = list.toArray(new String[]{});
         projectMapper.updateLayer(projectId, layers);
     }
+
+    @Override
+    public List<Map<String, Object>> getLayersInfo(String projectId) {
+        Map<String, Object> map = projectMapper.getProjectInfo(projectId);
+        List<String> list = Arrays.asList((String[]) map.get("layerManage"));
+        List<Map<String, Object>> result = new ArrayList<>();
+        if(list.size() != 0) {
+            List<Map<String, Object>> temp = projectMapper.getLayersInfo(list);
+            for(String id : list) {
+                for(Map<String, Object> m : temp) {
+                    if(m.get("id").toString().equals(id)) {
+                        result.add(m);
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
 
     //    @Override
 //    public void addLayer(Layer layer, String projectId) {

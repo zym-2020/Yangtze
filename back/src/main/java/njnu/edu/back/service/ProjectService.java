@@ -37,6 +37,9 @@ public interface ProjectService {
 
     void updateLayer(String projectId, List<String> list);
 
+    List<Map<String, Object>> getLayersInfo(String projectId);
+
+
 //    void addLayer(Layer layer, String projectId);
 //
 //    Project addLayers(List<Layer> layers, String projectId);

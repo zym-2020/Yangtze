@@ -27,4 +27,7 @@ public interface ProjectMapper {
     Map<String, Object> getProjectInfo(@Param("projectId") String projectId);
 
     void updateLayer(@Param("projectId") String projectId, @Param("layers") String[] layers);
+
+    List<Map<String, Object>> getLayersInfo(@Param("list") List<String> list);
+
 }

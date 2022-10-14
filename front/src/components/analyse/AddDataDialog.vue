@@ -86,6 +86,7 @@ type TableDataType = {
   time: string;
   location: string;
   visualType: string;
+  visualId: string;
   flag: boolean;
 };
 type SelectFileType = {
@@ -94,6 +95,7 @@ type SelectFileType = {
   fileName: string;
   dataListName: string;
   visualType: string;
+  visualId: string;
 };
 import { defineComponent, nextTick, onMounted, ref } from "vue";
 import { Search, ArrowLeft } from "@element-plus/icons-vue";
@@ -182,6 +184,7 @@ export default defineComponent({
             location: item.location,
             size: item.size,
             flag: false,
+            visualId: item.visualId,
           });
           let flag = false;
           for (let i = 0; i < fileList.value.length; i++) {
@@ -214,9 +217,11 @@ export default defineComponent({
 
     const cardClick = async (index: number) => {
       const data = await findFiles(dataList.value[index].id);
-      formatTableData(data.data);
-      selectDataList.value = dataList.value[index];
-      dataListShow.value = false;
+      if (data != null && (data as any).code === 0) {
+        formatTableData(data.data);
+        selectDataList.value = dataList.value[index];
+        dataListShow.value = false;
+      }
     };
 
     const checkboxChange = (val: TableDataType) => {
@@ -227,6 +232,7 @@ export default defineComponent({
           dataListId: selectDataList.value.id,
           dataListName: selectDataList.value.name,
           visualType: val.visualType,
+          visualId: val.visualId,
         });
       } else {
         for (let i = 0; i < fileList.value.length; i++) {

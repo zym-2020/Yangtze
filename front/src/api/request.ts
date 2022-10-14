@@ -105,30 +105,7 @@ export async function checkAddRegion(key: string) {
     return await get(`/project/checkAddRegion/${key}`)
 }
 
-//========================new project相关接口=================================
-export async function getAll(jsonData: { page: number, size: number, keyword: string }) {
-    return await post(`/project/getAll`, jsonData)
-}
 
-export async function getProjectInfo(projectId: string) {
-    return await get(`/project/getProjectInfo/${projectId}`)
-}
-
-export async function addProjectData(jsonData: { projectId: string, list: { fileId: string, dataListId: string }[] }) {
-    return await post(`/project/addData`, jsonData)
-}
-
-export async function getData(projectId: string) {
-    return await get(`/project/getData/${projectId}`)
-}
-
-export async function delData(projectId: string, dataListId: string, fileId: string) {
-    return await del(`/project/delData/${projectId}/${dataListId}/${fileId}`)
-}
-
-export async function updateLayer(projectId: string, list: string[]) {
-    return await post(`/project/updateLayer/${projectId}`, list)
-}
 
 //========================file相关接口=================================
 export async function getNoUpload(jsonData: GetNoUploadJsonData) {
@@ -450,3 +427,33 @@ export async function getDataGroup(dataId: string, number: number) {
 export async function addBrowseHistory(dataListId: string) {
     return await post(`/browseHistory/addHistory/${dataListId}`)
 }
+
+//========================new project相关接口=================================
+export async function getAll(jsonData: { page: number, size: number, keyword: string }) {
+    return await post(`/project/getAll`, jsonData)
+}
+
+export async function getProjectInfo(projectId: string) {
+    return await get(`/project/getProjectInfo/${projectId}`)
+}
+
+export async function addProjectData(jsonData: { projectId: string, list: { fileId: string, dataListId: string }[] }) {
+    return await post(`/project/addData`, jsonData)
+}
+
+export async function getData(projectId: string) {
+    return await get(`/project/getData/${projectId}`)
+}
+
+export async function delData(projectId: string, dataListId: string, fileId: string) {
+    return await del(`/project/delData/${projectId}/${dataListId}/${fileId}`)
+}
+
+export async function updateLayer(projectId: string, list: string[]) {
+    return await post(`/project/updateLayer/${projectId}`, list)
+}
+
+export async function getLayersInfo(projectId: string) {
+    return await get(`/project/getLayersInfo/${projectId}`)
+}
+

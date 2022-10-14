@@ -79,6 +79,12 @@ public class ProjectController {
         return ResultUtils.success();
     }
 
+    @AuthCheck
+    @RequestMapping(value = "/getLayersInfo/{projectId}", method = RequestMethod.GET)
+    public JsonResult getLayersInfo(@PathVariable String projectId) {
+        return ResultUtils.success(projectService.getLayersInfo(projectId));
+    }
+
 
 //    @AuthCheck
 //    @RequestMapping(value = "/addLayer/{projectId}", method = RequestMethod.PATCH)
