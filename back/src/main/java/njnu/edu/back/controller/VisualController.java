@@ -151,6 +151,16 @@ public class VisualController {
         return ResultUtils.success(visualService.getSuspension(visualId));
     }
 
+    /**
+    * @Description:geoJson数据
+    * @Author: Yiming
+    * @Date: 2022/10/14
+    */
+    @RequestMapping(value = "/getGeoJson/{fileId}", method = RequestMethod.GET)
+    public JsonResult getGeoJson(@PathVariable String fileId) {
+        return ResultUtils.success(visualService.getGeoJson(fileId));
+    }
+
 
 
 

@@ -15,9 +15,9 @@ import java.util.Map;
  */
 @Repository
 public interface AnalyticDataSetMapper {
-    List<Map<String, Object>> findDataByType(@Param("list") List<String> types);
+    List<Map<String, Object>> getAnalyticData(@Param("projectId") String projectId);
 
-    Map<String, Object> findById(@Param("id") String id);
+    String addDraw(@Param("Id") String id, @Param("fileName") String fileName, @Param("address") String address, @Param("email") String email, @Param("visualType") String visualType, @Param("visualId") String visualId, @Param("projectId") String projectId);
 
-    String findIdByBenchmarkAndReference(@Param("benchmark") String benchmark, @Param("reference") String reference);
+    void delAnalyticData(@Param("id") String id);
 }

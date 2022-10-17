@@ -38,6 +38,8 @@ public interface VisualService {
 
     JSONObject getSuspension(String visualId);
 
+    JSONObject getGeoJson(String fileId);
+
     void addVisualFile(VisualFile visualFile);
 
     void addSameNameVisualFile(String type, String address);

@@ -144,7 +144,11 @@ public class ProjectServiceImpl implements ProjectService {
         List<String> list = Arrays.asList((String[]) map.get("layerManage"));
         List<Map<String, Object>> result = new ArrayList<>();
         if(list.size() != 0) {
-            List<Map<String, Object>> temp = projectMapper.getLayersInfo(list);
+            List<Map<String, Object>> temp1 = projectMapper.getLayersInfo(list);
+            List<Map<String, Object>> temp2 = analyticDataSetMapper.getAnalyticData(projectId);
+            List<Map<String, Object>> temp = new ArrayList<>();
+            temp.addAll(temp1);
+            temp.addAll(temp2);
             for(String id : list) {
                 for(Map<String, Object> m : temp) {
                     if(m.get("id").toString().equals(id)) {

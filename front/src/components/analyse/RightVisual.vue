@@ -5,15 +5,100 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, nextTick, onMounted, ref } from "vue";
+import { computed, defineComponent, nextTick, onMounted, ref } from "vue";
 import mapBoxGl, { AnySourceData } from "mapbox-gl";
-import { getLayersInfo, getCoordinates } from "@/api/request";
+import { getLayersInfo, getCoordinates, getGeoJson } from "@/api/request";
+import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import router from "@/router";
 import { notice } from "@/utils/notice";
 export default defineComponent({
-  setup() {
+  emits: ["drawHandle"],
+  setup(_, context) {
     const container = ref<HTMLElement>();
     let map: mapBoxGl.Map;
+
+    const lineDraw = new MapboxDraw({
+      controls: {
+        combine_features: false,
+        uncombine_features: false,
+        trash: false,
+        point: false,
+        polygon: false,
+      },
+    });
+
+    const polygonDraw = new MapboxDraw({
+      controls: {
+        combine_features: false,
+        uncombine_features: false,
+        trash: false,
+        point: false,
+        line_string: false,
+      },
+    });
+
+    const operateDraw = (param: number) => {
+      if (param === 0) {
+        if (map.hasControl(lineDraw)) {
+          map.removeControl(lineDraw);
+        }
+        if (map.hasControl(polygonDraw)) {
+          map.removeControl(polygonDraw);
+        }
+      } else if (param === 1) {
+        if (map.hasControl(polygonDraw)) {
+          map.removeControl(polygonDraw);
+        }
+        if (!map.hasControl(lineDraw)) {
+          map.addControl(lineDraw, "top-left");
+        }
+      } else if (param === 2) {
+        if (map.hasControl(lineDraw)) {
+          map.removeControl(lineDraw);
+        }
+        if (!map.hasControl(polygonDraw)) {
+          map.addControl(polygonDraw, "top-left");
+        }
+      }
+    };
+
+    const draw = async (e: any) => {
+      if (map.hasControl(lineDraw)) {
+        context.emit("drawHandle", {
+          geoJson: e.features[0],
+          visualType: "geoJsonLine",
+        });
+        lineDraw.deleteAll();
+      }
+      if (map.hasControl(polygonDraw)) {
+        context.emit("drawHandle", {
+          geoJson: e.features[0],
+          visualType: "geoJsonPolygon",
+        });
+        polygonDraw.deleteAll();
+      }
+      // const jsonData: {
+      //   projectId: string;
+      //   geoJson: any;
+      //   fileName: string;
+      //   visualType: string;
+      // } = {
+      //   projectId: router.currentRoute.value.params.id as string,
+      //   geoJson: e.features[0],
+      //   fileName: "断面形态1",
+      //   visualType: "geoJsonLine",
+      // };
+      // const data = await addDraw(jsonData);
+      // if (data != null && (data as any).code === 0) {
+      //   notice("success", "成功", "绘制断面!");
+      //   await addMapLayer({
+      //     id: data.data as string,
+      //     visualType: "geoJsonLine",
+      //     visualId: "",
+      //   });
+
+      // }
+    };
 
     const initMap = () => {
       map = new mapBoxGl.Map({
@@ -44,6 +129,7 @@ export default defineComponent({
           addMapLayer(temp[i]);
         }
       }
+      map.on("draw.create", draw);
     };
 
     const addMapLayer = async (param: {
@@ -118,6 +204,29 @@ export default defineComponent({
               source: param.id,
             });
           }
+        } else if (
+          param.visualType === "geoJsonLine" ||
+          param.visualType === "geoJsonPoint" ||
+          param.visualType === "geoJsonPolygon"
+        ) {
+          let type: "fill" | "circle" | "line" = "line";
+          if (param.visualType === "geoJsonPoint") {
+            type = "circle";
+          } else if (param.visualType === "geoJsonPolygon") {
+            type = "fill";
+          }
+          const geojson = await getGeoJson(param.id);
+          if (geojson != null && (geojson as any).code === 0) {
+            map.addSource(param.id, {
+              type: "geojson",
+              data: geojson.data,
+            });
+            map.addLayer({
+              id: param.id,
+              type: type,
+              source: param.id,
+            });
+          }
         }
       }
     };
@@ -153,6 +262,7 @@ export default defineComponent({
       addMapLayer,
       removeLayer,
       changeLayerState,
+      operateDraw,
     };
   },
 });

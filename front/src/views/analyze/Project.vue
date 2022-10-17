@@ -1,6 +1,9 @@
 <template>
   <div class="main">
-    <top-tool @returnFileList="returnFileList"></top-tool>
+    <top-tool
+      @returnFileList="returnFileList"
+      @operateDraw="operateDraw"
+    ></top-tool>
     <div class="body">
       <div class="left" ref="left">
         <data-manage
@@ -16,7 +19,7 @@
         ></layer-manage>
         <div class="left-resize" ref="leftResize"></div>
       </div>
-      <right-visual ref="rightMap"></right-visual>
+      <right-visual ref="rightMap" @drawHandle="drawHandle"></right-visual>
     </div>
   </div>
 </template>
@@ -125,6 +128,16 @@ export default defineComponent({
       rightMap.value.changeLayerState(val);
     };
 
+    const operateDraw = (val: number) => {
+      rightMap.value.operateDraw(val);
+    };
+
+    const drawHandle = async (val: { geoJson: any; visualType: string }) => {
+      const param = await dataManage.value.addDrawData(val);
+      layerManage.value.addLayer(param);
+      rightMap.value.addMapLayer(param);
+    };
+
     nextTick(() => {
       dropSize();
     });
@@ -139,6 +152,8 @@ export default defineComponent({
       layerManage,
       closeLayer,
       hideLayer,
+      operateDraw,
+      drawHandle,
     };
   },
 });

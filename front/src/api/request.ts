@@ -52,10 +52,6 @@ export async function addLayers(jsonData: { id: string, name: string, type: stri
     return await patch(`/project/addLayers/${projectId}`, jsonData)
 }
 
-export async function addSection(layer: Layer, projectId: string) {
-    return await post(`/project/addSection/${projectId}`, layer)
-}
-
 export async function getSectionValue(projectId: string, sectionId: string, valueIds: string[]) {
     return await post(`/project/getSectionValue/${projectId}/${sectionId}`, valueIds)
 }
@@ -255,6 +251,18 @@ export async function findDataByType(type: string) {
     return await get(`/analyticDataSet/findDataByType/${type}`)
 }
 
+export async function getAnalyticData(projectId: string) {
+    return await get(`/analyticDataSet/getAnalyticData/${projectId}`)
+}
+
+export async function addDraw(jsonData: { geoJson: any, projectId: string, fileName: string, visualType: string }) {
+    return await post(`/analyticDataSet/addDraw`, jsonData)
+}
+
+export async function delAnalyticData(id: string) {
+    return await del(`/analyticDataSet/delAnalyticData/${id}`)
+}
+
 
 //========================船讯网相关接口=================================
 export async function getAreaShip(key: string, scode: string, xy: string) {
@@ -396,6 +404,10 @@ export async function getSalinity(id: string) {
 
 export async function getFlowSand_Z(id: string) {
     return await get(`/visual/getFlowSand_Z/${id}`)
+}
+
+export async function getGeoJson(fileId: string) {
+    return await get(`/visual/getGeoJson/${fileId}`)
 }
 
 //========================folder相关接口=================================

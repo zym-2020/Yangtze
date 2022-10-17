@@ -64,7 +64,14 @@ type Tree = {
 import router from "@/router";
 import { defineComponent, ref, onMounted, computed } from "vue";
 import { Search } from "@element-plus/icons-vue";
-import { addProjectData, getData, delData } from "@/api/request";
+import {
+  addProjectData,
+  getData,
+  delData,
+  getAnalyticData,
+  addDraw,
+  delAnalyticData,
+} from "@/api/request";
 import { notice } from "@/utils/notice";
 export default defineComponent({
   emits: ["operateLayer"],
@@ -80,6 +87,54 @@ export default defineComponent({
     const menu = ref<HTMLElement>();
     const selectedData = ref<Tree>();
     const parentId = ref("");
+
+    const sectionName = computed(() => {
+      if (treeData.value[treeData.value.length - 1].id != "") {
+        return "断面形态0";
+      } else {
+        let max: number = 0;
+        treeData.value[treeData.value.length - 1].children.forEach((item) => {
+          if (
+            item.label.substring(0, 5) === "断面形态" &&
+            parseInt(item.label.substring(5)) != NaN
+          ) {
+            const number = parseInt(item.label.substring(5));
+            if (number > max) {
+              max = number;
+            }
+          }
+        });
+        if (max === 0) {
+          return "断面形态0";
+        } else {
+          return "断面形态" + (max + 1);
+        }
+      }
+    });
+
+    const regionName = computed(() => {
+      if (treeData.value[treeData.value.length - 1].id != "") {
+        return "区域形态0";
+      } else {
+        let max: number = 0;
+        treeData.value[treeData.value.length - 1].children.forEach((item) => {
+          if (
+            item.label.substring(0, 5) === "区域形态" &&
+            parseInt(item.label.substring(5)) != NaN
+          ) {
+            const number = parseInt(item.label.substring(5));
+            if (number > max) {
+              max = number;
+            }
+          }
+        });
+        if (max === 0) {
+          return "区域形态0";
+        } else {
+          return "区域形态" + (max + 1);
+        }
+      }
+    });
 
     const addData = async (
       param: {
@@ -128,13 +183,13 @@ export default defineComponent({
           }
         }
         if (flag1) {
-          treeData.value.push({
+          treeData.value.splice(treeData.value.length - 2, 0, {
             id: item.dataListId,
             label: item.dataListName,
             flag: true,
             children: [],
           });
-          treeData.value[treeData.value.length - 1].children.push({
+          treeData.value[treeData.value.length - 2].children.push({
             id: item.fileId,
             label: item.fileName,
             flag: false,
@@ -151,6 +206,61 @@ export default defineComponent({
       await addProjectData(jsonData);
     };
 
+    const addDrawData = async (param: { geoJson: any; visualType: string }) => {
+      const fileName = JSON.parse(
+        JSON.stringify(
+          param.visualType === "geoJsonLine"
+            ? sectionName.value
+            : regionName.value
+        )
+      );
+      const jsonData: {
+        projectId: string;
+        geoJson: any;
+        fileName: string;
+        visualType: string;
+      } = {
+        projectId: router.currentRoute.value.params.id as string,
+        geoJson: param.geoJson,
+        fileName: fileName,
+        visualType: param.visualType,
+      };
+      const data = await addDraw(jsonData);
+      if (data != null && (data as any).code === 0) {
+        if (treeData.value[treeData.value.length - 1].id === "") {
+          treeData.value[treeData.value.length - 1].children.push({
+            id: data.data,
+            label: fileName,
+            flag: false,
+            children: [],
+            visualType: param.visualType,
+            visualId: "",
+          });
+        } else {
+          treeData.value.push({
+            id: "",
+            label: "分析数据集",
+            flag: true,
+            children: [],
+          });
+          treeData.value[treeData.value.length - 1].children.push({
+            id: data.data,
+            label: fileName,
+            flag: false,
+            children: [],
+            visualType: param.visualType,
+            visualId: "",
+          });
+        }
+        return {
+          id: data.data,
+          name: fileName,
+          visualType: param.visualType,
+          visualId: "",
+        };
+      }
+    };
+
     const operateLayer = async (keyword: string) => {
       context.emit("operateLayer", {
         content: {
@@ -162,11 +272,16 @@ export default defineComponent({
         type: keyword,
       });
       if (keyword === "del") {
-        const data = await delData(
-          router.currentRoute.value.params.id as string,
-          parentId.value,
-          selectedData.value?.id as string
-        );
+        let data;
+        if (parentId.value === "") {
+          data = await delAnalyticData(selectedData.value?.id as string);
+        } else {
+          data = await delData(
+            router.currentRoute.value.params.id as string,
+            parentId.value,
+            selectedData.value?.id as string
+          );
+        }
         if (data != null && (data as any).code === 0) {
           for (let i = 0; i < treeData.value.length; i++) {
             if (treeData.value[i].id === parentId.value) {
@@ -175,6 +290,7 @@ export default defineComponent({
                 treeData.value[i].children.length === 1
               ) {
                 treeData.value.splice(i, 1);
+                notice("success", "成功", "数据删除成功!");
                 return;
               } else {
                 for (let j = 0; j < treeData.value[i].children.length; j++) {
@@ -182,13 +298,13 @@ export default defineComponent({
                     treeData.value[i].children[j].id === selectedData.value?.id
                   ) {
                     treeData.value[i].children.splice(j, 1);
+                    notice("success", "成功", "数据删除成功!");
                     return;
                   }
                 }
               }
             }
           }
-          notice("success", "成功", "数据删除成功!");
         }
       }
     };
@@ -219,7 +335,9 @@ export default defineComponent({
         selectedData.value?.visualType === "lineVectorTile" ||
         selectedData.value?.visualType === "png" ||
         selectedData.value?.visualType === "movePng" ||
-        selectedData.value?.visualType === "rasterTile"
+        selectedData.value?.visualType === "rasterTile" ||
+        selectedData.value?.visualType === "geoJsonLine" ||
+        selectedData.value?.visualType === "geoJsonPolygon"
       ) {
         return true;
       } else {
@@ -228,6 +346,8 @@ export default defineComponent({
     });
 
     onMounted(async () => {
+      const a = parseInt("dasdsa");
+      console.log(a);
       const data = await getData(router.currentRoute.value.params.id as string);
       if (data != null && (data as any).code === 0) {
         (data.data as any[]).forEach((item) => {
@@ -263,6 +383,29 @@ export default defineComponent({
           }
         });
       }
+      const analyticData = await getAnalyticData(
+        router.currentRoute.value.params.id as string
+      );
+      if (analyticData != null && (data as any).code === 0) {
+        if (analyticData.data.length > 0) {
+          treeData.value.push({
+            id: "",
+            label: "分析数据集",
+            flag: true,
+            children: [],
+          });
+          analyticData.data.forEach((item: any) => {
+            treeData.value[treeData.value.length - 1].children.push({
+              id: item.id,
+              label: item.fileName,
+              flag: false,
+              children: [],
+              visualType: item.visualType,
+              visualId: item.visualId,
+            });
+          });
+        }
+      }
     });
 
     return {
@@ -276,6 +419,7 @@ export default defineComponent({
       menu,
       treeData,
       isLayerVisual,
+      addDrawData,
     };
   },
 });

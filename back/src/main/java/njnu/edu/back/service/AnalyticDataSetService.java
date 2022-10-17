@@ -1,5 +1,6 @@
 package njnu.edu.back.service;
 
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
@@ -14,12 +15,19 @@ import java.util.Map;
  * @Description:
  */
 public interface AnalyticDataSetService {
-    List<Map<String, Object>> findDataByType(String type);
+//    List<Map<String, Object>> findDataByType(String type);
+//
+//    void getRaster(String id, String x, String y, String z, HttpServletResponse response);
+//
+//    void getSlope(String rasterId, String x, String y, String z, HttpServletResponse response);
+//
+//    Object getVectorTile(String tableName, int x, int y, int z);
 
-    void getRaster(String id, String x, String y, String z, HttpServletResponse response);
+    List<Map<String, Object>> getAnalyticData(String projectId);
 
-    void getSlope(String rasterId, String x, String y, String z, HttpServletResponse response);
+    String addDraw(JSONObject jsonObject, String email);
 
-    Object getVectorTile(String tableName, int x, int y, int z);
+    void delAnalyticData(String id);
+
 
 }

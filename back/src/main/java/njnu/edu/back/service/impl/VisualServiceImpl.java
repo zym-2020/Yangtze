@@ -233,32 +233,50 @@ public class VisualServiceImpl implements VisualService {
 
     @Override
     public JSONObject getTide(String visualId) {
-        return readJson(visualId);
+        Map<String, Object> map = visualFileMapper.findById(visualId);
+        String path = visualAddress + map.get("content");
+        return readJson(path);
     }
 
     @Override
     public JSONObject getRateDirection(String visualId) {
-        return readJson(visualId);
+        Map<String, Object> map = visualFileMapper.findById(visualId);
+        String path = visualAddress + map.get("content");
+        return readJson(path);
     }
 
     @Override
     public JSONObject getSandContent(String visualId) {
-        return readJson(visualId);
+        Map<String, Object> map = visualFileMapper.findById(visualId);
+        String path = visualAddress + map.get("content");
+        return readJson(path);
     }
 
     @Override
     public JSONObject getFlowSand_Z(String visualId) {
-        return readJson(visualId);
+        Map<String, Object> map = visualFileMapper.findById(visualId);
+        String path = visualAddress + map.get("content");
+        return readJson(path);
     }
 
     @Override
     public JSONObject getSalinity(String visualId) {
-        return readJson(visualId);
+        Map<String, Object> map = visualFileMapper.findById(visualId);
+        String path = visualAddress + map.get("content");
+        return readJson(path);
     }
 
     @Override
     public JSONObject getSuspension(String visualId) {
-        return readJson(visualId);
+        Map<String, Object> map = visualFileMapper.findById(visualId);
+        String path = visualAddress + map.get("content");
+        return readJson(path);
+    }
+
+    @Override
+    public JSONObject getGeoJson(String fileId) {
+        String path = visualAddress + "geoJson\\" + fileId + ".json";
+        return readJson(path);
     }
 
     @Override
@@ -293,9 +311,8 @@ public class VisualServiceImpl implements VisualService {
     * @Author: Yiming
     * @Date: 2022/9/6
     */
-    private JSONObject readJson(String visualId) {
-        Map<String, Object> map = visualFileMapper.findById(visualId);
-        String path = visualAddress + map.get("content");
+    private JSONObject readJson(String path) {
+
         File file = new File(path);
         if(!file.exists()) {
             throw new MyException(ResultEnum.NO_OBJECT);
