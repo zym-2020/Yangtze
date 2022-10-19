@@ -18,4 +18,11 @@
     <delete id="delAnalyticData">
         delete from analytic_dataset where id::text = #{id}
     </delete>
+
+    <select id="getInfoById" resultType="java.util.Map">
+        select id, file_name as "fileName", address, create_time as "createTime", creator, visual_type as "visualType", visual_id as "visualId", project_id as "projectId"
+        from analytic_dataset where id::text = #{id}
+    </select>
+
+
 </mapper>

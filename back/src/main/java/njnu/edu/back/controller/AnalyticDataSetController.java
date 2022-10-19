@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -42,6 +43,30 @@ public class AnalyticDataSetController {
     public JsonResult delAnalyticData(@PathVariable String id) {
         analyticDataSetService.delAnalyticData(id);
         return ResultUtils.success();
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/checkState/{key}", method = RequestMethod.GET)
+    public JsonResult checkState(@PathVariable String key) {
+        return ResultUtils.success(analyticDataSetService.checkState(key));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/addSection/{projectId}/{sectionId}/{demId}", method = RequestMethod.POST)
+    public JsonResult addSection(@PathVariable String projectId, @PathVariable String sectionId, @PathVariable String demId, @JwtTokenParser("email") String email) {
+        return ResultUtils.success(analyticDataSetService.addSection(projectId, sectionId, demId, email));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/addSectionCompare/{projectId}/{sectionId}", method = RequestMethod.POST)
+    public JsonResult addSectionCompare(@PathVariable String projectId, @PathVariable String sectionId, @JwtTokenParser("email") String email, @RequestBody List<String> demList) {
+        return ResultUtils.success(analyticDataSetService.addSectionCompare(projectId, sectionId, email, demList));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/addSectionFlush/{projectId}/{sectionId}/{benchmarkId}/{referId}", method = RequestMethod.POST)
+    public JsonResult addSectionFlush(@PathVariable String projectId, @PathVariable String sectionId, @PathVariable String benchmarkId, @PathVariable String referId, @JwtTokenParser("email") String email) {
+        return ResultUtils.success(analyticDataSetService.addSectionFlush(projectId, sectionId, benchmarkId, referId, email));
     }
 
 //    @AuthCheck

@@ -46,12 +46,17 @@ type Tree = {
 };
 import { defineComponent, onMounted, ref } from "vue";
 import { Search, Delete } from "@element-plus/icons-vue";
-import { updateLayer, getLayersInfo } from "@/api/request";
+import { updateLayer } from "@/api/request";
 import router from "@/router";
 import { notice } from "@/utils/notice";
 export default defineComponent({
+  props: {
+    layerList: {
+      type: Array,
+    },
+  },
   emits: ["closeLayer", "hideLayer"],
-  setup(_, context) {
+  setup(props, context) {
     const defaultProps = {
       children: "children",
       label: "label",
@@ -130,22 +135,17 @@ export default defineComponent({
       context.emit("hideLayer", { flag: val.flag, id: val.id });
     };
 
-    onMounted(async () => {
-      const data = await getLayersInfo(
-        router.currentRoute.value.params.id as string
-      );
-      if (data != null && (data as any).code === 0) {
-        (data.data as any[]).forEach((item) => {
-          treeData.value.push({
-            id: item.id,
-            label: item.fileName,
-            visualType: item.visualType,
-            flag: true,
-            children: [],
-            visualId: item.visualId,
-          });
+    onMounted(() => {
+      props.layerList?.forEach((item: any) => {
+        treeData.value.push({
+          id: item.id,
+          label: item.fileName,
+          visualType: item.visualType,
+          flag: true,
+          children: [],
+          visualId: item.visualId,
         });
-      }
+      });
     });
 
     return {

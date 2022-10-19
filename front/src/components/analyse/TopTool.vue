@@ -13,7 +13,7 @@
         >底图</el-button
       >
       <el-divider direction="vertical" />
-      <el-button type="primary" text
+      <el-button type="primary" text @click="dialogAnalyse = true"
         ><svg style="width: 16px; margin-right: 10px">
           <use xlink:href="#icon-shujuyanjiu"></use></svg
         >分析</el-button
@@ -43,17 +43,23 @@
     <el-dialog v-model="dialogAddData" width="1000px" title="添加数据">
       <add-data-dialog @returnData="returnData" v-if="dialogAddData" />
     </el-dialog>
+
+    <el-dialog v-model="dialogAnalyse" width="1000px" title="分析算法">
+      <analyse-dialog @analyse="analyse" />
+    </el-dialog>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import AddDataDialog from "./AddDataDialog.vue";
+import AnalyseDialog from "./AnalyseDialog.vue";
 export default defineComponent({
-  components: { AddDataDialog },
-  emits: ["returnFileList", "operateDraw"],
+  components: { AddDataDialog, AnalyseDialog },
+  emits: ["returnFileList", "operateDraw", "analyse"],
   setup(_, context) {
     const dialogAddData = ref(false);
+    const dialogAnalyse = ref(false);
     const state = ref(0);
 
     const returnData = (
@@ -88,12 +94,19 @@ export default defineComponent({
       context.emit("operateDraw", state.value);
     };
 
+    const analyse = (val: { type: string; value: any }) => {
+      context.emit("analyse", val);
+      dialogAnalyse.value = false
+    };
+
     return {
       state,
       dialogAddData,
       returnData,
       sectionClick,
       regionClick,
+      dialogAnalyse,
+      analyse,
     };
   },
 });

@@ -56,4 +56,17 @@ public interface FileMapper {
     void updateVisualId(@Param("id") String id, @Param("visualId") String visualId);
 
     Map<String, Object> findByAddress(@Param("address") String address);
+
+    Map<String, Object> findInfoById(@Param("id") String id);
+
+    List<Map<String, Object>> findInfoListById(@Param("list") List<String> list);
+
+
+
+
+
+
+
+
+
 }

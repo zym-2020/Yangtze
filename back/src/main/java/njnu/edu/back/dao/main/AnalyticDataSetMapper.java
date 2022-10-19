@@ -20,4 +20,7 @@ public interface AnalyticDataSetMapper {
     String addDraw(@Param("Id") String id, @Param("fileName") String fileName, @Param("address") String address, @Param("email") String email, @Param("visualType") String visualType, @Param("visualId") String visualId, @Param("projectId") String projectId);
 
     void delAnalyticData(@Param("id") String id);
+
+    Map<String, Object> getInfoById(@Param("id") String id);
+
 }

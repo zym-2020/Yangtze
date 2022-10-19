@@ -1,13 +1,20 @@
 package njnu.edu.back.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import lombok.SneakyThrows;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
+import njnu.edu.back.common.utils.AnalyseUtil;
 import njnu.edu.back.common.utils.TileUtil;
 import njnu.edu.back.dao.main.AnalyticDataSetMapper;
+import njnu.edu.back.dao.main.AnalyticParameterMapper;
+import njnu.edu.back.dao.main.FileMapper;
 import njnu.edu.back.pojo.support.TileBox;
 import njnu.edu.back.service.AnalyticDataSetService;
 import njnu.edu.back.dao.shp.VectorTileMapper;
+import njnu.edu.back.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,11 +39,24 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
     @Autowired
     AnalyticDataSetMapper analyticDataSetMapper;
 
+    @Autowired
+    AnalyticParameterMapper analyticParameterMapper;
+
+    @Autowired
+    FileMapper fileMapper;
+
+    @Autowired
+    RedisService redisService;
+
     @Value("${basePath}")
     String basePath;
 
     @Value("${visualAddress}")
     String visualAddress;
+
+    @Value("${analyseAddress}")
+    String analyseAddress;
+
 
     @Override
     public List<Map<String, Object>> getAnalyticData(String projectId) {
@@ -77,6 +97,151 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
     @Override
     public void delAnalyticData(String id) {
         analyticDataSetMapper.delAnalyticData(id);
+    }
+
+    private JSONObject readJsonFile(String path) {
+        File file = new File(path);
+        if(!file.exists()) {
+            throw new MyException(ResultEnum.NO_OBJECT);
+        }
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader(path));
+            String jsonString = "";
+            String line = "";
+            while((line = br.readLine()) != null) {
+                jsonString += line;
+            }
+            br.close();
+            JSONObject jsonObject = JSON.parseObject(jsonString);
+            return jsonObject;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        } finally {
+            try {
+                if(br != null) {
+                    br.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+            }
+        }
+    }
+
+    @Override
+    public Map<String, Object> checkState(String key) {
+        Integer result = (Integer) redisService.get(key);
+        if(result == 0) {
+            throw new MyException(-1, "正在计算");
+        } else if(result == 1) {
+            redisService.del(key);
+            return analyticDataSetMapper.getInfoById(key);
+
+        } else {
+            redisService.del(key);
+            throw new MyException(-2, "计算错误");
+        }
+    }
+
+    @Override
+    public String addSection(String projectId, String sectionId, String demId, String email) {
+        Map<String, Object> section = analyticDataSetMapper.getInfoById(sectionId);
+        String address = (String) section.get("address");
+        Map<String, Object> file = fileMapper.findInfoById(demId);
+        String sectionPath = basePath + email + "\\project\\" + projectId + "\\" + address;
+        String demPath = basePath + file.get("address");
+        JSONObject jsonObject = readJsonFile(sectionPath);
+        JSONArray jsonArray = jsonObject.getJSONObject("geometry").getJSONArray("coordinates");
+        String tempPath = basePath + email + "\\temp\\" + UUID.randomUUID().toString() + ".txt";
+        String resultUUID = UUID.randomUUID().toString();
+        String resultPath =  basePath + email + "\\project\\" + projectId + "\\" + resultUUID + ".txt";
+        String result = UUID.randomUUID().toString();
+        redisService.set(result, 0, 60l);
+        new Thread() {
+            @Override
+            @SneakyThrows
+            public void run() {
+                Process process = AnalyseUtil.saveSectionValue(tempPath, demId, demPath, jsonArray, resultPath);
+                int code = process.waitFor();
+                if(code == 0) {
+                    analyticDataSetMapper.addDraw(result, section.get("fileName") + "_" + file.get("fileName"), resultUUID + ".txt", email, "section", "", projectId);
+                    redisService.set(result, 1, 60l);
+                } else {
+                    redisService.set(result, -1, 60l);
+                }
+            }
+        }.start();
+        return result;
+    }
+
+    @Override
+    public String addSectionCompare(String projectId, String sectionId, String email, List<String> demList) {
+        Map<String, Object> section = analyticDataSetMapper.getInfoById(sectionId);
+        String address = (String) section.get("address");
+        List<Map<String, Object>> files = fileMapper.findInfoListById(demList);
+        List<String> rasterPathList = new ArrayList<>();
+        for(Map<String, Object> map : files) {
+            rasterPathList.add(basePath + map.get("address"));
+        }
+        String sectionPath = basePath + email + "\\project\\" + projectId + "\\" + address;
+        JSONObject jsonObject = readJsonFile(sectionPath);
+        JSONArray jsonArray = jsonObject.getJSONObject("geometry").getJSONArray("coordinates");
+        String tempPath = basePath + email + "\\temp\\" + UUID.randomUUID().toString() + ".txt";
+        String resultUUID = UUID.randomUUID().toString();
+        String resultPath =  basePath + email + "\\project\\" + projectId + "\\" + resultUUID + ".txt";
+        String result = UUID.randomUUID().toString();
+        redisService.set(result, 0, 60l);
+        new Thread() {
+            @Override
+            @SneakyThrows
+            public void run() {
+                String fileName = "断面比较_" + section.get("fileName");
+                Process process = AnalyseUtil.savaSectionContrast(tempPath, demList, rasterPathList, jsonArray, resultPath);
+                int code = process.waitFor();
+                if(code == 0) {
+                    analyticDataSetMapper.addDraw(result, fileName, resultUUID + ".txt", email, "sectionContrast", "", projectId);
+                    redisService.set(result, 1, 60l);
+                } else {
+                    redisService.set(result, -1, 60l);
+                }
+            }
+        }.start();
+        return result;
+    }
+
+    @Override
+    public String addSectionFlush(String projectId, String sectionId, String benchmarkId, String referId, String email) {
+        Map<String, Object> section = analyticDataSetMapper.getInfoById(sectionId);
+        String sectionPath = basePath + email + "\\project\\" + projectId + "\\" + section.get("address");
+        String address = analyticParameterMapper.findAddressByBenchmarkIdAndReferId(benchmarkId, referId);
+        Map<String, Object> benchmark = fileMapper.findInfoById(benchmarkId);
+        Map<String, Object> refer = fileMapper.findInfoById(referId);
+        String benchmarkPath = basePath + benchmark.get("address");
+        String referPath = basePath + refer.get("address");
+        JSONObject jsonObject = readJsonFile(sectionPath);
+        JSONArray jsonArray = jsonObject.getJSONObject("geometry").getJSONArray("coordinates");
+        String tempPath = basePath + email + "\\temp\\" + UUID.randomUUID().toString() + ".txt";
+        String resultUUID = UUID.randomUUID().toString();
+        String resultPath =  basePath + email + "\\project\\" + projectId + "\\" + resultUUID + ".txt";
+        String result = UUID.randomUUID().toString();
+        redisService.set(result, 0, 60l);
+        new Thread() {
+            @Override
+            @SneakyThrows
+            public void run() {
+                Process process = AnalyseUtil.sectionFlush(tempPath, benchmarkId, referId, benchmarkPath, referPath, analyseAddress + address, jsonArray, resultPath);
+                int code = process.waitFor();
+                if(code == 0) {
+                    analyticDataSetMapper.addDraw(result, section.get("fileName") + "_断面冲淤", resultUUID + ".txt", email, "section", "", projectId);
+                    redisService.set(result, 1, 60l);
+                } else {
+                    redisService.set(result, -1, 60l);
+                }
+            }
+        }.start();
+        return result;
     }
 
     //    @Override

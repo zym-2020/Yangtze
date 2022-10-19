@@ -29,5 +29,11 @@ public interface AnalyticDataSetService {
 
     void delAnalyticData(String id);
 
+    Map<String, Object> checkState(String key);
 
+    String addSection(String projectId, String sectionId, String demId, String email);
+
+    String addSectionCompare(String projectId, String sectionId, String email, List<String> demList);
+
+    String addSectionFlush(String projectId, String sectionId, String benchmarkId, String referId, String email);
 }

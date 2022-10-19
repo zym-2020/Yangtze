@@ -3,6 +3,7 @@
     <top-tool
       @returnFileList="returnFileList"
       @operateDraw="operateDraw"
+      @analyse="analyse"
     ></top-tool>
     <div class="body">
       <div class="left" ref="left">
@@ -11,28 +12,43 @@
           ref="dataManage"
           @operateLayer="operateLayer"
         ></data-manage>
+        <el-skeleton :rows="5" animated class="bottom" v-if="skeletonFlag" />
         <layer-manage
           class="bottom"
           ref="layerManage"
+          :layerList="layerList"
           @closeLayer="closeLayer"
           @hideLayer="hideLayer"
+          v-else
         ></layer-manage>
         <div class="left-resize" ref="leftResize"></div>
       </div>
-      <right-visual ref="rightMap" @drawHandle="drawHandle"></right-visual>
+      <el-skeleton :rows="5" animated v-if="skeletonFlag" />
+      <right-visual
+        :layerList="layerList"
+        ref="rightMap"
+        @drawHandle="drawHandle"
+        v-else
+      ></right-visual>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, nextTick } from "vue";
+import { defineComponent, ref, nextTick, onMounted } from "vue";
+import { getLayersInfo } from "@/api/request";
 import TopTool from "@/components/analyse/TopTool.vue";
 import DataManage from "@/components/analyse/DataManage.vue";
 import LayerManage from "@/components/analyse/LayerManage.vue";
 import RightVisual from "@/components/analyse/RightVisual.vue";
+import router from "@/router";
 export default defineComponent({
   components: { TopTool, RightVisual, DataManage, LayerManage },
   setup() {
+    const skeletonFlag = ref(true);
+    const layerList = ref<
+      { id: string; fileName: string; visualId: string; visualType: string }[]
+    >([]);
     const leftResize = ref<HTMLElement>();
     const left = ref<HTMLElement>();
     const rightMap = ref();
@@ -111,6 +127,7 @@ export default defineComponent({
       };
     }) => {
       if (val.type === "add") {
+        console.log(val.content);
         layerManage.value.addLayer(val.content);
         rightMap.value.addMapLayer(val.content);
       } else if (val.type === "del") {
@@ -138,8 +155,26 @@ export default defineComponent({
       rightMap.value.addMapLayer(param);
     };
 
+    const analyse = async (val: { type: string; value: any }) => {
+      await dataManage.value.addAnalyse(val);
+    };
+
     nextTick(() => {
-      dropSize();
+      if (!skeletonFlag.value) {
+        dropSize();
+      }
+    });
+
+    onMounted(async () => {
+      skeletonFlag.value = true;
+      const data = await getLayersInfo(
+        router.currentRoute.value.params.id as string
+      );
+      if (data != null && (data as any).code === 0) {
+        layerList.value = data.data;
+      }
+      skeletonFlag.value = false;
+      
     });
 
     return {
@@ -154,6 +189,9 @@ export default defineComponent({
       hideLayer,
       operateDraw,
       drawHandle,
+      analyse,
+      skeletonFlag,
+      layerList,
     };
   },
 });

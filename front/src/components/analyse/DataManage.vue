@@ -62,7 +62,13 @@ type Tree = {
   visualId?: string;
 };
 import router from "@/router";
-import { defineComponent, ref, onMounted, computed } from "vue";
+import {
+  defineComponent,
+  ref,
+  onMounted,
+  computed,
+  onBeforeUnmount,
+} from "vue";
 import { Search } from "@element-plus/icons-vue";
 import {
   addProjectData,
@@ -71,11 +77,16 @@ import {
   getAnalyticData,
   addDraw,
   delAnalyticData,
+  addSection,
+  addSectionCompare,
+  addSectionFlush,
+  checkState,
 } from "@/api/request";
 import { notice } from "@/utils/notice";
 export default defineComponent({
   emits: ["operateLayer"],
   setup(_, context) {
+    let sectionTimeout: any;
     const serach = ref("");
 
     const defaultProps = {
@@ -183,7 +194,7 @@ export default defineComponent({
           }
         }
         if (flag1) {
-          treeData.value.splice(treeData.value.length - 2, 0, {
+          treeData.value.splice(treeData.value.length - 1, 0, {
             id: item.dataListId,
             label: item.dataListName,
             flag: true,
@@ -203,7 +214,9 @@ export default defineComponent({
           });
         }
       });
-      await addProjectData(jsonData);
+      if (jsonData.list.length > 0) {
+        await addProjectData(jsonData);
+      }
     };
 
     const addDrawData = async (param: { geoJson: any; visualType: string }) => {
@@ -258,6 +271,116 @@ export default defineComponent({
           visualType: param.visualType,
           visualId: "",
         };
+      }
+    };
+
+    const addAnalyse = async (param: { type: string; value: any }) => {
+      if (param.type === "section") {
+        addData([param.value.dem]);
+        context.emit("operateLayer", {
+          content: {
+            id: param.value.dem.fileId,
+            name: param.value.dem.fileName,
+            visualType: param.value.dem.visualType,
+            visualId: param.value.dem.visualId,
+          },
+          type: "add",
+        });
+        const data = await addSection(
+          router.currentRoute.value.params.id as string,
+          param.value.section as string,
+          param.value.dem.fileId
+        );
+        if (data != null && (data as any).code === 0) {
+          await checkStateHandle(param.type, data.data, "断面形态");
+        }
+      } else if (param.type === "sectionCompare") {
+        addData(param.value.demList);
+        const demList: string[] = [];
+        param.value.demList.forEach((item: any) => {
+          demList.push(item.fileId);
+          context.emit("operateLayer", {
+            content: {
+              id: item.fileId,
+              name: item.fileName,
+              visualType: item.visualType,
+              visualId: item.visualId,
+            },
+            type: "add",
+          });
+        });
+        const data = await addSectionCompare(
+          router.currentRoute.value.params.id as string,
+          param.value.section as string,
+          demList
+        );
+        if (data != null && (data as any).code === 0) {
+          await checkStateHandle(param.type, data.data, "断面比较");
+        }
+      } else if (param.type === "sectionFlush") {
+        console.log(param);
+        addData([param.value.benchmarkDem]);
+        context.emit("operateLayer", {
+          content: {
+            id: param.value.benchmarkDem.fileId,
+            name: param.value.benchmarkDem.fileName,
+            visualType: param.value.benchmarkDem.visualType,
+            visualId: param.value.benchmarkDem.visualId,
+          },
+          type: "add",
+        });
+        addData([param.value.referDem]);
+        context.emit("operateLayer", {
+          content: {
+            id: param.value.referDem.fileId,
+            name: param.value.referDem.fileName,
+            visualType: param.value.referDem.visualType,
+            visualId: param.value.referDem.visualId,
+          },
+          type: "add",
+        });
+        const data = await addSectionFlush(
+          router.currentRoute.value.params.id as string,
+          param.value.section,
+          param.value.benchmarkDem.fileId,
+          param.value.referDem.fileId
+        );
+        if (data != null && (data as any).code === 0) {
+          await checkStateHandle(param.type, data.data, "断面冲淤");
+        }
+      }
+    };
+
+    const checkStateHandle = async (
+      type: string,
+      key: string,
+      text: string
+    ) => {
+      const data = await checkState(key);
+      if (data != null && (data as any).code === 0) {
+        if (treeData.value[treeData.value.length - 1].id != "") {
+          treeData.value.push({
+            id: "",
+            label: "分析数据集",
+            children: [],
+            flag: true,
+          });
+        }
+        treeData.value[treeData.value.length - 1].children.push({
+          id: data.data.id,
+          label: data.data.fileName,
+          flag: false,
+          children: [],
+          visualType: data.data.visualType,
+          visualId: data.data.visualId,
+        });
+        notice("success", "成功", text + "计算成功！");
+      } else if (data != null && (data as any).code === -1) {
+        sectionTimeout = setTimeout(async () => {
+          await checkStateHandle(type, key, text);
+        }, 2000);
+      } else {
+        notice("error", "错误", text + "计算失败！");
       }
     };
 
@@ -408,6 +531,10 @@ export default defineComponent({
       }
     });
 
+    onBeforeUnmount(() => {
+      clearTimeout(sectionTimeout);
+    });
+
     return {
       serach,
       Search,
@@ -420,6 +547,7 @@ export default defineComponent({
       treeData,
       isLayerVisual,
       addDrawData,
+      addAnalyse,
     };
   },
 });

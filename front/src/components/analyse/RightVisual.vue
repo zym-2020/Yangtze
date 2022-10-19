@@ -7,13 +7,18 @@
 <script lang="ts">
 import { computed, defineComponent, nextTick, onMounted, ref } from "vue";
 import mapBoxGl, { AnySourceData } from "mapbox-gl";
-import { getLayersInfo, getCoordinates, getGeoJson } from "@/api/request";
+import { getCoordinates, getGeoJson } from "@/api/request";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import router from "@/router";
 import { notice } from "@/utils/notice";
 export default defineComponent({
+  props: {
+    layerList: {
+      type: Array,
+    },
+  },
   emits: ["drawHandle"],
-  setup(_, context) {
+  setup(props, context) {
     const container = ref<HTMLElement>();
     let map: mapBoxGl.Map;
 
@@ -115,19 +120,8 @@ export default defineComponent({
     };
 
     const initLayers = async () => {
-      const data = await getLayersInfo(
-        router.currentRoute.value.params.id as string
-      );
-      if (data != null && (data as any).code === 0) {
-        const temp: {
-          id: string;
-          fileName: string;
-          visualType: string;
-          visualId: string;
-        }[] = data.data;
-        for (let i = temp.length - 1; i >= 0; i--) {
-          addMapLayer(temp[i]);
-        }
+      for (let i = (props.layerList as any[]).length - 1; i >= 0; i--) {
+        await addMapLayer((props.layerList as any[])[i]);
       }
       map.on("draw.create", draw);
     };

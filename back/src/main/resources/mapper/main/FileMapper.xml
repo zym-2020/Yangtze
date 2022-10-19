@@ -124,4 +124,18 @@
     <select id="findByAddress" resultType="java.util.Map">
         select * from files where address = #{address}
     </select>
+    
+    <select id="findInfoById" resultType="java.util.Map">
+        select id, file_name as "fileName", size, address, time, location, uploader, visual_type as "visualType", visual_id as "visualId", folder_id as "folderId"
+        from files where id::text = #{id}
+    </select>
+
+    <select id="findInfoListById" resultType="java.util.Map">
+        select id, file_name as "fileName", size, address, time, location, uploader, visual_type as "visualType", visual_id as "visualId", folder_id as "folderId"
+        from files
+        where id::text in
+        <foreach collection="list" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
 </mapper>

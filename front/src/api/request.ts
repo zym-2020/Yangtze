@@ -263,6 +263,26 @@ export async function delAnalyticData(id: string) {
     return await del(`/analyticDataSet/delAnalyticData/${id}`)
 }
 
+export async function addSection(projectId: string, sectionId: string, demId: string) {
+    return await post(`/analyticDataSet/addSection/${projectId}/${sectionId}/${demId}`)
+}
+
+export async function addSectionCompare(projectId: string, sectionId: string, demList: string[]) {
+    return await post(`/analyticDataSet/addSectionCompare/${projectId}/${sectionId}`, demList)
+}
+
+export async function addSectionFlush(projectId: string, sectionId: string, benchmarkId: string, referId: string) {
+    return await post(`/analyticDataSet/addSectionFlush/${projectId}/${sectionId}/${benchmarkId}/${referId}`)
+}
+
+export async function checkState(key: string) {
+    return await get(`/analyticDataSet/checkState/${key}`)
+}
+//========================analyticParameter相关接口=================================
+export async function findByType(type: string) {
+    return await get(`/analyse/findByType/${type}`)
+}
+
 
 //========================船讯网相关接口=================================
 export async function getAreaShip(key: string, scode: string, xy: string) {
