@@ -158,7 +158,7 @@ video {
   }
   .el-form-item /deep/ .el-input__inner {
     background-color: rgba(255, 255, 255, 0.247);
-    color: white;
+    // color: white;
   }
 }
 </style>

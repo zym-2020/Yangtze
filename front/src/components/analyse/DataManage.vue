@@ -26,7 +26,7 @@
                 </div>
               </template>
             </el-tree>
-          </el-scrollbar>
+          </el-scrollbar> 
         </div>
       </div>
       <div class="bottom">

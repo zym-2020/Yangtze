@@ -118,6 +118,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Map<String, Object> getUserInfo(String email) {
+        User user = (User) redisService.get(email);
+        Map<String, Object> map = new HashMap<>();
+        if(user == null) {
+            user = userMapper.getUserByEmail(email);
+        }
+        map.put("id", user.getId());
+        map.put("name", user.getName());
+        map.put("email", user.getEmail());
+        map.put("role", user.getRole());
+        map.put("avatar", user.getAvatar());
+        return map;
+    }
+
+    @Override
     public String getAvatarURL(String email) {
         return userMapper.getAvatarURL(email);
     }

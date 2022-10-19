@@ -4,7 +4,7 @@ import { UserState } from './userState'
 import { RootState } from '@/store'
 import { notice } from '@/utils/notice';
 import { setToken, clear, clearRouter } from '@/utils/auth'
-import { login, getUserInfoByToken, setUserInfo } from '@/api/request'
+import { login, getUserInfo, setUserInfo } from '@/api/request'
 import router, { resetRouter } from '@/router'
 
 type AugmentedActionContext = {
@@ -35,7 +35,7 @@ export const userActions: ActionTree<UserState, RootState> & Actions = {
         }
     },
     async getUserInfo({ commit }) {
-        let data = await getUserInfoByToken() as any
+        let data = await getUserInfo() as any
         if (data != null) {
             if (data.code === 0) {
                 commit("SET_ID", data.data.id)

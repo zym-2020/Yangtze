@@ -25,4 +25,6 @@ public interface UserService {
 
     String getAvatarURL(String email);
 
+    Map<String, Object> getUserInfo(String email);
+
 }

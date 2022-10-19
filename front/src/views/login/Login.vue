@@ -95,9 +95,10 @@ video {
   z-index: -1;
 }
 .form {
+  position: absolute;
   width: 450px;
-  margin: 0 auto;
-  margin-top: 25vh;
+  top: 25vh;
+  left: calc(50vw - 225px);
   text-align: center;
   .btn {
     width: 450px;
@@ -108,7 +109,7 @@ video {
   }
   .el-form-item /deep/ .el-input__inner {
     background-color: rgba(255, 255, 255, 0.247);
-    color: white;
+    // color: white;
   }
 }
 </style>

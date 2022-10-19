@@ -707,6 +707,7 @@ export default defineComponent({
 
     onMounted(async () => {
       initMap();
+      console.log(router.currentRoute.value.params);
       (router.currentRoute.value.params.files as any[]).forEach((item) => {
         fileList.value.push(item.id);
       });

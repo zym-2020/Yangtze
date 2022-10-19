@@ -14,8 +14,8 @@ export async function login(jsonData: LoginJsonData) {
     return await post(`/user/login`, jsonData)
 }
 
-export async function getUserInfoByToken() {
-    return await get(`/user/getUserInfoByToken`)
+export async function getUserInfo() {
+    return await get(`/user/getUserInfo`)
 }
 
 export async function register(jsonData: RegisterJsonData) {

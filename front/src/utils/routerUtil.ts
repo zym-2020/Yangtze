@@ -29,6 +29,7 @@ export async function toIdPages(to: RouteLocationNormalized) {
                 if (files != null) {
                     if ((files as any).code === 0) {
                         to.params.fileInfo = JSON.parse(to.params.fileInfo as string)
+                        to.params.files = files.data
                         return 1
                     } else {
                         return -1
