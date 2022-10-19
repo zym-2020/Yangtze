@@ -17,25 +17,31 @@ export default {
 </script>
 
 <style lang='scss' scoped>
+/deep/.el-main {
+  overflow: hidden;
+}
+
 div.overview-wrapper {
   height: 58vh;
   background-image: url("../../assets/home/njy_cut.jpg");
   // background-position: bottom right;
   background-size: cover;
+  overflow: initial;
 
   div.content-wrapper {
     position: absolute;
     background-color: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(6px);
-    width: 30%;
-    height: 40%;
-    left: 35%;
+    width: 28vw;
+    height: 20vw;
+    left: 36vw;
     top: 14%;
     border-radius: 1em;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-content: flex-start;
+    overflow: unset;
 
     h1.overview-title {
       color: rgb(244, 250, 255);
@@ -49,7 +55,7 @@ div.overview-wrapper {
     p.overview-text {
       margin-top: 0.6em;
       color: rgb(240, 245, 255);
-      font-size: 24px;
+      font-size: 1.4em;
       width: 80%;
       height: 70%;
       line-height: 1.75;

@@ -61,13 +61,14 @@ export default defineComponent({
     height: 100%;
   }
 }
-.el-header {
+/deep/.el-header {
   padding: 0;
-  height: 60px;
+  height: 6vh!important;
 }
 .el-main {
   padding: 0;
   height: 100%;
+  overflow: unset;
   /deep/ .el-drawer__body{
      padding: 0px;
   }

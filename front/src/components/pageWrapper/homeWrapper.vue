@@ -42,8 +42,9 @@ export default {
 
 <style lang='scss'>
 div.page-wrapper {
-  height: 100%;
+  // height: 3200px;
   width: 100%;
+  padding: 0;
   background-color: rgb(5, 9, 39);
 }
 </style>
