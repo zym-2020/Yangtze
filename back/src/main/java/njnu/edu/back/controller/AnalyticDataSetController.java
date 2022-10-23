@@ -69,28 +69,28 @@ public class AnalyticDataSetController {
         return ResultUtils.success(analyticDataSetService.addSectionFlush(projectId, sectionId, benchmarkId, referId, email));
     }
 
-//    @AuthCheck
-//    @RequestMapping(value = "/findDataByType/{type}", method = RequestMethod.GET)
-//    public JsonResult findDataByType(@PathVariable String type) {
-//        return ResultUtils.success(analyticDataSetService.findDataByType(type));
-//    }
-//
-//    @CrossOrigin
-//    @RequestMapping(value = "/getRaster/{rasterId}/{x}/{y}/{z}", method = RequestMethod.GET)
-//    public void getRaster(@PathVariable String rasterId, @PathVariable String x, @PathVariable String y, @PathVariable String z, HttpServletResponse response) {
-//        analyticDataSetService.getRaster(rasterId, x, y, z, response);
-//    }
-//
-//    @CrossOrigin
-//    @RequestMapping(value = "/getSlope/{rasterId}/{x}/{y}/{z}", method = RequestMethod.GET)
-//    public void getSlope(@PathVariable String rasterId, @PathVariable String x, @PathVariable String y, @PathVariable String z, HttpServletResponse response) {
-//        analyticDataSetService.getSlope(rasterId, x, y, z, response);
-//    }
-//
-//    @CrossOrigin
-//    @RequestMapping(value = "/{tableName}/{x}/{y}/{z}", method = RequestMethod.GET)
-//    public Object getVectorTile(@PathVariable String tableName, @PathVariable int x, @PathVariable int y, @PathVariable int z) {
-//        return analyticDataSetService.getVectorTile(tableName, x, y, z);
-//    }
+    @AuthCheck
+    @RequestMapping(value = "/addRegionFlush/{projectId}/{regionId}/{benchmarkId}/{referId}", method = RequestMethod.POST)
+    public JsonResult addRegionFlush(@PathVariable String projectId, @PathVariable String regionId, @PathVariable String benchmarkId, @PathVariable String referId, @JwtTokenParser("email") String email) {
+        return ResultUtils.success(analyticDataSetService.addRegionFlush(projectId, regionId, benchmarkId, referId, email));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/addElevationFlush/{projectId}/{benchmarkId}/{referId}", method = RequestMethod.POST)
+    public JsonResult addElevationFlush(@PathVariable String projectId, @PathVariable String benchmarkId, @PathVariable String referId, @JwtTokenParser("email") String email) {
+        return ResultUtils.success(analyticDataSetService.addElevationFlush(projectId, benchmarkId, referId, email));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/addFlushContour/{projectId}/{benchmarkId}/{referId}", method = RequestMethod.POST)
+    public JsonResult addFlushContour(@PathVariable String projectId, @PathVariable String benchmarkId, @PathVariable String referId, @JwtTokenParser("email") String emial) {
+        return ResultUtils.success(analyticDataSetService.addFlushContour(projectId, benchmarkId, referId, emial));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/addSlope/{projectId}/{demId}", method = RequestMethod.POST)
+    public JsonResult addSlope(@PathVariable String projectId, @PathVariable String demId, @JwtTokenParser("email") String email) {
+        return ResultUtils.success(analyticDataSetService.addSlope(projectId, demId, email));
+    }
 
 }

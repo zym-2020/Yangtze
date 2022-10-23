@@ -30,9 +30,9 @@ spring:
   #      stat-view-servlet: #访问监控网页的登录用户名和密码
   #        login-username: druid
   #        login-password: druid
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/test
+#  data:
+#    mongodb:
+#      uri: mongodb://localhost:27017/test
 
   redis:
     host: localhost

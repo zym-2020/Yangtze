@@ -26,7 +26,7 @@
     <select id="getProjectInfo" resultType="java.util.Map">
         select p.id as "id", project_name as "projectName", creator, create_time as "createTime", p.avatar as "avatar", layer_manage as "layerManage", name as "userName", u.avatar as "userAvatar"
         from project p, users u
-        where p.id::text = #{projectId}
+        where p.id::text = #{projectId} and p.creator = u.email
     </select>
 
     <update id="updateLayer">

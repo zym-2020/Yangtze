@@ -111,7 +111,7 @@ export default defineComponent({
     const skeletonFlag = ref(false);
     const input = ref("");
     const keyWord = ref("");
-    const selectValue = ref("download");
+    const selectValue = ref("watch");
     const fileList = ref<any[]>([]);
     let classify: string[] = [];
     const total = ref(0);
@@ -273,7 +273,7 @@ export default defineComponent({
         size: 10,
         keyword: keyWord.value,
         tags: classify,
-        property: "download",
+        property: "watch",
         flag: false,
         type: "",
       };

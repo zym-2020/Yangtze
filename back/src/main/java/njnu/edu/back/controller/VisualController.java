@@ -29,7 +29,7 @@ public class VisualController {
     * @Author: Yiming
     * @Date: 2022/8/22
     */
-
+    @CrossOrigin
     @RequestMapping(value = "/getAvatar/{fileName}", method = RequestMethod.GET)
     public void getAvatar(@PathVariable String fileName, HttpServletResponse response) {
         visualService.getAvatar(fileName, response);
@@ -64,6 +64,7 @@ public class VisualController {
     * @Author: Yiming
     * @Date: 2022/8/22
     */
+    @CrossOrigin
     @RequestMapping(value = "/getPhoto/{fileId}", method = RequestMethod.GET)
     public void getPhoto(@PathVariable String fileId, HttpServletResponse response) {
         visualService.getPhoto(fileId, response);
@@ -91,6 +92,7 @@ public class VisualController {
     * @Author: Yiming
     * @Date: 2022/9/1
     */
+    @CrossOrigin
     @RequestMapping(value = "/getTide/{visualId}", method = RequestMethod.GET)
     public JsonResult getTide(@PathVariable String visualId) {
         return ResultUtils.success(visualService.getTide(visualId));
@@ -145,7 +147,7 @@ public class VisualController {
     * @Author: Yiming
     * @Date: 2022/9/9
     */
-
+    @CrossOrigin
     @RequestMapping(value = "/getSuspension/{visualId}", method = RequestMethod.GET)
     public JsonResult getSuspension(@PathVariable String visualId) {
         return ResultUtils.success(visualService.getSuspension(visualId));
@@ -156,11 +158,26 @@ public class VisualController {
     * @Author: Yiming
     * @Date: 2022/10/14
     */
+    @CrossOrigin
     @RequestMapping(value = "/getGeoJson/{fileId}", method = RequestMethod.GET)
     public JsonResult getGeoJson(@PathVariable String fileId) {
         return ResultUtils.success(visualService.getGeoJson(fileId));
     }
 
+    @RequestMapping(value = "/getSection/{fileId}", method = RequestMethod.GET)
+    public JsonResult getSection(@PathVariable String fileId) {
+        return ResultUtils.success(visualService.getSection(fileId));
+    }
+
+    @RequestMapping(value = "/getSectionContrast/{fileId}", method = RequestMethod.GET)
+    public JsonResult getSectionContrast(@PathVariable String fileId) {
+        return ResultUtils.success(visualService.getSectionContrast(fileId));
+    }
+
+    @RequestMapping(value = "/getSectionFlush/{fileId}", method = RequestMethod.GET)
+    public JsonResult getSectionFlush(@PathVariable String fileId) {
+        return ResultUtils.success(visualService.getSectionFlush(fileId));
+    }
 
 
 

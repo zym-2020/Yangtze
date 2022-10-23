@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import njnu.edu.back.pojo.VisualFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -39,6 +41,12 @@ public interface VisualService {
     JSONObject getSuspension(String visualId);
 
     JSONObject getGeoJson(String fileId);
+
+    Map<String, Object> getSection(String fileId);
+
+    List<List<Double>> getSectionContrast(String fileId);
+
+    Map<String, Object> getSectionFlush(String fileId);
 
     void addVisualFile(VisualFile visualFile);
 

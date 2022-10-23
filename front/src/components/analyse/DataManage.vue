@@ -26,7 +26,7 @@
                 </div>
               </template>
             </el-tree>
-          </el-scrollbar> 
+          </el-scrollbar>
         </div>
       </div>
       <div class="bottom">
@@ -41,7 +41,10 @@
         >
           <span>添加至图层</span>
         </li>
-        <li :class="isLayerVisual ? 'menu-item disabled' : 'menu-item'">
+        <li
+          :class="isLayerVisual ? 'menu-item disabled' : 'menu-item'"
+          @click="operateLayer('chart')"
+        >
           <span>可视化</span>
         </li>
         <li class="menu-item" @click="operateLayer('del')">
@@ -80,7 +83,11 @@ import {
   addSection,
   addSectionCompare,
   addSectionFlush,
+  addRegionFlush,
   checkState,
+  addElevationFlush,
+  addFlushContour,
+  addSlope,
 } from "@/api/request";
 import { notice } from "@/utils/notice";
 export default defineComponent({
@@ -292,7 +299,7 @@ export default defineComponent({
           param.value.dem.fileId
         );
         if (data != null && (data as any).code === 0) {
-          await checkStateHandle(param.type, data.data, "断面形态");
+          await checkStateHandle(data.data, "断面形态");
         }
       } else if (param.type === "sectionCompare") {
         addData(param.value.demList);
@@ -315,10 +322,14 @@ export default defineComponent({
           demList
         );
         if (data != null && (data as any).code === 0) {
-          await checkStateHandle(param.type, data.data, "断面比较");
+          await checkStateHandle(data.data, "断面比较");
         }
-      } else if (param.type === "sectionFlush") {
-        console.log(param);
+      } else if (
+        param.type === "sectionFlush" ||
+        param.type === "regionFlush" ||
+        param.type === "elevationFlush" ||
+        param.type === "flushContour"
+      ) {
         addData([param.value.benchmarkDem]);
         context.emit("operateLayer", {
           content: {
@@ -339,23 +350,85 @@ export default defineComponent({
           },
           type: "add",
         });
-        const data = await addSectionFlush(
+        if (param.type === "sectionFlush") {
+          const data = await addSectionFlush(
+            router.currentRoute.value.params.id as string,
+            param.value.section,
+            param.value.benchmarkDem.fileId,
+            param.value.referDem.fileId
+          );
+          if (data != null && (data as any).code === 0) {
+            await checkStateHandle(data.data, "断面冲淤");
+          }
+        } else if (param.type === "regionFlush") {
+          const data = await addRegionFlush(
+            router.currentRoute.value.params.id as string,
+            param.value.section,
+            param.value.benchmarkDem.fileId,
+            param.value.referDem.fileId
+          );
+          if (data != null && (data as any).code === 0) {
+            await checkStateHandle(data.data, "区域冲淤");
+          }
+        } else if (param.type === "elevationFlush") {
+          const data = await addElevationFlush(
+            router.currentRoute.value.params.id as string,
+            param.value.benchmarkDem.fileId,
+            param.value.referDem.fileId
+          );
+          if (data != null && (data as any).code === 0) {
+            console.log(data);
+            treeData.value[treeData.value.length - 1].children.push({
+              id: data.data.id,
+              label: data.data.fileName,
+              flag: false,
+              children: [],
+              visualId: data.data.visualId,
+              visualType: "elevationFlush",
+            });
+            notice("success", "成功", "特定高程冲淤计算成功！");
+          }
+        } else {
+          const data = await addFlushContour(
+            router.currentRoute.value.params.id as string,
+            param.value.benchmarkDem.fileId,
+            param.value.referDem.fileId
+          );
+          if (data != null && (data as any).code === 0) {
+            console.log(data);
+            treeData.value[treeData.value.length - 1].children.push({
+              id: data.data.id,
+              label: data.data.fileName,
+              flag: false,
+              children: [],
+              visualId: data.data.visualId,
+              visualType: "flushContour",
+            });
+            notice("success", "成功", "冲淤等深线计算成功！");
+          }
+        }
+      } else if (param.type === "slope") {
+        console.log(param.value.fileId);
+        const data = await addSlope(
           router.currentRoute.value.params.id as string,
-          param.value.section,
-          param.value.benchmarkDem.fileId,
-          param.value.referDem.fileId
+          param.value.fileId as string
         );
         if (data != null && (data as any).code === 0) {
-          await checkStateHandle(param.type, data.data, "断面冲淤");
+          console.log(data);
+          treeData.value[treeData.value.length - 1].children.push({
+            id: data.data.id,
+            label: data.data.fileName,
+            flag: false,
+            children: [],
+            visualId: data.data.visualId,
+            visualType: "slope",
+          });
+          notice("success", "成功", "河床坡度计算成功！");
         }
       }
     };
 
-    const checkStateHandle = async (
-      type: string,
-      key: string,
-      text: string
-    ) => {
+    const checkStateHandle = async (key: string, text: string) => {
       const data = await checkState(key);
       if (data != null && (data as any).code === 0) {
         if (treeData.value[treeData.value.length - 1].id != "") {
@@ -377,7 +450,7 @@ export default defineComponent({
         notice("success", "成功", text + "计算成功！");
       } else if (data != null && (data as any).code === -1) {
         sectionTimeout = setTimeout(async () => {
-          await checkStateHandle(type, key, text);
+          await checkStateHandle(key, text);
         }, 2000);
       } else {
         notice("error", "错误", text + "计算失败！");
@@ -460,7 +533,11 @@ export default defineComponent({
         selectedData.value?.visualType === "movePng" ||
         selectedData.value?.visualType === "rasterTile" ||
         selectedData.value?.visualType === "geoJsonLine" ||
-        selectedData.value?.visualType === "geoJsonPolygon"
+        selectedData.value?.visualType === "geoJsonPolygon" ||
+        selectedData.value?.visualType === "regionFlush" ||
+        selectedData.value?.visualType === "elevationFlush" ||
+        selectedData.value?.visualType === "flushContour" ||
+        selectedData.value?.visualType === "slope"
       ) {
         return true;
       } else {

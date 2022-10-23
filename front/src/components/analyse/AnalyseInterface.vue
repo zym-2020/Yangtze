@@ -6,7 +6,7 @@
       </template>
     </el-page-header>
 
-    <div class="section">
+    <div class="analyse">
       <div class="introduce">
         <strong v-if="analyseType === 'section'"
           >断面形态是指随着断面起点距的变化河道高程的变化趋势，选择相应的河道DEM与断面数据，计算该断面形态</strong
@@ -15,10 +15,26 @@
           >断面比较是指一条断面随着时间不同，河道地形发生的变化</strong
         >
         <strong v-if="analyseType === 'sectionFlush'"
-          >任意断面冲於是通过当前年数据和参考年数据，对这个时间段内河道的冲刷和淤泥进行比较分析</strong
+          >断面冲於是通过当前年数据和参考年数据，对这个时间段内河道的冲刷和淤泥进行比较分析</strong
+        >
+        <strong v-if="analyseType === 'regionFlush'"
+          >区域冲於是通过当前年数据和参考年数据，对这个时间段内河床区域的冲刷和淤泥进行比较分析</strong
+        >
+        <strong v-if="analyseType === 'elevationFlush'"
+          >针对整个长江南京以下河段，选择参数生成特定高程冲淤</strong
+        >
+        <strong v-if="analyseType === 'flushContour'"
+          >针对整个长江南京以下河段，选择参数生成冲淤等深线</strong
+        >
+        <strong v-if="analyseType === 'slope'"
+          >选择河床参数，计算河床坡度</strong
         >
       </div>
-      <el-select v-model="sectionValue" placeholder="选择断面">
+      <el-select
+        v-model="sectionValue"
+        :placeholder="placeholder"
+        v-if="selectFlag"
+      >
         <el-option
           v-for="(item, index) in options"
           :key="index"
@@ -26,8 +42,17 @@
           :value="item.id"
         />
       </el-select>
-      <div v-if="analyseType === 'section' || analyseType === 'sectionCompare'">
-        <div class="text" v-if="analyseType === 'section'">
+      <div
+        v-if="
+          analyseType === 'section' ||
+          analyseType === 'sectionCompare' ||
+          analyseType === 'slope'
+        "
+      >
+        <div
+          class="text"
+          v-if="analyseType === 'section' || analyseType === 'slope'"
+        >
           选择DEM数据，DEM将默认添加至数据与图层中
         </div>
         <div class="text" v-if="analyseType === 'sectionCompare'">
@@ -59,7 +84,15 @@
         </div>
       </div>
 
-      <div v-if="analyseType === 'sectionFlush'" class="section-flush">
+      <div
+        v-if="
+          analyseType === 'sectionFlush' ||
+          analyseType === 'regionFlush' ||
+          analyseType === 'elevationFlush' ||
+          analyseType === 'flushContour'
+        "
+        class="section-flush"
+      >
         <div class="left">
           <div class="text">选择基准面</div>
           <el-skeleton :rows="5" animated v-if="skeletonFlag" />
@@ -187,6 +220,36 @@ export default defineComponent({
         return "断面比较";
       } else if (props.analyseType === "sectionFlush") {
         return "断面冲淤";
+      } else if (props.analyseType === "regionFlush") {
+        return "区域冲淤";
+      } else if (props.analyseType === "elevationFlush") {
+        return "特定高程冲淤";
+      } else if (props.analyseType === "flushContour") {
+        return "冲淤等深线";
+      } else if (props.analyseType === "slope") {
+        return "河床坡度提取";
+      }
+    });
+    const placeholder = computed(() => {
+      if (
+        props.analyseType === "section" ||
+        props.analyseType === "sectionCompare" ||
+        props.analyseType === "sectionFlush"
+      ) {
+        return "选择断面";
+      } else {
+        return "选择区域";
+      }
+    });
+    const selectFlag = computed(() => {
+      if (
+        props.analyseType === "elevationFlush" ||
+        props.analyseType === "flushContour" ||
+        props.analyseType === "slope"
+      ) {
+        return false;
+      } else {
+        return true;
       }
     });
     const analyticDataList = computed(() => {
@@ -209,7 +272,7 @@ export default defineComponent({
     };
 
     const changeClick = (val: TreeData, type: string) => {
-      if (props.analyseType === "section") {
+      if (props.analyseType === "section" || props.analyseType === "slope") {
         treeData.value.forEach((item) => {
           item.children.forEach((c) => {
             if (c.id != val.id) {
@@ -248,7 +311,12 @@ export default defineComponent({
             }
           }
         }
-      } else if (props.analyseType === "sectionFlush") {
+      } else if (
+        props.analyseType === "sectionFlush" ||
+        props.analyseType === "regionFlush" ||
+        props.analyseType === "elevationFlush" ||
+        props.analyseType === "flushContour"
+      ) {
         if (type === "benchmark") {
           benchmarkTreeData.value.forEach((item) => {
             item.children.forEach((c) => {
@@ -323,14 +391,17 @@ export default defineComponent({
             sectionValue.value === "" ? "不得为空" : "至少选择两个DEM数据"
           );
         }
-      } else if (props.analyseType === "sectionFlush") {
+      } else if (
+        props.analyseType === "sectionFlush" ||
+        props.analyseType === "regionFlush"
+      ) {
         if (
           sectionValue.value != "" &&
           benchmarkDem.value != undefined &&
           referDem.value != undefined
         ) {
           if (referDem.value.fileId === benchmarkDem.value.fileId) {
-            notice("warning", "警告", "基准DEM数据不能与参考DEM数据相同")
+            notice("warning", "警告", "基准DEM数据不能与参考DEM数据相同");
           } else {
             context.emit("returnParameter", {
               section: sectionValue.value,
@@ -339,17 +410,48 @@ export default defineComponent({
             });
           }
         } else if (sectionValue.value === "") {
-          notice("warning", "警告", "断面数据不得为空");
+          if (props.analyseType === "sectionFlush") {
+            notice("warning", "警告", "请选择断面");
+          } else if (props.analyseType === "regionFlush") {
+            notice("warning", "警告", "请选择区域");
+          }
         } else if (benchmarkDem.value === undefined) {
           notice("warning", "警告", "基准DEM数据不得为空");
         } else {
           notice("warning", "警告", "参考DEM数据不得为空");
         }
+      } else if (
+        props.analyseType === "elevationFlush" ||
+        props.analyseType === "flushContour"
+      ) {
+        if (benchmarkDem.value != undefined && referDem.value != undefined) {
+          if (referDem.value.fileId === benchmarkDem.value.fileId) {
+            notice("warning", "警告", "基准DEM数据不能与参考DEM数据相同");
+          } else {
+            context.emit("returnParameter", {
+              benchmarkDem: benchmarkDem.value,
+              referDem: referDem.value,
+            });
+          }
+        } else {
+          notice(
+            "warning",
+            "警告",
+            (benchmarkDem.value === undefined ? "基准DEM" : "参考DEM") +
+              "数据不得为空"
+          );
+        }
+      } else if (props.analyseType === "slope") {
+        if (sectionDem.value != undefined) {
+          context.emit("returnParameter", sectionDem.value);
+        } else {
+          notice("warning", "警告", "请选择dem数据");
+        }
       }
     };
 
     const getParame = async (type: string) => {
-      const data = await findByType("section");
+      const data = await findByType("dem");
       if (data != null && (data as any).code === 0) {
         for (let i = 0; i < data.data.length; i++) {
           let flag = true;
@@ -390,7 +492,12 @@ export default defineComponent({
             });
           }
         }
-        if (type === "sectionFlush") {
+        if (
+          type === "sectionFlush" ||
+          type === "regionFlush" ||
+          type === "elevationFlush" ||
+          type === "flushContour"
+        ) {
           benchmarkTreeData.value = JSON.parse(JSON.stringify(treeData.value));
           referTreeData.value = JSON.parse(JSON.stringify(treeData.value));
         }
@@ -408,19 +515,23 @@ export default defineComponent({
               });
             }
           });
+        } else if (type === "regionFlush") {
+          options.value = [];
+          analyticDataList.value.forEach((item) => {
+            if (item.visualType === "geoJsonPolygon") {
+              options.value.push({
+                id: item.id,
+                name: item.fileName,
+              });
+            }
+          });
         }
       }
     };
 
     onMounted(async () => {
       skeletonFlag.value = true;
-      if (
-        props.analyseType === "section" ||
-        props.analyseType === "sectionCompare" ||
-        props.analyseType === "sectionFlush"
-      ) {
-        await getParame(props.analyseType);
-      }
+      await getParame(props.analyseType as string);
 
       skeletonFlag.value = false;
     });
@@ -439,6 +550,8 @@ export default defineComponent({
       changeClick,
       btnClick,
       skeletonFlag,
+      placeholder,
+      selectFlag,
     };
   },
 });
@@ -450,7 +563,7 @@ export default defineComponent({
   margin-left: 5px;
   margin-bottom: 30px;
 }
-.section {
+.analyse {
   .el-select {
     width: 100%;
   }

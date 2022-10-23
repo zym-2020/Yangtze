@@ -36,4 +36,12 @@ public interface AnalyticDataSetService {
     String addSectionCompare(String projectId, String sectionId, String email, List<String> demList);
 
     String addSectionFlush(String projectId, String sectionId, String benchmarkId, String referId, String email);
+
+    String addRegionFlush(String projectId, String regionId, String benchmarkId, String referId, String email);
+
+    Map<String, Object> addElevationFlush(String projectId, String benchmarkId, String referId, String email);
+
+    Map<String, Object> addFlushContour(String projectId, String benchmarkId, String referId, String email);
+
+    Map<String, Object> addSlope(String projectId, String demId, String email);
 }

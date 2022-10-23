@@ -65,9 +65,7 @@ export async function addSectionContrast(projectId: string, layer: Layer) {
     return await post(`/project/addSectionContrast/${projectId}`, layer)
 }
 
-export async function getSectionContrast(projectId: string, layerId: string) {
-    return await get(`/project/getSectionContrast/${projectId}/${layerId}`)
-}
+
 
 
 
@@ -275,6 +273,22 @@ export async function addSectionFlush(projectId: string, sectionId: string, benc
     return await post(`/analyticDataSet/addSectionFlush/${projectId}/${sectionId}/${benchmarkId}/${referId}`)
 }
 
+export async function addRegionFlush(projectId: string, regionId: string, benchmarkId: string, referId: string) {
+    return await post(`/analyticDataSet/addRegionFlush/${projectId}/${regionId}/${benchmarkId}/${referId}`)
+}
+
+export async function addElevationFlush(projectId: string, benchmarkId: string, referId: string) {
+    return await post(`/analyticDataSet/addElevationFlush/${projectId}/${benchmarkId}/${referId}`)
+}
+
+export async function addFlushContour(projectId: string, benchmarkId: string, referId: string) {
+    return await post(`/analyticDataSet/addFlushContour/${projectId}/${benchmarkId}/${referId}`)
+}
+
+export async function addSlope(projectId: string, demId: string) {
+    return await post(`/analyticDataSet/addSlope/${projectId}/${demId}`)
+}
+
 export async function checkState(key: string) {
     return await get(`/analyticDataSet/checkState/${key}`)
 }
@@ -428,6 +442,18 @@ export async function getFlowSand_Z(id: string) {
 
 export async function getGeoJson(fileId: string) {
     return await get(`/visual/getGeoJson/${fileId}`)
+}
+
+export async function getSection(fileId: string) {
+    return await get(`/visual/getSection/${fileId}`)
+}
+
+export async function getSectionContrast(fileId: string) {
+    return await get(`/visual/getSectionContrast/${fileId}`)
+}
+
+export async function getSectionFlush(fileId: string) {
+    return await get(`/visual/getSectionFlush/${fileId}`)
 }
 
 //========================folder相关接口=================================

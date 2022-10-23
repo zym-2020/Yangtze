@@ -17,5 +17,9 @@ import java.util.Map;
 public interface AnalyticParameterMapper {
     List<Map<String, Object>> findByType(@Param("type") String type);
 
-    String findAddressByBenchmarkIdAndReferId(@Param("benchmarkId") String benchmarkId, @Param("referId") String referId);
+    String findAddressByBenchmarkIdAndReferId(@Param("benchmarkId") String benchmarkId, @Param("referId") String referId, @Param("type") String type);
+
+    Map<String, Object> findByBenchmarkIdAndReferId(@Param("benchmarkId") String benchmarkId, @Param("referId") String referId, @Param("type") String type);
+
+    Map<String, Object> findSlope(@Param("demId") String demId);
 }

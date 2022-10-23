@@ -1,6 +1,9 @@
 <template>
   <div class="right-visual">
     <div ref="container" class="container"></div>
+    <el-dialog v-model="chartVisual" width="900px" title="断面图">
+      <chart-visual :chartVisualInfo="chartVisualInfo"></chart-visual>
+    </el-dialog>
   </div>
 </template>
 
@@ -9,9 +12,11 @@ import { computed, defineComponent, nextTick, onMounted, ref } from "vue";
 import mapBoxGl, { AnySourceData } from "mapbox-gl";
 import { getCoordinates, getGeoJson } from "@/api/request";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
-import router from "@/router";
+import ChartVisual from "./ChartVisual.vue";
+
 import { notice } from "@/utils/notice";
 export default defineComponent({
+  components: { ChartVisual },
   props: {
     layerList: {
       type: Array,
@@ -21,6 +26,8 @@ export default defineComponent({
   setup(props, context) {
     const container = ref<HTMLElement>();
     let map: mapBoxGl.Map;
+    const chartVisual = ref(false);
+    const chartVisualInfo = ref();
 
     const lineDraw = new MapboxDraw({
       controls: {
@@ -82,27 +89,6 @@ export default defineComponent({
         });
         polygonDraw.deleteAll();
       }
-      // const jsonData: {
-      //   projectId: string;
-      //   geoJson: any;
-      //   fileName: string;
-      //   visualType: string;
-      // } = {
-      //   projectId: router.currentRoute.value.params.id as string,
-      //   geoJson: e.features[0],
-      //   fileName: "断面形态1",
-      //   visualType: "geoJsonLine",
-      // };
-      // const data = await addDraw(jsonData);
-      // if (data != null && (data as any).code === 0) {
-      //   notice("success", "成功", "绘制断面!");
-      //   await addMapLayer({
-      //     id: data.data as string,
-      //     visualType: "geoJsonLine",
-      //     visualId: "",
-      //   });
-
-      // }
     };
 
     const initMap = () => {
@@ -135,7 +121,8 @@ export default defineComponent({
         let type: "line" | "circle" | "fill" = "line";
         if (
           param.visualType === "lineVectorTile3D" ||
-          param.visualType === "lineVectorTile"
+          param.visualType === "lineVectorTile" ||
+          param.visualType === "flushContour"
         ) {
           type = "line";
         } else if (
@@ -155,7 +142,8 @@ export default defineComponent({
           param.visualType === "pointVectorTile" ||
           param.visualType === "pointVectorTile3D" ||
           param.visualType === "polygonVectorTile" ||
-          param.visualType === "polygonVectorTile3D"
+          param.visualType === "polygonVectorTile3D" ||
+          param.visualType === "flushContour"
         ) {
           map.addSource(param.id, {
             type: "vector",
@@ -169,7 +157,11 @@ export default defineComponent({
             type: type,
             "source-layer": param.visualId,
           });
-        } else if (param.visualType === "rasterTile") {
+        } else if (
+          param.visualType === "rasterTile" ||
+          param.visualType === "elevationFlush" ||
+          param.visualType === "slope"
+        ) {
           map.addSource(param.id, {
             type: "raster",
             tiles: [
@@ -183,10 +175,11 @@ export default defineComponent({
           });
         } else if (
           param.visualType === "png" ||
-          param.visualType === "movePng"
+          param.visualType === "movePng" ||
+          param.visualType === "regionFlush"
         ) {
           const coordinates = await getCoordinates(param.visualId);
-          if (coordinates != null && (coordinates.data as any).code === 0) {
+          if (coordinates != null && (coordinates as any).code === 0) {
             map.addSource(param.id, {
               type: "image",
               url: `http://localhost:8002/visual/getPngResource/${param.visualId}`,
@@ -215,14 +208,36 @@ export default defineComponent({
               type: "geojson",
               data: geojson.data,
             });
-            map.addLayer({
-              id: param.id,
-              type: type,
-              source: param.id,
-            });
+            if (type === "fill") {
+              map.addLayer({
+                id: param.id,
+                type: type,
+                source: param.id,
+                paint: {
+                  "fill-opacity": 0.5,
+                  "fill-color": "#f24545",
+                },
+              });
+            } else {
+              map.addLayer({
+                id: param.id,
+                type: type,
+                source: param.id,
+              });
+            }
           }
         }
       }
+    };
+
+    const addChart = async (param: {
+      id: string;
+      name: string;
+      visualType: string;
+      visualId: string;
+    }) => {
+      chartVisualInfo.value = param;
+      chartVisual.value = true;
     };
 
     const removeLayer = (id: string) => {
@@ -257,6 +272,12 @@ export default defineComponent({
       removeLayer,
       changeLayerState,
       operateDraw,
+      addChart,
+      chartVisual,
+      chartVisualInfo
+      // chart,
+      // btnClick,
+      // flag,
     };
   },
 });
@@ -272,6 +293,25 @@ export default defineComponent({
     height: 100%;
     width: 100%;
     border-radius: 8px;
+  }
+  /deep/.el-dialog {
+    .el-dialog__header {
+      padding: 10px;
+      background: #4c75a9;
+      margin: 0px;
+      .el-dialog__title {
+        color: white;
+      }
+      .el-dialog__headerbtn {
+        height: 40px;
+        .el-icon {
+          color: white;
+        }
+      }
+    }
+    .el-dialog__body {
+      padding: 0px;
+    }
   }
 }
 </style>

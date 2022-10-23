@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.common.utils.TileUtil;
+import njnu.edu.back.dao.main.AnalyticDataSetMapper;
 import njnu.edu.back.dao.main.FileMapper;
 import njnu.edu.back.dao.main.VisualFileMapper;
 import njnu.edu.back.dao.shp.VectorTileMapper;
@@ -19,6 +20,9 @@ import org.springframework.stereotype.Repository;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -48,6 +52,9 @@ public class VisualServiceImpl implements VisualService {
 
     @Autowired
     FileMapper fileMapper;
+
+    @Autowired
+    AnalyticDataSetMapper analyticDataSetMapper;
 
     @Override
     public void getAvatar(String fileName, HttpServletResponse response) {
@@ -280,6 +287,124 @@ public class VisualServiceImpl implements VisualService {
     }
 
     @Override
+    public Map<String, Object> getSection(String fileId) {
+        Map<String, Object> section = analyticDataSetMapper.getInfoById(fileId);
+        String address = (String) section.get("address");
+        String path = basePath + section.get("creator") + "\\project\\" + section.get("projectId") + "\\" + address;
+        File file = new File(path);
+        if(!file.exists()) {
+            throw new MyException(ResultEnum.NO_OBJECT);
+        }
+        BufferedReader br = null;
+        List<Double> list = new ArrayList<>();
+        try {
+            br = new BufferedReader(new FileReader(path));
+
+            String value = "";
+            while((value = br.readLine()) != null) {
+                if(!value.equals("-3.4028235e+38")) {
+                    list.add(Double.valueOf(value));
+                }
+            }
+            br.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        } finally {
+            try {
+                if(br != null) {
+                    br.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+            }
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("list", list);
+        return map;
+    }
+
+    @Override
+    public List<List<Double>> getSectionContrast(String fileId) {
+        Map<String, Object> section = analyticDataSetMapper.getInfoById(fileId);
+        String address = (String) section.get("address");
+        String path = basePath + section.get("creator") + "\\project\\" + section.get("projectId") + "\\" + address;
+        File file = new File(path);
+        List<List<Double>> result = new ArrayList<>();
+        if(!file.exists()) {
+            throw new MyException(ResultEnum.NO_OBJECT);
+        }
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader(path));
+            int number = Integer.parseInt(br.readLine());
+            for(int i = 0; i < number; i++) {
+                List<Double> list = new ArrayList<>();
+                String value = "";
+                while((value = br.readLine()) != null) {
+                    if(value.equals("")) {
+                        break;
+                    }
+                    if(!value.equals("-3.4028235e+38")) {
+                        list.add(Double.valueOf(value));
+                    } else {
+                        list.add(0.0);
+                    }
+                }
+                result.add(list);
+            }
+            br.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
+        return result;
+    }
+
+    @Override
+    public Map<String, Object> getSectionFlush(String fileId) {
+        Map<String, Object> sectionFlush = analyticDataSetMapper.getInfoById(fileId);
+        String address = (String) sectionFlush.get("address");
+        String path = basePath + sectionFlush.get("creator") + "\\project\\" + sectionFlush.get("projectId") + "\\" + address;
+        File file = new File(path);
+        Map<String, Object> result = new HashMap<>();
+        if(!file.exists()) {
+            throw new MyException(ResultEnum.NO_OBJECT);
+        }
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader(path));
+
+            List<List<Double>> list = new ArrayList<>();
+            for(int i = 0; i < 3; i++) {
+                List<Double> temp = new ArrayList<>();
+                String value = "";
+                while((value = br.readLine()) != null) {
+                    if(value.equals("")) {
+                        break;
+                    }
+                    if(!value.equals("-3.4028235e+38")) {
+                        temp.add(Double.valueOf(value));
+                    } else {
+                        temp.add(0.0);
+                    }
+                }
+                list.add(temp);
+            }
+            br.close();
+            result.put("benchmark", list.get(0));
+            result.put("refer", list.get(1));
+            result.put("flush", list.get(2));
+            return result;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
+    }
+
+    @Override
     public void addVisualFile(VisualFile visualFile) {
         visualFileMapper.addVisualFile(visualFile);
     }
@@ -312,7 +437,6 @@ public class VisualServiceImpl implements VisualService {
     * @Date: 2022/9/6
     */
     private JSONObject readJson(String path) {
-
         File file = new File(path);
         if(!file.exists()) {
             throw new MyException(ResultEnum.NO_OBJECT);

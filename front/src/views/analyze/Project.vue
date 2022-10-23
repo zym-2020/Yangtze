@@ -35,7 +35,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, nextTick, onMounted } from "vue";
+import { defineComponent, ref, nextTick, onMounted, onUpdated } from "vue";
 import { getLayersInfo } from "@/api/request";
 import TopTool from "@/components/analyse/TopTool.vue";
 import DataManage from "@/components/analyse/DataManage.vue";
@@ -75,7 +75,7 @@ export default defineComponent({
           document.onmouseup = null;
         };
       };
-
+      console.log(2);
       const bottomResize: HTMLElement = document.querySelector(
         ".bottom-resize"
       ) as HTMLElement;
@@ -127,13 +127,14 @@ export default defineComponent({
       };
     }) => {
       if (val.type === "add") {
-        console.log(val.content);
         layerManage.value.addLayer(val.content);
         rightMap.value.addMapLayer(val.content);
       } else if (val.type === "del") {
         console.log(val, val.content);
         layerManage.value.delLayer(val.content.id);
         rightMap.value.removeLayer(val.content.id);
+      } else if (val.type === "chart") {
+        rightMap.value.addChart(val.content);
       }
     };
 
@@ -159,10 +160,16 @@ export default defineComponent({
       await dataManage.value.addAnalyse(val);
     };
 
-    nextTick(() => {
-      if (!skeletonFlag.value) {
-        dropSize();
-      }
+    // nextTick(() => {
+    //   console.log(1)
+    //   if (!skeletonFlag.value) {
+    //     console.log(1);
+    //     dropSize();
+    //   }
+    // });
+
+    onUpdated(() => {
+      dropSize();
     });
 
     onMounted(async () => {
@@ -174,7 +181,6 @@ export default defineComponent({
         layerList.value = data.data;
       }
       skeletonFlag.value = false;
-      
     });
 
     return {
@@ -199,7 +205,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .main {
-  height: 100%;
+  height: calc(100vh - 60px);
   .body {
     height: calc(100% - 50px);
     display: flex;

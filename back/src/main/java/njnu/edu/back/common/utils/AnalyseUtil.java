@@ -29,11 +29,10 @@ public class AnalyseUtil {
     static String pythonDir = "D:\\zhuomian\\水科院\\python\\";
 
 
-    public static Process saveSectionValue(String tempPath, String rasterId, String rasterPath, JSONArray jsonArray, String resultPath) throws IOException {
+    public static Process saveSectionValue(String tempPath, String rasterPath, JSONArray jsonArray, String resultPath) throws IOException {
         BufferedWriter out = null;
         try {
             out = new BufferedWriter(new FileWriter(tempPath));
-            out.write(rasterId + "\n");
             out.write(rasterPath + "\n");
             out.write(resultPath + "\n");
             out.write(jsonArray.size() + "\n");
@@ -64,14 +63,11 @@ public class AnalyseUtil {
         return processBuilder.start();
     }
 
-    public static Process savaSectionContrast(String tempPath, List<String> rasterIdList, List<String> rasterPathList, JSONArray jsonArray, String resultPath) throws IOException {
+    public static Process savaSectionContrast(String tempPath, List<String> rasterPathList, JSONArray jsonArray, String resultPath) throws IOException {
         BufferedWriter out = null;
         try {
             out = new BufferedWriter(new FileWriter(tempPath));
             out.write(rasterPathList.size() + "\n");
-            for(String id : rasterIdList) {
-                out.write(id + "\n");
-            }
             for(String path : rasterPathList) {
                 out.write(path + "\n");
             }
@@ -105,12 +101,10 @@ public class AnalyseUtil {
 
     }
 
-    public static Process sectionFlush(String tempPath, String benchmarkId, String referId, String benchmarkPath, String referPath, String demPath, JSONArray jsonArray, String resultPath) throws IOException {
+    public static Process sectionFlush(String tempPath, String benchmarkPath, String referPath, String demPath, JSONArray jsonArray, String resultPath) throws IOException {
         BufferedWriter out = null;
         try {
             out = new BufferedWriter(new FileWriter(tempPath));
-            out.write(benchmarkId + "\n");
-            out.write(referId + "\n");
             out.write(benchmarkPath + "\n");
             out.write(referPath + "\n");
             out.write(demPath + "\n");
@@ -220,13 +214,14 @@ public class AnalyseUtil {
         }
     }
 
-    public static Process rasterCrop(String tempPath, String rasterPath, String outputPng, String outputJson, JSONArray jsonArray) {
+    public static Process rasterCrop(String tempPath, String rasterPath, String outputPng, String outputTif, String outputJson, JSONArray jsonArray) {
         BufferedWriter out = null;
         try {
             out = new BufferedWriter(new FileWriter(tempPath));
             out.write(rasterPath + "\n");
             out.write(outputPng + "\n");
             out.write(outputJson + "\n");
+            out.write(outputTif + "\n");
             out.write(jsonArray.getJSONArray(0).size() - 1 + "\n");
             for(int i = 0; i < jsonArray.getJSONArray(0).size() - 1; i++) {
                 out.write(jsonArray.getJSONArray(0).getJSONArray(i).getString(0) + "," + jsonArray.getJSONArray(0).getJSONArray(i).getString(1) + "\n");
