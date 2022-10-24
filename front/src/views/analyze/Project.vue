@@ -19,6 +19,7 @@
           :layerList="layerList"
           @closeLayer="closeLayer"
           @hideLayer="hideLayer"
+          @moveLayer="moveLayer"
           v-else
         ></layer-manage>
         <div class="left-resize" ref="leftResize"></div>
@@ -146,6 +147,10 @@ export default defineComponent({
       rightMap.value.changeLayerState(val);
     };
 
+    const moveLayer = (val: { drop: string; target: string }) => {
+      rightMap.value.moveLayer(val);
+    };
+
     const operateDraw = (val: number) => {
       rightMap.value.operateDraw(val);
     };
@@ -198,6 +203,7 @@ export default defineComponent({
       analyse,
       skeletonFlag,
       layerList,
+      moveLayer,
     };
   },
 });

@@ -3,8 +3,7 @@ package njnu.edu.back.pojo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import njnu.edu.back.pojo.support.Layer;
-import njnu.edu.back.pojo.support.NameCount;
+
 import org.springframework.data.annotation.Id;
 
 import java.util.Date;

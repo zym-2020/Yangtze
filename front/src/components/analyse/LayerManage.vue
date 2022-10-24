@@ -9,7 +9,13 @@
         <div class="scroll">
           <el-scrollbar>
             <div>
-              <el-tree :data="treeData" :props="defaultProps">
+              <el-tree
+                :data="treeData"
+                :props="defaultProps"
+                draggable
+                :allow-drop="allowDrop"
+                @node-drop="dragHandle"
+              >
                 <template #default="{ data }">
                   <div class="custom">
                     <el-checkbox
@@ -49,13 +55,15 @@ import { Search, Delete } from "@element-plus/icons-vue";
 import { updateLayer } from "@/api/request";
 import router from "@/router";
 import { notice } from "@/utils/notice";
+import type { DragEvents } from "element-plus/es/components/tree/src/model/useDragNode";
+
 export default defineComponent({
   props: {
     layerList: {
       type: Array,
     },
   },
-  emits: ["closeLayer", "hideLayer"],
+  emits: ["closeLayer", "hideLayer", "moveLayer"],
   setup(props, context) {
     const defaultProps = {
       children: "children",
@@ -135,6 +143,49 @@ export default defineComponent({
       context.emit("hideLayer", { flag: val.flag, id: val.id });
     };
 
+    const allowDrop = (draggingNode: any, dropNode: any, type: string) => {
+      if (draggingNode.level === dropNode.level) {
+        if (draggingNode.parent.id === dropNode.parent.id) {
+          // 向上拖拽 || 向下拖拽
+          return type === "prev" || type === "next";
+        }
+      } else {
+        // 不同级进行处理
+        return false;
+      }
+    };
+
+    const dragHandle = async (
+      node: any,
+      dropNode: any,
+      dropType: any,
+      ev: DragEvents
+    ) => {
+      let target = "";
+      console.log(dropType);
+      if (dropType === "before") {
+        for (let i = 0; i < treeData.value.length; i++) {
+          if (treeData.value[i].id === node.data.id) {
+            if (i != 0) {
+              target = treeData.value[i + 1].id;
+            }
+            break;
+          }
+        }
+      } else {
+        target = dropNode.data.id;
+      }
+      context.emit("moveLayer", {
+        drop: node.data.id,
+        target: target,
+      });
+      const list: string[] = [];
+      treeData.value.forEach((item) => {
+        list.push(item.id);
+      });
+      await updateLayer(router.currentRoute.value.params.id as string, list);
+    };
+
     onMounted(() => {
       props.layerList?.forEach((item: any) => {
         treeData.value.push({
@@ -158,6 +209,8 @@ export default defineComponent({
       closeClick,
       changeClick,
       delLayer,
+      dragHandle,
+      allowDrop,
     };
   },
 });

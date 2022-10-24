@@ -247,6 +247,14 @@ export default defineComponent({
       }
     };
 
+    const moveLayer = (param: { drop: string; target: string }) => {
+      if (param.target === "") {
+        map.moveLayer(param.drop);
+      } else {
+        map.moveLayer(param.drop, param.target);
+      }
+    };
+
     const changeLayerState = (param: { id: string; flag: boolean }) => {
       if (map.getLayer(param.id) != undefined) {
         if (param.flag) {
@@ -274,7 +282,8 @@ export default defineComponent({
       operateDraw,
       addChart,
       chartVisual,
-      chartVisualInfo
+      chartVisualInfo,
+      moveLayer,
       // chart,
       // btnClick,
       // flag,
