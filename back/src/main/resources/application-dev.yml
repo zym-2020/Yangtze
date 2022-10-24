@@ -69,6 +69,8 @@ shp2pgsqldir:
 datadir:
   E:\水科院\数据\
 
+
+
 pictureAddress:
   E:\yangtze\other\picture\
 visualAddress:
@@ -79,3 +81,5 @@ basePath:
   E:\yangtze\user\
 analyseAddress:
   E:\yangtze\other\analyse\
+mapAddress:
+  E:\yangtze\other\map\

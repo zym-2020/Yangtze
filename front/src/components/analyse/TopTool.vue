@@ -7,7 +7,7 @@
         >添加</el-button
       >
       <el-divider direction="vertical" />
-      <el-button type="primary" text
+      <el-button type="primary" text @click="dialogBasemap = true"
         ><svg style="width: 16px; margin-right: 10px">
           <use xlink:href="#icon-ditu"></use></svg
         >底图</el-button
@@ -47,6 +47,15 @@
     <el-dialog v-model="dialogAnalyse" width="1000px" title="分析算法">
       <analyse-dialog @analyse="analyse" />
     </el-dialog>
+
+    <el-dialog
+      v-model="dialogBasemap"
+      width="500px"
+      title="选择底图"
+      class="basemap"
+    >
+      <basemap-dialog @changeBasemap="changeBasemap" />
+    </el-dialog>
   </div>
 </template>
 
@@ -54,12 +63,14 @@
 import { defineComponent, ref } from "vue";
 import AddDataDialog from "./AddDataDialog.vue";
 import AnalyseDialog from "./AnalyseDialog.vue";
+import BasemapDialog from "./BasemapDialog.vue";
 export default defineComponent({
-  components: { AddDataDialog, AnalyseDialog },
-  emits: ["returnFileList", "operateDraw", "analyse"],
+  components: { AddDataDialog, AnalyseDialog, BasemapDialog },
+  emits: ["returnFileList", "operateDraw", "analyse", "changeBasemap"],
   setup(_, context) {
     const dialogAddData = ref(false);
     const dialogAnalyse = ref(false);
+    const dialogBasemap = ref(false);
     const state = ref(0);
 
     const returnData = (
@@ -96,7 +107,12 @@ export default defineComponent({
 
     const analyse = (val: { type: string; value: any }) => {
       context.emit("analyse", val);
-      dialogAnalyse.value = false
+      dialogAnalyse.value = false;
+    };
+
+    const changeBasemap = (val: string) => {
+      context.emit("changeBasemap", val);
+      dialogBasemap.value = false
     };
 
     return {
@@ -107,6 +123,8 @@ export default defineComponent({
       regionClick,
       dialogAnalyse,
       analyse,
+      dialogBasemap,
+      changeBasemap,
     };
   },
 });
@@ -133,6 +151,15 @@ export default defineComponent({
     .el-button {
       border: solid 1px rgba($color: #000000, $alpha: 0);
       box-sizing: border-box;
+    }
+  }
+  /deep/ .basemap {
+    .el-dialog__header {
+      background: #f6f7f8;
+      margin: 0px;
+    }
+    .el-dialog__body {
+      padding: 0px;
     }
   }
 }

@@ -3,7 +3,7 @@
 <mapper namespace="njnu.edu.back.dao.main.AnalyticDataSetMapper">
 
     <select id="getAnalyticData" resultType="java.util.Map">
-        select id, file_name as "fileName", visual_type as "visualType", visual_id as "visualId" from analytic_dataset where project_id = #{projectId}
+        select id, file_name as "fileName", visual_type as "visualType", visual_id as "visualId" from analytic_dataset where project_id = #{projectId} order by create_time
     </select>
 
     <select id="addDraw" resultType="java.lang.String">
@@ -24,5 +24,8 @@
         from analytic_dataset where id::text = #{id}
     </select>
 
+    <update id="rename">
+        update analytic_dataset set file_name = #{name} where id::text = #{id}
+    </update>
 
 </mapper>

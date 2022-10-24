@@ -44,6 +44,9 @@ public class VisualServiceImpl implements VisualService {
     @Value("${basePath}")
     String basePath;
 
+    @Value("${mapAddress}")
+    String mapAddress;
+
     @Autowired
     VisualFileMapper visualFileMapper;
 
@@ -402,6 +405,19 @@ public class VisualServiceImpl implements VisualService {
             e.printStackTrace();
             throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
         }
+    }
+
+    @Override
+    public JSONObject getTianDiTu() {
+//        String jsonString = "{\"version\":8,\"sources\":{\"tdtVec\":{\"type\":\"raster\",\"tiles\":[\"http://t0.tianditu.com/vec_w/wmts?tk=35a94ab5985969d0b93229c30db6abd6&SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=vec&STYLE=default&TILEMATRIXSET=w&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=tiles\"],\"tileSize\":256},\"txt\":{\"type\":\"raster\",\"tiles\":[\"http://t0.tianditu.com/cva_w/wmts?tk=35a94ab5985969d0b93229c30db6abd6&SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=cva&STYLE=default&TILEMATRIXSET=w&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=tiles\"],\"tileSize\":256}},\"layers\":[{\"id\":\"tdtVec\",\"type\":\"raster\",\"source\":\"tdtVec\"},{\"id\":\"txt\",\"type\":\"raster\",\"source\":\"txt\"}]}";
+        String path = mapAddress + "tianditu.json";
+        return readJson(path);
+    }
+
+    @Override
+    public JSONObject getTianDiTuImage() {
+        String path = mapAddress + "tianditu-image.json";
+        return readJson(path);
     }
 
     @Override

@@ -292,6 +292,10 @@ export async function addSlope(projectId: string, demId: string) {
 export async function checkState(key: string) {
     return await get(`/analyticDataSet/checkState/${key}`)
 }
+
+export async function rename(jsonData: { id: string, name: string }) {
+    return await patch(`/analyticDataSet/rename`, jsonData)
+}
 //========================analyticParameter相关接口=================================
 export async function findByType(type: string) {
     return await get(`/analyse/findByType/${type}`)

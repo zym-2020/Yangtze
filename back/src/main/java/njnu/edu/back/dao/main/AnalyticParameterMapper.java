@@ -22,4 +22,6 @@ public interface AnalyticParameterMapper {
     Map<String, Object> findByBenchmarkIdAndReferId(@Param("benchmarkId") String benchmarkId, @Param("referId") String referId, @Param("type") String type);
 
     Map<String, Object> findSlope(@Param("demId") String demId);
+
+
 }

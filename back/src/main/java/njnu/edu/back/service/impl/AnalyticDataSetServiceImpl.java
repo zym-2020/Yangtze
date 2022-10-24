@@ -357,6 +357,11 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
         return m;
     }
 
+    @Override
+    public void rename(String id, String name) {
+        analyticDataSetMapper.rename(id, name);
+    }
+
     //    @Override
 //    public List<Map<String, Object>> findDataByType(String type) {
 //        List<String> types = new ArrayList<>();

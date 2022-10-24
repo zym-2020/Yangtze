@@ -179,8 +179,17 @@ public class VisualController {
         return ResultUtils.success(visualService.getSectionFlush(fileId));
     }
 
+    @CrossOrigin
+    @RequestMapping(value = "/getTianDiTu", method = RequestMethod.GET)
+    public JSONObject getTianDiTu() {
+        return visualService.getTianDiTu();
+    }
 
-
+    @CrossOrigin
+    @RequestMapping(value = "/getTianDiTuImage", method = RequestMethod.GET)
+    public JSONObject getTianDiTuImage() {
+        return visualService.getTianDiTuImage();
+    }
 
 
 

@@ -4,6 +4,7 @@
       @returnFileList="returnFileList"
       @operateDraw="operateDraw"
       @analyse="analyse"
+      @changeBasemap="changeBasemap"
     ></top-tool>
     <div class="body">
       <div class="left" ref="left">
@@ -165,6 +166,11 @@ export default defineComponent({
       await dataManage.value.addAnalyse(val);
     };
 
+    const changeBasemap = (val: string) => {
+      const layers = layerManage.value.getLayers();
+      rightMap.value.changeBasemap(layers, val);
+    };
+
     // nextTick(() => {
     //   console.log(1)
     //   if (!skeletonFlag.value) {
@@ -204,6 +210,7 @@ export default defineComponent({
       skeletonFlag,
       layerList,
       moveLayer,
+      changeBasemap,
     };
   },
 });

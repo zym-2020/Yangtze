@@ -47,11 +47,25 @@
         >
           <span>可视化</span>
         </li>
+        <li
+          :class="isAnalyse ? 'menu-item' : 'menu-item disabled'"
+          @click="operateLayer('rename')"
+        >
+          <span>重命名</span>
+        </li>
         <li class="menu-item" @click="operateLayer('del')">
           <span>删除</span>
         </li>
       </ul>
     </div>
+    <el-dialog v-model="dialogRename" width="350px" :show-close="false">
+      <el-input v-model="input" />
+      <div class="btn">
+        <el-button type="primary" plain size="small" @click="btnClick"
+          >确定</el-button
+        >
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -88,6 +102,7 @@ import {
   addElevationFlush,
   addFlushContour,
   addSlope,
+  rename,
 } from "@/api/request";
 import { notice } from "@/utils/notice";
 export default defineComponent({
@@ -105,6 +120,9 @@ export default defineComponent({
     const menu = ref<HTMLElement>();
     const selectedData = ref<Tree>();
     const parentId = ref("");
+
+    const dialogRename = ref(false);
+    const input = ref("");
 
     const sectionName = computed(() => {
       if (treeData.value[treeData.value.length - 1].id != "") {
@@ -458,15 +476,17 @@ export default defineComponent({
     };
 
     const operateLayer = async (keyword: string) => {
-      context.emit("operateLayer", {
-        content: {
-          id: selectedData.value?.id,
-          name: selectedData.value?.label,
-          visualType: selectedData.value?.visualType,
-          visualId: selectedData.value?.visualId,
-        },
-        type: keyword,
-      });
+      if (keyword != "rename") {
+        context.emit("operateLayer", {
+          content: {
+            id: selectedData.value?.id,
+            name: selectedData.value?.label,
+            visualType: selectedData.value?.visualType,
+            visualId: selectedData.value?.visualId,
+          },
+          type: keyword,
+        });
+      }
       if (keyword === "del") {
         let data;
         if (parentId.value === "") {
@@ -502,6 +522,9 @@ export default defineComponent({
             }
           }
         }
+      } else if (keyword === "rename") {
+        dialogRename.value = true;
+        input.value = selectedData.value?.label as string;
       }
     };
 
@@ -545,9 +568,43 @@ export default defineComponent({
       }
     });
 
+    const isAnalyse = computed(() => {
+      if (parentId.value === "") {
+        return true;
+      } else {
+        return false;
+      }
+    });
+
+    const btnClick = async () => {
+      dialogRename.value = false;
+      context.emit("operateLayer", {
+        content: {
+          id: selectedData.value?.id,
+          name: input.value,
+          visualType: selectedData.value?.visualType,
+          visualId: selectedData.value?.visualId,
+        },
+        type: "rename",
+      });
+      for (
+        let i = 0;
+        i < treeData.value[treeData.value.length - 1].children.length;
+        i++
+      ) {
+        if (
+          treeData.value[treeData.value.length - 1].children[i].id ===
+          selectedData.value?.id
+        ) {
+          treeData.value[treeData.value.length - 1].children[i].label =
+            input.value;
+          break;
+        }
+      }
+      await rename({ id: selectedData.value?.id as string, name: input.value });
+    };
+
     onMounted(async () => {
-      const a = parseInt("dasdsa");
-      console.log(a);
       const data = await getData(router.currentRoute.value.params.id as string);
       if (data != null && (data as any).code === 0) {
         (data.data as any[]).forEach((item) => {
@@ -625,6 +682,10 @@ export default defineComponent({
       isLayerVisual,
       addDrawData,
       addAnalyse,
+      isAnalyse,
+      dialogRename,
+      input,
+      btnClick,
     };
   },
 });
@@ -728,6 +789,18 @@ export default defineComponent({
         background: white;
         color: #c7d0dc;
       }
+    }
+  }
+  /deep/ .el-dialog {
+    .el-dialog__header {
+      padding: 0px;
+    }
+    .el-dialog__body {
+      padding-bottom: 10px;
+    }
+    .btn {
+      text-align: center;
+      margin-top: 10px;
     }
   }
 }

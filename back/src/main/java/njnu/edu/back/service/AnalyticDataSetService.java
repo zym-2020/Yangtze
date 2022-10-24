@@ -44,4 +44,6 @@ public interface AnalyticDataSetService {
     Map<String, Object> addFlushContour(String projectId, String benchmarkId, String referId, String email);
 
     Map<String, Object> addSlope(String projectId, String demId, String email);
+
+    void rename(String id, String name);
 }

@@ -186,6 +186,10 @@ export default defineComponent({
       await updateLayer(router.currentRoute.value.params.id as string, list);
     };
 
+    const getLayers = () => {
+      return treeData.value
+    }
+
     onMounted(() => {
       props.layerList?.forEach((item: any) => {
         treeData.value.push({
@@ -211,6 +215,7 @@ export default defineComponent({
       delLayer,
       dragHandle,
       allowDrop,
+      getLayers
     };
   },
 });

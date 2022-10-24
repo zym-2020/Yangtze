@@ -95,10 +95,16 @@ export default defineComponent({
       map = new mapBoxGl.Map({
         container: container.value as HTMLElement,
         accessToken:
-          "pk.eyJ1IjoiMTY2NTE2OTkzNzYiLCJhIjoiY2ttMDh5amJpMHE2dzJ3cTd5eWZsMGQxZyJ9.XErH3kSOuRC_OWXWCpDLkQ",
-        style: "mapbox://styles/16651699376/ckmpu8kuk0h8r17msqpz351vf",
+          "pk.eyJ1Ijoiam9obm55dCIsImEiOiJja2xxNXplNjYwNnhzMm5uYTJtdHVlbTByIn0.f1GfZbFLWjiEayI6hb_Qvg",
+        style: "mapbox://styles/johnnyt/cl9miecpn001t14rspop38nyk",
+        // style: "mapbox://styles/johnnyt/cl4wa5e28003n14l8ykdpchb4",
+        // style: {
+        //   version: 8,
+        //   sources: {},
+        //   layers: []
+        // },
         center: [121.18, 31.723],
-        zoom: 7,
+        zoom: 8,
       });
       map.on("load", async () => {
         await initLayers();
@@ -265,6 +271,35 @@ export default defineComponent({
       }
     };
 
+    const changeBasemap = (param: any[], url: string) => {
+      const list = map.getStyle().layers.slice(param.length * -1);
+      const source: any = {};
+      list.forEach((item) => {
+        for (const i in map.getStyle().sources) {
+          if (item.id === i) {
+            source[i] = map.getStyle().sources[i];
+          }
+        }
+      });
+      if (url != "") {
+        map.setStyle(url);
+        map.once("styledata", () => {
+          for (const i in source) {
+            map.addSource(i, source[i]);
+          }
+          list.forEach((item) => {
+            map.addLayer(item);
+          });
+        });
+      } else {
+        map.setStyle({
+          version: 8,
+          sources: source,
+          layers: list,
+        });
+      }
+    };
+
     const mapResize = () => {
       map.resize();
     };
@@ -284,6 +319,7 @@ export default defineComponent({
       chartVisual,
       chartVisualInfo,
       moveLayer,
+      changeBasemap,
       // chart,
       // btnClick,
       // flag,

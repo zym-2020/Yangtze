@@ -93,4 +93,11 @@ public class AnalyticDataSetController {
         return ResultUtils.success(analyticDataSetService.addSlope(projectId, demId, email));
     }
 
+    @AuthCheck
+    @RequestMapping(value = "/rename", method = RequestMethod.PATCH)
+    public JsonResult rename(@RequestBody JSONObject jsonObject) {
+        analyticDataSetService.rename(jsonObject.getString("id"), jsonObject.getString("name"));
+        return ResultUtils.success();
+    }
+
 }

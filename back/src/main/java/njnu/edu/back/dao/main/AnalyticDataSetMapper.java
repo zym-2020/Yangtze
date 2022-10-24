@@ -23,4 +23,6 @@ public interface AnalyticDataSetMapper {
 
     Map<String, Object> getInfoById(@Param("id") String id);
 
+    void rename(@Param("id") String id, @Param("name") String name);
+
 }
