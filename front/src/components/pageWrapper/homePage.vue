@@ -10,16 +10,16 @@
             <el-row id="links" justify="space-around">
               <el-col :span="6">
                 <el-dropdown>
-                  <el-button type="primary" class="dropdown-button" color="rgba(219, 219, 219, 0.2)" :dark="false">
+                  <el-button type="primary" class="dropdown-button" id="data" color="rgba(219, 219, 219, 0.2)" :dark="false">
                     资源门户<el-icon class="el-icon--right"><arrow-down /></el-icon>
                   </el-button>
                   <template #dropdown>
                     <el-dropdown-menu>
                       <el-dropdown-item>
-                        <span>asdas</span>
+                        特色数据 1
                       </el-dropdown-item>
-                      <el-dropdown-item>Action 2</el-dropdown-item>
-                      <el-dropdown-item>Action 3</el-dropdown-item>
+                      <el-dropdown-item>特色数据 2</el-dropdown-item>
+                      <el-dropdown-item>特色数据 3</el-dropdown-item>
                       <el-dropdown-item divided @click="RouteTo('/data/list')">探索更多数据</el-dropdown-item>
                     </el-dropdown-menu>
                   </template>
@@ -27,16 +27,16 @@
               </el-col>
               <el-col :span="6">
                 <el-dropdown>
-                  <el-button type="primary" class="dropdown-button" color="rgba(219, 219, 219, 0.2)" :dark="false">
+                  <el-button type="primary" class="dropdown-button" id="amap" color="rgba(219, 219, 219, 0.2)" :dark="false">
                     一张图<el-icon class="el-icon--right"><arrow-down /></el-icon>
                   </el-button>
                   <template #dropdown>
                     <el-dropdown-menu>
                       <el-dropdown-item>
-                        <span>123</span>
+                        工程方案一张图
                       </el-dropdown-item>
-                      <el-dropdown-item>Action 2</el-dropdown-item>
-                      <el-dropdown-item>Action 3</el-dropdown-item>
+                      <el-dropdown-item>流场可视化</el-dropdown-item>
+                      <el-dropdown-item>长江船舶</el-dropdown-item>
                       <el-dropdown-item divided>更多一张图</el-dropdown-item>
                     </el-dropdown-menu>
                   </template>
@@ -44,28 +44,23 @@
               </el-col>
               <el-col :span="6">
                 <el-dropdown>
-                  <el-button type="primary" class="dropdown-button" color="rgba(219, 219, 219, 0.2)" :dark="false">
+                  <el-button type="primary" class="dropdown-button" id="analysis" color="rgba(219, 219, 219, 0.2)" :dark="false">
                     分析中心<el-icon class="el-icon--right"><arrow-down /></el-icon>
                   </el-button>
                   <template #dropdown>
                     <el-dropdown-menu>
                       <el-dropdown-item>
-                        1312312
+                        河床演变
                       </el-dropdown-item>
-                      <el-dropdown-item>Action 2</el-dropdown-item>
-                      <el-dropdown-item>Action 3</el-dropdown-item>
+                      <el-dropdown-item>水文分析</el-dropdown-item>
+                      <el-dropdown-item>物模与数模</el-dropdown-item>
                       <el-dropdown-item divided>进入分析中心</el-dropdown-item>
                     </el-dropdown-menu>
                   </template>
                 </el-dropdown>
               </el-col>
             </el-row>
-            <div id="bot-text">
-              水利部交通运输部国家能源局南京水利科学研究院<br>
-              南科院联系电话：025-85828808
-              &nbsp;地址：南京市广州路223号 　邮编：210029
-            </div>
-            <div id="img-logo"></div>
+            <BottomInfo />
             <div id="usage-data">
               <el-divider content-position="center">数据<br>条目数量</el-divider>
               <span>112<br></span>
@@ -76,23 +71,65 @@
             </div>
         </el-carousel-item>
         <el-carousel-item>
-            <h3 text="2xl" justify="center">{{ 2 }}</h3>
+          <PartOutline partID=0 />
+          <BottomInfo />
+          <el-row id="special-data" justify="space-around">
+            <el-col :span="7" id="data-one">
+              <DataCard cardID=0 />
+            </el-col>
+            <el-col :span="7" id="data-two">
+              <DataCard cardID=1 />
+            </el-col>
+            <el-col :span="7" id="data-three">
+              <DataCard cardID=2 />
+            </el-col>
+          </el-row>
         </el-carousel-item>
         <el-carousel-item>
-            <h3 text="2xl" justify="center">{{ 3 }}</h3>
+          <PartOutline partID=1 />
+          <BottomInfo />
+          <el-row id="special-data" justify="space-around">
+            <el-col :span="7" id="data-one">
+              <DataCard cardID=3 />
+            </el-col>
+            <el-col :span="7" id="data-two">
+              <DataCard cardID=4 />
+            </el-col>
+            <el-col :span="7" id="data-three">
+              <DataCard cardID=5 />
+            </el-col>
+          </el-row>
         </el-carousel-item>
         <el-carousel-item>
-            <h3 text="2xl" justify="center">{{ 4 }}</h3>
+            <PartOutline partID=2 />
+            <BottomInfo />
+            <el-row id="special-data" justify="space-around">
+              <el-col :span="7" id="data-one">
+                <DataCard cardID=6 />
+              </el-col>
+              <el-col :span="7" id="data-two">
+                <DataCard cardID=7 />
+              </el-col>
+              <el-col :span="7" id="data-three">
+                <DataCard cardID=8 />
+              </el-col>
+            </el-row>
         </el-carousel-item>
     </el-carousel>
 </template>
 
 <script lang="ts">
 import DropDown from '../pagePart/dropdown.vue';
+import BottomInfo from '../pagePart/bottomInfo.vue';
+import DataCard from '../pagePart/dataCard.vue';
+import PartOutline from '../pagePart/partOutline.vue';
 export default {
     name:'HomePage', 
     components: {
       DropDown, 
+      BottomInfo, 
+      DataCard, 
+      PartOutline
     }
 }
 </script>
@@ -201,26 +238,6 @@ onMounted(() => {
         font-family: 'Microsoft YaHei';
       }
 
-      div#bot-text {
-        position: absolute;
-        width: 42vw;
-        height: 6vh;
-        bottom: 0vh;
-        right: 6vw;
-        color: #e6e6e6;
-        text-align: right;
-        font-family: 'SimSun';
-      }
-
-      div#img-logo {
-        position: absolute;
-        width: 80px;
-        height: 80px;
-        right: 2vw;
-        bottom: 0vh;
-        background-image: url("../../assets/homePage/blueLogo.png");
-      }
-
       div#usage-data {
         width: 6vw;
         height: 28vh;
@@ -268,8 +285,63 @@ onMounted(() => {
     }
 
     .el-carousel__item:nth-child(2) {
-      background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0)), url("../../assets/homePage/bg-mapbox.png");
+      background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.25)), url("../../assets/homePage/bg-mapbox.png");
       background-size: cover;
+
+      .el-row#special-data {
+        width: 72vw;
+        height: 64vh;
+        position: absolute;
+        top: 14vh;
+        left: 0vw;
+        // background-color: #012063;
+
+        .el-col {
+          // background-color: #39d6fd;
+          border-radius: 5px;
+          border-color: #39d6fd;
+        }
+      }
+    }
+
+    .el-carousel__item:nth-child(3) {
+      background: linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.45)), url("../../assets/homePage/amap-page.png");
+      background-size: cover;
+
+      .el-row#special-data {
+        width: 72vw;
+        height: 64vh;
+        position: absolute;
+        top: 14vh;
+        left: 0vw;
+        // background-color: #012063;
+
+        .el-col {
+          // background-color: #39d6fd;
+          border-radius: 5px;
+          border-color: #39d6fd;
+        }
+      }
+    }
+
+    .el-carousel__item:nth-child(4) {
+      background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.05)), url("../../assets/homePage/abstract-flowing.png");
+      background-size: cover;
+
+      .el-row#special-data {
+        width: 72vw;
+        height: 64vh;
+        position: absolute;
+        top: 14vh;
+        left: 0vw;
+        // background-color: #012063;
+
+        .el-col {
+          // background-color: #39d6fd;
+          border-radius: 5px;
+          border-color: #39d6fd;
+        }
+      }
     }
 
     .el-carousel__item:nth-child(2n) {
@@ -304,6 +376,27 @@ onMounted(() => {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   -webkit-animation: hue 60s infinite linear;
+
+  &#data {
+    background-image: linear-gradient(30deg, #fffef0 0%, #9edcfc 10%, #fff352 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -webkit-animation: hue 60s infinite linear;
+  }
+
+  &#amap {
+    background-image: linear-gradient(45deg, #fffef0 0%, #9edcfc 10%, #52ff52 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -webkit-animation: hue 60s infinite linear;
+  }
+
+  &#analysis {
+    background-image: linear-gradient(45deg, #fffef0 0%, #9edcfc 10%, #ff9252 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -webkit-animation: hue 60s infinite linear;
+  }
 }
 
 ul.el-dropdown-menu {
