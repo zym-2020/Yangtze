@@ -23,5 +23,5 @@ public interface AnalyticParameterMapper {
 
     Map<String, Object> findSlope(@Param("demId") String demId);
 
-
+    Map<String, Object> findInfoById(@Param("id") String id);
 }

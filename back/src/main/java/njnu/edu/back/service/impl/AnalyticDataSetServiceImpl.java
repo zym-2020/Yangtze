@@ -4,9 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import lombok.SneakyThrows;
+import net.lingala.zip4j.ZipFile;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.common.utils.AnalyseUtil;
+import njnu.edu.back.common.utils.Encrypt;
 import njnu.edu.back.common.utils.TileUtil;
 import njnu.edu.back.dao.main.AnalyticDataSetMapper;
 import njnu.edu.back.dao.main.AnalyticParameterMapper;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -58,6 +61,12 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
 
     @Value("${analyseAddress}")
     String analyseAddress;
+
+    @Value("${encrypt.key}")
+    String key;
+
+    @Value("${tempAddress}")
+    String tempAddress;
 
 
     @Override
@@ -362,117 +371,78 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
         analyticDataSetMapper.rename(id, name);
     }
 
-    //    @Override
-//    public List<Map<String, Object>> findDataByType(String type) {
-//        List<String> types = new ArrayList<>();
-//        if(type.equals("riverBed")) {
-//            types.add("riverBed");
-//            types.add("deepHorizonLine");
-//            return analyticDataSetMapper.findDataByType(types);
-//        } else if(type.equals("satellite")) {
-//            types.add("satellite");
-//            return analyticDataSetMapper.findDataByType(types);
-//        } else {
-//            types.add("hydrology");
-//            return analyticDataSetMapper.findDataByType(types);
-//        }
-//    }
-//
-//    @Override
-//    public void getRaster(String id, String x, String y, String z, HttpServletResponse response) {
-//        int temp = ((int) Math.pow(2, Integer.parseInt(z)) - Integer.parseInt(y)) - 1;
-//        y = Integer.toString(temp);
-//        String address = (String) analyticDataSetMapper.findById(id).get("address");
-//        String path = address + "\\tiles\\" + z + "\\" + x + "\\" + y + ".png";
-//        ServletOutputStream sos = null;
-//        InputStream in = null;
-//        response.setContentType("image/png");
-//        try {
-//            File file = new File(path);
-//            if(file.exists()) {
-//                in = new FileInputStream(file);
-//                sos = response.getOutputStream();
-//                byte[] b = new byte[1024];
-//                int len;
-//                while((len = in.read(b)) != -1) {
-//                    sos.write(b, 0, len);
-//                }
-//            } else {
-//                in = new FileInputStream(new File(baseDir + "123@qq.com\\upload\\raster\\color.dem\\tiles\\9\\428\\304.png"));
-//                sos = response.getOutputStream();
-//                byte[] b = new byte[1024];
-//                int len;
-//                while((len = in.read(b)) != -1) {
-//                    sos.write(b, 0, len);
-//                }
-//                sos.flush();
-//            }
-//
-//        } catch (IOException e) {
-////            e.printStackTrace();
-//        } finally {
-//            if(in != null) {
-//                try {
-//                    in.close();
-////                    sos.close();
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//        }
-//    }
-//
-//    @Override
-//    public void getSlope(String rasterId, String x, String y, String z, HttpServletResponse response) {
-//        int temp = ((int) Math.pow(2, Integer.parseInt(z)) - Integer.parseInt(y)) - 1;
-//        y = Integer.toString(temp);
-//        String address = (String) analyticDataSetMapper.findById(rasterId).get("address");
-//        String path = address + "\\slope\\" + z + "\\" + x + "\\" + y + ".png";
-//        ServletOutputStream sos = null;
-//        InputStream in = null;
-//        response.setContentType("image/png");
-//        try {
-//            File file = new File(path);
-//            if(file.exists()) {
-//                in = new FileInputStream(file);
-//                sos = response.getOutputStream();
-//                byte[] b = new byte[1024];
-//                int len;
-//                while((len = in.read(b)) != -1) {
-//                    sos.write(b, 0, len);
-//                }
-//            } else {
-//                in = new FileInputStream(new File(baseDir + "123@qq.com\\upload\\raster\\color.dem\\tiles\\9\\428\\304.png"));
-//                sos = response.getOutputStream();
-//                byte[] b = new byte[1024];
-//                int len;
-//                while((len = in.read(b)) != -1) {
-//                    sos.write(b, 0, len);
-//                }
-//                sos.flush();
-//                sos.close();
-//            }
-//
-//        } catch (IOException e) {
-////            e.printStackTrace();
-//        } finally {
-//            if(in != null) {
-//                try {
-//                    in.close();
-////                    sos.close();
-//                } catch (Exception e) {
-////                    e.printStackTrace();
-//                }
-//            }
-//
-//        }
-//    }
-//
-//    @Override
-//    public Object getVectorTile(String tableName, int x, int y, int z) {
-//        TileBox tileBox = TileUtil.tile2boundingBox(x, y, z, tableName);
-//        Object result = vectorTileMapper.getVictorTile(tileBox);
-//        return result;
-//    }
+    @Override
+    public String getUrl(String id, String userId) {
+        String uuid = UUID.randomUUID().toString();
+        redisService.set(uuid, id, 30l);
+        return Encrypt.encryptByUserId(uuid, userId, key.toCharArray());
+    }
+
+    @Override
+    public void downloadAnalyticData(String userId, String id, HttpServletResponse response) {
+        String tempId = (String) redisService.get(id);
+        if(tempId == null) {
+            throw new MyException(-1, "链接已失效");
+        } else {
+            redisService.del(id);
+            id = tempId;
+        }
+        Map<String, Object> map = analyticDataSetMapper.getInfoById(id);
+        if(map == null) {
+            throw new MyException(ResultEnum.NO_OBJECT);
+        }
+        String address = (String) map.get("address");
+        String type = (String) map.get("visualType");
+        String path;
+        if(type.equals("elevationFlush") || type.equals("flushContour") || type.equals("slope")) {
+            Map<String, Object> analyticParameter = analyticParameterMapper.findInfoById(address);
+            path = analyseAddress + analyticParameter.get("address");
+            File file = new File(path);
+            File[] filesArray = file.listFiles();
+            ZipFile zipFile = new ZipFile(tempAddress + analyticParameter.get("address") + ".zip");
+            InputStream in = null;
+            ServletOutputStream sos = null;
+            try {
+                List<File> files = Arrays.asList(filesArray);
+                zipFile.addFiles(files);
+                in = new FileInputStream(tempAddress + analyticParameter.get("address") + ".zip");
+                sos = response.getOutputStream();
+                response.setContentType("application/octet-stream");
+                response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(analyticParameter.get("address") + ".zip", "UTF-8"));
+                byte[] b = new byte[1024];
+                int len;
+                while((len = in.read(b)) > 0) {
+                    sos.write(b, 0, len);
+                }
+                sos.flush();
+                sos.close();
+                in.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+            }
+        } else {
+            InputStream in = null;
+            ServletOutputStream sos = null;
+            try {
+                response.setContentType("application/octet-stream");
+                response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(address, "UTF-8"));
+                in = new FileInputStream(basePath + map.get("creator") + "\\project\\" + map.get("projectId") + "\\" + address);
+                sos = response.getOutputStream();
+                byte[] b = new byte[1024];
+                int len;
+                while((len = in.read(b)) > 0) {
+                    sos.write(b, 0, len);
+                }
+                sos.flush();
+                sos.close();
+                in.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+            }
+        }
+    }
+
+
 }

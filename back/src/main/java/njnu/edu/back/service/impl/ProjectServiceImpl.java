@@ -59,7 +59,7 @@ public class ProjectServiceImpl implements ProjectService {
             avatar = uuid + "." + suffix;
         }
 
-        String projectId = projectMapper.addProject(projectName, email, avatar, new String[]{});
+        String projectId = projectMapper.addProject(projectName, email, avatar, new String[]{}, "mapbox://styles/johnnyt/cl9miecpn001t14rspop38nyk", true);
         File f = new File(basePath + email + "\\project\\" + projectId);
         f.mkdirs();
         return projectId;
@@ -70,7 +70,7 @@ public class ProjectServiceImpl implements ProjectService {
         if(!keyword.equals("")) {
             keyword = "%" + keyword + "%";
         }
-        List<Map<String, Object>> list = projectMapper.fuzzyQuery(keyword, size, page * size);
+        List<Map<String, Object>> list = projectMapper.fuzzyQuery(keyword, size, page * size, 1);
         int total = projectMapper.fuzzyCount(keyword);
         Map<String, Object> result = new HashMap<>();
         result.put("list", list);
@@ -142,5 +142,13 @@ public class ProjectServiceImpl implements ProjectService {
         return result;
     }
 
+    @Override
+    public void updateBasemap(String projectId, String url) {
+        projectMapper.updateBasemap(projectId, url);
+    }
 
+    @Override
+    public void updatePublicState(String projectId, boolean b) {
+        projectMapper.updatePublicState(projectId, b);
+    }
 }

@@ -27,4 +27,6 @@ public class Project {
     Date createTime;
     String avatar;
     String[] LayerManage;
+    String basemap;
+    Boolean isPublic;
 }

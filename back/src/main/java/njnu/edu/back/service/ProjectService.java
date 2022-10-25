@@ -32,5 +32,7 @@ public interface ProjectService {
 
     List<Map<String, Object>> getLayersInfo(String projectId);
 
+    void updateBasemap(String projectId, String url);
 
+    void updatePublicState(String projectId, boolean b);
 }

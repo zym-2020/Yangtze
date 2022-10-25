@@ -21,4 +21,10 @@
     <select id="findSlope" resultType="java.util.Map">
         select id, address, content from analytic_parameter where file_id = #{demId} and type = 'slope'
     </select>
+
+    <select id="findInfoById" resultType="java.util.Map">
+        select id, type, file_id as "fileId", data_list_id as "dataListId", address, content, benchmark_id as "benchmarkId", refer_id as "referId"
+        from analytic_parameter
+        where id::text = #{id}
+    </select>
 </mapper>

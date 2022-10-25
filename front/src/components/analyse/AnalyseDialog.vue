@@ -37,17 +37,17 @@ export default defineComponent({
     const list = [
       {
         name: "断面形态",
-        src: "https://pic3.zhimg.com/v2-96d58dc7ea889b98102cbad4c53bb91e_720w.jpg?source=172ae18b",
+        src: "/analyse/断面形态.png",
         value: "section",
       },
       {
         name: "断面比较",
-        src: "https://pic3.zhimg.com/v2-96d58dc7ea889b98102cbad4c53bb91e_720w.jpg?source=172ae18b",
+        src: "/analyse/断面比较.png",
         value: "sectionCompare",
       },
       {
         name: "断面冲淤",
-        src: "https://pic3.zhimg.com/v2-96d58dc7ea889b98102cbad4c53bb91e_720w.jpg?source=172ae18b",
+        src: "/analyse/断面冲淤.png",
         value: "sectionFlush",
       },
     //   {
@@ -57,17 +57,17 @@ export default defineComponent({
     //   },
       {
         name: "区域冲淤",
-        src: "https://pic3.zhimg.com/v2-96d58dc7ea889b98102cbad4c53bb91e_720w.jpg?source=172ae18b",
+        src: "/analyse/区域冲淤.png",
         value: "regionFlush",
       },
       {
         name: "特定高程冲淤",
-        src: "https://pic3.zhimg.com/v2-96d58dc7ea889b98102cbad4c53bb91e_720w.jpg?source=172ae18b",
+        src: "/analyse/特定高程冲淤.png",
         value: "elevationFlush",
       },
       {
         name: "冲淤等深线",
-        src: "https://pic3.zhimg.com/v2-96d58dc7ea889b98102cbad4c53bb91e_720w.jpg?source=172ae18b",
+        src: "/analyse/冲淤等深线.png",
         value: "flushContour",
       },
       {
@@ -77,7 +77,7 @@ export default defineComponent({
       },
       {
         name: "河床坡度提取",
-        src: "https://pic3.zhimg.com/v2-96d58dc7ea889b98102cbad4c53bb91e_720w.jpg?source=172ae18b",
+        src: "/analyse/河床坡度提取.png",
         value: "slope",
       },
       {

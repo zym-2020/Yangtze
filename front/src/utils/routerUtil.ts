@@ -69,12 +69,28 @@ export async function toIdPages(to: RouteLocationNormalized) {
         if (to.params.id != '' && to.params.id != null && to.params.id != null) {
             if (to.params.projectInfo != undefined && to.params.projectInfo != null) {
                 to.params.projectInfo = JSON.parse(to.params.projectInfo as string)
+                if((to.params.projectInfo as any).creator != store.state.user.email && (to.params.projectInfo as any).isPublic === false) {
+                    return -1
+                }
+                if ((to.params.projectInfo as any).creator === store.state.user.email) {
+                    to.params.role = 'creator'
+                } else {
+                    to.params.role = 'member'
+                }
                 return 1
             } else {
                 const data = await getProjectInfo(to.params.id as string)
                 if (data != null) {
                     if ((data as any).code === 0) {
                         to.params.projectInfo = data.data
+                        if((to.params.projectInfo as any).creator != store.state.user.email && (to.params.projectInfo as any).isPublic === false) {
+                            return -1
+                        }
+                        if ((to.params.projectInfo as any).creator === store.state.user.email) {
+                            to.params.role = 'creator'
+                        } else {
+                            to.params.role = 'member'
+                        }
                         return 1
                     } else {
                         return -1

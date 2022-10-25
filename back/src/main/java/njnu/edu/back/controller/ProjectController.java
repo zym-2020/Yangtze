@@ -83,4 +83,20 @@ public class ProjectController {
         return ResultUtils.success(projectService.getLayersInfo(projectId));
     }
 
+    @AuthCheck
+    @RequestMapping(value = "/updateBasemap", method = RequestMethod.PATCH)
+    public JsonResult updateBasemap(@RequestBody JSONObject jsonObject) {
+        projectService.updateBasemap(jsonObject.getString("projectId"), jsonObject.getString("url"));
+        return ResultUtils.success();
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/updatePublicState", method = RequestMethod.PATCH)
+    public JsonResult updatePublicState(@RequestBody JSONObject jsonObject) {
+        projectService.updatePublicState(jsonObject.getString("projectId"), jsonObject.getBoolean("state"));
+        return ResultUtils.success();
+    }
+
+
+
 }

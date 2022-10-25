@@ -18,9 +18,9 @@ import java.util.UUID;
  */
 @Repository
 public interface ProjectMapper {
-    String addProject(@Param("projectName") String projectName, @Param("email") String email, @Param("avatar") String avatar, @Param("layerManage") String[] layerManage);
+    String addProject(@Param("projectName") String projectName, @Param("email") String email, @Param("avatar") String avatar, @Param("layerManage") String[] layerManage, @Param("basemap") String basemap, @Param("isPublic") Boolean isPublic);
 
-    List<Map<String, Object>> fuzzyQuery(@Param("keyword") String keyword, @Param("size") int size, @Param("start") int start);
+    List<Map<String, Object>> fuzzyQuery(@Param("keyword") String keyword, @Param("size") int size, @Param("start") int start, @Param("flag") int flag);
 
     int fuzzyCount(@Param("keyword") String keyword);
 
@@ -30,4 +30,7 @@ public interface ProjectMapper {
 
     List<Map<String, Object>> getLayersInfo(@Param("list") List<String> list);
 
+    void updateBasemap(@Param("projectId") String projectId, @Param("basemap") String basemap);
+
+    void updatePublicState(@Param("projectId") String projectId, @Param("flag") boolean flag);
 }

@@ -5,6 +5,7 @@
       @operateDraw="operateDraw"
       @analyse="analyse"
       @changeBasemap="changeBasemap"
+      @createGeoJson="drawHandle"
     ></top-tool>
     <div class="body">
       <div class="left" ref="left">
@@ -171,13 +172,6 @@ export default defineComponent({
       rightMap.value.changeBasemap(layers, val);
     };
 
-    // nextTick(() => {
-    //   console.log(1)
-    //   if (!skeletonFlag.value) {
-    //     console.log(1);
-    //     dropSize();
-    //   }
-    // });
 
     onUpdated(() => {
       dropSize();

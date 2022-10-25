@@ -65,40 +65,13 @@ export async function addSectionContrast(projectId: string, layer: Layer) {
     return await post(`/project/addSectionContrast/${projectId}`, layer)
 }
 
-
-
-
-
-
-
-export async function checkLayerState(projectId: string, sectionId: string) {
-    return await get(`/project/checkState/${projectId}/${sectionId}`)
+export async function updateBasemap(jsonData: { projectId: string, url: string }) {
+    return await patch(`/project/updateBasemap`, jsonData)
 }
 
-export async function getFlushId(jsonData: GetFlushIdJsonData) {
-    return await post(`/project/getFlushId`, jsonData)
+export async function updatePublicState(jsonData: { projectId: string, state: boolean }) {
+    return await patch(`/project/updatePublicState`, jsonData)
 }
-
-export async function computeContour(jsonData: ComputeContourJsonData) {
-    return await post(`/project/computeContour`, jsonData)
-}
-
-export async function sortLayer(projectId: string, layers: any[]) {
-    return await post(`/project/sortLayer/${projectId}`, layers)
-}
-
-export async function addRegion(projectId: string, demId: string, jsonArray: any[]) {
-    return await post(`/project/addRegion/${projectId}/${demId}`, jsonArray)
-}
-
-export async function getRegionLayer(projectId: string, layerId: string) {
-    return await get(`/project/getRegionLayer/${projectId}/${layerId}`)
-}
-
-export async function checkAddRegion(key: string) {
-    return await get(`/project/checkAddRegion/${key}`)
-}
-
 
 
 //========================file相关接口=================================
@@ -295,6 +268,14 @@ export async function checkState(key: string) {
 
 export async function rename(jsonData: { id: string, name: string }) {
     return await patch(`/analyticDataSet/rename`, jsonData)
+}
+
+export async function getUrl(id: string) {
+    return await get(`/analyticDataSet/getUrl/${id}`)
+}
+
+export async function downloadAnalyticData(userId: string, id: string) {
+    return await get(`/analyticDataSet/downloadAnalyticData/${userId}/${id}`)
 }
 //========================analyticParameter相关接口=================================
 export async function findByType(type: string) {

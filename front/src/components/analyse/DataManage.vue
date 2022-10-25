@@ -2,7 +2,8 @@
   <div class="data-manage">
     <div class="data-manage-body">
       <div class="input">
-        <el-input v-model="serach" :suffix-icon="Search" />
+        <!-- <strong style="margin-left: 30px">项目名：test</strong> -->
+        <!-- <el-input v-model="serach" :suffix-icon="Search" /> -->
       </div>
       <div class="content">
         <div class="scroll">
@@ -37,23 +38,32 @@
       <ul class="right-menu" ref="menu">
         <li
           :class="!isLayerVisual ? 'menu-item disabled' : 'menu-item'"
-          @click="operateLayer('add')"
+          @click="operateLayer('add', !isLayerVisual)"
         >
           <span>添加至图层</span>
         </li>
         <li
           :class="isLayerVisual ? 'menu-item disabled' : 'menu-item'"
-          @click="operateLayer('chart')"
+          @click="operateLayer('chart', isLayerVisual)"
         >
           <span>可视化</span>
         </li>
         <li
-          :class="isAnalyse ? 'menu-item' : 'menu-item disabled'"
-          @click="operateLayer('rename')"
+          :class="renameAble ? 'menu-item' : 'menu-item disabled'"
+          @click="operateLayer('rename', renameAble)"
         >
           <span>重命名</span>
         </li>
-        <li class="menu-item" @click="operateLayer('del')">
+        <li
+          :class="downloadAble ? 'menu-item' : 'menu-item disabled'"
+          @click="operateLayer('download', downloadAble)"
+        >
+          <span>下载</span>
+        </li>
+        <li
+          :class="isDelete ? 'menu-item' : 'menu-item disabled'"
+          @click="operateLayer('del')"
+        >
           <span>删除</span>
         </li>
       </ul>
@@ -103,13 +113,17 @@ import {
   addFlushContour,
   addSlope,
   rename,
+  getUrl,
+  downloadAnalyticData,
 } from "@/api/request";
+import { decrypt } from "@/utils/auth";
+import { useStore } from "@/store";
 import { notice } from "@/utils/notice";
 export default defineComponent({
   emits: ["operateLayer"],
   setup(_, context) {
     let sectionTimeout: any;
-    const serach = ref("");
+    const store = useStore();
 
     const defaultProps = {
       children: "children",
@@ -128,23 +142,19 @@ export default defineComponent({
       if (treeData.value[treeData.value.length - 1].id != "") {
         return "断面形态0";
       } else {
-        let max: number = 0;
+        let max: number = -1;
         treeData.value[treeData.value.length - 1].children.forEach((item) => {
           if (
-            item.label.substring(0, 5) === "断面形态" &&
-            parseInt(item.label.substring(5)) != NaN
+            item.label.substring(0, 4) === "断面形态" &&
+            parseInt(item.label.substring(4)) != NaN
           ) {
-            const number = parseInt(item.label.substring(5));
+            const number = parseInt(item.label.substring(4));
             if (number > max) {
               max = number;
             }
           }
         });
-        if (max === 0) {
-          return "断面形态0";
-        } else {
-          return "断面形态" + (max + 1);
-        }
+        return "断面形态" + (max + 1);
       }
     });
 
@@ -152,23 +162,20 @@ export default defineComponent({
       if (treeData.value[treeData.value.length - 1].id != "") {
         return "区域形态0";
       } else {
-        let max: number = 0;
+        let max: number = -1;
         treeData.value[treeData.value.length - 1].children.forEach((item) => {
+          console.log(item.label.substring(0, 5));
           if (
-            item.label.substring(0, 5) === "区域形态" &&
-            parseInt(item.label.substring(5)) != NaN
+            item.label.substring(0, 4) === "区域形态" &&
+            parseInt(item.label.substring(4)) != NaN
           ) {
-            const number = parseInt(item.label.substring(5));
+            const number = parseInt(item.label.substring(4));
             if (number > max) {
               max = number;
             }
           }
         });
-        if (max === 0) {
-          return "区域形态0";
-        } else {
-          return "区域形态" + (max + 1);
-        }
+        return "区域形态" + (max + 1);
       }
     });
 
@@ -475,56 +482,68 @@ export default defineComponent({
       }
     };
 
-    const operateLayer = async (keyword: string) => {
-      if (keyword != "rename") {
-        context.emit("operateLayer", {
-          content: {
-            id: selectedData.value?.id,
-            name: selectedData.value?.label,
-            visualType: selectedData.value?.visualType,
-            visualId: selectedData.value?.visualId,
-          },
-          type: keyword,
-        });
-      }
-      if (keyword === "del") {
-        let data;
-        if (parentId.value === "") {
-          data = await delAnalyticData(selectedData.value?.id as string);
-        } else {
-          data = await delData(
-            router.currentRoute.value.params.id as string,
-            parentId.value,
-            selectedData.value?.id as string
-          );
+    const operateLayer = async (keyword: string, flag: boolean) => {
+      if (flag) {
+        if (keyword != "rename" && keyword != "download") {
+          context.emit("operateLayer", {
+            content: {
+              id: selectedData.value?.id,
+              name: selectedData.value?.label,
+              visualType: selectedData.value?.visualType,
+              visualId: selectedData.value?.visualId,
+            },
+            type: keyword,
+          });
         }
-        if (data != null && (data as any).code === 0) {
-          for (let i = 0; i < treeData.value.length; i++) {
-            if (treeData.value[i].id === parentId.value) {
-              if (
-                treeData.value[i].children.length === 0 ||
-                treeData.value[i].children.length === 1
-              ) {
-                treeData.value.splice(i, 1);
-                notice("success", "成功", "数据删除成功!");
-                return;
-              } else {
-                for (let j = 0; j < treeData.value[i].children.length; j++) {
-                  if (
-                    treeData.value[i].children[j].id === selectedData.value?.id
-                  ) {
-                    treeData.value[i].children.splice(j, 1);
-                    notice("success", "成功", "数据删除成功!");
-                    return;
+        if (keyword === "del") {
+          let data;
+          if (parentId.value === "") {
+            data = await delAnalyticData(selectedData.value?.id as string);
+          } else {
+            data = await delData(
+              router.currentRoute.value.params.id as string,
+              parentId.value,
+              selectedData.value?.id as string
+            );
+          }
+          if (data != null && (data as any).code === 0) {
+            for (let i = 0; i < treeData.value.length; i++) {
+              if (treeData.value[i].id === parentId.value) {
+                if (
+                  treeData.value[i].children.length === 0 ||
+                  treeData.value[i].children.length === 1
+                ) {
+                  treeData.value.splice(i, 1);
+                  notice("success", "成功", "数据删除成功!");
+                  return;
+                } else {
+                  for (let j = 0; j < treeData.value[i].children.length; j++) {
+                    if (
+                      treeData.value[i].children[j].id ===
+                      selectedData.value?.id
+                    ) {
+                      treeData.value[i].children.splice(j, 1);
+                      notice("success", "成功", "数据删除成功!");
+                      return;
+                    }
                   }
                 }
               }
             }
           }
+        } else if (keyword === "rename") {
+          dialogRename.value = true;
+          input.value = selectedData.value?.label as string;
+        } else if (keyword === "download") {
+          const data = await getUrl(selectedData.value?.id as string);
+          if (data != null && (data as any).code === 0) {
+            window.location.href =
+              "http://localhost:8002/analyticDataSet/downloadAnalyticData/" +
+              store.state.user.id +
+              "/" +
+              decrypt(data.data, store.state.user.id);
+          }
         }
-      } else if (keyword === "rename") {
-        dialogRename.value = true;
-        input.value = selectedData.value?.label as string;
       }
     };
 
@@ -568,8 +587,27 @@ export default defineComponent({
       }
     });
 
-    const isAnalyse = computed(() => {
+    const renameAble = computed(() => {
+      if (
+        parentId.value === "" &&
+        router.currentRoute.value.params.role === "creator"
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+
+    const downloadAble = computed(() => {
       if (parentId.value === "") {
+        return true;
+      } else {
+        return false;
+      }
+    });
+
+    const isDelete = computed(() => {
+      if (router.currentRoute.value.params.role === "creator") {
         return true;
       } else {
         return false;
@@ -670,7 +708,6 @@ export default defineComponent({
     });
 
     return {
-      serach,
       Search,
       addData,
       operateLayer,
@@ -682,7 +719,9 @@ export default defineComponent({
       isLayerVisual,
       addDrawData,
       addAnalyse,
-      isAnalyse,
+      renameAble,
+      downloadAble,
+      isDelete,
       dialogRename,
       input,
       btnClick,
@@ -700,7 +739,12 @@ export default defineComponent({
     height: 100%;
     border-radius: 8px;
     .input {
-      padding: 5px 10px;
+      height: 42px;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+      background: rgba($color: #abadb3, $alpha: 0.5);
+      line-height: 42px;
+      font-size: 20px;
     }
     .content {
       padding: 0 10px;

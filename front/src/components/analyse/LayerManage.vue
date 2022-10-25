@@ -3,7 +3,7 @@
     <div class="bottom-resize"></div>
     <div class="layer-manage-body">
       <div class="input">
-        <el-input v-model="serach" :suffix-icon="Search" />
+        <!-- <el-input v-model="serach" :suffix-icon="Search" /> -->
       </div>
       <div class="content">
         <div class="scroll">
@@ -187,8 +187,8 @@ export default defineComponent({
     };
 
     const getLayers = () => {
-      return treeData.value
-    }
+      return treeData.value;
+    };
 
     onMounted(() => {
       props.layerList?.forEach((item: any) => {
@@ -215,7 +215,7 @@ export default defineComponent({
       delLayer,
       dragHandle,
       allowDrop,
-      getLayers
+      getLayers,
     };
   },
 });
@@ -238,7 +238,13 @@ export default defineComponent({
     height: 100%;
     border-radius: 8px;
     .input {
-      padding: 5px 10px;
+      // padding: 5px 10px;
+      height: 42px;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+      background: rgba($color: #abadb3, $alpha: 0.5);
+      line-height: 42px;
+      font-size: 20px;
     }
     .content {
       padding: 0 10px;

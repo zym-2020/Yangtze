@@ -10,11 +10,11 @@
 <script lang="ts">
 import { computed, defineComponent, nextTick, onMounted, ref } from "vue";
 import mapBoxGl, { AnySourceData } from "mapbox-gl";
-import { getCoordinates, getGeoJson } from "@/api/request";
+import { getCoordinates, getGeoJson, updateBasemap } from "@/api/request";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import ChartVisual from "./ChartVisual.vue";
-
 import { notice } from "@/utils/notice";
+import router from "@/router";
 export default defineComponent({
   components: { ChartVisual },
   props: {
@@ -91,18 +91,26 @@ export default defineComponent({
       }
     };
 
+    const basemap = computed(() => {
+      if (
+        (router.currentRoute.value.params.projectInfo as any).basemap === ""
+      ) {
+        return {
+          version: 8,
+          sources: {},
+          layers: [],
+        };
+      } else {
+        return (router.currentRoute.value.params.projectInfo as any).basemap;
+      }
+    });
+
     const initMap = () => {
       map = new mapBoxGl.Map({
         container: container.value as HTMLElement,
         accessToken:
           "pk.eyJ1Ijoiam9obm55dCIsImEiOiJja2xxNXplNjYwNnhzMm5uYTJtdHVlbTByIn0.f1GfZbFLWjiEayI6hb_Qvg",
-        style: "mapbox://styles/johnnyt/cl9miecpn001t14rspop38nyk",
-        // style: "mapbox://styles/johnnyt/cl4wa5e28003n14l8ykdpchb4",
-        // style: {
-        //   version: 8,
-        //   sources: {},
-        //   layers: []
-        // },
+        style: basemap.value,
         center: [121.18, 31.723],
         zoom: 8,
       });
@@ -271,7 +279,7 @@ export default defineComponent({
       }
     };
 
-    const changeBasemap = (param: any[], url: string) => {
+    const changeBasemap = async (param: any[], url: string) => {
       const list = map.getStyle().layers.slice(param.length * -1);
       const source: any = {};
       list.forEach((item) => {
@@ -298,6 +306,10 @@ export default defineComponent({
           layers: list,
         });
       }
+      await updateBasemap({
+        projectId: router.currentRoute.value.params.id as string,
+        url: url,
+      });
     };
 
     const mapResize = () => {

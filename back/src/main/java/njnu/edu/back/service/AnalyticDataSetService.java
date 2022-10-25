@@ -46,4 +46,8 @@ public interface AnalyticDataSetService {
     Map<String, Object> addSlope(String projectId, String demId, String email);
 
     void rename(String id, String name);
+
+    String getUrl(String id, String userId);
+
+    void downloadAnalyticData(String userId, String id, HttpServletResponse response);
 }

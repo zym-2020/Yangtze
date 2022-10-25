@@ -100,4 +100,15 @@ public class AnalyticDataSetController {
         return ResultUtils.success();
     }
 
+    @AuthCheck
+    @RequestMapping(value = "/getUrl/{id}", method = RequestMethod.GET)
+    public JsonResult getUrl(@PathVariable String id, @JwtTokenParser("id") String userId) {
+        return ResultUtils.success(analyticDataSetService.getUrl(id, userId));
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/downloadAnalyticData/{userId}/{id}", method = RequestMethod.GET)
+    public void downloadAnalyticData(@PathVariable String userId, @PathVariable String id, HttpServletResponse response) {
+        analyticDataSetService.downloadAnalyticData(userId, id, response);
+    }
 }
