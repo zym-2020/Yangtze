@@ -42,10 +42,18 @@ const cardData = ref(
     backdrop-filter: blur(3px);
     border-width: 0px;
     font-family: 'Microsoft YaHei';
+    // text-align: center;
 
     /deep/.el-card__body {
         height: 100%;
         padding: 8px;
+
+        h2.data-card-title {
+            text-align: center !important;
+            // font-size: 2vh;
+            color: #000000;
+            transition-duration: 0.5s;
+        }
     }
 
     &:hover {
@@ -112,13 +120,7 @@ const cardData = ref(
             background-image: url("../../assets/homePage/ele-dirt.jpg");
         }
     }
-·
-    h2.data-card-title {
-        text-align: center;
-        // font-size: 2vh;
-        color: #000000;
-        transition-duration: 0.5s;
-    }
+    
 
     div.data-card-content {
         padding-top: 3vh;
