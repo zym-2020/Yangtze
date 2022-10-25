@@ -2,9 +2,11 @@ package njnu.edu.back.service;
 
 import cn.hutool.json.JSONObject;
 import com.alibaba.fastjson.JSONArray;
+import njnu.edu.back.pojo.File;
 import njnu.edu.back.pojo.dto.AddFileDTO;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
@@ -18,31 +20,39 @@ import java.util.Map;
  */
 
 public interface FileService {
-    String addFile(AddFileDTO addFileDTO, String email);
+    String addFile(File file, String email);
 
-    List<Map<String, Object>> findByLevel(int level, String email);
+    List<Map<String, Object>> findByFolderId(String folderId, String email);
 
-    List<Map<String, Object>> findByParentId(String parentId, String email);
-
-    List<String> getNoUpload(String MD5, String email, int total, JSONObject jsonObject);
+    List<String> getNoUpload(String MD5, String email, int total);
 
     void uploadFile(MultipartFile multipartFile, String MD5, String email, String name);
 
-    String mergeFile(String email, String MD5, String uuid);
+    String mergeFile(String email, String MD5, String uid, int total, String name, String folderId);
 
     int checkMergeState(String key);
 
-    void rename(String id, String name);
+    void rename(String id, String fileName);
 
     void deleteFilesOrFolders(JSONObject jsonObject);
 
-    void getAvatar(String pictureName, HttpServletResponse response);
+    String getDownloadURL(String id, String userId);
 
-    void unPack(String filePath, String parentId, int level, String email);
+    void downloadInList(String userId, String id, String dataListId, HttpServletResponse response, HttpServletRequest request);
 
-    List<Map<String, Object>> getFolderTree(String email);
+    void downloadLocalFile(String userId, String id, HttpServletResponse response);
 
-    void updateParentIdAndLevel(JSONObject jsonObject);
+//    void unPack(String filePath, String parentId, int level, String email);
+//
+//    List<Map<String, Object>> getFolderTree(String email);
+//
+//    void updateParentIdAndLevel(JSONObject jsonObject);
+//
+//    void compressFile(JSONObject jsonObject, String email);
 
-    void compressFile(JSONObject jsonObject, String email);
+    void importData(String folderPath, String email, String time, String visualType, String visualId);
+
+    void importGrid();
+
+    List<String> check(String path);
 }

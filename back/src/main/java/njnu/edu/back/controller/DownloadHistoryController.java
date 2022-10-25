@@ -26,18 +26,10 @@ public class DownloadHistoryController{
     DownloadHistoryService downloadHistoryService;
 
     @AuthCheck
-    @RequestMapping(value = "/addHistory", method = RequestMethod.POST)
-    public JsonResult addHistory(@RequestBody DownloadHistory downloadHistory, @JwtTokenParser("id") String userId, HttpServletRequest request) {
-        downloadHistory.setUserId(userId);
-        downloadHistory.setIp(request.getRemoteAddr());
-        downloadHistoryService.addHistory(downloadHistory);
-        return ResultUtils.success();
-    }
-
-    @AuthCheck
-    @RequestMapping(value = "/pageQuery/{dataId}/{size}/{page}", method = RequestMethod.GET)
-    public JsonResult pageQuery(@PathVariable int size, @PathVariable int page, @PathVariable String dataId) {
-        return ResultUtils.success(downloadHistoryService.pageQuery(size, page, dataId));
+    @CrossOrigin
+    @RequestMapping(value = "/pageQuery/{dataListId}/{size}/{page}", method = RequestMethod.GET)
+    public JsonResult pageQuery(@PathVariable int size, @PathVariable int page, @PathVariable String dataListId) {
+        return ResultUtils.success(downloadHistoryService.pageQuery(size, page, dataListId));
     }
 
 }

@@ -1,12 +1,10 @@
 package njnu.edu.back.service.impl;
 
 import njnu.edu.back.pojo.dto.AddMessageDTO;
-import njnu.edu.back.service.DownloadService;
 import njnu.edu.back.service.MessageService;
-import njnu.edu.back.service.UploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import njnu.edu.back.dao.MessageMapper;
+import njnu.edu.back.dao.main.MessageMapper;
 
 import java.util.HashMap;
 import java.util.Map;

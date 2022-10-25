@@ -1,7 +1,7 @@
 import SparkMD5 from 'spark-md5'
 import { getToken } from './auth'
 import axios from 'axios';
-import { checkMergeState } from '@/api/request'
+import { checkMergeStateTemp } from '@/api/request'
 import { useStore } from '@/store';
 import { notice } from './notice';
 
@@ -62,7 +62,7 @@ export async function handlePostFiles(chunkList: string[], fileChunk: { file: Bl
                 formData.append("file", fileChunk[parseInt(name as string)].file)
                 formData.append("MD5", MD5)
                 formData.append("name", name as string)
-                axios.post('http://172.21.212.10:8080/Yangtze/file/uploadFile', formData, {
+                axios.post('http://localhost:8080/Yangtze/file/uploadFile', formData, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -123,6 +123,6 @@ export async function checkStatus(key: string, id: string, callback: () => void)
 }
 
 export async function checkMerge(key: string) {
-    const state = await checkMergeState(key)
+    const state = await checkMergeStateTemp(key)
     return state.data
 }

@@ -6,7 +6,6 @@ import njnu.edu.back.common.resolver.JwtTokenParser;
 import njnu.edu.back.common.result.JsonResult;
 import njnu.edu.back.common.result.ResultUtils;
 import njnu.edu.back.pojo.User;
-import njnu.edu.back.pojo.dto.AddUserDTO;
 import njnu.edu.back.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -33,20 +32,14 @@ public class UserController {
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public JsonResult register(@RequestBody AddUserDTO addUserDTO) {
-        return ResultUtils.success(userService.register(addUserDTO));
+    public JsonResult register(@RequestBody User user) {
+        return ResultUtils.success(userService.register(user));
     }
 
     @AuthCheck
-    @RequestMapping(value = "/getUserInfoByToken", method = RequestMethod.GET)
-    public JsonResult getUserInfoByToken(@JwtTokenParser("id") String id, @JwtTokenParser(value = "name") String name, @JwtTokenParser(value = "email") String email, @JwtTokenParser(value = "roles") String[] roles, @JwtTokenParser("avatar") String avatar) {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.putOnce("id", id);
-        jsonObject.putOnce("name", name);
-        jsonObject.putOnce("email", email);
-        jsonObject.putOnce("roles", roles);
-        jsonObject.putOnce("avatar", avatar);
-        return ResultUtils.success(jsonObject);
+    @RequestMapping(value = "/getUserInfo", method = RequestMethod.GET)
+    public JsonResult getUserInfo(@JwtTokenParser("email") String email) {
+        return ResultUtils.success(userService.getUserInfo(email));
     }
 
     @AuthCheck
@@ -61,10 +54,15 @@ public class UserController {
         return ResultUtils.success(userService.setUserInfo(email, name, contactEmail,occupation, department, avatar));
     }
 
-    @AuthCheck
-    @RequestMapping(value = "/setUserInfoWithoutAvatar", method = RequestMethod.PATCH)
-    public JsonResult setUserInfoWithoutAvatar(@JwtTokenParser("email") String email, @RequestBody User user) {
-        return ResultUtils.success(userService.setUserInfoWithoutAvatar(email, user));
-    }
 
+    /**
+    * @Description:获取用户头像
+    * @Author: Yiming
+    * @Date: 2022/9/13
+    */
+    @AuthCheck
+    @RequestMapping(value = "/getAvatarURL/{email}", method = RequestMethod.GET)
+    public JsonResult getAvatarURL(@PathVariable String email) {
+        return ResultUtils.success(userService.getAvatarURL(email));
+    }
 }

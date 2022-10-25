@@ -21,6 +21,6 @@ public class DownloadHistory {
     String userId;
     Date downloadTime;
     String ip;
-    String dataId;
-    String dataType;
+    String dataListId;
+    String fileId;
 }

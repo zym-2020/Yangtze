@@ -7,7 +7,7 @@
             <div style="display: flex; align-items: center">
               <el-icon><timer /></el-icon>
               <span style="margin-left: 10px">{{
-                date(scope.row.download_time)
+                date(scope.row.downloadTime)
               }}</span>
             </div>
           </template>
@@ -20,9 +20,9 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="下载数据类型" width="180">
+        <el-table-column label="文件名">
           <template #default="scope">
-            {{ type(scope.row.data_type) }}
+            {{ scope.row.fileName }}
           </template>
         </el-table-column>
       </el-table>
@@ -43,122 +43,52 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref } from "vue";
-import { dateFormat, getLastOrNextFewDateBy } from "@/utils/common";
+import { defineComponent, onMounted, ref } from "vue";
+import { dateFormat } from "@/utils/common";
 import { pageQueryDownloadHistory } from "@/api/request";
-import router from '@/router'
-import * as echarts from "echarts";
+import router from "@/router";
 export default defineComponent({
-
   setup() {
-    const tableData = ref<any[]>([])
-    const total = ref(0)
-    const chart = ref<HTMLElement>();
-    const chartInit = () => {
-      const option = {
-        title: {
-          text: "10天内数据下载量柱状图",
-          left: "center",
-          top: 20,
-        },
+    const tableData = ref<any[]>([]);
+    const total = ref(0);
 
-        legend: {},
-        grid: {
-          left: "3%",
-          right: "4%",
-          bottom: "3%",
-          containLabel: true,
-        },
-        tooltip: {
-          trigger: "axis",
-          axisPointer: {
-            type: "shadow",
-          },
-        },
-        yAxis: {
-          type: "value",
-          boundaryGap: [0, 0.01],
-        },
-        xAxis: {
-          type: "category",
-          data: getLastOrNextFewDateBy(new Date().toLocaleDateString(), -10),
-        },
-        series: [
-          {
-            name: "原始数据",
-            type: "bar",
-            data: [18203, 23489, 29034, 104970, 131744, 630230, 630230, 630230, 630230, 630230],
-          },
-          {
-            name: "整合数据",
-            type: "bar",
-            data: [19325, 23438, 31000, 121594, 134141, 681807, 630230, 630230, 630230, 630230],
-          },
-          {
-            name: "可视化数据",
-            type: "bar",
-            data: [19325, 23438, 31000, 121594, 134141, 681807, 630230, 630230, 630230, 630230],
-          },
-        ],
-        dataZoom: [
-          {
-            type: "slider",
-            realtime: true,
-            start: 0,
-            end: 50,
-            xAxisIndex: [0],
-          },
-        ],
-      };
-      const myChart = echarts.init(chart.value as HTMLElement, undefined, {
-        height: 300,
-        width: 450,
-      });
-      myChart.setOption(option);
-    };
 
     const initData = async () => {
-      const data = await pageQueryDownloadHistory(10, 0, (router.currentRoute.value.params as any).id)
-      if(data != null) {
-        if((data as any).code === 0) {
-          tableData.value = data.data.list
-          total.value = data.data.total
+      const data = await pageQueryDownloadHistory(
+        10,
+        0,
+        (router.currentRoute.value.params as any).id
+      );
+      if (data != null) {
+        if ((data as any).code === 0) {
+          tableData.value = data.data.list;
+          total.value = data.data.total;
         }
       }
-    }
+    };
 
     const date = (time: string) => {
       return dateFormat(time);
     };
-    const type = (type: string) => {
-      if (type === "origin") {
-        return "原始数据";
-      } else if (type === "struct") {
-        return "整合数据";
-      } else if (type === "visual") {
-        return "可视化数据";
-      }
-    };
+
     const avatar = (avatar: string) => {
-      if (avatar === "" || avatar === undefined || avatar === null) {
+      if (avatar === "") {
         return "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png";
       } else {
-        return "http://172.21.212.10:8002" + avatar;
+        return "http://localhost:8002/visual/getAvatar/" + avatar;
       }
     };
 
     onMounted(async () => {
-      await initData()
+      await initData();
       // chartInit();
     });
 
     return {
       date,
-      type,
       avatar,
       tableData,
-      chart,
-      total
+      total,
     };
   },
 });

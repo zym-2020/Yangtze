@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="njnu.edu.back.dao.main.FileMapper">
+
+    <select id="findByFileName" resultType="java.util.Map">
+        select * from files where file_name = #{fileName}
+    </select>
+
+    <insert id="addFile" parameterType="njnu.edu.back.pojo.File">
+        <if test="id != null">
+            insert into files values(#{id}::uuid, #{fileName}, #{size}, #{address}, #{time}, #{location}, #{uploader}, #{visualType}, #{visualId}, #{folderId});
+        </if>
+        <if test="id == null">
+            insert into files values(default, #{fileName}, #{size}, #{address}, #{time}, #{location}, #{uploader}, #{visualType}, #{visualId}, #{folderId});
+        </if>
+    </insert>
+
+
+    <select id="findByFolderId" resultType="java.util.HashMap">
+        select id, file_name as "fileName", size, time, location, uploader, visual_type as "visualType", visual_id as "visualId", folder_id as "folderId"
+        from files
+        <if test="folderId == ''">
+            where uploader = #{email} and folder_id = #{folderId};
+        </if>
+        <if test="folderId != ''">
+            where folder_id = #{folderId}
+        </if>
+    </select>
+
+    <update id="rename">
+        update files set file_name = #{fileName} where id::text = #{id};
+    </update>
+
+    <delete id="batchDelete">
+        delete from files
+        <foreach collection="list" item="item" open="where id::text in (" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="batchDeleteFolder">
+        with recursive temp_folder as (
+            select * from folder
+            <foreach collection="list" item="item" open="where id::text in (" close=")" separator=",">
+                #{item}
+            </foreach>
+            union
+            select f.* from folder f
+            inner join temp_folder on temp_folder.id::text = f.parent_id
+        ) delete from files where folder_id in (select id from temp_files);
+    </delete>
+
+
+    <select id="findById" resultType="java.util.HashMap">
+        select * from files where id::text = #{id};
+    </select>
+
+    <select id="findListById" resultType="java.util.HashMap">
+        select * from files
+        <foreach collection="list" item="item" open="where id::text in (" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+<!--    <insert id="batchInsert">-->
+<!--        insert into files values-->
+<!--        <foreach collection="list" item="item" index="index" separator=",">-->
+<!--            (#{item.id}::uuid, #{item.name}, #{item.address}, #{item.fileName}, #{item.level}, #{item.parentId}, now(), #{item.uploader}, #{item.meta}, #{item.folder}, #{item.size})-->
+<!--        </foreach>-->
+<!--    </insert>-->
+
+<!--    <select id="selectFolder" resultType="java.util.HashMap">-->
+<!--        select * from files where uploader = #{email} and folder = true order by level asc;-->
+<!--    </select>-->
+
+<!--    <update id="updateFolderParentIdAndLevel">-->
+<!--        with recursive temp_files as (-->
+<!--            select * from files-->
+<!--            <foreach collection="list" item="item" open="where id::text in (" close=")" separator=",">-->
+<!--                #{item}-->
+<!--            </foreach>-->
+<!--            union-->
+<!--            select f.* from files f-->
+<!--            inner join temp_files on temp_files.id::text = f.parent_id-->
+<!--            )-->
+<!--            update files set level = level + #{levelDifference} where id in (select id from temp_files);-->
+<!--        update files set parent_id = #{parentId} where id::text = #{id};-->
+<!--    </update>-->
+
+<!--    <update id="updateFileParentIdAndLevel">-->
+<!--        update files set parent_id = #{parentId}, level = level + #{levelDifference}-->
+<!--        <foreach collection="list" item="item" open="where id::text in (" close=")" separator=",">-->
+<!--            #{item}-->
+<!--        </foreach>-->
+<!--    </update>-->
+
+<!--    <select id="selectFolderPath" resultType="java.util.HashMap">-->
+<!--        with recursive temp_files as (-->
+<!--            select *, name as path from files-->
+<!--            <foreach collection="list" item="item" open="where id::text in (" close=")" separator=",">-->
+<!--                #{item}-->
+<!--            </foreach>-->
+<!--            union-->
+<!--            select f.*, temp_files.name || '\' || f.name from files f-->
+<!--            inner join temp_files on temp_files.id::text = f.parent_id-->
+<!--        ) select path, address from temp_files where folder = false;-->
+<!--    </select>-->
+
+<!--    <select id="selectFilePath" resultType="java.util.HashMap">-->
+<!--        select name as path, address from files-->
+<!--        <foreach collection="list" item="item" open="where id::text in (" close=")" separator=",">-->
+<!--            #{item}-->
+<!--        </foreach>-->
+<!--    </select>-->
+
+    <select id="findListByVisualType" resultType="java.util.Map">
+        select * from files where visual_type = #{type};
+    </select>
+
+    <update id="updateVisualId">
+        update files set visual_id = #{visualId} where id::text = #{id}
+    </update>
+
+    <select id="findByAddress" resultType="java.util.Map">
+        select * from files where address = #{address}
+    </select>
+    
+    <select id="findInfoById" resultType="java.util.Map">
+        select id, file_name as "fileName", size, address, time, location, uploader, visual_type as "visualType", visual_id as "visualId", folder_id as "folderId"
+        from files where id::text = #{id}
+    </select>
+
+    <select id="findInfoListById" resultType="java.util.Map">
+        select id, file_name as "fileName", size, address, time, location, uploader, visual_type as "visualType", visual_id as "visualId", folder_id as "folderId"
+        from files
+        where id::text in
+        <foreach collection="list" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

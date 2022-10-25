@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="njnu.edu.back.dao.main.DataRelationalMapper">
+    <delete id="batchDeleteByDataListId">
+        delete from data_relational
+        <foreach collection="list" item="item" open="where file_id in (" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="batchDeleteFolder">
+        with recursive temp_folder as (
+        select * from folder
+        <foreach collection="list" item="item" open="where id::text in (" close=")" separator=",">
+            #{item}
+        </foreach>
+        union
+        select f.* from folder f
+        inner join temp_folder on temp_folder.id::text = f.parent_id
+        ) delete from data_relational where file_id in (select id from temp_files);
+    </delete>
+
+    <select id="findFilesByDataListId" resultType="java.util.Map">
+        select files.id as id, file_name as "fileName", size, time, location, visual_type as "visualType", visual_id as "visualId", address from files, data_relational where files.id::text = data_relational.file_id and data_relational.data_list_id = #{dataListId}
+    </select>
+
+    <select id="findFileIdByDataListId" resultType="java.util.Map">
+        select file_id as "fileId" from data_relational where data_list_id = #{dataListId};
+    </select>
+
+    <insert id="batchInsert">
+        insert into data_relational values
+        <foreach collection="list" item="item" separator=",">
+            (default, #{dataListId}, #{item})
+        </foreach>
+    </insert>
+
+    <delete id="batchDelete">
+        delete from data_relational where data_list_id = #{dataListId} and file_id in
+        <foreach collection="list" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </delete>
+</mapper>

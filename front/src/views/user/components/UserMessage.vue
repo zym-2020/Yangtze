@@ -23,12 +23,8 @@
           <el-sub-menu index="2-4">
             <template #title>上传结果</template>
             <el-menu-item index="2-4-1">上传成功</el-menu-item>
-            <el-menu-item index="2-4-2" @click="showuploadfail"
-              >上传失败</el-menu-item
-            >
-            <el-menu-item index="2-4-3" @click="showdownloadfail"
-              >下载结果</el-menu-item
-            >
+            <el-menu-item index="2-4-2">上传失败</el-menu-item>
+            <el-menu-item index="2-4-3">下载结果</el-menu-item>
           </el-sub-menu>
         </el-sub-menu>
         <el-menu-item index="3" @click="showHistoryMessage"

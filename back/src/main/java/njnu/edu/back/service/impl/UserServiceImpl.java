@@ -2,13 +2,11 @@ package njnu.edu.back.service.impl;
 
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
-import njnu.edu.back.common.utils.CommonUtils;
 import njnu.edu.back.common.utils.Encrypt;
 import njnu.edu.back.common.utils.JwtTokenUtil;
 import njnu.edu.back.common.utils.LocalUploadUtil;
-import njnu.edu.back.dao.UserMapper;
+import njnu.edu.back.dao.main.UserMapper;
 import njnu.edu.back.pojo.User;
-import njnu.edu.back.pojo.dto.AddUserDTO;
 import njnu.edu.back.service.RedisService;
 import njnu.edu.back.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -31,8 +28,11 @@ import java.util.UUID;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Value("${basedir}")
-    String baseDir;
+    @Value("${basePath}")
+    String basePath;
+
+    @Value("${pictureAddress}")
+    String pictureAddress;
 
     @Autowired
     UserMapper userMapper;
@@ -62,51 +62,78 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int register(@Valid AddUserDTO addUserDTO) {
-        User user = userMapper.getUserByEmail(addUserDTO.getEmail());
-        if(user == null) {
-            addUserDTO.setPassword(Encrypt.md5(addUserDTO.getPassword()));
-            LocalUploadUtil.createUserFolder(baseDir, addUserDTO.getEmail());
-            return userMapper.addUser(addUserDTO);
+    public int register(User user) {
+        User temp = userMapper.getUserByEmail(user.getEmail());
+        if(temp == null) {
+            user.setPassword(Encrypt.md5(user.getPassword()));
+            LocalUploadUtil.createUserFolder(basePath, user.getEmail());
+            user.setRole("member");
+            return userMapper.addUser(user);
         } else {
             throw new MyException(ResultEnum.EXIST_OBJECT);
         }
     }
 
     @Override
-    public User getUserByEmail(String email) {
+    public Map<String, Object> getUserByEmail(String email) {
         User user = (User) redisService.get(email);
         if(user != null)
-            return user;
+            return formatUser(user);
         else {
             user = userMapper.getUserByEmail(email);
             redisService.set(email, user, 60*24*7l);
-            return user;
+            return formatUser(user);
         }
+    }
+
+    private Map<String, Object> formatUser(User user) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", user.getId());
+        map.put("avatar", user.getAvatar());
+        map.put("contactEmail", user.getContactEmail());
+        map.put("department", user.getDepartment());
+        map.put("email", user.getEmail());
+        map.put("name", user.getName());
+        map.put("occupation", user.getOccupation());
+        return map;
     }
 
     @Override
     public Map<String, String> setUserInfo(String email, String name, String contactEmail, String occupation, String department, MultipartFile avatar) {
-        User user = new User(null, name, email, null, null, contactEmail, null, occupation, department);
-        String uuid = UUID.randomUUID().toString();
-        String suffix = avatar.getOriginalFilename().substring(avatar.getOriginalFilename().lastIndexOf(".") + 1);
-        String path = baseDir + "other\\avatar\\" + uuid + "." + suffix;
-        LocalUploadUtil.uploadAvatar(path, avatar);
-        String ip = CommonUtils.getIp();
-        user.setAvatar("http://" + ip + ":8002/file/avatar/" + uuid + "." + suffix);
-        String token = JwtTokenUtil.generateTokenByUser(userMapper.updateUserInfo(user));
-        redisService.del(email);
+        User user = new User(null, name, email, null, null, contactEmail, "", occupation, department);
         Map<String, String> result = new HashMap<>();
+        if(!avatar.isEmpty()) {
+            String uuid = UUID.randomUUID().toString();
+            String suffix = avatar.getOriginalFilename().substring(avatar.getOriginalFilename().lastIndexOf(".") + 1);
+            String path = pictureAddress + uuid + "." + suffix;
+            LocalUploadUtil.uploadAvatar(path, avatar);
+            user.setAvatar(uuid + "." + suffix);
+        }
+        User resultUser = userMapper.updateUserInfo(user);
+        String token = JwtTokenUtil.generateTokenByUser(resultUser);
+        redisService.del(email);
         result.put("token", token);
-        result.put("avatar", "http://" + ip + ":8002/file/avatar/" + uuid + "." + suffix);
+        result.put("avatar", resultUser.getAvatar());
         return result;
     }
 
     @Override
-    public String setUserInfoWithoutAvatar(String email, User user) {
-        user.setEmail(email);
-        String token = JwtTokenUtil.generateTokenByUser(userMapper.updateUserInfoWithoutAvatar(user));
-        redisService.del(email);
-        return token;
+    public Map<String, Object> getUserInfo(String email) {
+        User user = (User) redisService.get(email);
+        Map<String, Object> map = new HashMap<>();
+        if(user == null) {
+            user = userMapper.getUserByEmail(email);
+        }
+        map.put("id", user.getId());
+        map.put("name", user.getName());
+        map.put("email", user.getEmail());
+        map.put("role", user.getRole());
+        map.put("avatar", user.getAvatar());
+        return map;
+    }
+
+    @Override
+    public String getAvatarURL(String email) {
+        return userMapper.getAvatarURL(email);
     }
 }

@@ -17,8 +17,10 @@ import javax.swing.*;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.zip.ZipEntry;
 
 
 /**
@@ -95,8 +97,6 @@ public class ZipOperate {
 
     public static void compressFile(String destination, List<Map<String, Object>> fileList) {
         ZipFile zipFile = new ZipFile(destination);
-        ProgressMonitor progressMonitor = zipFile.getProgressMonitor();
-//        zipFile.setRunInThread(true);
         try {
             List<File> files = new ArrayList<>();
             Map<String, String> maps = new HashMap<>();
@@ -104,30 +104,19 @@ public class ZipOperate {
                 String address = (String) map.get("address");
                 String name = address.split("\\\\")[address.split("\\\\").length - 1];
                 files.add(new File(address));
-                maps.put(name, (String) map.get("path"));
+                maps.put(name, (String) map.get("fileName"));
             }
             zipFile.addFiles(files);
             zipFile.renameFiles(maps);
-//            while (!progressMonitor.getState().equals(ProgressMonitor.State.READY)) {
-//                System.out.println("Percentage done: " + progressMonitor.getPercentDone());
-//                System.out.println("Current file: " + progressMonitor.getFileName());
-//                System.out.println("Current task: " + progressMonitor.getCurrentTask());
-//
-//                Thread.sleep(100);
-//            }
-//            if (progressMonitor.getResult().equals(ProgressMonitor.Result.SUCCESS)) {
-//                System.out.println("Successfully added folder to zip");
-//            } else if (progressMonitor.getResult().equals(ProgressMonitor.Result.ERROR)) {
-//                System.out.println("Error occurred. Error message: " + progressMonitor.getException().getMessage());
-//            } else if (progressMonitor.getResult().equals(ProgressMonitor.Result.CANCELLED)) {
-//                System.out.println("Task cancelled");
-//            }
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
         }
 
     }
+
+
 
 
 }

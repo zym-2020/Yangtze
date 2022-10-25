@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="njnu.edu.back.dao.shp.VectorTileMapper">
+    <select id="getVictorTile" resultType="java.lang.Object" parameterType="njnu.edu.back.pojo.support.TileBox">
+        select st_asmvt(result, #{visualId}) tile
+        from(
+                select st_asmvtgeom(ST_Transform(geom, 3857), ST_Transform(st_makeenvelope(#{xMin,jdbcType=NUMERIC}, #{yMin,jdbcType=NUMERIC}, #{xMax,jdbcType=NUMERIC},#{yMax,jdbcType=NUMERIC}, 4326), 3857), 4096, 0, true) as geom
+                from ${name}
+            ) as result
+    </select>
+
+    <select id="getVictorTile3D" resultType="java.lang.Object" parameterType="njnu.edu.back.pojo.support.TileBox">
+        select st_asmvt(result, #{visualId}) tile
+        from(
+            select st_asmvtgeom(ST_Transform(geom_2d, 3857), ST_Transform(st_makeenvelope(#{xMin,jdbcType=NUMERIC}, #{yMin,jdbcType=NUMERIC}, #{xMax,jdbcType=NUMERIC},#{yMax,jdbcType=NUMERIC}, 4326), 3857), 4096, 0, true) as geom
+            from (select ST_Force2D(geom) AS geom_2d FROM ${name}) as t
+                ) as result
+    </select>
+</mapper>

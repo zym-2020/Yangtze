@@ -8,7 +8,7 @@ const store = useStore()
 const requestList = new Set()
 
 const axiosInstance: AxiosInstance = axios.create({
-    baseURL: 'http://172.21.212.10:8080/Yangtze/',
+    baseURL: '/Yangtze/',
     timeout: 200000
 })
 
@@ -29,6 +29,7 @@ axiosInstance.interceptors.response.use(
     },
     (err: AxiosResponse) => {
         if (axios.isCancel(err)) {
+            console.log(err)
             notice('warning', '警告', '操作过于频繁')
             return null
         } else {
@@ -51,7 +52,9 @@ axiosInstance.interceptors.request.use(
                 let url: string = config.baseURL as string + config.url
                 e(url)
             }
-            requestList.has(config.url + JSON.stringify(config.data)) ? cancelRequest() : requestList.add(config.url + JSON.stringify(config.data))
+            if(JSON.stringify(config.data) != '{}') {
+                requestList.has(config.url + JSON.stringify(config.data)) ? cancelRequest() : requestList.add(config.url + JSON.stringify(config.data))
+            }
         })
         return config
     }

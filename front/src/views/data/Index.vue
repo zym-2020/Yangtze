@@ -5,19 +5,21 @@
       <div class="body">
         <div class="left">
           <div class="content">
-            <div class="title">
-              <strong>类别</strong>
+            <div class="video" style="margin-bottom: 30px">
+              <div>
+                <el-card style="text-align: center">
+                  <strong>资源类别</strong>
+                </el-card>
+              </div>
             </div>
-            <data-collapse @selectList="getSelectList" ></data-collapse>
+
+            <data-collapse @selectList="getSelectList"></data-collapse>
           </div>
         </div>
+
         <div class="right">
           <div class="list">
-            <el-input
-              v-model="input"
-              placeholder="请输入关键字"
-              @keyup.enter="search"
-            >
+            <el-input v-model="input" placeholder="请输入关键字">
               <template #append>
                 <el-button @click="search"
                   ><el-icon><Search /></el-icon
@@ -47,8 +49,12 @@
                 <data-card
                   :fileInfo="item"
                   class="card"
-                  @clickName="toDetail(index)"
-                ></data-card>
+                  @toDetail="toDetail(index)"
+                >
+                  <template #border>
+                    <hr style="border-color: #d8d8d8" />
+                  </template>
+                </data-card>
               </div>
             </div>
             <div v-else>
@@ -58,13 +64,25 @@
             <div class="pagination">
               <el-pagination
                 background
+                :page-size="10"
                 layout="prev, pager, next"
                 :total="total"
-                :current-page="currentPage"
+                v-model:current-page="currentPage"
                 @current-change="pageChange"
                 :hide-on-single-page="true"
               />
             </div>
+          </div>
+        </div>
+        <div>
+          <div>
+            <el-card
+              shadow="always"
+              style="margin-top: 110px"
+              class="video2"
+              @click="isCoor"
+              >空间位置查询
+            </el-card>
           </div>
         </div>
       </div>
@@ -77,7 +95,7 @@ import { defineComponent, onMounted, ref } from "vue";
 import PageHeader from "@/components/page/PageHeader.vue";
 import DataCollapse from "@/components/page/DataCollapse.vue";
 import DataCard from "@/components/cards/DataCard.vue";
-import { fuzzyQuery, fuzzyQueryClassify } from "@/api/request";
+import { fuzzyQueryDataList } from "@/api/request";
 import router from "@/router";
 
 import NProgress from "nprogress";
@@ -88,15 +106,18 @@ export default defineComponent({
     DataCollapse,
     DataCard,
   },
+
   setup() {
-    const skeletonFlag = ref(false)
+    const skeletonFlag = ref(false);
     const input = ref("");
     const keyWord = ref("");
-    const selectValue = ref("download");
+    const selectValue = ref("watch");
     const fileList = ref<any[]>([]);
-    const classify = ref<any[]>([]);
+    let classify: string[] = [];
     const total = ref(0);
     const currentPage = ref(1);
+    const searchMap = ref(false);
+
     const options = ref<{ label: string; value: string }[]>([
       {
         label: "下载量",
@@ -116,65 +137,87 @@ export default defineComponent({
       },
     ]);
 
+    const isCoor = () => {
+      searchMap.value = !searchMap.value;
+      router.push({
+        path: "/data/spaceSearch",
+      });
+    };
+
     const search = async () => {
       NProgress.start();
       keyWord.value = input.value;
-      let property = "";
-      let flag = false;
+      const jsonData = {
+        page: 0,
+        size: 10,
+        keyword: keyWord.value,
+        tags: classify,
+        property: "",
+        flag: false,
+        type: "",
+      };
+
       switch (selectValue.value) {
         case "download":
-          property = "download";
-          flag = false;
+          jsonData.property = "download";
           break;
         case "watch":
-          property = "watch";
-          flag = false;
+          jsonData.property = "watch";
           break;
         case "update":
-          property = "update_time";
-          flag = false;
+          jsonData.property = "update_time";
           break;
         case "name":
-          property = "name";
-          flag = false;
+          jsonData.property = "name";
           break;
       }
-      if (classify.value.length > 0) {
-        const data = await fuzzyQueryClassify({
-          size: 10,
-          page: 0,
-          property: property,
-          flag: flag,
-          keyWord: keyWord.value,
-          tags: classify.value,
-        });
-        if (data != null) {
-          if ((data as any).code === 0) {
-            fileList.value = data.data.list;
-            total.value = data.data.total;
-            currentPage.value = 1;
-          }
-        }
-      } else {
-        const data = await fuzzyQuery({
-          size: 10,
-          page: 0,
-          property: property,
-          flag: flag,
-          keyWord: keyWord.value,
-        });
-        if (data != null) {
-          if ((data as any).code === 0) {
-            fileList.value = data.data.list;
-            total.value = data.data.total;
-            currentPage.value = 1;
-          }
+      const data = await fuzzyQueryDataList(jsonData);
+      if (data != null) {
+        if ((data as any).code === 0) {
+          fileList.value = (data as any).data.list;
+          total.value = (data as any).data.total;
+          currentPage.value = 1;
         }
       }
       NProgress.done();
     };
 
-    const pageChange = () => {};
+    const pageChange = async () => {
+      const jsonData = {
+        page: currentPage.value - 1,
+        size: 10,
+        keyword: keyWord.value,
+        tags: classify,
+        property: "",
+        flag: false,
+        type: "",
+      };
+
+      NProgress.start();
+      switch (selectValue.value) {
+        case "download":
+          jsonData.property = "download";
+          break;
+        case "watch":
+          jsonData.property = "watch";
+          break;
+        case "update":
+          jsonData.property = "update_time";
+          break;
+        case "name":
+          jsonData.property = "name";
+          break;
+      }
+      const data = await fuzzyQueryDataList(jsonData);
+      console.log(data);
+      if (data != null) {
+        if ((data as any).code === 0) {
+          fileList.value = (data as any).data.list;
+          total.value = (data as any).data.total;
+        }
+      }
+      NProgress.done();
+    };
 
     const toDetail = (index: number) => {
       router.push({
@@ -186,73 +229,57 @@ export default defineComponent({
       });
     };
 
-    const getSelectList = async (val: any[]) => {
-      classify.value = val;
+    const getSelectList = async (val: string[]) => {
       NProgress.start();
-      let property = "";
-      let flag = false;
+      classify = val;
+      const jsonData = {
+        page: 0,
+        size: 10,
+        keyword: keyWord.value,
+        tags: classify,
+        property: "",
+        flag: false,
+        type: "",
+      };
+
       switch (selectValue.value) {
         case "download":
-          property = "download";
-          flag = false;
+          jsonData.property = "download";
           break;
         case "watch":
-          property = "watch";
-          flag = false;
+          jsonData.property = "watch";
           break;
         case "update":
-          property = "update_time";
-          flag = false;
+          jsonData.property = "update_time";
           break;
         case "name":
-          property = "name";
-          flag = false;
+          jsonData.property = "name";
           break;
       }
-      if (val.length > 0) {
-        const data = await fuzzyQueryClassify({
-          size: 10,
-          page: 0,
-          property: property,
-          flag: flag,
-          keyWord: keyWord.value,
-          tags: val,
-        });
-        if (data != null) {
-          if ((data as any).code === 0) {
-            fileList.value = data.data.list;
-            total.value = data.data.total;
-            currentPage.value = 1;
-          }
-        }
-      } else {
-        const data = await fuzzyQuery({
-          size: 10,
-          page: 0,
-          property: property,
-          flag: flag,
-          keyWord: keyWord.value,
-        });
-        if (data != null) {
-          if ((data as any).code === 0) {
-            fileList.value = data.data.list;
-            total.value = data.data.total;
-            currentPage.value = 1;
-          }
+      const data = await fuzzyQueryDataList(jsonData);
+      if (data != null) {
+        if ((data as any).code === 0) {
+          fileList.value = data.data.list;
+          total.value = data.data.total;
+          currentPage.value = 1;
         }
       }
       NProgress.done();
     };
 
     onMounted(async () => {
-      const data = await fuzzyQuery({
+      let jsonData = {
+        page: currentPage.value - 1,
         size: 10,
-        page: 0,
-        property: "download",
+        keyword: keyWord.value,
+        tags: classify,
+        property: "watch",
         flag: false,
-        keyWord: keyWord.value,
-      });
-      skeletonFlag.value = true
+        type: "",
+      };
+      const data = await fuzzyQueryDataList(jsonData);
+
+      skeletonFlag.value = true;
       if (data != null) {
         if ((data as any).code === 0) {
           fileList.value = data.data.list;
@@ -264,30 +291,84 @@ export default defineComponent({
     return {
       skeletonFlag,
       input,
+      searchMap,
       options,
       selectValue,
       fileList,
       total,
       toDetail,
       currentPage,
+
       pageChange,
       search,
       getSelectList,
+      isCoor,
     };
   },
 });
 </script>
 
 <style lang="scss" scoped>
+.warning-row {
+  background: #0c90b8;
+}
+.success-row {
+  background: #0c90b8;
+}
+
+.video2 {
+  width: 60px;
+  height: 180px;
+  border-radius: 15px;
+  background-color: rgb(255, 255, 255);
+  //opacity: 0.6;
+  transition: all 0.3s ease-in-out;
+  margin-left: 45px;
+  margin-right: 45px;
+  // -webkit-animation适配-webkit内核的浏览器
+  // -webkit-animation: ripple 1s linear infinite;
+  //animation: ripple 1s linear infinite;
+  cursor: pointer;
+}
+
+.video2:hover {
+  background-color: #859ecc;
+  transform: scale(1.2);
+}
+@-webkit-keyframes ripple {
+  0% {
+    /* 在box四周添加三层白色阴影 */
+    box-shadow: 0 0 0 0 rgb(255, 255, 255 / 25%),
+      0 0 0 10px rgb(255, 255, 255 / 25%), 0 0 0 20px rgb(255, 255, 255 / 25%);
+  }
+
+  100% {
+    /* 分别改变三层阴影的距离
+          形成两帧的动画,然后在transition的过渡下形成动画 */
+    box-shadow: 0 0 0 10px rgb(255, 255, 255 / 25%),
+      0 0 0 20px rgb(255, 255, 255 / 25%), 0 0 0 40px rgba(50, 100, 245, 0);
+  }
+}
+@keyframes ripple {
+  0% {
+    box-shadow: 0 0 0 0 rgb(255, 255, 255 / 25%),
+      0 0 0 10px rgb(255, 255, 255 / 25%), 0 0 0 20px rgb(255, 255, 255 / 25%);
+  }
+  100% {
+    box-shadow: 0 0 0 10px rgb(255, 255, 255 / 25%),
+      0 0 0 20px rgb(255, 255, 255 / 25%), 0 0 0 40px rgba(255, 255, 255, 0);
+  }
+}
 .data-main {
   .data-body {
     .body {
-      width: 1250px;
+      width: 1550px;
+      margin-left: 100px;
       margin: 0 auto;
       margin-top: 10px;
       display: flex;
       .left {
-        width: 300px;
+        width: 400px;
         background: #f6f7fa;
         min-height: calc(100vh - 170px);
         .content {
@@ -295,11 +376,14 @@ export default defineComponent({
           .title {
             height: 50px;
             border-bottom: solid 1px #d2d2d2;
+            text-align: center;
           }
         }
       }
       .right {
-        width: 950px;
+        width: 1000px;
+        //float:left;
+
         .list {
           margin: 30px 20px 10px 20px;
           .statistics {
@@ -319,13 +403,15 @@ export default defineComponent({
               top: 20px;
             }
           }
-          
         }
         .card {
           cursor: pointer;
           margin-bottom: 40px;
         }
       }
+    }
+    .body2 {
+      width: 150px;
     }
   }
 }
@@ -334,5 +420,46 @@ export default defineComponent({
   margin-bottom: 40px;
   display: flex;
   justify-content: space-around;
+}
+
+.video {
+  width: 366px;
+  height: 61px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.6);
+  //opacity: 0.6;
+  transition: all 0.3s ease-in-out;
+  // -webkit-animation适配-webkit内核的浏览器
+  //-webkit-animation: ripple 1s linear infinite;
+  //animation: ripple 1s linear infinite;
+}
+
+.video:hover {
+  background-color: #ffffff;
+  transform: scale(1.2);
+}
+@-webkit-keyframes ripple {
+  0% {
+    /* 在box四周添加三层白色阴影 */
+    box-shadow: 0 0 0 0 rgb(255, 255, 255 / 25%),
+      0 0 0 10px rgb(255, 255, 255 / 25%), 0 0 0 20px rgb(255, 255, 255 / 25%);
+  }
+
+  100% {
+    /* 分别改变三层阴影的距离
+          形成两帧的动画,然后在transition的过渡下形成动画 */
+    box-shadow: 0 0 0 10px rgb(255, 255, 255 / 25%),
+      0 0 0 20px rgb(255, 255, 255 / 25%), 0 0 0 40px rgba(50, 100, 245, 0);
+  }
+}
+@keyframes ripple {
+  0% {
+    box-shadow: 0 0 0 0 rgb(255, 255, 255 / 25%),
+      0 0 0 10px rgb(255, 255, 255 / 25%), 0 0 0 20px rgb(255, 255, 255 / 25%);
+  }
+  100% {
+    box-shadow: 0 0 0 10px rgb(255, 255, 255 / 25%),
+      0 0 0 20px rgb(255, 255, 255 / 25%), 0 0 0 40px rgba(50, 100, 245, 0);
+  }
 }
 </style>

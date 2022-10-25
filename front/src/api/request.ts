@@ -1,20 +1,21 @@
 import { get, post, del, patch } from './axios'
-
 import {
     RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, AddFileJsonData, RenameJsonData, UnPackJsonData, UpdateParentIdAndLevelJsonData, CompressFileJsonData, GetFlushIdJsonData, ComputeContourJsonData,
-    SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData, GetNoUploadJsonData, AddRecordJsonData, AddMessageJsonData, DeleteFilesOrFolders, GetProjectsJsonData, Layer, SectionJsonData, SectionContrastJsonData 
+    SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData, GetNoUploadJsonData, AddRecordJsonData, AddMessageJsonData, DeleteFilesOrFolders, GetProjectsJsonData, Layer, SectionJsonData, SectionContrastJsonData
 } from './type/userType'
 import { Resource, Analyse } from '@/store/resourse/resourceState'
 
 import axios from 'axios'
+import { JsonObject } from 'type-fest'
+import { idID } from 'naive-ui'
 
 //========================User相关接口=================================
 export async function login(jsonData: LoginJsonData) {
     return await post(`/user/login`, jsonData)
 }
 
-export async function getUserInfoByToken() {
-    return await get(`/user/getUserInfoByToken`)
+export async function getUserInfo() {
+    return await get(`/user/getUserInfo`)
 }
 
 export async function register(jsonData: RegisterJsonData) {
@@ -29,9 +30,6 @@ export async function setUserInfo(formData: FormData) {
     return await patch(`/user/setUserInfo`, formData)
 }
 
-export async function setUserInfoWithoutAvatar(jsonData: SetUserInfoWithoutAvatarJsonData) {
-    return await patch(`/user/setUserInfoWithoutAvatar`, jsonData)
-}
 
 //========================VectorTile相关接口=================================
 
@@ -54,10 +52,6 @@ export async function addLayers(jsonData: { id: string, name: string, type: stri
     return await patch(`/project/addLayers/${projectId}`, jsonData)
 }
 
-export async function addSection(layer: Layer, projectId: string) {
-    return await post(`/project/addSection/${projectId}`, layer)
-}
-
 export async function getSectionValue(projectId: string, sectionId: string, valueIds: string[]) {
     return await post(`/project/getSectionValue/${projectId}/${sectionId}`, valueIds)
 }
@@ -71,63 +65,14 @@ export async function addSectionContrast(projectId: string, layer: Layer) {
     return await post(`/project/addSectionContrast/${projectId}`, layer)
 }
 
-export async function getSectionContrast(projectId: string, layerId: string) {
-    return await get(`/project/getSectionContrast/${projectId}/${layerId}`)
+export async function updateBasemap(jsonData: { projectId: string, url: string }) {
+    return await patch(`/project/updateBasemap`, jsonData)
 }
 
-export async function getAll(jsonData: { page: number, size: number, keyWord: string }) {
-    return await post(`/project/getAll`, jsonData)
+export async function updatePublicState(jsonData: { projectId: string, state: boolean }) {
+    return await patch(`/project/updatePublicState`, jsonData)
 }
 
-export async function getProjectInfo(projectId: string) {
-    return await get(`/project/getProjectInfo/${projectId}`)
-}
-
-export async function checkLayerState(projectId: string, sectionId: string) {
-    return await get(`/project/checkState/${projectId}/${sectionId}`)
-}
-
-export async function getFlushId(jsonData: GetFlushIdJsonData) {
-    return await post(`/project/getFlushId`, jsonData)
-}
-
-export async function computeContour(jsonData: ComputeContourJsonData) {
-    return await post(`/project/computeContour`, jsonData)
-}
-
-export async function sortLayer(projectId: string, layers: any[]) {
-    return await post(`/project/sortLayer/${projectId}`, layers)
-}
-
-export async function addRegion(projectId: string, demId: string, jsonArray: any[]) {
-    return await post(`/project/addRegion/${projectId}/${demId}`, jsonArray)
-}
-
-export async function getRegionLayer(projectId: string, layerId: string) {
-    return await get(`/project/getRegionLayer/${projectId}/${layerId}`)
-}
-
-export async function checkAddRegion(key: string) {
-    return await get(`/project/checkAddRegion/${key}`)
-}
-
-//========================vectorRelationship相关接口=================================
-export async function vectorPageQuery(size: number, start: number) {
-    return await get(`/vectorRelationship/pageQuery/${size}/${start}`)
-}
-
-export async function newShape(jsonData: NewShapeJsonData) {
-    return await post(`/vectorRelationship/newShape`, jsonData)
-}
-
-export async function checkState(uuid: string) {
-    return await get(`/vectorRelationship/checkState/${uuid}`)
-}
-
-//========================rasterRelationship相关接口=================================
-export async function rasterPageQuery(size: number, start: number) {
-    return await get(`/rasterRelationship/pageQuery/${size}/${start}`)
-}
 
 //========================file相关接口=================================
 export async function getNoUpload(jsonData: GetNoUploadJsonData) {
@@ -138,7 +83,7 @@ export async function mergeFile(md5: string, uid: string) {
     return await post(`/file/mergeFile/${md5}/${uid}`)
 }
 
-export async function checkMergeState(key: string) {
+export async function checkMergeStateTemp(key: string) {
     return await get(`/file/checkMergeState/${key}`)
 }
 
@@ -154,7 +99,7 @@ export async function addFile(jsonData: AddFileJsonData) {
     return await post(`/file/addFile`, jsonData)
 }
 
-export async function rename(jsonData: RenameJsonData) {
+export async function renameTemp(jsonData: RenameJsonData) {
     return await patch(`/file/rename`, jsonData)
 }
 
@@ -178,95 +123,16 @@ export async function compressFile(jsonData: CompressFileJsonData) {
     return await post(`/file/compressFile`, jsonData)
 }
 
+export async function getFilePath(path: string) {
+    return await get(`/file/getFilePath/${path}`)
+}
 //========================share_file相关接口=================================
-export async function addShareFile(formData: FormData) {
-    return await post(`/share/addShareFile`, formData)
-}
-
-export async function pageQueryByAdmin(jsonData: FuzzyQueryClassifyJsonData) {
-    return await post(`/share/pageQueryByAdmin`, jsonData)
-}
-
-export async function getFileInfoAndMeta(id: string) {
-    return await get(`/share/getFileInfoAndMeta/${id}`)
-}
-
-export async function getFileInfoAndMetaAndUserInfo(id: string) {
-    return await get(`/share/getFileInfoAndMetaAndUserInfo/${id}`)
-}
-
-export async function addWatchCount(id: string) {
-    return await patch(`/share/addWatchCount/${id}`)
-}
-
-export async function fuzzyQuery(jsonData: FuzzyQueryClassifyJsonData) {
-    return await post(`/share/fuzzyQuery`, jsonData)
-}
-
-export async function fuzzyQueryClassify(jsonData: FuzzyQueryClassifyJsonData) {
-    return await post(`/share/fuzzyQueryClassify`, jsonData)
-}
-
-export async function pageQueryByEmail(page: number, size: number) {
-    return await get(`/share/pageQueryByEmail/${page}/${size}`)
-}
-
-//这里懒得写了，字段太多
-export async function updateShareFileNoAvatar(jsonData: any) {
-    return await patch(`/share/updateShareFileNoAvatar`, jsonData)
-}
-
-//这个也是一样，懒得写了
-export async function updateShareFile(formData: FormData) {
-    return await patch(`/share/updateShareFile`, formData)
-}
-
-export async function deleteShareFileById(jsonData: DeleteShareFileByIdJsonDaya) {
-    return await del(`/share/deleteShareFileById`, jsonData)
-}
-
-export async function updateStatusById(jsonData: UpdateStatusByIdJsonData) {
-    return await patch(`/share/updateStatusById`, jsonData)
-}
 
 export async function offlineById(id: string) {
     return await patch(`/share/offlineById/${id}`)
 }
-
-export async function examineById(id: string) {
-    return await patch(`/share/examineById/${id}`)
-}
-
 export async function onlineById(id: string) {
     return await patch(`/share/onlineById/${id}`)
-}
-
-export async function deleteShareFileAsMember(id: string, page: number, size: number) {
-    return await del(`/share/deleteShareFileAsMember/${id}/${page}/${size}`)
-}
-
-export async function getShareFileById(id: string) {
-    return await patch(`/share/getShareFileById/${id}`)
-}
-//========================fileMeta相关接口=================================
-
-export async function getFileMetaAndUserInfo(id: string, email: string) {
-    return await get(`/fileMeta/getFileMetaAndUserInfo/${id}/${email}`)
-}
-
-//========================download相关接口=================================
-export async function getDownloadURL(id: string) {
-    return await get(`/download/getDownloadURL/${id}`)
-}
-
-//========================downloadHistory相关接口=================================
-export async function pageQueryDownloadHistory(size: number, page: number, id: string) {
-    return await get(`/downloadHistory/pageQuery/${id}/${size}/${page}`)
-}
-
-//========================browseHistory相关接口=================================
-export async function getDataGroup(dataId: string, number: number) {
-    return await get(`/browseHistory/getDataGroup/${dataId}/${number}`)
 }
 
 //========================uploadRecord相关接口=================================
@@ -287,7 +153,7 @@ export async function pageQuerys(property: string, flag: boolean, page: number, 
 }
 
 export async function QueryByType(property: string) {
-    return await get(`/admin/message/QueryByType/${property}`,{responseType:'arraybuffer'})
+    return await get(`/admin/message/QueryByType/${property}`, { responseType: 'arraybuffer' })
 }
 
 export async function QueryByUser(property: string, type: string) {
@@ -311,15 +177,15 @@ export async function QueryByUserEmail() {
     return await get(`/admin/message/QueryByUserEmail`)
 }
 
-export async function QueryByUserType(property:string) {
+export async function QueryByUserType(property: string) {
     return await get(`/admin/message/QueryByUserType/${property}`)
 }
 
-export async function offlineMessage(property:string,dataUploadTime:string) {
+export async function offlineMessage(property: string, dataUploadTime: string) {
     return await get(`/admin/message/offlineMessage/${property}/${dataUploadTime}`)
 }
 
-export async function offlineUserMessage(property:string,dataUploadTime:string) {
+export async function offlineUserMessage(property: string, dataUploadTime: string) {
     return await get(`/admin/message/offlineUserMessage/${property}/${dataUploadTime}`)
 }
 
@@ -331,11 +197,11 @@ export async function QueryAllHistoryMessage() {
     return await get(`/admin/message/QueryAllHistoryMessage`)
 }
 
-export async function showMessageDetails(property:string) {
+export async function showMessageDetails(property: string) {
     return await get(`/admin/message/showMessageDetails/${property}`)
 }
 
-export async function responseMessage(response:string,id:string) {
+export async function responseMessage(response: string, id: string) {
     return await get(`/admin/message/responseMessage/${response}/${id}`)
 }
 
@@ -347,46 +213,73 @@ export async function CountUserReply() {
     return await get(`/admin/message/CountUserReply`)
 }
 
-// export async function responseTest(response:string) {
-    
-//     axios.get("http://172.21.212.10:8080/Yangtze/admin/message/responseMessage/122", { responseType: 'arraybuffer'}).then((res) => {
-        
-//         const dataView = new DataView(res.data)
-//         console.log("223",res.data)
-//         console.log("123", dataView.byteLength, dataView.getInt32(4))
-//         return dataView
-//     })
-// }
-
-export async function responseBinary(response:String) {
-    
-    axios.get("http://172.21.212.10:8080/Yangtze/admin/message/responseBinary/122", { responseType: 'arraybuffer'}).then((res) => {
-        
-        const dataView = new DataView(res.data)
-        console.log("223",res.data)
-        console.log("123", dataView.byteLength, dataView.getInt32(4))
-        return dataView
-    })
+export async function ZipEntryPath(path: string) {
+    return await get(`/admin/message/ZipEntryPath/${path}`)
 }
-
-export async function getShipBinary(response:String) {
-    
-    axios.get("http://172.21.212.10:8003/ship/getShipBinary", { responseType: 'arraybuffer'}).then((res) => {
-        
-        const dataView = new DataView(res.data)
-        console.log("223",res.data)
-        console.log("123", dataView.byteLength, dataView.getInt32(4))
-        return dataView
-    })
-}
-
-// export async function queryByMsi(mmsi:number) {
-//     return await get(`/admin/message/QueryByMsi/${mmsi}`)
-// }
 
 //========================analyticDataSet相关接口=================================
 export async function findDataByType(type: string) {
     return await get(`/analyticDataSet/findDataByType/${type}`)
+}
+
+export async function getAnalyticData(projectId: string) {
+    return await get(`/analyticDataSet/getAnalyticData/${projectId}`)
+}
+
+export async function addDraw(jsonData: { geoJson: any, projectId: string, fileName: string, visualType: string }) {
+    return await post(`/analyticDataSet/addDraw`, jsonData)
+}
+
+export async function delAnalyticData(id: string) {
+    return await del(`/analyticDataSet/delAnalyticData/${id}`)
+}
+
+export async function addSection(projectId: string, sectionId: string, demId: string) {
+    return await post(`/analyticDataSet/addSection/${projectId}/${sectionId}/${demId}`)
+}
+
+export async function addSectionCompare(projectId: string, sectionId: string, demList: string[]) {
+    return await post(`/analyticDataSet/addSectionCompare/${projectId}/${sectionId}`, demList)
+}
+
+export async function addSectionFlush(projectId: string, sectionId: string, benchmarkId: string, referId: string) {
+    return await post(`/analyticDataSet/addSectionFlush/${projectId}/${sectionId}/${benchmarkId}/${referId}`)
+}
+
+export async function addRegionFlush(projectId: string, regionId: string, benchmarkId: string, referId: string) {
+    return await post(`/analyticDataSet/addRegionFlush/${projectId}/${regionId}/${benchmarkId}/${referId}`)
+}
+
+export async function addElevationFlush(projectId: string, benchmarkId: string, referId: string) {
+    return await post(`/analyticDataSet/addElevationFlush/${projectId}/${benchmarkId}/${referId}`)
+}
+
+export async function addFlushContour(projectId: string, benchmarkId: string, referId: string) {
+    return await post(`/analyticDataSet/addFlushContour/${projectId}/${benchmarkId}/${referId}`)
+}
+
+export async function addSlope(projectId: string, demId: string) {
+    return await post(`/analyticDataSet/addSlope/${projectId}/${demId}`)
+}
+
+export async function checkState(key: string) {
+    return await get(`/analyticDataSet/checkState/${key}`)
+}
+
+export async function rename(jsonData: { id: string, name: string }) {
+    return await patch(`/analyticDataSet/rename`, jsonData)
+}
+
+export async function getUrl(id: string) {
+    return await get(`/analyticDataSet/getUrl/${id}`)
+}
+
+export async function downloadAnalyticData(userId: string, id: string) {
+    return await get(`/analyticDataSet/downloadAnalyticData/${userId}/${id}`)
+}
+//========================analyticParameter相关接口=================================
+export async function findByType(type: string) {
+    return await get(`/analyse/findByType/${type}`)
 }
 
 
@@ -402,13 +295,208 @@ export async function getAreaShip(key: string, scode: string, xy: string) {
     })
 }
 
-export async function getShip() {
-    axios.get("http://localhost:8002/ship/getShip", {
-        responseType: 'arraybuffer'
-    }).then(res => {
-        console.log(res)
-        const d = new DataView(res.data)
-        console.log(d.getInt32(0))
+export async function QueryCode() {
+    axios.get("http://localhost:8002/ship/QueryCode", { responseType: 'arraybuffer' }).then((res) => {
+
+        const dataView = new DataView(res.data)
+        // console.log("223",res.data)
+        // console.log("123", dataView.byteLength, dataView.getInt32(4))
+        return dataView
     })
+
+}
+//========================JsonRecord相关接口=================================
+
+export async function QueryShpByName(name: string) {
+    return await get(`/jsonRecord/QueryByName/${name}`)
+
+}
+
+
+//========================ShpCoordinates相关接口=================================
+
+export async function QueryCoordinatesByName(name: string) {
+    return await get(`/share/QueryCoordinatesByName/${name}`)
+
+}
+
+//========================TideStation相关接口=================================
+
+export async function QueryHeightByName(name: string) {
+    return await get(`/share/QueryHeightByName/${name}`)
+
+}
+
+//========================DataRelational相关接口=================================
+export async function addRelational(jsonData: { dataListId: string, fileIdList: string[] }) {
+    return await post(`/relational/addRelational`, jsonData)
+}
+
+export async function updateRelational(jsonData: { dataListId: string, fileIdList: string[] }) {
+    return await patch(`/relational/updateRelational`, jsonData)
+}
+
+
+//========================DataList相关接口=================================
+
+export async function findFiles(dataListId: string) {
+    return await get(`/dataList/findFiles/${dataListId}`)
+}
+//浏览量增加
+export async function addWatchCount(id: string) {
+    return await patch(`/dataList/addWatchCount/${id}`)
+}
+
+
+export async function updateStatusById(id: string, status: number) {
+    return await patch(`/dataList/updateStatusById/${id}/${status}`)
+}
+
+export async function deleteAsMember(jsonData: { id: string, size: number, page: number }) {
+    return await del(`/dataList/deleteAsMember`, jsonData)
+}
+
+export async function deleteByAdmin(jsonData: { page: number, size: number, keyword: string, tags: string[], property: string, flag: boolean, id: string, type: string }) {
+    return await del(`/dataList/deleteByAdmin`, jsonData)
+}
+
+export async function fuzzyQueryDataList(jsonData: { page: number, size: number, keyword: string, tags: string[], property: string, flag: boolean, type: string }) {
+    return await post(`/dataList/fuzzyQuery`, jsonData)
+}
+
+export async function getFileInfoAndUserInfo(id: string) {
+    return await get(`/dataList/getFileInfoAndUserInfo/${id}`)
+}
+
+export async function fuzzyQueryAdmin(jsonData: { page: number, size: number, keyword: string, tags: string[], property: string, flag: boolean, type: string }) {
+    return await post(`/dataList/fuzzyQueryAdmin`, jsonData)
+}
+
+export async function addDataList(formData: FormData) {
+    return await post(`/dataList/addDataList`, formData)
+}
+
+export async function updateDataList(formData: FormData) {
+    return await patch(`/dataList/updateDataList`, formData)
+}
+
+export async function pageQueryByEmail(jsonData: { page: number, size: number, keyword: string }) {
+    return await post(`/dataList/pageQueryByEmail`, jsonData)
+}
+
+//============================Visual相关接口====================================
+//获取用户头像，项目头像，缩略图等
+export async function getAvatar(filename: string) {
+    return await get(`/visual/getAvatar/${filename}`)
+}
+
+//获取图片
+export async function getPhoto(fileId: string) {
+    return await get(`/visual/getPhoto/${fileId}`)
+}
+
+//地图png可视化，包括两部分，获取坐标、获取png资源
+export async function getCoordinates(visualId: string) {
+    return await get(`/visual/getCoordinates/${visualId}`)
+}
+
+export async function getPngResource(visualId: string) {
+    return await get(`/visual/getPngResource/${visualId}`)
+}
+
+
+export async function getRateDirection(id: string) {
+    return await get(`/visual/getRateDirection/${id}`)
+}
+
+export async function getSandContent(id: string) {
+    return await get(`/visual/getSandContent/${id}`)
+}
+
+export async function getSuspension(id: string) {
+    return await get(`/visual/getSuspension/${id}`)
+}
+
+export async function getSalinity(id: string) {
+    return await get(`/visual/getSalinity/${id}`)
+}
+
+export async function getFlowSand_Z(id: string) {
+    return await get(`/visual/getFlowSand_Z/${id}`)
+}
+
+export async function getGeoJson(fileId: string) {
+    return await get(`/visual/getGeoJson/${fileId}`)
+}
+
+export async function getSection(fileId: string) {
+    return await get(`/visual/getSection/${fileId}`)
+}
+
+export async function getSectionContrast(fileId: string) {
+    return await get(`/visual/getSectionContrast/${fileId}`)
+}
+
+export async function getSectionFlush(fileId: string) {
+    return await get(`/visual/getSectionFlush/${fileId}`)
+}
+
+//========================folder相关接口=================================
+export async function addFolder(jsonData: { folderName: string, parentId: string }) {
+    return await post(`/folder/addFolder`, jsonData)
+}
+
+//============================NewFile相关接口====================================
+
+//获取下载的url
+export async function getDownloadURL(id: string) {
+    return await get(`/file/getDownloadURL/${id}`)
+}
+
+export async function findByFolderId(folderId: string) {
+    return await get(`/file/findByFolderId/${folderId}`)
+}
+
+//========================downloadHistory相关接口=================================
+export async function pageQueryDownloadHistory(size: number, page: number, id: string) {
+    return await get(`/downloadHistory/pageQuery/${id}/${size}/${page}`)
+}
+
+//========================browseHistory相关接口=================================
+export async function getDataGroup(dataId: string, number: number) {
+    return await get(`/browseHistory/getDataGroup/${dataId}/${number}`)
+}
+
+export async function addBrowseHistory(dataListId: string) {
+    return await post(`/browseHistory/addHistory/${dataListId}`)
+}
+
+//========================new project相关接口=================================
+export async function getAll(jsonData: { page: number, size: number, keyword: string }) {
+    return await post(`/project/getAll`, jsonData)
+}
+
+export async function getProjectInfo(projectId: string) {
+    return await get(`/project/getProjectInfo/${projectId}`)
+}
+
+export async function addProjectData(jsonData: { projectId: string, list: { fileId: string, dataListId: string }[] }) {
+    return await post(`/project/addData`, jsonData)
+}
+
+export async function getData(projectId: string) {
+    return await get(`/project/getData/${projectId}`)
+}
+
+export async function delData(projectId: string, dataListId: string, fileId: string) {
+    return await del(`/project/delData/${projectId}/${dataListId}/${fileId}`)
+}
+
+export async function updateLayer(projectId: string, list: string[]) {
+    return await post(`/project/updateLayer/${projectId}`, list)
+}
+
+export async function getLayersInfo(projectId: string) {
+    return await get(`/project/getLayersInfo/${projectId}`)
 }
 

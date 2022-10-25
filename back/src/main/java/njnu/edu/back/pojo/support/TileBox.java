@@ -21,4 +21,5 @@ public class TileBox {
     double yMax;
     String name;
     Integer srid;
+    String visualId;
 }

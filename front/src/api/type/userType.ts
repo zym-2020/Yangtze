@@ -1,4 +1,3 @@
-import internal from "stream"
 
 export interface LoginJsonData {
     email: string,
@@ -9,7 +8,6 @@ export interface RegisterJsonData {
     email: string,
     name: string,
     password: string,
-    roles: string[]
 }
 
 export interface ProjectJsonData {

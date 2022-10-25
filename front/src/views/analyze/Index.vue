@@ -33,7 +33,7 @@
         layout="prev, pager, next"
         :total="total"
         @current-change="currentChange"
-        :current-page="currentPage"
+        v-model:current-page="currentPage"
         :page-size="12"
         :background="true"
       >
@@ -64,33 +64,33 @@ export default defineComponent({
     const search = ref("");
     const total = ref(0);
     const createFlag = ref(false);
-    const keyWord = ref("");
+    const keyword = ref("");
     const currentPage = ref(1);
 
     onMounted(async () => {
-      const projectList = await getAll({
+      const data = await getAll({
         size: 12,
         page: 0,
-        keyWord: keyWord.value,
+        keyword: keyword.value,
       });
-      if (projectList != null) {
-        projects.value = (projectList.data as any).content;
-        total.value = (projectList.data as any).totalElements;
+      if (data != null && (data as any).code === 0) {
+        projects.value = data.data.list;
+        total.value = data.data.total;
       }
     });
 
     const searchClick = async () => {
-      keyWord.value = search.value;
+      keyword.value = search.value;
       const data = await getAll({
         size: 12,
         page: 0,
-        keyWord: keyWord.value,
+        keyword: keyword.value,
       });
 
       if (data != null) {
         if ((data as any).code === 0) {
-          projects.value = (data.data as any).content;
-          total.value = (data.data as any).totalElements;
+          projects.value = data.data.list;
+          total.value = data.data.total;
           currentPage.value = 1;
         }
       }
@@ -98,16 +98,16 @@ export default defineComponent({
 
     const currentChange = async (page: number) => {
       currentPage.value = page;
-      const projectList = await getAll({
+      const data = await getAll({
         size: 12,
         page: page - 1,
-        keyWord: keyWord.value,
+        keyword: keyword.value,
       });
-      if (projectList != null) {
-        projects.value = (projectList.data as any).content;
-        total.value = (projectList.data as any).totalElements;
+      if (data != null && (data as any).code === 0) {
+        projects.value = data.data.list;
+        total.value = data.data.total;
       }
-      search.value = keyWord.value;
+      search.value = keyword.value;
     };
 
     const createProject = (val: any) => {
@@ -116,7 +116,7 @@ export default defineComponent({
         name: "project",
         params: {
           id: val.id,
-          projectInfo: JSON.stringify(val)
+          projectInfo: JSON.stringify(val),
         },
       });
     };

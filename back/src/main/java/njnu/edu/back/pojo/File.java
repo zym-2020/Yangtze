@@ -19,14 +19,13 @@ import java.util.Date;
 @NoArgsConstructor
 public class File {
     String id;
-    String name;
-    String address;
     String fileName;
-    Integer level;
-    String parentId;
-    Date createTime;
-    String uploader;
-    String meta;
-    boolean folder;
+    String address;
     String size;
+    String time;
+    String location;
+    String uploader;
+    String visualType;
+    String visualId;
+    String folderId;
 }

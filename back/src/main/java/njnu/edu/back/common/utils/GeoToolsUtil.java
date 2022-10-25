@@ -8,6 +8,7 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.io.WKTReader;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
+import njnu.edu.back.pojo.ShareFile;
 import org.geotools.data.FeatureWriter;
 import org.geotools.data.Transaction;
 import org.geotools.data.shapefile.ShapefileDataStore;
@@ -19,6 +20,7 @@ import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -26,6 +28,7 @@ import java.io.FileWriter;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,6 +40,7 @@ import java.util.Map;
  */
 
 public class GeoToolsUtil {
+
     public static void json2shape(JSONArray jsonArray, String fileName, String path, String type) {
         File dirFile = new File(path);
         if(!dirFile.exists()) {
@@ -189,4 +193,6 @@ public class GeoToolsUtil {
                 throw new MyException(-1, "类型转换错误！");
         }
     }
+
+
 }

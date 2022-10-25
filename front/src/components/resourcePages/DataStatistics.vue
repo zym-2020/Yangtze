@@ -9,16 +9,19 @@
   </div>
 </template>
 
+
+
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
-import BrowseStatistics from './components/BrowseStatistics.vue'
+import BrowseStatistics from "./components/BrowseStatistics.vue";
 import DownloadStatistics from "./components/DownloadStatistics.vue";
 
 export default defineComponent({
-  components: { DownloadStatistics, BrowseStatistics },
-  setup() {
-
+  components: {
+    DownloadStatistics,
+    BrowseStatistics,
   },
+  setup() {},
 });
 </script>
 

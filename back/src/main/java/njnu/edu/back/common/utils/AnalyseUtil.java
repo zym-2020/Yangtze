@@ -63,6 +63,79 @@ public class AnalyseUtil {
         return processBuilder.start();
     }
 
+    public static Process savaSectionContrast(String tempPath, List<String> rasterPathList, JSONArray jsonArray, String resultPath) throws IOException {
+        BufferedWriter out = null;
+        try {
+            out = new BufferedWriter(new FileWriter(tempPath));
+            out.write(rasterPathList.size() + "\n");
+            for(String path : rasterPathList) {
+                out.write(path + "\n");
+            }
+            out.write(resultPath + "\n");
+            out.write(jsonArray.size() + "\n");
+            for(int i = 0; i < jsonArray.size(); i++) {
+                out.write(jsonArray.getObject(i, JSONArray.class).getString(0) + "," + jsonArray.getObject(i, JSONArray.class).getString(1) + "\n");
+            }
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        } finally {
+            if(out != null) {
+                try {
+                    out.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+                }
+            }
+        }
+
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        List<String> commands = new ArrayList<>();
+        commands.add("python");
+        commands.add(pythonDir + "SectionContrast.py");
+        commands.add(tempPath);
+        processBuilder.command(commands);
+        return processBuilder.start();
+
+    }
+
+    public static Process sectionFlush(String tempPath, String benchmarkPath, String referPath, String demPath, JSONArray jsonArray, String resultPath) throws IOException {
+        BufferedWriter out = null;
+        try {
+            out = new BufferedWriter(new FileWriter(tempPath));
+            out.write(benchmarkPath + "\n");
+            out.write(referPath + "\n");
+            out.write(demPath + "\n");
+            out.write(resultPath + "\n");
+            out.write(jsonArray.size() + "\n");
+            for(int i = 0; i < jsonArray.size(); i++) {
+                out.write(jsonArray.getObject(i, JSONArray.class).getString(0) + "," + jsonArray.getObject(i, JSONArray.class).getString(1) + "\n");
+            }
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        } finally {
+            if(out != null) {
+                try {
+                    out.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+                }
+            }
+        }
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        List<String> commands = new ArrayList<>();
+        commands.add("python");
+        commands.add(pythonDir + "section_flush.py");
+        commands.add(tempPath);
+        processBuilder.command(commands);
+        return processBuilder.start();
+    }
+
     public static Process createContour(String exePath, String interval, String rasterPath, String resultPath) {
         ProcessBuilder processBuilder = new ProcessBuilder();
         List<String> commands = new ArrayList<>();
@@ -141,13 +214,14 @@ public class AnalyseUtil {
         }
     }
 
-    public static Process rasterCrop(String tempPath, String rasterPath, String outputPng, String outputJson, JSONArray jsonArray) {
+    public static Process rasterCrop(String tempPath, String rasterPath, String outputPng, String outputTif, String outputJson, JSONArray jsonArray) {
         BufferedWriter out = null;
         try {
             out = new BufferedWriter(new FileWriter(tempPath));
             out.write(rasterPath + "\n");
             out.write(outputPng + "\n");
             out.write(outputJson + "\n");
+            out.write(outputTif + "\n");
             out.write(jsonArray.getJSONArray(0).size() - 1 + "\n");
             for(int i = 0; i < jsonArray.getJSONArray(0).size() - 1; i++) {
                 out.write(jsonArray.getJSONArray(0).getJSONArray(i).getString(0) + "," + jsonArray.getJSONArray(0).getJSONArray(i).getString(1) + "\n");

@@ -1,212 +1,385 @@
 <template>
   <div>
-    <el-collapse @change="handleChange" v-model="activeNames">
+    <!-- <el-drawer
+      v-model="drawer"
+      title="资源类型的一些介绍！"
+      direction="ltr"
+      :before-close="handleClose"
+      size="320px"
+      :append-to-body="true"
+      style="overflow: auto"
+      ><div style="text-align: center">Hi, there!</div>
+    </el-drawer> -->
+    <el-collapse v-model="activeNames">
       <el-collapse-item
-        v-for="(item, index) in categoryList"
-        :key="index"
+        v-for="(item, indexs) in categoryList"
+        :key="indexs"
         :title="item.title"
-        :name="index"
+        :name="indexs"
         active
       >
-      <p style="text-align :center;font-weight: bold">{{desciription[index]}}</p>
         <div v-for="(dataItem, index) in item.data" :key="index">
-        <!-- :label="dataItem.name + '（' + dataItem.count + '）'"  -->
-          <el-checkbox
-            :label=dataItem.name 
-            size="default"
-            @change="change(dataItem)"
-          />
+          <el-card
+            shadow="always"
+            :style="[
+              { marginLeft: dataItem.count == false ? '110px' : '50px' },
+              { marginTop: '5px' },
+            ]"
+            class="video"
+          >
+            <el-checkbox :label="dataItem.name" size="default" @change="change(indexs, index)" />
+          </el-card>
         </div>
-        <hr style="border-color: #d8d8d8" />
       </el-collapse-item>
-      
     </el-collapse>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive } from "vue";
+import { defineComponent, ref, reactive, computed } from "vue";
 export default defineComponent({
   emits: ["selectList"],
   setup(props, context) {
-    const activeNames=reactive([0,1,2,3,4])
-    const desciription =reactive(['地形数据、水文数据、工程数据'])
+    const activeNames = reactive([0, 1, 2, 3, 4]);
     const categoryList = ref([
       {
-        title: "基础数据、整合数据、可视化数据",
+        title: "一级分类（必选）",
         data: [
           {
-            name: "栅格ASC文件",
-            count: 5,
+            name: "基础地形数据",
+            count: false,
           },
+          {
+            name: "基础水文数据",
+            count: false,
+          },
+          {
+            name: "基础工程数据",
+            count: false,
+          },
+          {
+            name: "整合资料库",
+            count: false,
+          },
+          {
+            name: "数模案例库",
+            count: false,
+          },
+          {
+            name: "物模案例库",
+            count: false,
+          },
+          {
+            name: "影像资料库",
+            count: false,
+          },
+          {
+            name: "辅助资料库",
+            count: false,
+          },
+          {
+            name: "元数据",
+            count: false,
+          },
+        ],
+      },
+      {
+        title: "基础地形数据",
+        data: [
           {
             name: "栅格TXT文件",
-            count: 7,
+            count: false,
           },
           {
-            name: "栅格文件",
-            count: 7,
+            name: "栅格ASC文件",
+            count: false,
+          },
+        ],
+      },
+      {
+        title: "基础水文数据",
+        data: [
+          {
+            name: "潮位数据",
+            count: false,
           },
           {
-            name: "矢量文件",
-            count: 7,
+            name: "流速流向数据",
+            count: false,
+          },
+          {
+            name: "含沙量数据",
+            count: false,
+          },
+          {
+            name: "流量数据",
+            count: false,
+          },
+          {
+            name: "输沙率数据",
+            count: false,
+          },
+          {
+            name: "悬移质数据",
+            count: false,
+          },
+          {
+            name: "冲淤数据",
+            count: false,
+          },
+          {
+            name: "深泓线数据",
+            count: false,
+          },
+          {
+            name: "沙滩数据",
+            count: false,
+          },
+          {
+            name: "床沙数据",
+            count: false,
+          },
+          {
+            name: "含盐度数据",
+            count: false,
+          },
+          {
+            name: "风速风向数据",
+            count: false,
+          },
+          {
+            name: "报告文字数据",
+            count: false,
+          },
+          {
+            name: "水文测验布置",
+            count: false,
+          },
+        ],
+      },
+
+      {
+        title: "基础工程数据",
+        data: [
+          {
+            name: "DWG工程文件",
+            count: false,
+          },
+          {
+            name: "码头工程",
+            count: false,
+          },
+          {
+            name: "桥梁工程",
+            count: false,
+          },
+          {
+            name: "规划未实施工程",
+            count: false,
+          },
+          {
+            name: "水利工程",
+            count: false,
+          },
+          {
+            name: "护岸工程",
+            count: false,
+          },
+          {
+            name: "航道整治工程",
+            count: false,
+          },
+          {
+            name: "水利工程",
+            count: false,
+          },
+          {
+            name: "航标",
+            count: false,
+          },
+        ],
+      },
+      {
+        title: "整合地形数据",
+        data: [
+          {
+            name: "SHAPEFILE",
+            count: false,
           },
           {
             name: "等高线",
-            count: 7,
+            count: false,
           },
           {
             name: "等深线",
-            count: 7,
+            count: false,
           },
           {
-            name: "潮位",
-            count: 7,
+            name: "高程点",
+            count: false,
           },
           {
-            name: "大断面结果",
-            count: 7,
-          }, 
-          {
-            name: "含沙量",
-            count: 7,
-          },          
-          {
-            name: "流量",
-            count: 7,
+            name: "边界",
+            count: false,
           },
           {
-            name: "输沙率",
-            count: 7,
+            name: "TIN",
+            count: false,
           },
           {
-            name: "流速",
-            count: 7,
-          },
-          {
-            name: "流向",
-            count: 7,
-          },
-          {
-            name: "悬移质",
-            count: 7,
-          },
-          {
-            name: "冲淤",
-            count: 7,
-          },
-          {
-            name: "深泓线",
-            count: 7,
-          },
-          {
-            name: "风速",
-            count: 7,
-          },
-          {
-            name: "风向",
-            count: 7,
-          },
-          {
-            name: "DWG工程文件",
-            count: 7,
-          },
-          {
-            name: "TXT工程文件",
-            count: 7,
+            name: "DEM",
+            count: false,
           },
         ],
       },
       {
-        title: "数学模型",
+        title: "整合水文数据",
+        data: [
+          {
+            name: "MDB关系数据库",
+            count: false,
+          },
+        ],
+      },
+      {
+        title: "整合工程数据",
+        data: [
+          {
+            name: "DWG工程文件",
+            count: false,
+          },
+          {
+            name: "码头工程",
+            count: false,
+          },
+          {
+            name: "桥梁工程",
+            count: false,
+          },
+          {
+            name: "规划未实施工程",
+            count: false,
+          },
+          {
+            name: "水利工程",
+            count: false,
+          },
+          {
+            name: "护岸工程",
+            count: false,
+          },
+          {
+            name: "航道整治工程",
+            count: false,
+          },
+          {
+            name: "水利工程",
+            count: false,
+          },
+          {
+            name: "航标",
+            count: false,
+          },
+        ],
+      },
+      {
+        title: "数模案例库",
         data: [
           {
             name: "流场",
-
-            count: 7,
+            count: false,
           },
         ],
       },
       {
-        title: "物理模型",
+        title: "物模案例库",
         data: [
           {
-            name: "地图数据",
-            count: 5,
+            name: "流速",
+            count: false,
           },
           {
-            name: "浓度场数据",
-            count: 7,
-          }
-        ],
-      },
-      {
-        title: "辅助数据",
-        data: [
-          {
-            name: "Pdf",
-            count: 5,
+            name: "泥沙",
+            count: false,
           },
           {
-            name: "Excel",
-            count: 7,
-          },
-          {
-            name: "PPT",
-            count: 7,
-          },
-          {
-            name: "Word",
-            count: 7,
-          },
-        ],
-      },
-      {
-        title: "影像资料",
-        data: [
-          {
-            name: "遥感影像",
-            count: 5,
-          },
-          {
-            name: "照片",
-            count: 7,
+            name: "水位",
+            count: false,
           },
           {
             name: "视频",
-            count: 7,
+            count: false,
           },
-          
+          {
+            name: "照片",
+            count: false,
+          },
         ],
       },
-     
+      {
+        title: "影像资料库",
+        data: [
+          {
+            name: "遥感影像",
+            count: false,
+          },
+        ],
+      },
+      {
+        title: "辅助资料库",
+        data: [
+          {
+            name: "地名数据",
+            count: false,
+          },
+          {
+            name: "固定断面线",
+            count: false,
+          },
+          {
+            name: "制导线",
+            count: false,
+          },
+        ],
+      },
+      {
+        title: "元数据",
+        data: [
+          {
+            name: "Pdf",
+            count: false,
+          },
+          {
+            name: "Word",
+            count: false,
+          },
+          {
+            name: "PPT",
+            count: false,
+          },
+        ],
+      },
     ]);
+    const selectList: string[] = [];
 
-    const selectList = ref<any[]>([]);
-     
-    const handleChange = (val: string[]) => {
-      // console.log(val);
-    };
 
-    const change = (val: any) => {
-      for (let i = 0; i < selectList.value.length; i++) {
-        if (val.name === selectList.value[i]) {
-          selectList.value.splice(i, 1);
-          context.emit("selectList", selectList.value);
+    const change = (indexs: number, index: number) => {
+      const str = categoryList.value[indexs].data[index].name
+      for (let i = 0; i < selectList.length; i++) {
+        if(str === selectList[i]) {
+          selectList.splice(i, 1)
+          context.emit("selectList", selectList)
           return;
         }
       }
-      selectList.value.push(val.name);
-      context.emit("selectList", selectList.value);
+      selectList.push(str)
+      context.emit("selectList", selectList)
     };
 
     return {
       activeNames,
-      desciription,
-      handleChange,
       categoryList,
       change,
-      
     };
   },
 });
@@ -219,5 +392,46 @@ export default defineComponent({
 }
 .el-collapse /deep/ .el-collapse-item__wrap {
   background: #f6f7fa;
+}
+
+.video {
+  width: 319px;
+  height: 60px;
+  border-radius: 10px;
+  background-color: rgb(255, 255, 255);
+  //opacity: 0.6;
+  transition: all 0.3s ease-in-out;
+  // -webkit-animation适配-webkit内核的浏览器
+  // -webkit-animation: ripple 1s linear infinite;
+  //animation: ripple 1s linear infinite;
+}
+
+.video:hover {
+  background-color: #859ecc;
+  transform: scale(1.2);
+}
+@-webkit-keyframes ripple {
+  0% {
+    /* 在box四周添加三层白色阴影 */
+    box-shadow: 0 0 0 0 rgb(255, 255, 255 / 25%),
+      0 0 0 10px rgb(255, 255, 255 / 25%), 0 0 0 20px rgb(255, 255, 255 / 25%);
+  }
+
+  100% {
+    /* 分别改变三层阴影的距离
+          形成两帧的动画,然后在transition的过渡下形成动画 */
+    box-shadow: 0 0 0 10px rgb(255, 255, 255 / 25%),
+      0 0 0 20px rgb(255, 255, 255 / 25%), 0 0 0 40px rgba(50, 100, 245, 0);
+  }
+}
+@keyframes ripple {
+  0% {
+    box-shadow: 0 0 0 0 rgb(255, 255, 255 / 25%),
+      0 0 0 10px rgb(255, 255, 255 / 25%), 0 0 0 20px rgb(255, 255, 255 / 25%);
+  }
+  100% {
+    box-shadow: 0 0 0 10px rgb(255, 255, 255 / 25%),
+      0 0 0 20px rgb(255, 255, 255 / 25%), 0 0 0 40px rgba(255, 255, 255, 0);
+  }
 }
 </style>

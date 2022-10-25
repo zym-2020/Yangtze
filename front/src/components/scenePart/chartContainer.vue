@@ -10,8 +10,8 @@
 
 <script lang="ts">
 export default {
-    name:'chartContainer'
-}
+  name: "chartContainer",
+};
 </script>
 
 <script setup lang='ts'>
@@ -58,8 +58,6 @@ onMounted(()=> {
         chart.resize();
     };
 });
-
-
 </script>
 
 <style  lang='scss' scope>
@@ -143,11 +141,44 @@ div.chart-container {
         }
     }
 
+  &[styleId="1"] {
+    height: 100%;
+    width: 100%;
     div {
-        canvas {
-            border-radius: 0.4em;
-        }
+      canvas {
+        border-radius: 0.6em;
+      }
     }
-}
+  }
+  &[styleId="2"] {
+    height: 35%;
+    width: 23%;
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  &[styleId="3"] {
+    height: 35%;
+    width: 52%;
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  &[styleId="4"] {
+    position: absolute;
+    right: 1vw;
+    top: 23vh;
+    height: 30vh;
+    width: 28vw;
+    background-color: rgba(26, 26, 26, 0.6);
+  }
 
+  @each $order in $orders {
+    &[order="#{$order}"] {
+      order: $order;
+    }
+  }
+
+  div {
+    canvas {
+      border-radius: 0.4em;
+    }
+  }
+}
 </style>

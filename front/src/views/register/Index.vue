@@ -104,7 +104,6 @@ export default defineComponent({
             email: form.email,
             name: form.name,
             password: Base64.btoa(form.password),
-            roles: ["visiter"],
           };
           let data = (await register(jsonData)) as any;
           if (data != null) {
@@ -159,7 +158,7 @@ video {
   }
   .el-form-item /deep/ .el-input__inner {
     background-color: rgba(255, 255, 255, 0.247);
-    color: white;
+    // color: white;
   }
 }
 </style>

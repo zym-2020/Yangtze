@@ -26,120 +26,81 @@
             :rows="3"
           />
         </el-form-item>
-        <el-form-item label="标签：" prop="tagList">
+        <el-form-item label="标签：" prop="tags">
           <el-select
-            v-model="form.tagList"
+            v-model="form.tags"
             multiple
             placeholder="标签"
-            collapse-tags
+            size="large"
+            style="width: 300px"
           >
             <el-option-group
               v-for="(group, groupIndex) in options"
               :key="groupIndex"
-              :label="group.label"
+              :label="group.title"
             >
               <el-option
-                v-for="(item, index) in group.options"
+                v-for="(item, index) in group.data"
                 :key="index"
-                :label="item"
-                :value="item"
+                :label="item.name"
+                :value="item.name"
               />
             </el-option-group>
           </el-select>
         </el-form-item>
-        <el-form-item label="原始数据：" prop="origin">
-          <el-button type="primary" plain @click="openFolder('origin')">
-            添加<el-icon class="el-icon--right"><Upload /></el-icon>
-          </el-button>
-          <el-tag
-            closable
-            v-if="
-              form.origin.name != '' &&
-              form.origin.name != undefined &&
-              form.origin.name != null
-            "
-            size="large"
-            class="tag"
-            type="success"
-            @close="tagClose('origin')"
-          >
-            {{ form.origin.name }}
-          </el-tag>
-        </el-form-item>
-        <el-form-item label="整合数据：">
-          <el-button type="primary" plain @click="openFolder('struct')">
-            添加<el-icon class="el-icon--right"><Upload /></el-icon>
-          </el-button>
-          <el-tag
-            closable
-            v-if="
-              form.struct.name != '' &&
-              form.struct.name != undefined &&
-              form.struct.name != null
-            "
-            size="large"
-            class="tag"
-            type="success"
-            @close="tagClose('struct')"
-          >
-            {{ form.struct.name }}
-          </el-tag>
-        </el-form-item>
-        <el-form-item label="可视化数据：">
-          <el-button type="primary" plain @click="openFolder('visual')">
-            添加<el-icon class="el-icon--right"><Upload /></el-icon>
-          </el-button>
-          <el-tag
-            closable
-            v-if="
-              form.visual.name != '' &&
-              form.visual.name != undefined &&
-              form.visual.name != null
-            "
-            size="large"
-            class="tag"
-            type="success"
-            @close="tagClose('visual')"
-          >
-            {{ form.visual.name }}
-          </el-tag>
-        </el-form-item>
+
         <el-form-item label="条目封面：">
-          <avatar-upload @upload="upload"></avatar-upload>
+          <avatar-upload
+            @upload="upload"
+            :pictureName="avatarName"
+          ></avatar-upload>
+        </el-form-item>
+
+        <el-form-item label="条目缩略图：">
+          <avatar-upload
+            @upload="uploadTh"
+            :pictureName="thumbName"
+          ></avatar-upload>
         </el-form-item>
       </el-form>
       <el-divider />
       <el-form
         label-width="130px"
-        :model="metaForm"
+        :model="form"
         ref="metaRef"
         :rules="metaRules"
       >
         <el-form-item label="数据提供方：" prop="provider">
-          <el-input v-model="metaForm.provider" />
+          <el-input v-model="form.provider" />
         </el-form-item>
         <el-form-item label="联系电话：">
-          <el-input v-model="metaForm.phone" />
+          <el-input v-model="form.providerPhone" />
         </el-form-item>
         <el-form-item label="联系邮箱：">
-          <el-input v-model="metaForm.email" />
+          <el-input v-model="form.providerEmail" />
         </el-form-item>
         <el-form-item label="联系地址：">
-          <el-input v-model="metaForm.address" />
+          <el-input v-model="form.providerAddress" />
         </el-form-item>
         <el-form-item label="原始数据类型：" prop="type">
-          <el-input v-model="metaForm.type" />
+          <el-input v-model="form.type" />
         </el-form-item>
-        <el-form-item label="数据时间：">
-          <el-input v-model="metaForm.time" />
+        <el-form-item label="数据时间描述：">
+          <el-input v-model="form.time" />
         </el-form-item>
-        <el-form-item label="数据范围：">
-          <el-input v-model="metaForm.range" />
+        <el-form-item label="数据范围描述：">
+          <el-input v-model="form.range" />
         </el-form-item>
-        <el-form-item label="数据获取方式：" prop="getMode">
-          <el-radio-group v-model="metaForm.getMode">
-            <el-radio label="在线获取" />
-            <el-radio label="订单获取" />
+        <el-form-item label="数据条目定位：">
+          <div ref="container" class="container"></div>
+        </el-form-item>
+        <el-form-item label="数据绑定：">
+          <data-bind @changeData="changeData" />
+        </el-form-item>
+        <el-form-item label="数据获取方式：" prop="getOnline">
+          <el-radio-group v-model="form.getOnline">
+            <el-radio :label="true">在线获取</el-radio>
+            <el-radio :label="false">订单获取</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="数据详情：">
@@ -152,7 +113,7 @@
             />
             <Editor
               style="height: 320px; overflow-y: hidden"
-              v-model="metaForm.valueHtml"
+              v-model="form.detail"
               :defaultConfig="editorConfig"
               mode="default"
               @onCreated="handleCreated"
@@ -162,110 +123,111 @@
       </el-form>
     </div>
     <div class="btn">
-      <el-button type="primary" plain @click="commit(fileRef, metaRef)"
+      <el-button type="success" plain @click="commit(fileRef, metaRef)"
         >更新</el-button
       >
     </div>
-
-    <el-dialog v-model="folderFlag" width="700px" :show-close="false">
-      <resource-dialog
-        :type="resourceType"
-        @selectedFile="selectedFile"
-      ></resource-dialog>
-    </el-dialog>
   </div>
 </template>
 
 <script lang="ts">
+type TableDataType = {
+  id: string;
+  name: string;
+  folder: boolean;
+  size: string;
+  flag: boolean;
+  parentId: string;
+};
 import {
   defineComponent,
   reactive,
   ref,
   shallowRef,
   onBeforeUnmount,
-  watch,
+  onMounted,
 } from "vue";
 import "@wangeditor/editor/dist/css/style.css"; // 引入 css
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
 import { IDomEditor } from "@wangeditor/editor";
 import PageHeader from "@/components/page/PageHeader.vue";
-import ResourceDialog from "@/components/dialog/ResourceDialog.vue";
-import { updateShareFileNoAvatar, updateShareFile } from "@/api/request";
-import { notice } from "@/utils/notice";
+import DataBind from "./components/DataBind.vue";
 import type { FormInstance } from "element-plus";
 import AvatarUpload from "@/components/upload/AvatarUpload.vue";
+import mapBoxGl, { AnySourceData } from "mapbox-gl";
+import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
+import MapboxDraw from "@mapbox/mapbox-gl-draw";
+import { updateDataList, updateRelational } from "@/api/request";
 import router from "@/router";
-import { useStore } from "@/store";
+import { notice } from "@/utils/notice";
 
 export default defineComponent({
-  components: { PageHeader, Editor, Toolbar, ResourceDialog, AvatarUpload },
+  components: {
+    PageHeader,
+    Editor,
+    Toolbar,
+    AvatarUpload,
+    DataBind,
+  },
   setup() {
     const defaultProps = {
       children: "children",
       label: "label",
     };
-    const folderFlag = ref(false);
-    const resourceType = ref("");
+
     const editorRef = shallowRef<IDomEditor>();
     const toolbarConfig = {};
+    const tableData = ref<TableDataType[]>([]);
     const editorConfig = {
       scroll: true,
       autoFocus: true,
     };
-    const updateAvatarFlag = ref(false);
+
+    const avatar = ref<File>();
+    const thumbnail = ref<File>();
+    const avatarName = ref<string>(
+      (router.currentRoute.value.params.fileInfo as any).avatar
+    );
+    const thumbName = ref<string>(
+      (router.currentRoute.value.params.fileInfo as any).thumbnail
+    );
+    const fileList = ref<string[]>([]);
+
+    let map: mapBoxGl.Map;
+    const container = ref<HTMLElement>();
 
     const fileRef = ref<HTMLElement>();
     const metaRef = ref<HTMLElement>();
-    const status = ref(
-      (router.currentRoute.value.params.fileInfo as any).status
-    );
 
     const handleCreated = (editor: any) => {
       editorRef.value = editor; // 记录 editor 实例，重要！
     };
 
-    const openFolder = (type: string) => {
-      resourceType.value = type;
-      folderFlag.value = true;
-    };
-
-    const selectedFile = (val: any) => {
-      folderFlag.value = false;
-      switch (val.type) {
-        case "origin":
-          form.origin.name = val.file.name;
-          form.origin.address = val.file.address;
-          break;
-        case "struct":
-          form.struct.name = val.file.name;
-          form.struct.address = val.file.address;
-          break;
-        case "visual":
-          form.visual.name = val.file.name;
-          form.visual.address = val.file.address;
-          break;
-      }
-    };
-    const tagClose = (type: string) => {
-      switch (type) {
-        case "origin":
-          form.origin.name = "";
-          form.origin.address = "";
-          break;
-        case "struct":
-          form.struct.name = "";
-          form.struct.address = "";
-          break;
-        case "visual":
-          form.visual.name = "";
-          form.visual.address = "";
-          break;
-      }
-    };
-
     const upload = (val: any) => {
-      form.avatar = val;
-      updateAvatarFlag.value = true;
+      avatar.value = val;
+    };
+
+    const uploadTh = (val: any) => {
+      console.log("123");
+      thumbnail.value = val;
+    };
+
+    const changeData = (val: TableDataType[]) => {
+      fileList.value = [];
+      val.forEach((item) => {
+        fileList.value.push(item.id);
+      });
+    };
+
+    const getCoordinates = (location: string[]) => {
+      const coordinates = [];
+      for (let i = 0; i + 1 < location.length; i = i + 2) {
+        coordinates.push([
+          parseFloat(location[i]),
+          parseFloat(location[i + 1]),
+        ]);
+      }
+      return coordinates;
     };
 
     const commit = async (
@@ -276,206 +238,384 @@ export default defineComponent({
       await formEl1.validate(async (valid1, fields) => {
         await formEl2.validate(async (valid2) => {
           if (valid1 && valid2) {
-            if (status.value === 1) {
-            } else if (status.value === -1) {
-              const jsonData = {
-                id: router.currentRoute.value.params.id,
-                provider: metaForm.provider,
-                time: metaForm.time,
-                range: metaForm.range,
-                detail: metaForm.valueHtml,
-                type: metaForm.type,
-                providerPhone: metaForm.phone,
-                providerEmail: metaForm.email,
-                providerAddress: metaForm.address,
-                getOnline: metaForm.getMode === "在线获取" ? true : false,
-                name: form.name,
-                description: form.description,
-                originName: form.origin.name,
-                structuredName: form.struct.name,
-                visualName: form.visual.name,
-                originAddress: form.origin.address,
-                visualSource: "",
-                visualType: "",
-                structuredSource: "",
-                tags: form.tagList,
-                avatar: form.avatar,
-              };
-              if (updateAvatarFlag.value) {
-                delete jsonData.avatar;
-                const formData = new FormData();
-                formData.append("jsonString", JSON.stringify(jsonData));
-                formData.append("multipartFile", form.avatar);
-                const data = await updateShareFile(formData);
-                if (data != null) {
-                  if ((data as any).code === 0) {
-                    notice("success", "成功", "更新成功!");
-                  } else if ((data as any).code === -99) {
-                    notice("warning", "警告", "您没有权限！");
-                  } else {
-                    notice("error", "错误", "数据公布错误!");
-                  }
-                }
-              } else {
-                const data = await updateShareFileNoAvatar(jsonData);
-                if (data != null) {
-                  if ((data as any).code === 0) {
-                    notice("success", "成功", "更新成功!");
-                  } else if ((data as any).code === -99) {
-                    notice("warning", "警告", "您没有权限！");
-                  } else {
-                    notice("error", "错误", "数据公布错误!");
-                  }
-                }
-              }
+            console.log("1", avatar.value, thumbnail.value);
+            const formData = new FormData();
+            formData.append("jsonString", JSON.stringify(form));
+            if (avatar.value != undefined) {
+              formData.append("avatar", avatar.value);
+            } else {
+              formData.append("avatar", new Blob());
+            }
+            if (thumbnail.value != undefined) {
+              formData.append("thumbnail", thumbnail.value);
+            } else {
+              formData.append("thumbnail", new Blob());
+            }
+            const data = await updateDataList(formData);
+            const data1 = await updateRelational({
+              dataListId: form.id,
+              fileIdList: fileList.value,
+            });
+            if (
+              data != null &&
+              (data as any).code === 0 &&
+              data1 != null &&
+              (data1 as any).code === 0
+            ) {
+              notice("success", "成功", "更新成功！");
             }
           }
         });
       });
     };
-
     const options = ref([
       {
-        label: "基础数据、整合数据、可视化数据",
-        options: ["栅格ASC文件", "栅格TXT文件", "栅格文件", "矢量文件", "等高线", "等深线", "潮位","大断面结果","含沙量","流量","输沙率","流速","流向","悬移质","冲淤","深泓线","风速","风向","DWG工程文件","TXT工程文件"],
+        title: "一级分类（必选）",
+        data: [
+          {
+            name: "基础地形数据",
+            count: false,
+          },
+          {
+            name: "基础水文数据",
+            count: false,
+          },
+          {
+            name: "基础工程数据",
+            count: false,
+          },
+          {
+            name: "整合资料库",
+            count: false,
+          },
+          {
+            name: "数模案例库",
+            count: false,
+          },
+          {
+            name: "物模案例库",
+            count: false,
+          },
+          {
+            name: "影像资料库",
+            count: false,
+          },
+          {
+            name: "辅助资料库",
+            count: false,
+          },
+          {
+            name: "元数据",
+            count: false,
+          },
+        ],
       },
       {
-        label: "数学模型",
-        options: ["流场", ],
+        title: "基础地形数据",
+        data: [
+          {
+            name: "栅格TXT文件",
+            count: false,
+          },
+          {
+            name: "栅格ASC文件",
+            count: false,
+          },
+        ],
       },
       {
-        label: "流场数据",
-        options: ["流场矢量线数据", "流场栅格数据"],
+        title: "基础水文数据",
+        data: [
+          {
+            name: "潮位数据",
+            count: false,
+          },
+          {
+            name: "流速流向数据",
+            count: false,
+          },
+          {
+            name: "含沙量数据",
+            count: false,
+          },
+          {
+            name: "流量数据",
+            count: false,
+          },
+          {
+            name: "输沙率数据",
+            count: false,
+          },
+          {
+            name: "悬移质数据",
+            count: false,
+          },
+          {
+            name: "冲淤数据",
+            count: false,
+          },
+          {
+            name: "深泓线数据",
+            count: false,
+          },
+          {
+            name: "沙滩数据",
+            count: false,
+          },
+          {
+            name: "床沙数据",
+            count: false,
+          },
+          {
+            name: "含盐度数据",
+            count: false,
+          },
+          {
+            name: "风速风向数据",
+            count: false,
+          },
+          {
+            name: "报告文字数据",
+            count: false,
+          },
+          {
+            name: "水文测验布置",
+            count: false,
+          },
+        ],
+      },
+
+      {
+        title: "基础工程数据",
+        data: [
+          {
+            name: "DWG工程文件",
+            count: false,
+          },
+          {
+            name: "码头工程",
+            count: false,
+          },
+          {
+            name: "桥梁工程",
+            count: false,
+          },
+          {
+            name: "规划未实施工程",
+            count: false,
+          },
+          {
+            name: "水利工程",
+            count: false,
+          },
+          {
+            name: "护岸工程",
+            count: false,
+          },
+          {
+            name: "航道整治工程",
+            count: false,
+          },
+          {
+            name: "实施工程",
+            count: false,
+          },
+          {
+            name: "航标",
+            count: false,
+          },
+        ],
       },
       {
-        label: "物理模型",
-        options: ["地图数据", "浓度场数据", ],
+        title: "整合地形数据",
+        data: [
+          {
+            name: "SHAPEFILE",
+            count: false,
+          },
+          {
+            name: "等高线",
+            count: false,
+          },
+          {
+            name: "等深线",
+            count: false,
+          },
+          {
+            name: "高程点",
+            count: false,
+          },
+          {
+            name: "边界",
+            count: false,
+          },
+          {
+            name: "TIN",
+            count: false,
+          },
+          {
+            name: "DEM",
+            count: false,
+          },
+        ],
       },
       {
-        label: "辅助数据",
-        options: [
-          "Pdf",
-          "Excel",
-          "PPT",
-          "Word",
+        title: "整合水文数据",
+        data: [
+          {
+            name: "MDB关系数据库",
+            count: false,
+          },
+        ],
+      },
+      {
+        title: "整合工程数据",
+        data: [
+          {
+            name: "DWG工程文件",
+            count: false,
+          },
+          {
+            name: "码头工程",
+            count: false,
+          },
+          {
+            name: "桥梁工程",
+            count: false,
+          },
+          {
+            name: "规划未实施工程",
+            count: false,
+          },
+          {
+            name: "水利工程",
+            count: false,
+          },
+          {
+            name: "护岸工程",
+            count: false,
+          },
+          {
+            name: "航道整治工程",
+            count: false,
+          },
+          {
+            name: "水利工程",
+            count: false,
+          },
+          {
+            name: "航标",
+            count: false,
+          },
+        ],
+      },
+      {
+        title: "数模案例库",
+        data: [
+          {
+            name: "流场",
+            count: false,
+          },
+        ],
+      },
+      {
+        title: "物模案例库",
+        data: [
+          {
+            name: "流速",
+            count: false,
+          },
+          {
+            name: "泥沙",
+            count: false,
+          },
+          {
+            name: "水位",
+            count: false,
+          },
+          {
+            name: "潮汐",
+            conut: false,
+          },
+          {
+            name: "视频",
+            count: false,
+          },
+          {
+            name: "照片",
+            count: false,
+          },
+        ],
+      },
+      {
+        title: "影像资料库",
+        data: [
+          {
+            name: "遥感影像",
+            count: false,
+          },
+        ],
+      },
+      {
+        title: "辅助资料库",
+        data: [
+          {
+            name: "地名数据",
+            count: false,
+          },
+          {
+            name: "固定断面线",
+            count: false,
+          },
+          {
+            name: "制导线",
+            count: false,
+          },
+        ],
+      },
+      {
+        title: "元数据",
+        data: [
+          {
+            name: "Pdf",
+            count: false,
+          },
+          {
+            name: "Word",
+            count: false,
+          },
+          {
+            name: "PPT",
+            count: false,
+          },
         ],
       },
     ]);
 
     const form = reactive({
+      id: (router.currentRoute.value.params.fileInfo as any).id,
       name: (router.currentRoute.value.params.fileInfo as any).name,
       description: (router.currentRoute.value.params.fileInfo as any)
         .description,
-      tagList: (router.currentRoute.value.params.fileInfo as any).tags,
-      origin: {
-        name: (router.currentRoute.value.params.fileInfo as any).originName,
-        address: (router.currentRoute.value.params.fileInfo as any)
-          .originAddress,
-      },
-      struct: {
-        name: (router.currentRoute.value.params.fileInfo as any).structuredName,
-        address: (router.currentRoute.value.params.fileInfo as any)
-          .structuredSource,
-      },
-      visual: {
-        name: (router.currentRoute.value.params.fileInfo as any).visualName,
-        address: (router.currentRoute.value.params.fileInfo as any)
-          .visualSource,
-      },
-      avatar: (router.currentRoute.value.params.fileInfo as any).avatar,
+      tags: (router.currentRoute.value.params.fileInfo as any).tags,
+      location: (router.currentRoute.value.params.fileInfo as any).location,
+      provider: (router.currentRoute.value.params.fileInfo as any).provider,
+      time: (router.currentRoute.value.params.fileInfo as any).time,
+      range: (router.currentRoute.value.params.fileInfo as any).range,
+      detail: (router.currentRoute.value.params.fileInfo as any).detail,
+      type: (router.currentRoute.value.params.fileInfo as any).type,
+      providerPhone: (router.currentRoute.value.params.fileInfo as any)
+        .providerPhone,
+      providerEmail: (router.currentRoute.value.params.fileInfo as any)
+        .providerEmail,
+      providerAddress: (router.currentRoute.value.params.fileInfo as any)
+        .providerAddress,
+      getOnline: (router.currentRoute.value.params.fileInfo as any).getOnline,
     });
-
-    const metaForm = reactive({
-      provider: (router.currentRoute.value.params.fileMeta as any).provider,
-      time: (router.currentRoute.value.params.fileMeta as any).time,
-      range: (router.currentRoute.value.params.fileMeta as any).range,
-      valueHtml: (router.currentRoute.value.params.fileMeta as any).detail,
-      phone: (router.currentRoute.value.params.fileMeta as any).provider_phone,
-      email: (router.currentRoute.value.params.fileMeta as any).provider_email,
-      address: (router.currentRoute.value.params.fileMeta as any)
-        .provider_address,
-      type: (router.currentRoute.value.params.fileMeta as any).type,
-      getMode: (router.currentRoute.value.params.fileMeta as any).get_online
-        ? "在线获取"
-        : "订单获取",
-    });
-
-    watch(
-      () => router.currentRoute.value.path,
-      () => {
-        if (router.currentRoute.value.name === "updateShare") {
-          form.name = (router.currentRoute.value.params.fileInfo as any).name;
-          form.description = (
-            router.currentRoute.value.params.fileInfo as any
-          ).description;
-          form.tagList = (
-            router.currentRoute.value.params.fileInfo as any
-          ).tags;
-          form.origin.name = (
-            router.currentRoute.value.params.fileInfo as any
-          ).originName;
-          form.origin.address = (
-            router.currentRoute.value.params.fileInfo as any
-          ).originAddress;
-          form.struct.name = (
-            router.currentRoute.value.params.fileInfo as any
-          ).structuredName;
-          form.struct.address = (
-            router.currentRoute.value.params.fileInfo as any
-          ).structuredSource;
-          form.visual.name = (
-            router.currentRoute.value.params.fileInfo as any
-          ).visualName;
-          form.visual.address = (
-            router.currentRoute.value.params.fileInfo as any
-          ).visualSource;
-          form.avatar = (
-            router.currentRoute.value.params.fileInfo as any
-          ).avatar;
-          metaForm.provider = (
-            router.currentRoute.value.params.fileMeta as any
-          ).provider;
-          metaForm.time = (
-            router.currentRoute.value.params.fileMeta as any
-          ).time;
-          metaForm.range = (
-            router.currentRoute.value.params.fileMeta as any
-          ).range;
-          metaForm.valueHtml = (
-            router.currentRoute.value.params.fileMeta as any
-          ).detail;
-          metaForm.phone = (
-            router.currentRoute.value.params.fileMeta as any
-          ).provider_phone;
-          metaForm.email = (
-            router.currentRoute.value.params.fileMeta as any
-          ).provider_email;
-          metaForm.address = (
-            router.currentRoute.value.params.fileMeta as any
-          ).provider_address;
-          metaForm.type = (
-            router.currentRoute.value.params.fileMeta as any
-          ).type;
-          metaForm.getMode = (router.currentRoute.value.params.fileMeta as any)
-            .get_online
-            ? "在线获取"
-            : "订单获取";
-        }
-      }
-    );
-
-    const validateOrigin = (rule: any, value: any, callback: any) => {
-      if (value.name === "" || value.address === "") {
-        return callback(new Error("原始数据不得为空！"));
-      } else {
-        callback();
-      }
-    };
 
     const fileRules = reactive({
       name: [{ required: true, message: "条目名不得为空！", trigger: "blur" }],
-      tagList: [{ required: true, message: "标签不得为空！", trigger: "blur" }],
-      origin: [{ required: true, validator: validateOrigin, trigger: "blur" }],
+      tags: [{ required: true, message: "标签不得为空！", trigger: "blur" }],
     });
     const metaRules = reactive({
       provider: [
@@ -484,10 +624,79 @@ export default defineComponent({
       type: [
         { required: true, message: "数据类型不得为空！", trigger: "blur" },
       ],
-      getMode: [
+      getOnline: [
         { required: true, message: "数据获取方式不得为空！", trigger: "blur" },
       ],
     });
+
+    const initMap = () => {
+      map = new mapBoxGl.Map({
+        container: container.value as HTMLElement,
+        style: "mapbox://styles/16651699376/ckmpu8kuk0h8r17msqpz351vf",
+        center: [121.18, 31.723],
+        zoom: 8,
+        accessToken:
+          "pk.eyJ1IjoiMTY2NTE2OTkzNzYiLCJhIjoiY2ttMDh5amJpMHE2dzJ3cTd5eWZsMGQxZyJ9.XErH3kSOuRC_OWXWCpDLkQ",
+      });
+      //自定义绘制面
+      const polygonDraw = new MapboxDraw({
+        controls: {
+          combine_features: false,
+          uncombine_features: false,
+          trash: true,
+          point: false,
+          line_string: false,
+        },
+      });
+
+      //绘制事件
+      const updateArea = function (e: any) {
+        if (e.type === "draw.create") {
+          if (polygonDraw.getAll().features.length > 1) {
+            polygonDraw.delete(polygonDraw.getAll().features[0].id as string);
+          }
+          form.location = [] as string[];
+          (e.features[0].geometry.coordinates[0] as number[][]).forEach(
+            (item) => {
+              form.location.push(item[0].toString());
+              form.location.push(item[1].toString());
+            }
+          );
+        } else if (e.type === "draw.update") {
+          form.location = [] as string[];
+          (e.features[0].geometry.coordinates[0] as number[][]).forEach(
+            (item) => {
+              form.location.push(item[0].toString());
+              form.location.push(item[1].toString());
+            }
+          );
+        } else if (e.type === "draw.delete") {
+          form.location = [] as string[];
+        }
+      };
+      map.addControl(polygonDraw, "top-right");
+      map.on("draw.create", updateArea);
+      map.on("draw.delete", updateArea);
+      map.on("draw.update", updateArea);
+      map.on("load", () => {
+        if (
+          (router.currentRoute.value.params.fileInfo as any).location.length > 0
+        ) {
+          polygonDraw.add({
+            type: "Feature",
+            properties: {},
+            geometry: {
+              type: "Polygon",
+              coordinates: [
+                getCoordinates(
+                  (router.currentRoute.value.params.fileInfo as any).location
+                ),
+              ],
+            },
+          });
+        }
+      });
+    };
 
     // 组件销毁时，也及时销毁编辑器
     onBeforeUnmount(() => {
@@ -496,26 +705,34 @@ export default defineComponent({
       editor.destroy();
     });
 
+    onMounted(async () => {
+      initMap();
+      console.log(router.currentRoute.value.params);
+      (router.currentRoute.value.params.files as any[]).forEach((item) => {
+        fileList.value.push(item.id);
+      });
+    });
+
     return {
       form,
+      container,
       defaultProps,
       options,
-      metaForm,
       editorRef,
       toolbarConfig,
       editorConfig,
       handleCreated,
       commit,
-      folderFlag,
-      selectedFile,
-      tagClose,
-      resourceType,
-      openFolder,
       fileRules,
       metaRules,
       fileRef,
       metaRef,
       upload,
+      uploadTh,
+      thumbName,
+      avatarName,
+      changeData,
+      tableData,
     };
   },
 });
@@ -536,11 +753,15 @@ export default defineComponent({
       .tag {
         margin-left: 15px;
       }
+      .container {
+        height: 400px;
+        width: 100%;
+      }
     }
   }
   .btn {
     text-align: center;
-    margin-bottom: 40px;
+    height: 80px;
   }
   /deep/.el-dialog {
     .el-dialog__header {

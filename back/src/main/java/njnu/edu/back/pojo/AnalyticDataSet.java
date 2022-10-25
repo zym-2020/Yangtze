@@ -18,11 +18,11 @@ import java.util.Date;
 @Data
 public class AnalyticDataSet {
     String id;
-    String name;
+    String fileName;
     String address;
-    String description;
-    String type;
-    Date uploadTime;
-    String benchmark;
-    String reference;
+    Date createTime;
+    String creator;
+    String visualType;
+    String visualId;
+    String projectId;
 }

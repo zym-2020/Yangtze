@@ -9,7 +9,7 @@
               :src="
                 avatarUrl === ''
                   ? 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
-                  : 'http://172.21.212.10:8002' + avatarUrl
+                  : 'http://localhost:8002/visual/getAvatar/' + avatarUrl
               "
               fit="cover"
             />
@@ -139,7 +139,11 @@
                   <use xlink:href="#icon-shangchuantouxiang"></use>
                 </svg>
               </div>
-              <avatar-upload class="upload" @upload="upload"></avatar-upload>
+              <avatar-upload
+                class="upload"
+                @upload="upload"
+                :pictureName="avatarUrl"
+              ></avatar-upload>
             </div>
             <div class="btn">
               <el-button size="small" @click="commit">提交</el-button>
@@ -155,13 +159,12 @@
               <user-resource></user-resource>
             </el-tab-pane>
             <el-tab-pane label="工程" name="project">
-              <!-- <user-project></user-project> -->
               <div>hahah</div>
             </el-tab-pane>
             <el-tab-pane label="共享条目" name="share">
               <user-share-file></user-share-file>
             </el-tab-pane>
-            <el-tab-pane label="消息" name="message" >
+            <el-tab-pane label="消息" name="message">
               <user-message></user-message>
             </el-tab-pane>
           </el-tabs>
@@ -192,7 +195,6 @@ export default defineComponent({
   setup() {
     const activeName = ref("resource");
     const store = useStore();
-    const flag = ref(false);
     const editFlag = ref(false);
     const avatar = ref<File>();
     const avatarUrl = computed(() => {
@@ -202,7 +204,6 @@ export default defineComponent({
       id: "",
       name: "",
       contactEmail: "",
-      roles: [],
       avatar: "",
       occupation: "",
       department: "",
@@ -213,7 +214,6 @@ export default defineComponent({
         userInfo.id = (data.data as any).id;
         userInfo.name = (data.data as any).name;
         userInfo.contactEmail = (data.data as any).contactEmail;
-        userInfo.roles = (data.data as any).roles;
         userInfo.avatar = (data.data as any).avatar;
         userInfo.occupation = (data.data as any).occupation;
         userInfo.department = (data.data as any).department;
@@ -222,17 +222,21 @@ export default defineComponent({
 
     const upload = (val: any) => {
       avatar.value = val;
-      flag.value = true;
     };
 
     const commit = async () => {
-      await store.dispatch("updateUserInfo", {
+      let avatarFile;
+      if (avatar.value === undefined) {
+        avatarFile = new Blob();
+      } else {
+        avatarFile = avatar.value;
+      }
+      store.dispatch("updateUserInfo", {
         name: userInfo.name,
-        avatar: avatar.value,
         contactEmail: userInfo.contactEmail,
         occupation: userInfo.occupation,
         department: userInfo.department,
-        flag: flag.value,
+        avatar: avatarFile as File,
       });
       editFlag.value = false;
     };

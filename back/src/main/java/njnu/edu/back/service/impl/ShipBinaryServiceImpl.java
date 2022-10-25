@@ -1,6 +1,6 @@
 package njnu.edu.back.service.impl;
 
-import njnu.edu.back.dao.ShipMapper;
+import njnu.edu.back.dao.main.ShipMapper;
 import njnu.edu.back.service.ShipBinaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

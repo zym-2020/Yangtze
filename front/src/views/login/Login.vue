@@ -19,10 +19,12 @@
           />
         </el-form-item>
       </el-form>
-      <el-button type="primary" @click="click(ruleFormRef)" class="btn">登录</el-button>
+      <el-button type="primary" @click="click(ruleFormRef)" class="btn"
+        >登录</el-button
+      >
       <div>
-        <el-button type="text" @click="toRegister">注册</el-button>
-        <el-button type="text">忘记密码？</el-button>
+        <el-button text @click="toRegister">注册</el-button>
+        <el-button text>忘记密码？</el-button>
       </div>
     </div>
   </div>
@@ -33,28 +35,27 @@ import { defineComponent, reactive, ref } from "vue";
 import { useStore } from "@/store/index";
 import router from "@/router";
 import type { FormInstance } from "element-plus";
-import { Base64 } from 'js-base64'
+import { Base64 } from "js-base64";
 export default defineComponent({
   setup() {
     const store = useStore();
-    const ruleFormRef = ref<FormInstance>()
+    const ruleFormRef = ref<FormInstance>();
     const form = reactive({
-      email: "123@qq.com",
+      email: "nhri_admin@163.com",
       password: "123",
     });
     const click = async (formEl: FormInstance | undefined) => {
-      if(!formEl) return
-      await formEl.validate(async valid => {
-        if(valid) {
+      if (!formEl) return;
+      await formEl.validate(async (valid) => {
+        if (valid) {
           let jsonData = {
             email: form.email,
-            password: Base64.btoa(form.password)
-          }
+            password: Base64.btoa(form.password),
+          };
           await store.dispatch("login", jsonData);
           router.push({ path: "/" });
         }
-      })
-      
+      });
     };
 
     const rules = reactive({
@@ -74,7 +75,7 @@ export default defineComponent({
       click,
       rules,
       toRegister,
-      ruleFormRef
+      ruleFormRef,
     };
   },
 });
@@ -94,9 +95,10 @@ video {
   z-index: -1;
 }
 .form {
+  position: absolute;
   width: 450px;
-  margin: 0 auto;
-  margin-top: 25vh;
+  top: 25vh;
+  left: calc(50vw - 225px);
   text-align: center;
   .btn {
     width: 450px;
@@ -107,7 +109,7 @@ video {
   }
   .el-form-item /deep/ .el-input__inner {
     background-color: rgba(255, 255, 255, 0.247);
-    color: white;
+    // color: white;
   }
 }
 </style>

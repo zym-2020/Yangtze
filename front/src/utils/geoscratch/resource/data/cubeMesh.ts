@@ -74,7 +74,7 @@ export class CubeMesh {
     }
 
     async setup(gl: WebGL2RenderingContext, shader: Shader) {
-        const meshData = await axios.get("http://172.21.212.10:8080/json/cube.json")
+        const meshData = await axios.get("http://localhost:8080/json/cube.json")
             .then((response) => {
                 return response.data;
             });

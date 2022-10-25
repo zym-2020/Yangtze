@@ -192,7 +192,7 @@ export default class ShipProcessor {
 
     public Add2Map_GeoJSON(map: mapboxgl.Map) {
         map.loadImage(
-            'http://172.21.212.10:8080/ship_icon.png', 
+            'http://localhost:8080/ship_icon.png', 
             (error, image) => {
                 if(error) throw error;
                 map.addImage('ship-marker', image as HTMLImageElement);

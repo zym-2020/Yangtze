@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="njnu.edu.back.dao.main.AnalyticDataSetMapper">
+
+    <select id="getAnalyticData" resultType="java.util.Map">
+        select id, file_name as "fileName", visual_type as "visualType", visual_id as "visualId" from analytic_dataset where project_id = #{projectId} order by create_time
+    </select>
+
+    <select id="addDraw" resultType="java.lang.String">
+        <if test="Id == ''">
+            insert into analytic_dataset values (default, #{fileName}, #{address}, now(), #{email}, #{visualType}, #{visualId}, #{projectId}) returning id::text
+        </if>
+        <if test="Id != ''">
+            insert into analytic_dataset values (#{Id}::uuid, #{fileName}, #{address}, now(), #{email}, #{visualType}, #{visualId}, #{projectId}) returning id::text
+        </if>
+    </select>
+
+    <delete id="delAnalyticData">
+        delete from analytic_dataset where id::text = #{id}
+    </delete>
+
+    <select id="getInfoById" resultType="java.util.Map">
+        select id, file_name as "fileName", address, create_time as "createTime", creator, visual_type as "visualType", visual_id as "visualId", project_id as "projectId"
+        from analytic_dataset where id::text = #{id}
+    </select>
+
+    <update id="rename">
+        update analytic_dataset set file_name = #{name} where id::text = #{id}
+    </update>
+
+</mapper>

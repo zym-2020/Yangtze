@@ -1,6 +1,7 @@
 <template>
   <div>
-    <div ref="chart" class="chart"></div>
+    <el-skeleton :rows="5" animated v-show="skeleton" />
+    <div ref="chart" class="chart" v-show="!skeleton"></div>
   </div>
 </template>
 
@@ -8,14 +9,14 @@
 import { defineComponent, onMounted, ref } from "vue";
 import * as echarts from "echarts";
 import { getLastOrNextFewDateBy } from "@/utils/common";
-import { getDataGroup } from '@/api/request'
-import router from '@/router'
+import { getDataGroup } from "@/api/request";
+import router from "@/router";
 export default defineComponent({
   setup() {
     const chart = ref<HTMLElement>();
+    const skeleton = ref(true);
 
     const chartInit = (dateList: any[], valueList: any[]) => {
-
       const option = {
         visualMap: [
           {
@@ -63,29 +64,37 @@ export default defineComponent({
 
     onMounted(async () => {
       let values: any[];
-      const data = await getDataGroup((router.currentRoute.value.params as any).id, -29)
-      if(data != null) {
-        if((data as any).code === 0) {
-          values = data.data
+      const data = await getDataGroup(
+        (router.currentRoute.value.params as any).id,
+        -29
+      );
+      if (data != null) {
+        if ((data as any).code === 0) {
+          values = data.data;
         }
       }
-      const nowDate = new Date()
-      const dataList = getLastOrNextFewDateBy(nowDate.toLocaleDateString(), -30)
-      const valueList:any[] = []
+      skeleton.value = false;
+      const nowDate = new Date();
+      const dataList = getLastOrNextFewDateBy(
+        nowDate.toLocaleDateString(),
+        -30
+      );
+      const valueList: any[] = [];
       dataList.forEach((item, index) => {
-        for(let i = 0;i < values.length;i++) {
-          if(item === values[i].date) {
-            valueList.push(values[i].sum)
-            return
+        for (let i = 0; i < values.length; i++) {
+          if (item === values[i].date) {
+            valueList.push(values[i].sum);
+            return;
           }
         }
-        valueList.push(0)
-      })
+        valueList.push(0);
+      });
       chartInit(dataList, valueList);
     });
 
     return {
       chart,
+      skeleton,
     };
   },
 });

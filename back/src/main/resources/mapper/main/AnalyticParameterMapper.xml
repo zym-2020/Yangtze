@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="njnu.edu.back.dao.main.AnalyticParameterMapper">
+    <select id="findByType" resultType="java.util.Map">
+        <if test="type == 'dem'">
+            select file_id as "fileId", data_list_id as "dataListId", file_name as "fileName", name as "dataListName", f.visual_id as "visualId", f.visual_type as "visualType"
+            from analytic_parameter a, files f, data_list d
+            where a.type = #{type} and f.id::text = a.file_id and d.id::text = a.data_list_id
+        </if>
+    </select>
+
+    <select id="findAddressByBenchmarkIdAndReferId" resultType="java.lang.String">
+        select address from analytic_parameter where benchmark_id = #{benchmarkId} and refer_id = #{referId} and type = #{type}
+    </select>
+
+    <select id="findByBenchmarkIdAndReferId" resultType="java.util.Map">
+        select id, type, file_id as "fileId", data_list_id as "dataListId", address, content
+        from analytic_parameter where benchmark_id = #{benchmarkId} and refer_id = #{referId} and type = #{type}
+    </select>
+
+    <select id="findSlope" resultType="java.util.Map">
+        select id, address, content from analytic_parameter where file_id = #{demId} and type = 'slope'
+    </select>
+
+    <select id="findInfoById" resultType="java.util.Map">
+        select id, type, file_id as "fileId", data_list_id as "dataListId", address, content, benchmark_id as "benchmarkId", refer_id as "referId"
+        from analytic_parameter
+        where id::text = #{id}
+    </select>
+</mapper>

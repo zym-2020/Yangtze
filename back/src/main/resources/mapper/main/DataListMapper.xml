@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="njnu.edu.back.dao.main.DataListMapper">
+    <insert id="addDataList" parameterType="njnu.edu.back.pojo.DataList">
+        <if test="id != null">
+            insert into data_list values(#{id}, #{name}, #{location, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}, #{description}, #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler},
+            #{creator}, now(), now(), #{download}, #{watch}, #{avatar}, #{status}, #{provider}, #{time}, #{range}, #{type}, #{providerPhone},
+            #{providerEmail}, #{providerAddress}, #{getOnline}, #{detail}, #{thumbnail})
+        </if>
+        <if test="id == null">
+            insert into data_list values(default, #{name}, #{location, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}, #{description}, #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler},
+            #{creator}, now(), now(), #{download}, #{watch}, #{avatar}, #{status}, #{provider}, #{time}, #{range}, #{type}, #{providerPhone},
+            #{providerEmail}, #{providerAddress}, #{getOnline}, #{detail}, #{thumbnail})
+        </if>
+
+    </insert>
+
+    <update id="updateDataList">
+        update data_list
+        set name = #{dataList.name}, location = #{dataList.location, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}, description = #{dataList.description}, tags = #{dataList.tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler},
+            update_time = now(), provider = #{dataList.provider}, time = #{dataList.time}, range = #{dataList.range}, type = #{dataList.type}, provider_phone = #{dataList.providerPhone}, provider_email = #{dataList.providerEmail},
+            provider_address = #{dataList.providerAddress}, get_online = #{dataList.getOnline}, detail = #{dataList.detail}
+            <if test="dataList.avatar != ''">
+                ,avatar = #{dataList.avatar}
+            </if>
+            <if test="dataList.thumbnail != ''">
+                ,thumbnail = #{dataList.thumbnail}
+            </if>
+        where id::text = #{id}
+    </update>
+
+    <select id="getFileInfo" resultType="java.util.Map">
+        select id, name, location, description, tags, creator, create_time as "createTime", update_time as "updateTime", download, watch, avatar, status,
+               provider, time, range, type, provider_phone as "providerPhone", provider_email as "providerEmail", provider_address as "providerAddress", get_online as "getOnline", detail, thumbnail
+        from data_list where id::text = #{id}
+    </select>
+
+    <select id="getFileInfoAndUserInfo" resultType="java.util.Map">
+        select d.id as id, d.name as name, location, description, tags, creator, create_time as "createTime", update_time as "updateTime", download, watch, d.avatar as avatar, status,
+               provider, time, range, type, provider_phone as "providerPhone", provider_email as "providerEmail", provider_address as "providerAddress", get_online as "getOnline", detail, thumbnail,
+               u.name as "userName", u.avatar as "userAvatar"
+        from data_list d, users u
+        where d.id::text = #{id} and creator = email
+    </select>
+
+    <update id="addWatchCount">
+        update data_list set watch = watch + 1 where id::text = #{id}
+    </update>
+
+    <update id="addDownloadCount">
+        update data_list set download = download + 1 where id::text = #{id}
+    </update>
+
+    <select id="fuzzyQuery" resultType="java.util.Map">
+        select data_list.id as "id", data_list.name as "name", location, description, tags, creator, create_time as "createTime", update_time as "updateTime", download, watch, data_list.avatar as "avatar", status,
+               provider, time, range, type, provider_phone as "providerPhone", provider_email as "providerEmail", provider_address as "providerAddress", get_online as "getOnline", detail, thumbnail, users.avatar as "userAvatar", users.name as "userName"
+        from data_list, users
+        where
+            users.email = data_list.creator
+            <if test="status == -1 or status == 0 or status == 1">
+                and status = #{status}
+            </if>
+            <if test="keyword != ''">
+                and data_list.name like #{keyword}
+            </if>
+            <if test="type != ''">
+                and data_list.type = #{type}
+            </if>
+            <if test="tags.length > 0">
+                and tags @> #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}::text[]
+            </if>
+            <if test="flag">
+                order by ${property} asc, data_list.id asc
+                limit #{size} offset #{start};
+            </if>
+            <if test="!flag">
+                order by ${property} desc, data_list.id desc
+                limit #{size} offset #{start};
+            </if>
+    </select>
+
+    <select id="countFuzzyQuery" resultType="java.lang.Integer">
+        select count(*) from data_list
+        where
+            <if test="status == 2">
+                (status = 1 or status = 0 or status = -1)
+            </if>
+            <if test="status != 2">
+                status = #{status}
+            </if>
+            <if test="type != ''">
+                and type = #{type}
+            </if>
+            <if test="keyword != ''">
+                and name like #{keyword}
+            </if>
+            <if test="tags.length > 0">
+                and tags @> #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}::text[]
+            </if>
+    </select>
+
+    <delete id="deleteById">
+        delete from data_list where id::text = #{id}
+    </delete>
+
+    <select id="pageQueryByEmail" resultType="java.util.Map">
+        select data_list.id as "id", data_list.name as "name", location, description, tags, creator, create_time as "createTime", update_time as "updateTime", download, watch, data_list.avatar as "avatar", status,
+               provider, time, range, type, provider_phone as "providerPhone", provider_email as "providerEmail", provider_address as "providerAddress", get_online as "getOnline", detail, thumbnail, users.avatar as "userAvatar", users.name as "userName"
+        from data_list, users
+        where creator = #{email} and users.email = data_list.creator
+        <if test="keyword != ''">
+            and data_list.name like #{keyword}
+        </if>
+        order by create_time asc
+        limit #{size} offset #{start};
+    </select>
+
+    <select id="countPageQueryByEmail" resultType="java.lang.Integer">
+        select count(*) from data_list where creator = #{email}
+        <if test="keyword != ''">
+            and data_list.name like #{keyword}
+        </if>
+    </select>
+
+    <update id="updateStatusById">
+        update data_list set status = #{status}
+        where id::text = #{id}
+    </update>
+</mapper>

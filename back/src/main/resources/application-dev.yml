@@ -6,22 +6,20 @@ minio:
 
 spring:
   datasource:
-#    url: jdbc:postgresql://localhost:5432/testdb?stringtype=unspecified
-#    username: postgres
-#    password: 123
-#    driver-class-name: org.postgresql.Driver
     main:
-      driver-class-name: org.postgresql.Driver
-      jdbc-url: jdbc:postgresql://localhost:5432/testdb?stringtype=unspecified
+      jdbc-url: jdbc:postgresql://localhost:5432/dataset?stringtype=unspecified
       username: postgres
       password: 123
+      driver-class-name: org.postgresql.Driver
 
     shp:
-      driver-class-name: org.postgresql.Driver
-      jdbc-url: jdbc:postgresql://localhost:5432/shp_data?stringtype=unspecified
+      jdbc-url: jdbc:postgresql://localhost:5432/shp_dataset?stringtype=unspecified
       username: postgres
       password: 123
-
+      driver-class-name: org.postgresql.Driver
+    osm:
+      jdbc-url: jdbc:sqlite:D:\zhuomian\osm\2020-10-planet-14.mbtiles
+      driver-class-name: org.sqlite.JDBC
     #配置druid连接池
     druid:
       initial-size: 5 #连接池初始化大小
@@ -32,10 +30,9 @@ spring:
   #      stat-view-servlet: #访问监控网页的登录用户名和密码
   #        login-username: druid
   #        login-password: druid
-
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/test
+#  data:
+#    mongodb:
+#      uri: mongodb://localhost:27017/test
 
   redis:
     host: localhost
@@ -50,6 +47,8 @@ spring:
         max-active: 10  #最大连接数
         max-wait: 1000ms  #最大阻塞时间
         shutdown-timeout: 200ms
+
+
 
   #mongodb地址
 #  data:
@@ -67,3 +66,20 @@ contourdir:
   D:\Python\Python39\Lib\site-packages\osgeo\
 shp2pgsqldir:
   D:\App\postgresql\bin\
+datadir:
+  E:\水科院\数据\
+
+
+
+pictureAddress:
+  E:\yangtze\other\picture\
+visualAddress:
+  E:\yangtze\other\visual\
+tempAddress:
+  E:\yangtze\other\temp\
+basePath:
+  E:\yangtze\user\
+analyseAddress:
+  E:\yangtze\other\analyse\
+mapAddress:
+  E:\yangtze\other\map\

@@ -5,9 +5,11 @@ import njnu.edu.back.common.result.ResultEnum;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Random;
 
 /**
  * Created with IntelliJ IDEA.
@@ -82,5 +84,36 @@ public class CommonUtils {
             return tmp;
         }
         return utfBytes;
+    }
+
+    public static String getRandomCharStr(int n) {
+        String codes = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        Random random = new Random();
+        StringBuilder randomStr = new StringBuilder();
+        for (int i = 0; i < n; i++) {
+            randomStr.append(codes.charAt(random.nextInt(62)));
+        }
+        return randomStr.toString();
+    }
+
+    public static String getFileSize(long size) {
+        String fileSize = "";
+        DecimalFormat df = new DecimalFormat("0.0");
+        if(size <= 1024) {
+            fileSize =  "1.0 KB";
+        } else if(size < 1048576) {
+            fileSize = df.format(size / 1024) + " KB";
+        } else if(size == 1048576) {
+            fileSize = "1.0 MB";
+        } else if(size > 1048576 && size < 1073741824l) {
+            fileSize = df.format(size / (1024 *1024)) + " MB";
+        } else if(size > 1048576 && size == 1073741824l) {
+            fileSize = "1.0 GB";
+        } else if(size > 1073741824 && size < 1099511627776l) {
+            fileSize = df.format(size / (1024 * 1024 * 1024)) + " GB";
+        } else {
+            fileSize = "文件超过1.0 TB";
+        }
+        return fileSize;
     }
 }

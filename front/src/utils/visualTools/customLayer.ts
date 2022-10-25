@@ -63,19 +63,19 @@ class TBVSLayer extends CustomLayer {
         this.framebuffer.push(gl.canvas.height);
 
         // Get vertex shader source
-        const vertexSource = await axios.get("http://172.21.212.10:8080/shaders/tbvs.vert")
+        const vertexSource = await axios.get("http://localhost:8080/shaders/tbvs.vert")
         .then((response) => {
             return response.data;
         })
         // Get fragment shader source
-        const fragmentSource = await axios.get("http://172.21.212.10:8080/shaders/tbvs.frag")
+        const fragmentSource = await axios.get("http://localhost:8080/shaders/tbvs.frag")
         .then((response) => {
             return response.data;
         })
         this.shader = new Shader(gl, vertexSource, fragmentSource);
 
         // Create a texture
-        this.texture = loadTexture(gl, "http://172.21.212.10:8080/images/TBVS_88.png", 0);
+        this.texture = loadTexture(gl, "http://localhost:8080/images/TBVS_88.png", 0);
 
         // this.symbols?.setup(gl, this.shader);
 
@@ -191,7 +191,7 @@ class TLayer extends CustomLayer {
         this.scene = new three.Scene();
         this.camera = new three.PerspectiveCamera();
 
-        this.texture = new three.TextureLoader().load('http://172.21.212.10:8080/textures/TBVS_88.png', (texture)=> {console.log("this is ", texture.image.width)});
+        this.texture = new three.TextureLoader().load('http://localhost:8080/textures/TBVS_88.png', (texture)=> {console.log("this is ", texture.image.width)});
         this.texture.flipY = false;
         console.log("texture? ", this.texture);
 
@@ -204,11 +204,11 @@ class TLayer extends CustomLayer {
             u_matrix: {value: new three.Matrix4()}, 
             u_symbolMatrix: {value: new three.Matrix4()}
         };
-        const vertexShader = await axios.get("http://172.21.212.10:8080/shaders/tbvs_three.vert")
+        const vertexShader = await axios.get("http://localhost:8080/shaders/tbvs_three.vert")
                             .then((response) => {
                                 return response.data;
                             });
-        const fragmentShader = await axios.get("http://172.21.212.10:8080/shaders/tbvs_three.frag")
+        const fragmentShader = await axios.get("http://localhost:8080/shaders/tbvs_three.frag")
                             .then((response) => {
                                 return response.data;
                             });
@@ -382,11 +382,11 @@ class mLayer extends CustomLayer {
             glslVersion: three.GLSL3,
             uniforms: {
             },
-            vertexShader: await axios.get("http://172.21.212.10:8080/shaders/tbvs_three.vert")
+            vertexShader: await axios.get("http://localhost:8080/shaders/tbvs_three.vert")
                                 .then((response) => {
                                     return response.data;
                                 }), 
-            fragmentShader: await axios.get("http://172.21.212.10:8080/shaders/tbvs_three.frag")
+            fragmentShader: await axios.get("http://localhost:8080/shaders/tbvs_three.frag")
                                 .then((response) => {
                                     return response.data;
                                 }),

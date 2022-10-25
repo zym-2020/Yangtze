@@ -1,14 +1,18 @@
 <template>
   <div class="share-main">
-    <el-scrollbar height="80vh" :always="false" v-if="fileList.length > 0">
+    <div class="head">
+      <el-input v-model="search" placeholder="搜索" @keyup.enter="searchFile" />
+      <el-button type="primary" plain @click="searchFile">搜索</el-button>
+      <el-button type="info" plain @click="toAdd">创建共享条目</el-button>
+    </div>
+    <el-scrollbar :always="false" v-if="fileList.length > 0">
       <div v-for="(item, index) in fileList" :key="index">
         <div class="card">
-          <data-card :fileInfo="item" @clickName="toShareFile(index)">
+          <data-card :fileInfo="item">
             <template #status>
               <div v-if="item.status === 1" class="online">
                 <el-tag type="success">Online</el-tag>
               </div>
-
               <div v-else class="offline">
                 <el-tag type="info">Offline</el-tag>
               </div>
@@ -29,7 +33,7 @@
                         >
                         <el-dropdown-item
                           v-if="item.status === 1"
-                          @click="operate(2, item)"
+                          @click="operate(2, item, index)"
                           >下线</el-dropdown-item
                         >
                         <el-dropdown-item
@@ -39,6 +43,9 @@
                         >
                         <el-dropdown-item @click="operate(4, item)"
                           >删除</el-dropdown-item
+                        >
+                        <el-dropdown-item @click="operate(5, item, index)"
+                          >跳转</el-dropdown-item
                         >
                       </el-dropdown-menu>
                     </template>
@@ -57,7 +64,7 @@
       background
       layout="prev, pager, next"
       :total="total"
-      :current-page="currentPage"
+      v-model:current-page="currentPage"
       @current-change="currentChange"
       :hide-on-single-page="true"
     />
@@ -66,24 +73,20 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
-import {
-  pageQueryByEmail,
-  offlineById,
-  deleteShareFileAsMember,
-} from "@/api/request";
-import { notice } from "@/utils/notice";
+import { pageQueryByEmail, updateStatusById } from "@/api/request";
 import DataCard from "@/components/cards/DataCard.vue";
 import { ElMessageBox } from "element-plus";
 import router from "@/router";
-import { addMessage, QueryByTime, examineById } from "@/api/request";
 export default defineComponent({
   components: { DataCard },
   setup() {
     const fileList = ref<any[]>([]);
     const total = ref(0);
     const currentPage = ref(1);
+    const search = ref("");
+    const keyword = ref("");
 
-    const operate = async (number: number, info: any) => {
+    const operate = async (number: number, info: any, index: number) => {
       if (number === 1) {
         router.push({
           name: "updateShare",
@@ -102,14 +105,10 @@ export default defineComponent({
           }
         )
           .then(async () => {
-            const data = await offlineById(info.id);
+            const data = await updateStatusById(info.id, -1);
             if (data != null) {
               if ((data as any).code === 0) {
-                fileList.value.forEach((item) => {
-                  if (item.id === info.id) {
-                    item.status = -1;
-                  }
-                });
+                fileList.value[index].status = -1;
               }
             }
           })
@@ -123,68 +122,68 @@ export default defineComponent({
             cancelButtonText: "取消",
             type: "warning",
           }
-        ).then(async () => {
-          const jsonCache = JSON.stringify(info);
-          const data = await addMessage({
-            id: "",
-            dataName: info.name,
-            dataUploadTime: "",
-            dataExamineTime: "2012-02-25",
-            dataCache: jsonCache,
-            messageRequest: "fff",
-            reply: false,
-            fileId: info.id,
-            messageSender: "fgz",
-            messageReceiver: " ",
-            messageResponse: "examine",
-            messageType: "online",
-            replyUser:false,
-          });
-          console.log(info.id)
-          await examineById(info.id);
-        });
+        ).then(async () => {});
       } else if (number === 4) {
         ElMessageBox.confirm("您确定要删除该条目吗？", "警告", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
         })
-          .then(async () => {
-            const data = await deleteShareFileAsMember(
-              info.id,
-              currentPage.value - 1,
-              10
-            );
-            if ((data as any).code === 0) {
-              fileList.value = data.data;
-              notice("success", "成功", "删除成功！");
-            }
-          })
+          .then(async () => {})
           .catch(() => {});
+      } else if (number === 5) {
+        router.push({
+          name: "shareFile",
+          params: {
+            id: fileList.value[index].id,
+            fileInfo: JSON.stringify(fileList.value[index]),
+          },
+        });
       }
     };
 
-    const currentChange = () => {};
+    const currentChange = async (val: number) => {
+      const jsonData = {
+        page: val - 1,
+        size: 10,
+        keyword: keyword.value,
+      };
+      const data = await pageQueryByEmail(jsonData);
+      if (data != null && (data as any).code === 0) {
+        fileList.value = data.data.list;
+        total.value = data.data.total;
+        search.value = keyword.value;
+      }
+    };
 
-    const toShareFile = (index: number) => {
-      router.push({
-        name: "shareFile",
-        params: {
-          id: fileList.value[index].id,
-          fileInfo: JSON.stringify(fileList.value[index]),
-        },
-      });
+    const searchFile = async () => {
+      keyword.value = search.value;
+      const jsonData = {
+        page: currentPage.value - 1,
+        size: 10,
+        keyword: keyword.value,
+      };
+      const data = await pageQueryByEmail(jsonData);
+      if (data != null && (data as any).code === 0) {
+        fileList.value = data.data.list;
+        total.value = data.data.total;
+      }
+    };
+
+    const toAdd = () => {
+      router.push({ name: "share" });
     };
 
     onMounted(async () => {
-      const data = await pageQueryByEmail(0, 10);
-      if (data != null) {
-        if ((data as any).code === 0) {
-          fileList.value = data.data.list;
-          total.value = data.data.total;
-        } else {
-          notice("error", "失败", (data as any).msg);
-        }
+      const jsonData = {
+        page: 0,
+        size: 10,
+        keyword: "",
+      };
+      const data = await pageQueryByEmail(jsonData);
+      if (data != null && (data as any).code === 0) {
+        fileList.value = data.data.list;
+        total.value = data.data.total;
       }
     });
 
@@ -194,7 +193,9 @@ export default defineComponent({
       total,
       currentPage,
       currentChange,
-      toShareFile,
+      search,
+      searchFile,
+      toAdd,
     };
   },
 });
@@ -204,6 +205,16 @@ export default defineComponent({
 .share-main {
   height: 80vh;
   border-bottom: solid 0.5px #ebeef5;
+  .head {
+    height: 50px;
+    .el-input {
+      width: 400px;
+      margin-right: 20px;
+    }
+  }
+  .el-scrollbar {
+    height: calc(100% - 50px);
+  }
   .card {
     border: 1px solid #dcdfe6;
     box-sizing: border-box;

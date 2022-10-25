@@ -15,12 +15,15 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import type { UploadFile } from "element-plus";
-import router from '@/router'
 export default defineComponent({
-
+  props: {
+    pictureName: {
+      type: String
+    }
+  },
   emits: ["upload"],
   setup(props, context) {
-    const imageUrl = ref('');
+    const imageUrl = ref("");
     const file = ref<File>();
 
     const avatar = ref<HTMLElement>();
@@ -32,16 +35,19 @@ export default defineComponent({
       }
     };
 
+    const initPicture = () => {
+      imageUrl.value = ""
+    }
+
     onMounted(() => {
-      const fileInfo: any = router.currentRoute.value.params.fileInfo
-      if(fileInfo != undefined && fileInfo != null && fileInfo.avatar != '' && fileInfo.avatar != undefined && fileInfo.avatar != null) {
-        console.log(1)
-        imageUrl.value = "http://172.21.212.10:8002" + fileInfo.avatar
+      if(props.pictureName != "") {
+        imageUrl.value = `http://localhost:8002/visual/getAvatar/${props.pictureName}`
       }
-    })
+    });
 
     return {
       imageUrl,
+      initPicture,
       change,
       avatar,
     };
@@ -50,7 +56,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-/deep/ .el-upload {
+:deep() .el-upload {
   border: 1px dashed #8c939d;
   border-radius: 6px;
   cursor: pointer;
@@ -64,7 +70,7 @@ export default defineComponent({
     display: block;
   }
 }
-/deep/ .el-upload:hover {
+:deep() .el-upload:hover {
   border-color: #a6bed7;
 }
 .avatar-uploader-icon {

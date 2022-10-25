@@ -33,7 +33,7 @@ export const dateFormat = (date: string, format?: string) => {
 };
 
 export const uuid = (len?: number, radix?: number) => {
-  const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
+  const chars = '0123456789abcdefghijklmnopqrstuvwxyz'.split('');
   const uuid = []
   let i
   radix = radix || chars.length

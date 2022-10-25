@@ -6,6 +6,55 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "2471351",
+      "name": "多行输入",
+      "font_class": "duohangshuru",
+      "unicode": "e66c",
+      "unicode_decimal": 58988
+    },
+    {
+      "icon_id": "4933870",
+      "name": "面",
+      "font_class": "mian",
+      "unicode": "ec1e",
+      "unicode_decimal": 60446
+    },
+    {
+      "icon_id": "4933871",
+      "name": "线",
+      "font_class": "xian",
+      "unicode": "ec1f",
+      "unicode_decimal": 60447
+    },
+    {
+      "icon_id": "9149479",
+      "name": "输入框",
+      "font_class": "shurukuang",
+      "unicode": "e71f",
+      "unicode_decimal": 59167
+    },
+    {
+      "icon_id": "5379903",
+      "name": "info",
+      "font_class": "info",
+      "unicode": "e705",
+      "unicode_decimal": 59141
+    },
+    {
+      "icon_id": "5318218",
+      "name": "地图",
+      "font_class": "ditu",
+      "unicode": "e68b",
+      "unicode_decimal": 59019
+    },
+    {
+      "icon_id": "22236022",
+      "name": "添加应用",
+      "font_class": "tianjiayingyong",
+      "unicode": "e658",
+      "unicode_decimal": 58968
+    },
+    {
       "icon_id": "1040940",
       "name": "圆形小颗粒",
       "font_class": "1301",
