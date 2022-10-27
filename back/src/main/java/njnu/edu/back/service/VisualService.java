@@ -52,6 +52,8 @@ public interface VisualService {
 
     JSONObject getTianDiTuImage();
 
+    void scenario(String type, int x, int y, int z, HttpServletResponse response);
+
     void addVisualFile(VisualFile visualFile);
 
     void addSameNameVisualFile(String type, String address);

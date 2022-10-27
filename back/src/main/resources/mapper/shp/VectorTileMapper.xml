@@ -16,4 +16,5 @@
             from (select ST_Force2D(geom) AS geom_2d FROM ${name}) as t
                 ) as result
     </select>
+
 </mapper>

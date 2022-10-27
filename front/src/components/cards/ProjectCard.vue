@@ -3,7 +3,13 @@
     <el-card class="card" shadow="hover">
       <template #header>
         <div class="card-header" :title="projectInfo.projectName">
-          <strong>{{ projectInfo.projectName }}</strong>
+          <div class="icon">
+            <el-icon v-if="projectInfo.isPublic" color="#21d86d"><Unlock /></el-icon>
+            <el-icon v-else color="#dd001b"><Lock /></el-icon>
+          </div>
+          <div class="text">
+            <strong>{{ projectInfo.projectName }}</strong>
+          </div>
         </div>
       </template>
 
@@ -28,12 +34,13 @@
           </svg>
           <strong class="text">{{ getDate(projectInfo.createTime) }}</strong>
         </div>
-        <div class="user" :title="projectInfo.userName">
+        <div class="user" :title="projectInfo.userName" v-if="flag">
           <svg style="width: 20px; height: 20px; margin-top: 5px">
             <use xlink:href="#icon-nickname"></use>
           </svg>
           <strong class="text">{{ projectInfo.userName }}</strong>
         </div>
+        <slot name="operate" v-else />
       </div>
     </el-card>
   </div>
@@ -47,6 +54,9 @@ export default defineComponent({
     projectInfo: {
       type: Object,
     },
+    flag: {
+      type: Boolean,
+    },
   },
   setup(props) {
     const projectInfo = computed(() => {
@@ -57,9 +67,14 @@ export default defineComponent({
       return dateFormat(date, "yyyy-MM-dd");
     };
 
+    const flag = computed(() => {
+      return props.flag;
+    });
+
     return {
       projectInfo,
       getDate,
+      flag,
     };
   },
 });
@@ -78,13 +93,21 @@ export default defineComponent({
       padding: 10px;
     }
     .card-header {
-      height: 20px;
-      line-height: 20px;
-      width: 248px;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      -o-text-overflow: ellipsis;
+      display: flex;
+
+      .icon {
+        width: 20px;
+        margin-top: 1px;
+      }
+      .text {
+        height: 20px;
+        line-height: 20px;
+        width: 228px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        -o-text-overflow: ellipsis;
+      }
     }
     .des {
       display: flex;

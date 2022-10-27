@@ -421,6 +421,30 @@ public class VisualServiceImpl implements VisualService {
     }
 
     @Override
+    public void scenario(String type, int x, int y, int z, HttpServletResponse response) {
+        TileBox tileBox;
+        byte[] bytes;
+        if(type.equals("tide")) {
+            tileBox = TileUtil.tile2boundingBox(x, y, z, "tide_station");
+            tileBox.setVisualId("tide");
+            bytes = (byte[]) vectorTileMapper.getVictorTile(tileBox);
+        } else {
+            bytes = new byte[1024];
+        }
+        ServletOutputStream sos;
+        try {
+            response.setContentType("application/octet-stream");
+            sos = response.getOutputStream();
+            sos.write(bytes);
+            sos.flush();
+            sos.close();
+        } catch (Exception e) {
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
+
+    }
+
+    @Override
     public void addVisualFile(VisualFile visualFile) {
         visualFileMapper.addVisualFile(visualFile);
     }

@@ -192,6 +192,13 @@ public class VisualController {
     }
 
 
+    @CrossOrigin
+    @RequestMapping(value = "/scenario/{type}/{x}/{y}/{z}", method = RequestMethod.GET)
+    public void scenario(@PathVariable String type, @PathVariable int x, @PathVariable int y, @PathVariable int z, HttpServletResponse response) {
+        visualService.scenario(type, x, y, z, response);
+    }
+
+
 
 
 

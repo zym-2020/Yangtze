@@ -159,7 +159,7 @@
               <user-resource></user-resource>
             </el-tab-pane>
             <el-tab-pane label="工程" name="project">
-              <div>hahah</div>
+              <user-project />
             </el-tab-pane>
             <el-tab-pane label="共享条目" name="share">
               <user-share-file></user-share-file>

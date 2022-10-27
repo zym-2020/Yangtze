@@ -21,6 +21,7 @@
             <project-card
               class="card"
               :projectInfo="item"
+              :flag="true"
               @click="toProject({ id: item.id, projectInfo: item })"
             ></project-card>
           </div>
@@ -40,7 +41,12 @@
       </el-pagination>
     </div>
 
-    <el-dialog v-model="createFlag" width="600px" :show-close="false">
+    <el-dialog
+      v-model="createFlag"
+      width="500px"
+      :show-close="false"
+      title="创建项目"
+    >
       <create-project @createProject="createProject"></create-project>
     </el-dialog>
   </div>
@@ -53,6 +59,9 @@ import ProjectCard from "@/components/cards/ProjectCard.vue";
 import router from "@/router";
 import CreateProject from "@/components/tools/CreateProject.vue";
 import PageHeader from "@/components/page/PageHeader.vue";
+import NProgress from "nprogress";
+
+NProgress.configure({ showSpinner: false });
 export default defineComponent({
   components: {
     ProjectCard,
@@ -80,6 +89,7 @@ export default defineComponent({
     });
 
     const searchClick = async () => {
+      NProgress.start();
       keyword.value = search.value;
       const data = await getAll({
         size: 12,
@@ -94,6 +104,7 @@ export default defineComponent({
           currentPage.value = 1;
         }
       }
+      NProgress.done();
     };
 
     const currentChange = async (page: number) => {
@@ -110,13 +121,12 @@ export default defineComponent({
       search.value = keyword.value;
     };
 
-    const createProject = (val: any) => {
+    const createProject = (val: string) => {
       createFlag.value = false;
       router.push({
         name: "project",
         params: {
-          id: val.id,
-          projectInfo: JSON.stringify(val),
+          id: val,
         },
       });
     };
@@ -148,7 +158,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .main {
-  height: calc(100vh - 60px);
+  height: calc(100vh - 63px);
   position: relative;
   .search {
     // height: 50px;
@@ -187,7 +197,12 @@ export default defineComponent({
 }
 /deep/.el-dialog {
   .el-dialog__header {
-    padding: 0;
+    padding: 10px;
+    margin: 0;
+    background: #25aef3;
+    .el-dialog__title {
+      color: white;
+    }
   }
   .el-dialog__body {
     padding: 0;

@@ -31,47 +31,6 @@ export async function setUserInfo(formData: FormData) {
 }
 
 
-//========================VectorTile相关接口=================================
-
-
-//========================Project相关接口=================================
-
-export async function addProjectWithoutAvatar(jsonData: ProjectJsonData) {
-    return await post(`/project/addProjectWithoutAvatar`, jsonData)
-}
-
-export async function addProjectWithAvatar(formData: FormData) {
-    return await post(`/project/addProjectWithAvatar`, formData)
-}
-
-export async function getProjectsByEmail(email: string) {
-    return await get(`/project/getProjectsByEmail/${email}`)
-}
-
-export async function addLayers(jsonData: { id: string, name: string, type: string, demSlopeId?: string }[], projectId: string) {
-    return await patch(`/project/addLayers/${projectId}`, jsonData)
-}
-
-export async function getSectionValue(projectId: string, sectionId: string, valueIds: string[]) {
-    return await post(`/project/getSectionValue/${projectId}/${sectionId}`, valueIds)
-}
-
-export async function delLayer(projectId: string, layerId: string) {
-    return await del(`/project/delLayer/${projectId}/${layerId}`)
-}
-
-
-export async function addSectionContrast(projectId: string, layer: Layer) {
-    return await post(`/project/addSectionContrast/${projectId}`, layer)
-}
-
-export async function updateBasemap(jsonData: { projectId: string, url: string }) {
-    return await patch(`/project/updateBasemap`, jsonData)
-}
-
-export async function updatePublicState(jsonData: { projectId: string, state: boolean }) {
-    return await patch(`/project/updatePublicState`, jsonData)
-}
 
 
 //========================file相关接口=================================
@@ -500,3 +459,31 @@ export async function getLayersInfo(projectId: string) {
     return await get(`/project/getLayersInfo/${projectId}`)
 }
 
+export async function updateBasemap(jsonData: { projectId: string, url: string }) {
+    return await patch(`/project/updateBasemap`, jsonData)
+}
+
+export async function updatePublicState(jsonData: { projectId: string, state: boolean }) {
+    return await patch(`/project/updatePublicState`, jsonData)
+}
+
+export async function addProject(formData: FormData) {
+    return await post(`/project/addProject`, formData)
+}
+
+export async function getAllByEmail(page: number, size: number) {
+    return await get(`/project/getAllByEmail/${page}/${size}`)
+}
+
+export async function updateProjectInfo(formData: FormData) {
+    return await patch(`/project/updateProjectInfo`, formData)
+}
+
+export async function deleteProject(projectId: string) {
+    return await del(`/project/deleteProject/${projectId}`)
+}
+
+export async function getAllByAdmin(jsonData: { keyword: string, page: number, size: number }) {
+    return await post(`/project/getAllByAdmin`, jsonData)
+
+}

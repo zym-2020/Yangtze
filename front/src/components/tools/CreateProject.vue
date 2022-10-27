@@ -1,7 +1,6 @@
 <template>
   <div class="create-project">
     <div class="body">
-      <div class="title">创建项目</div>
       <div class="form">
         <el-form
           :model="form"
@@ -13,8 +12,11 @@
           <el-form-item label="项目名：" prop="name">
             <el-input v-model="form.name" />
           </el-form-item>
-          <el-form-item label="项目描述：">
-            <el-input v-model="form.description" />
+          <el-form-item label="权限：" prop="permission">
+            <el-radio-group v-model="form.isPublic">
+              <el-radio label="true" size="large">公共</el-radio>
+              <el-radio label="false" size="large">私密</el-radio>
+            </el-radio-group>
           </el-form-item>
           <el-form-item label="封面：">
             <el-upload
@@ -38,23 +40,23 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from "vue";
-import { addProjectWithAvatar, addProjectWithoutAvatar } from "@/api/request";
-// import { Plus } from "@element-plus/icons-vue";
+import { defineComponent, onMounted, reactive, ref } from "vue";
+import { addProject, updateProjectInfo } from "@/api/request";
 import { notice } from "@/utils/notice";
 import type { FormInstance, UploadFile } from "element-plus";
-import { useStore } from "@/store";
 
 export default defineComponent({
-  emits: ["createProject"],
-  //   components: { Plus },
-  setup(_, context) {
+  props: {
+    info: {
+      type: Object,
+    },
+  },
+  emits: ["createProject", "updateProject"],
+  setup(props, context) {
     const form = reactive({
       name: "",
-      description: "",
+      isPublic: "true",
     });
-    const result =
-      '{"analyse":{"anyArea":{"analysisResultList":[],"classify":"任意区域冲淤","classifyCount":0},"area":{"analysisResultList":[],"classify":"断面面积冲淤","classifyCount":0},"boundary":{"analysisResultList":[],"classify":"边界分析","classifyCount":0},"branch":{"analysisResultList":[],"classify":"汊道断面比较","classifyCount":0},"deep":{"analysisResultList":[],"classify":"冲淤等深线","classifyCount":0},"deepContrast":{"analysisResultList":[],"classify":"等深线比较","classifyCount":0},"elev":{"analysisResultList":[],"classify":"特定高程冲淤","classifyCount":0},"line":{"analysisResultList":[],"classify":"深泓线比较","classifyCount":0},"section":{"analysisResultList":[],"classify":"断面形态","classifyCount":0},"sectionContrast":{"analysisResultList":[],"classify":"断面比较","classifyCount":0},"slope":{"analysisResultList":[],"classify":"河床坡度提取","classifyCount":0},"volume":{"analysisResultList":[],"classify":"河道容积计算","classifyCount":0}},"layerDataList":[]}';
 
     const rules = reactive({
       name: [{ required: true, message: "项目名不能为空", trigger: "blur" }],
@@ -62,7 +64,6 @@ export default defineComponent({
     const ruleFormRef = ref<FormInstance>();
     const imageUrl = ref("");
     const file = ref<File>();
-    const store = useStore();
 
     const change = (uploadFile: UploadFile) => {
       if (uploadFile.status === "ready") {
@@ -75,45 +76,54 @@ export default defineComponent({
       if (!formEl) return;
       await formEl.validate(async (valid) => {
         if (valid) {
-          let data;
-          if (file.value === undefined) {
-            data = await addProjectWithoutAvatar({
-              projectName: form.name,
-              description: form.description,
-              creator: store.state.user.email,
-              creatorName: store.state.user.name,
-            });
-            if (data != null) {
-              if ((data as any).code === 0) {
-                notice("success", "成功", "创建成功");
-              } else {
-                notice("error", "错误", "创建错误");
-              }
+          if (props.info === undefined) {
+            const formData = new FormData();
+            if (file === undefined) {
+              formData.append("file", new Blob());
+            } else {
+              formData.append("file", file.value as File);
+            }
+            formData.append("projectName", form.name);
+            formData.append("isPublic", form.isPublic);
+            const data = await addProject(formData);
+
+            if (data != null && (data as any).code === 0) {
+              context.emit("createProject", data.data);
             }
           } else {
             const formData = new FormData();
-            const jsonString = {
-              projectName: form.name,
-              description: form.description,
-              creator: store.state.user.email,
-              creatorName: store.state.user.name,
-            };
-            formData.append("jsonString", JSON.stringify(jsonString));
-            formData.append("file", file.value);
-            data = await addProjectWithAvatar(formData);
-            if (data != null) {
-              if ((data as any).code === 0) {
-                notice("success", "成功", "创建成功");
-              } else {
-                notice("error", "错误", "创建错误");
-              }
+            if (file === undefined) {
+              formData.append("file", new Blob());
+            } else {
+              formData.append("file", file.value as File);
+            }
+            formData.append("projectName", form.name);
+            formData.append("isPublic", form.isPublic);
+            formData.append("id", (props.info as any).id);
+            const data = await updateProjectInfo(formData);
+            if (data != null && (data as any).code === 0) {
+              context.emit("updateProject", {
+                avatar: data.data,
+                id: (props.info as any).id,
+                projectName: form.name,
+                isPublic: form.isPublic === "true" ? true : false,
+              });
+              notice("success", "成功", "修改成功");
             }
           }
-
-          context.emit("createProject", data.data);
         }
       });
     };
+
+    onMounted(() => {
+      if (props.info != undefined) {
+        form.name = (props.info as any).projectName;
+        form.isPublic = (props.info as any).isPublic ? "true" : "false";
+        imageUrl.value =
+          "http://localhost:8002/visual/getAvatar/" +
+          (props.info as any).avatar;
+      }
+    });
 
     return {
       form,
@@ -129,12 +139,10 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .create-project {
-  height: 350px;
-  padding: 20px 10px 10px 10px;
+  height: 400px;
   width: 100%;
-  background: #a6bed7;
   .body {
-    background: #f0f0f0;
+    // background: #f0f0f0;
     height: 100%;
     .title {
       margin-left: 10px;
@@ -143,8 +151,9 @@ export default defineComponent({
       font-size: 16px;
     }
     .form {
+      padding-top: 10px;
       height: calc(100% - 30px);
-      width: 70%;
+      width: 80%;
       margin: 0 auto;
       .btn {
         text-align: center;
@@ -157,8 +166,8 @@ export default defineComponent({
         overflow: hidden;
         //   transition: var(--el-transition-duration-fast);
         .avatar {
-          width: 50px;
-          height: 50px;
+          width: 100px;
+          height: 100px;
           display: block;
         }
       }
@@ -168,8 +177,8 @@ export default defineComponent({
       .avatar-uploader-icon {
         font-size: 28px;
         color: #8c939d;
-        width: 50px;
-        height: 50px;
+        width: 100px;
+        height: 100px;
         text-align: center;
       }
     }

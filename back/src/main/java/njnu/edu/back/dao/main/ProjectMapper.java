@@ -22,7 +22,11 @@ public interface ProjectMapper {
 
     List<Map<String, Object>> fuzzyQuery(@Param("keyword") String keyword, @Param("size") int size, @Param("start") int start, @Param("flag") int flag);
 
-    int fuzzyCount(@Param("keyword") String keyword);
+    List<Map<String, Object>> fuzzyQueryByEmail(@Param("email") String email, @Param("size") int size, @Param("start") int start);
+
+    int fuzzyCountByEmail(@Param("email") String email);
+
+    int fuzzyCount(@Param("keyword") String keyword, @Param("flag") int flag);
 
     Map<String, Object> getProjectInfo(@Param("projectId") String projectId);
 
@@ -33,4 +37,10 @@ public interface ProjectMapper {
     void updateBasemap(@Param("projectId") String projectId, @Param("basemap") String basemap);
 
     void updatePublicState(@Param("projectId") String projectId, @Param("flag") boolean flag);
+
+    void updateProjectInfo(@Param("projectId") String projectId, @Param("projectName") String projectName, @Param("isPublic") boolean isPublic, @Param("avatar") String avatar);
+
+    void deleteProject(@Param("projectId") String projectId);
+
+
 }

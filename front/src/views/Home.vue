@@ -17,7 +17,5 @@ export default {
 </script>
 
 <style lang="scss">
-body {
-    background-color: rgb(231, 231, 231);
-}
+
 </style>

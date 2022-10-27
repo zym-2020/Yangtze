@@ -239,11 +239,10 @@ export default defineComponent({
     border-radius: 8px;
     .input {
       // padding: 5px 10px;
-      height: 42px;
+      height: 38px;
       border-top-left-radius: 8px;
       border-top-right-radius: 8px;
       background: rgba($color: #abadb3, $alpha: 0.5);
-      line-height: 42px;
       font-size: 20px;
     }
     .content {

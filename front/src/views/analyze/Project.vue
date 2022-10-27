@@ -129,6 +129,7 @@ export default defineComponent({
         visualId: string;
       };
     }) => {
+      console.log(val)
       if (val.type === "add") {
         layerManage.value.addLayer(val.content);
         rightMap.value.addMapLayer(val.content);

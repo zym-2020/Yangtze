@@ -1,43 +1,44 @@
 <template>
   <div class="admin">
     <div class="left">
-      <admin-left></admin-left>
+      <admin-left :flag="flag" @nav="navHandle"></admin-left>
     </div>
     <div class="admin-main">
       <el-scrollbar class="scroll">
-        <!-- <router-view /> -->
-        <router-view v-slot="{ Component }">
-          <keep-alive>
-            <component
-              :is="Component"
-              v-if="route.meta.keepAlive"
-              :key="route.path"
-            />
-          </keep-alive>
-          <component
-            :is="Component"
-            v-if="!route.meta.keepAlive"
-            :key="route.path"
-          />
-        </router-view>
+        <resource-manage v-show="flag === 1" />
+        <scenario-manage v-show="flag === 2"></scenario-manage>
+        <project-manage v-show="flag === 3"></project-manage>
+        <message-manage v-show="flag === 4"></message-manage>
       </el-scrollbar>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from "vue";
+import { defineComponent, computed, ref } from "vue";
 import AdminLeft from "./components/AdminLeft.vue";
-import router from '@/router'
+import ResourceManage from "./views/ResourceManage.vue";
+import ProjectManage from "./views/ProjectManage.vue";
+import ScenarioManage from "./views/ScenarioManage.vue";
+import MessageManage from "./views/MessageManage.vue";
 export default defineComponent({
-  components: { AdminLeft },
+  components: {
+    AdminLeft,
+    ResourceManage,
+    ProjectManage,
+    ScenarioManage,
+    MessageManage,
+  },
   setup() {
-    const route = computed(() => {
-      return router.currentRoute.value;
-    });
-  
+    const flag = ref(1);
+
+    const navHandle = (val: number) => {
+      flag.value = val;
+    };
+
     return {
-      route,
+      flag,
+      navHandle,
     };
   },
 });
@@ -46,14 +47,18 @@ export default defineComponent({
 <style lang="scss" scoped>
 .admin {
   display: flex;
+
   .left {
     width: 200px;
   }
   .admin-main {
     width: calc(100% - 200px);
-    height: calc(100vh - 60px);
+    height: calc(100vh - 63px);
     .scroll {
-      max-height: 100%;
+      height: 100%;
+      /deep/ .el-scrollbar__view {
+        height: 100%;
+      }
     }
   }
 }

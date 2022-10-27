@@ -38,31 +38,31 @@
       <ul class="right-menu" ref="menu">
         <li
           :class="!isLayerVisual ? 'menu-item disabled' : 'menu-item'"
-          @click="operateLayer('add', !isLayerVisual)"
+          @click="operateLayer('add', isLayerVisual)"
         >
           <span>添加至图层</span>
         </li>
         <li
           :class="isLayerVisual ? 'menu-item disabled' : 'menu-item'"
-          @click="operateLayer('chart', isLayerVisual)"
+          @click="operateLayer('chart', !isLayerVisual)"
         >
           <span>可视化</span>
         </li>
         <li
           :class="renameAble ? 'menu-item' : 'menu-item disabled'"
-          @click="operateLayer('rename', renameAble)"
+          @click="operateLayer('rename', !renameAble)"
         >
           <span>重命名</span>
         </li>
         <li
           :class="downloadAble ? 'menu-item' : 'menu-item disabled'"
-          @click="operateLayer('download', downloadAble)"
+          @click="operateLayer('download', !downloadAble)"
         >
           <span>下载</span>
         </li>
         <li
           :class="isDelete ? 'menu-item' : 'menu-item disabled'"
-          @click="operateLayer('del')"
+          @click="operateLayer('del', !isDelete)"
         >
           <span>删除</span>
         </li>
@@ -483,6 +483,7 @@ export default defineComponent({
     };
 
     const operateLayer = async (keyword: string, flag: boolean) => {
+      console.log(flag);
       if (flag) {
         if (keyword != "rename" && keyword != "download") {
           context.emit("operateLayer", {
@@ -739,11 +740,11 @@ export default defineComponent({
     height: 100%;
     border-radius: 8px;
     .input {
-      height: 42px;
+      height: 38px;
       border-top-left-radius: 8px;
       border-top-right-radius: 8px;
       background: rgba($color: #abadb3, $alpha: 0.5);
-      line-height: 42px;
+      line-height: 40px;
       font-size: 20px;
     }
     .content {

@@ -16,9 +16,11 @@ import java.util.Map;
  */
 public interface ProjectService {
 
-    String addProject(String projectName, MultipartFile file, String email);
+    String addProject(String projectName, MultipartFile file, boolean isPublic, String email);
 
     Map<String, Object> getAll(String keyword, int page, int size);
+
+    Map<String, Object> getAllByEmail(String email, int page, int size);
 
     Map<String, Object> getProjectInfo(String projectId);
 
@@ -35,4 +37,10 @@ public interface ProjectService {
     void updateBasemap(String projectId, String url);
 
     void updatePublicState(String projectId, boolean b);
+
+    String updateProjectInfo(MultipartFile file, String projectName, String id, boolean isPublic);
+
+    void deleteProject(String projectId, String email, String role);
+
+    Map<String, Object> getAllByAdmin(String keyword, int page, int size, String role);
 }

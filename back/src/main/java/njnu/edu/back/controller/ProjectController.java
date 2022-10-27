@@ -32,14 +32,20 @@ public class ProjectController {
 
     @AuthCheck
     @RequestMapping(value = "/addProject", method = RequestMethod.POST)
-    public JsonResult addProject(@RequestParam String projectName, @RequestParam MultipartFile file, @JwtTokenParser("email") String email) {
-        return ResultUtils.success(projectService.addProject(projectName, file, email));
+    public JsonResult addProject(@RequestParam String projectName, @RequestParam MultipartFile file, @RequestParam boolean isPublic, @JwtTokenParser("email") String email) {
+        return ResultUtils.success(projectService.addProject(projectName, file, isPublic, email));
     }
 
     @AuthCheck
     @RequestMapping(value = "/getAll", method = RequestMethod.POST)
     public JsonResult getAll(@RequestBody JSONObject jsonObject) {
         return ResultUtils.success(projectService.getAll(jsonObject.getString("keyword"), jsonObject.getIntValue("page"), jsonObject.getIntValue("size")));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/getAllByEmail/{page}/{size}", method = RequestMethod.GET)
+    public JsonResult getAllByEmail(@JwtTokenParser("email") String email, @PathVariable int page, @PathVariable int size) {
+        return ResultUtils.success(projectService.getAllByEmail(email, page, size));
     }
 
     @AuthCheck
@@ -97,6 +103,29 @@ public class ProjectController {
         return ResultUtils.success();
     }
 
+    @AuthCheck
+    @RequestMapping(value = "/updateProjectInfo", method = RequestMethod.PATCH)
+    public JsonResult updateProjectInfo(@RequestParam MultipartFile file, @RequestParam String projectName, @RequestParam String id, @RequestParam boolean isPublic) {
+        return ResultUtils.success(projectService.updateProjectInfo(file, projectName, id, isPublic));
+    }
 
+    @AuthCheck
+    @RequestMapping(value = "/deleteProject/{projectId}", method = RequestMethod.DELETE)
+    public JsonResult deleteProject(@PathVariable String projectId, @JwtTokenParser("email") String email, @JwtTokenParser("role") String role) {
+        projectService.deleteProject(projectId, email, role);
+        return ResultUtils.success();
+    }
+
+
+    /**
+    * @Description:admin用户接口
+    * @Author: Yiming
+    * @Date: 2022/10/26
+    */
+    @AuthCheck
+    @RequestMapping(value = "/getAllByAdmin", method = RequestMethod.POST)
+    public JsonResult getAllByAdmin(@RequestBody JSONObject jsonObject, @JwtTokenParser("role") String role) {
+        return ResultUtils.success(projectService.getAllByAdmin(jsonObject.getString("keyword"), jsonObject.getIntValue("page"), jsonObject.getIntValue("size"), role));
+    }
 
 }

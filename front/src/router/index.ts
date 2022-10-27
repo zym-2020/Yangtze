@@ -89,7 +89,15 @@ export const asyncRouters: Array<RouteRecordRaw> = [
         children: [
             {
                 path: "",
-                redirect: "/scenario/scenarioOne"
+                redirect: "/scenario/list"
+            },
+            {
+                path: "list",
+                component: () => import('@/views/scenario/Index.vue'),
+                meta: {
+                    role: ['member', 'admin'],
+                    keepAlive: true
+                }
             },
             {
                 path: 'scenarioOne',
@@ -198,99 +206,8 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 component: () => import('@/views/user/Admin.vue'),
                 meta: {
                     role: ['admin']
-                },
-                children: [
-                    {
-                        path: '',
-                        name: 'UserAdminChild',
-                        redirect: '/user/admin/resource'
-                    },
-                    {
-                        path: 'resource',
-                        name: 'UserAdminResource',
-                        component: () => import('@/views/user/views/ResourceManage.vue'),
-                        meta: {
-                            role: ['admin'],
-                            keepAlive: true
-                        }
-                    },
-                    {
-                        path: 'scenario',
-                        name: 'UserAdminScenario',
-                        component: () => import('@/views/user/views/ScenarioManage.vue'),
-                        meta: {
-                            role: ['admin']
-                        }
-                    },
-                    {
-                        path: 'project',
-                        name: 'UserAdminProject',
-                        component: () => import('@/views/user/views/ProjectManage.vue'),
-                        meta: {
-                            role: ['admin'],
-                            keepAlive: true
-                        }
-                    },
-                    {
-                        path: 'message',
-                        name: 'UserAdminMessage',
-                        component: () => import('@/views/user/views/MessageManage.vue'),
-                        meta: {
-                            role: ['admin']
-                        }
-                    },
-                    {
-                        path: 'msuess',
-                        component: () => import('@/views/user/views/MsuessManage.vue'),
-                        meta: {
-                            role: ['admin']
-                        }
-                    },
-                    {
-                        path: 'mfail',
-                        component: () => import('@/views/user/views/MfailManage.vue'),
-                        meta: {
-                            role: ['admin']
-                        }
+                }
 
-
-                    },
-                    {
-                        path: 'mexamine',
-                        component: () => import('@/views/user/views/MexamineManage.vue'),
-                        meta: {
-                            role: ['admin']
-                        }
-
-
-                    },
-                    {
-                        path: 'muploadfail',
-                        component: () => import('@/views/user/views/MuploadfailManage.vue'),
-                        meta: {
-                            role: ['admin']
-                        }
-
-
-                    },
-                    {
-                        path: 'mweclome',
-                        component: () => import('@/views/user/views/MweclomeManage.vue'),
-                        meta: {
-                            role: ['admin']
-                        }
-
-
-                    }, {
-                        path: 'mdownloadfail',
-                        component: () => import('@/views/user/views/MdownloadfailManage.vue'),
-                        meta: {
-                            role: ['admin']
-                        }
-
-
-                    },
-                ]
             }
         ]
     },

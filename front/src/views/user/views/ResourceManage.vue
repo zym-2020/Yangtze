@@ -249,10 +249,11 @@ export default defineComponent({
 <style lang="scss" scoped>
 .head {
   height: 70px;
+  margin-top: 20px;
   .el-input {
     width: 400px;
     margin-left: 30px;
-    margin-top: 20px;
+
     margin-right: 20px;
   }
 }

@@ -19,13 +19,7 @@
         <span>项目管理</span>
       </el-menu-item>
 
-      <!-- <el-badge :is-dot="realBadge" class="item">
-        <el-menu-item index="4" @click="changeShowBadge">
-          <el-icon><ChatLineRound /></el-icon>
-          消息
-        </el-menu-item>
-      </el-badge> -->
-      <el-menu-item index="4" @click="changeShowBadge">
+      <el-menu-item index="4">
         <el-icon><ChatLineRound /></el-icon>
         消息
       </el-menu-item>
@@ -37,55 +31,52 @@
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref } from "vue";
 import { useStore } from "@/store";
-import router from "@/router";
-import { useStyle } from "naive-ui/es/_mixins";
-import { CountReply, CountUserReply } from "@/api/request";
+
 export default defineComponent({
-  setup() {
+  props: {
+    flag: {
+      type: Number,
+    },
+  },
+  emits: ["nav"],
+  setup(props, context) {
     const store = useStore();
     const showBadge = ref(true);
     const selectIndex = computed(() => {
-      switch (router.currentRoute.value.path) {
-        case "/user/admin/resource":
+      switch (props.flag) {
+        case 1:
           return "1";
-        case "/user/admin/scenario":
+        case 2:
           return "2";
-        case "/user/admin/project":
+        case 3:
           return "3";
-        case "/user/admin/message":
+        case 4:
           return "4";
       }
     });
-    const realBadge = async () => {
-      return await CountReply();
-    };
+
     const selectHandle = (index: string) => {
       switch (index) {
         case "1":
-          router.push({ path: "resource" });
+          context.emit("nav", 1);
           break;
         case "2":
-          router.push({ path: "scenario" });
+          context.emit("nav", 2);
           break;
         case "3":
-          router.push({ path: "project" });
+          context.emit("nav", 3);
           break;
         case "4":
-          router.push({ path: "message" });
+          context.emit("nav", 4);
           break;
       }
     };
-    function changeShowBadge() {
-      store.commit("SET_MESSAGE_BADGE", true);
-    }
 
     return {
       store,
       showBadge,
       selectHandle,
       selectIndex,
-      changeShowBadge,
-      realBadge,
     };
   },
 });
@@ -93,8 +84,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .admin-left {
-  margin-top: 1px;
-  height: calc(100vh - 61px);
+  height: calc(100vh - 63px);
   width: 100%;
   .el-menu {
     height: 100%;

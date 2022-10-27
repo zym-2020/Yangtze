@@ -1,6 +1,7 @@
 package njnu.edu.back.service.impl;
 
 
+import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.utils.LocalUploadUtil;
 import njnu.edu.back.dao.main.AnalyticDataSetMapper;
 import njnu.edu.back.dao.main.ProjectFileMapper;
@@ -50,7 +51,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 
     @Override
-    public String addProject(String projectName, MultipartFile file, String email) {
+    public String addProject(String projectName, MultipartFile file, boolean isPublic, String email) {
         String avatar = "";
         if(!file.isEmpty()) {
             String uuid = UUID.randomUUID().toString();
@@ -59,7 +60,7 @@ public class ProjectServiceImpl implements ProjectService {
             avatar = uuid + "." + suffix;
         }
 
-        String projectId = projectMapper.addProject(projectName, email, avatar, new String[]{}, "mapbox://styles/johnnyt/cl9miecpn001t14rspop38nyk", true);
+        String projectId = projectMapper.addProject(projectName, email, avatar, new String[]{}, "mapbox://styles/johnnyt/cl9miecpn001t14rspop38nyk", isPublic);
         File f = new File(basePath + email + "\\project\\" + projectId);
         f.mkdirs();
         return projectId;
@@ -71,7 +72,17 @@ public class ProjectServiceImpl implements ProjectService {
             keyword = "%" + keyword + "%";
         }
         List<Map<String, Object>> list = projectMapper.fuzzyQuery(keyword, size, page * size, 1);
-        int total = projectMapper.fuzzyCount(keyword);
+        int total = projectMapper.fuzzyCount(keyword, 1);
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", list);
+        result.put("total", total);
+        return result;
+    }
+
+    @Override
+    public Map<String, Object> getAllByEmail(String email, int page, int size) {
+        List<Map<String, Object>> list = projectMapper.fuzzyQueryByEmail(email, size, page * size);
+        int total = projectMapper.fuzzyCountByEmail(email);
         Map<String, Object> result = new HashMap<>();
         result.put("list", list);
         result.put("total", total);
@@ -150,5 +161,45 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public void updatePublicState(String projectId, boolean b) {
         projectMapper.updatePublicState(projectId, b);
+    }
+
+    @Override
+    public String updateProjectInfo(MultipartFile file, String projectName, String id, boolean isPublic) {
+        String avatar = "";
+        if(!file.isEmpty()) {
+            String uuid = UUID.randomUUID().toString();
+            String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
+            LocalUploadUtil.uploadAvatar(pictureAddress + uuid + "." + suffix, file);
+            avatar = uuid + "." + suffix;
+        }
+        projectMapper.updateProjectInfo(id, projectName, isPublic, avatar);
+        return avatar;
+    }
+
+    @Override
+    public void deleteProject(String projectId, String email, String role) {
+        Map<String, Object> map = projectMapper.getProjectInfo(projectId);
+        String creator = (String) map.get("creator");
+        if(creator.equals(email) || role.equals("admin")) {
+            projectMapper.deleteProject(projectId);
+        } else {
+            throw new MyException(-99, "没有权限");
+        }
+    }
+
+    @Override
+    public Map<String, Object> getAllByAdmin(String keyword, int page, int size, String role) {
+        if(!role.equals("admin")) {
+            throw new MyException(-99, "没有权限");
+        }
+        if(!keyword.equals("")) {
+            keyword = "%" + keyword + "%";
+        }
+        List<Map<String, Object>> list = projectMapper.fuzzyQuery(keyword, size, size * page, 0);
+        int total = projectMapper.fuzzyCount(keyword, 0);
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", list);
+        result.put("total", total);
+        return result;
     }
 }

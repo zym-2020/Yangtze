@@ -22,10 +22,29 @@
         limit #{size} offset #{start}
     </select>
 
+    <select id="fuzzyQueryByEmail" resultType="java.util.Map">
+        select p.id as "id", project_name as "projectName", creator, create_time as "createTime", p.avatar as "avatar", layer_manage as "layerManage", basemap, is_public as "isPublic"
+        from project p
+        where creator = #{email}
+        order by create_time asc
+        limit #{size} offset #{start}
+    </select>
+
+    <select id="fuzzyCountByEmail" resultType="java.lang.Integer">
+        select count(*) from project
+        where creator = #{email}
+    </select>
+
     <select id="fuzzyCount" resultType="java.lang.Integer">
         select count(*) from project
         <if test="keyword != ''">
             where project_name like #{keyword}
+            <if test="flag == 1">
+                and is_public = true
+            </if>
+            <if test="flag == -1">
+                and is_public = false
+            </if>
         </if>
     </select>
 
@@ -54,4 +73,16 @@
     <update id="updatePublicState">
         update project set is_public = #{flag} where id::text = #{projectId}
     </update>
+
+    <update id="updateProjectInfo" >
+        update project set project_name = #{projectName}, is_public = #{isPublic}
+        <if test="avatar != ''">
+            ,avatar = #{avatar}
+        </if>
+        where id::text = #{projectId}
+    </update>
+
+    <delete id="deleteProject">
+        delete from project where id::text = #{projectId}
+    </delete>
 </mapper>
