@@ -279,8 +279,11 @@ export default defineComponent({
       }
     };
 
-    const changeBasemap = async (param: any[], url: string) => {
-      const list = map.getStyle().layers.slice(param.length * -1);
+    const changeBasemap = async (param: number, url: string) => {
+      let list: any[] = [];
+      if (param != 0) {
+        list = map.getStyle().layers.slice(param * -1);
+      }
       const source: any = {};
       list.forEach((item) => {
         for (const i in map.getStyle().sources) {
@@ -289,6 +292,7 @@ export default defineComponent({
           }
         }
       });
+      console.log(list, source);
       if (url != "") {
         map.setStyle(url);
         map.once("styledata", () => {

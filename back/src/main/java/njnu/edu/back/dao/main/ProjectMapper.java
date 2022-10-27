@@ -1,13 +1,10 @@
 package njnu.edu.back.dao.main;
 
-import njnu.edu.back.pojo.Project;
-import njnu.edu.back.pojo.dto.AddProject;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Created with IntelliJ IDEA.

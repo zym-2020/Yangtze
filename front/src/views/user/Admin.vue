@@ -8,7 +8,6 @@
         <resource-manage v-show="flag === 1" />
         <scenario-manage v-show="flag === 2"></scenario-manage>
         <project-manage v-show="flag === 3"></project-manage>
-        <message-manage v-show="flag === 4"></message-manage>
       </el-scrollbar>
     </div>
   </div>
@@ -20,14 +19,12 @@ import AdminLeft from "./components/AdminLeft.vue";
 import ResourceManage from "./views/ResourceManage.vue";
 import ProjectManage from "./views/ProjectManage.vue";
 import ScenarioManage from "./views/ScenarioManage.vue";
-import MessageManage from "./views/MessageManage.vue";
 export default defineComponent({
   components: {
     AdminLeft,
     ResourceManage,
     ProjectManage,
     ScenarioManage,
-    MessageManage,
   },
   setup() {
     const flag = ref(1);

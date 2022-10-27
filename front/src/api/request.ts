@@ -1,13 +1,12 @@
 import { get, post, del, patch } from './axios'
 import {
-    RegisterJsonData, LoginJsonData, ProjectJsonData, NewShapeJsonData, AddFileJsonData, RenameJsonData, UnPackJsonData, UpdateParentIdAndLevelJsonData, CompressFileJsonData, GetFlushIdJsonData, ComputeContourJsonData,
-    SetUserInfoWithoutAvatarJsonData, FuzzyQueryClassifyJsonData, DeleteShareFileByIdJsonDaya, UpdateStatusByIdJsonData, GetNoUploadJsonData, AddRecordJsonData, AddMessageJsonData, DeleteFilesOrFolders, GetProjectsJsonData, Layer, SectionJsonData, SectionContrastJsonData
+    RegisterJsonData, LoginJsonData, AddFileJsonData, RenameJsonData, UnPackJsonData, UpdateParentIdAndLevelJsonData, CompressFileJsonData,
+    GetNoUploadJsonData, AddRecordJsonData, DeleteFilesOrFolders
 } from './type/userType'
-import { Resource, Analyse } from '@/store/resourse/resourceState'
+
 
 import axios from 'axios'
-import { JsonObject } from 'type-fest'
-import { idID } from 'naive-ui'
+
 
 //========================User相关接口=================================
 export async function login(jsonData: LoginJsonData) {
@@ -105,75 +104,6 @@ export async function delRecord(id: string) {
 
 export async function addRecord(jsonData: AddRecordJsonData) {
     return await post(`/uploadRecord/addRecord`, jsonData)
-}
-//========================messagebox相关接口=================================
-export async function pageQuerys(property: string, flag: boolean, page: number, size: number) {
-    return await get(`/admin/message/pageQuerys/${property}/${flag}/${page}/${size}`)
-}
-
-export async function QueryByType(property: string) {
-    return await get(`/admin/message/QueryByType/${property}`, { responseType: 'arraybuffer' })
-}
-
-export async function QueryByUser(property: string, type: string) {
-    return await get(`/admin/message/QueryByUser/${property}/${type}`)
-}
-
-export async function QueryByReceiver(property: string) {
-    return await get(`/admin/message/QueryByReceiver/${property}`)
-}
-
-export async function addMessage(jsonData: AddMessageJsonData) {
-    return await post(`/admin/message/addMessage`, jsonData)
-}
-
-export async function QueryByTime(property: string) {
-    return await get(`/admin/message/QueryByTime/${property}`)
-}
-
-
-export async function QueryByUserEmail() {
-    return await get(`/admin/message/QueryByUserEmail`)
-}
-
-export async function QueryByUserType(property: string) {
-    return await get(`/admin/message/QueryByUserType/${property}`)
-}
-
-export async function offlineMessage(property: string, dataUploadTime: string) {
-    return await get(`/admin/message/offlineMessage/${property}/${dataUploadTime}`)
-}
-
-export async function offlineUserMessage(property: string, dataUploadTime: string) {
-    return await get(`/admin/message/offlineUserMessage/${property}/${dataUploadTime}`)
-}
-
-export async function QueryHistoryMessage() {
-    return await get(`/admin/message/QueryHistoryMessage`)
-}
-
-export async function QueryAllHistoryMessage() {
-    return await get(`/admin/message/QueryAllHistoryMessage`)
-}
-
-export async function showMessageDetails(property: string) {
-    return await get(`/admin/message/showMessageDetails/${property}`)
-}
-
-export async function responseMessage(response: string, id: string) {
-    return await get(`/admin/message/responseMessage/${response}/${id}`)
-}
-
-export async function CountReply() {
-    return await get(`/admin/message/CountReply`)
-}
-
-export async function CountUserReply() {
-    return await get(`/admin/message/CountUserReply`)
-}
-
-export async function ZipEntryPath(path: string) {
-    return await get(`/admin/message/ZipEntryPath/${path}`)
 }
 
 //========================analyticDataSet相关接口=================================
@@ -485,5 +415,4 @@ export async function deleteProject(projectId: string) {
 
 export async function getAllByAdmin(jsonData: { keyword: string, page: number, size: number }) {
     return await post(`/project/getAllByAdmin`, jsonData)
-
 }

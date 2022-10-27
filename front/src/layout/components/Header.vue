@@ -39,13 +39,7 @@
                     <el-dropdown-item v-if="adminFlag" command="2"
                       >admin界面</el-dropdown-item
                     >
-
                     <el-dropdown-item command="3">上传记录</el-dropdown-item>
-                    <el-dropdown-item command="4" :index="path"
-                      >消息
-                      <!-- <router-link :to="{name:UserChild}"></router-link> -->
-                    </el-dropdown-item>
-
                     <el-dropdown-item command="5">退出</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
@@ -97,8 +91,6 @@ export default defineComponent({
         router.push({ path: "/user/admin" });
       } else if (param === "5") {
         store.dispatch("logout", undefined);
-      } else if (param === "4") {
-        router.push({ path: "/message" });
       } else if (param === "3") {
         store.commit("SET_UPLOAD_DOT_FLAG", false);
         context.emit("openUploadList");

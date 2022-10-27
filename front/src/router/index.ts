@@ -148,7 +148,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 component: () => import('@/views/analyze/Index.vue'),
                 meta: {
                     role: ['member', 'admin'],
-                    keepAlive: true
+                    // keepAlive: true
                 }
             },
             {
@@ -208,20 +208,6 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                     role: ['admin']
                 }
 
-            }
-        ]
-    },
-    {
-        path: "/message",
-        name: "Message",
-        component: shallowRef(Layout),
-        meta: {
-            title: "消息"
-        },
-        children: [
-            {
-                path: '',
-                component: () => import('@/views/message/Index.vue')
             }
         ]
     },

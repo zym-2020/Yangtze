@@ -187,7 +187,7 @@ export default defineComponent({
     };
 
     const getLayers = () => {
-      return treeData.value;
+      return treeData.value.length;
     };
 
     onMounted(() => {

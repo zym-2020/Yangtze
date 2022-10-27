@@ -164,9 +164,7 @@
             <el-tab-pane label="共享条目" name="share">
               <user-share-file></user-share-file>
             </el-tab-pane>
-            <el-tab-pane label="消息" name="message">
-              <user-message></user-message>
-            </el-tab-pane>
+            
           </el-tabs>
         </div>
       </el-col>
@@ -182,7 +180,6 @@ import { useStore } from "@/store";
 import { getUserByEmail } from "@/api/request";
 import AvatarUpload from "@/components/upload/AvatarUpload.vue";
 import UserShareFile from "./components/UserShareFile.vue";
-import UserMessage from "./components/UserMessage.vue";
 
 export default defineComponent({
   components: {
@@ -190,7 +187,6 @@ export default defineComponent({
     UserProject,
     AvatarUpload,
     UserShareFile,
-    UserMessage,
   },
   setup() {
     const activeName = ref("resource");

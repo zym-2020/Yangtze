@@ -58,6 +58,7 @@
         :total="total"
         v-model:current-page="currentPage"
         @current-change="currentChange"
+        hide-on-single-page
       />
     </div>
   </div>
