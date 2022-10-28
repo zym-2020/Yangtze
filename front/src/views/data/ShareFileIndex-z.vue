@@ -12,17 +12,14 @@
         :fileInfo="fileInfo"
       ></data-detail>
       <data-statistics v-if="active === 2"></data-statistics>
-      <similar-data
-        :similarList="similarList"
-        v-if="active === 3"
-      ></similar-data>
+      <similar-data v-if="active === 3"></similar-data>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref } from "vue";
-import { addWatchCount, addBrowseHistory, getSimilarData } from "@/api/request";
+import { addWatchCount, addBrowseHistory } from "@/api/request";
 import DataDetailHeader from "@/components/page/DataDetailHeader.vue";
 import DataDetail from "@/components/resourcePages/DataDetail.vue";
 import DataStatistics from "@/components/resourcePages/DataStatistics.vue";
@@ -32,7 +29,6 @@ export default defineComponent({
   components: { DataDetailHeader, DataDetail, DataStatistics, SimilarData },
   setup() {
     const active = ref(1);
-    const similarList = ref<any[]>([]);
     const fileInfo = computed(() => {
       return router.currentRoute.value.params.fileInfo;
     });
@@ -41,27 +37,17 @@ export default defineComponent({
       active.value = val;
     };
 
-    onMounted(async () => {
+    onMounted(() => {
       if (
         router.currentRoute.value.params.id != null &&
         router.currentRoute.value.params.id != undefined
       ) {
         addWatchCount(router.currentRoute.value.params.id as string);
-        addBrowseHistory(router.currentRoute.value.params.id as string);
-      }
-      console.log((router.currentRoute.value.params.fileInfo as any).type);
-      const data = await getSimilarData(
-        (router.currentRoute.value.params.fileInfo as any).type
-      );
-      if (data != null) {
-        if ((data as any).code === 0) {
-          similarList.value = (data as any).data;
-        }
+        addBrowseHistory(router.currentRoute.value.params.id as string)
       }
     });
 
     return {
-      similarList,
       fileInfo,
       active,
       activeClick,

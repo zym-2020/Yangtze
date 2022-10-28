@@ -35,7 +35,7 @@ public interface ProjectMapper {
 
     void updatePublicState(@Param("projectId") String projectId, @Param("flag") boolean flag);
 
-    void updateProjectInfo(@Param("projectId") String projectId, @Param("projectName") String projectName, @Param("isPublic") boolean isPublic, @Param("avatar") String avatar);
+    String updateProjectInfo(@Param("projectId") String projectId, @Param("projectName") String projectName, @Param("isPublic") boolean isPublic, @Param("avatar") String avatar);
 
     void deleteProject(@Param("projectId") String projectId);
 

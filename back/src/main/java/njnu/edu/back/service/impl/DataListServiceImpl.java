@@ -6,6 +6,7 @@ import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.common.utils.Encrypt;
 import njnu.edu.back.common.utils.LocalUploadUtil;
+import njnu.edu.back.common.utils.PolygonCheck;
 import njnu.edu.back.common.utils.ZipOperate;
 import njnu.edu.back.dao.main.DataListMapper;
 import njnu.edu.back.dao.main.DataRelationalMapper;
@@ -169,12 +170,12 @@ public class DataListServiceImpl implements DataListService {
     }
 
     @Override
-    public Map<String, Object> fuzzyQueryAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag, String type) {
+    public Map<String, Object> fuzzyQueryAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag, String type, int status) {
         if(!keyword.equals("")) {
             keyword = "%" + keyword + "%";
         }
         int total = dataListMapper.countFuzzyQuery(keyword, tags, 2, type);
-        List<Map<String, Object>> list = dataListMapper.fuzzyQuery(size * page, size, keyword, tags, property, flag, 2, type);
+        List<Map<String, Object>> list = dataListMapper.fuzzyQuery(size * page, size, keyword, tags, property, flag, status, type);
         Map<String, Object> result = new HashMap<>();
         result.put("total", total);
         result.put("list", list);
@@ -182,9 +183,9 @@ public class DataListServiceImpl implements DataListService {
     }
 
     @Override
-    public Map<String, Object> deleteByAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag, String id, String type) {
+    public Map<String, Object> deleteByAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag, String id, String type, int status) {
         dataListMapper.deleteById(id);
-        return fuzzyQueryAdmin(page, size, keyword, tags, property, flag, type);
+        return fuzzyQueryAdmin(page, size, keyword, tags, property, flag, type, status);
     }
 
     @Override
@@ -284,4 +285,22 @@ public class DataListServiceImpl implements DataListService {
     public List<Map<String, Object>> findFiles(String dataListId) {
         return dataRelationalMapper.findFilesByDataListId(dataListId);
     }
+
+    @Override
+    public Map<String, Object> clearQuery(  String[] tags,String type,String location,String startDate,String endDate) {
+        String[] arr=location.split(",");
+        List<Map<String, Object>> list = dataListMapper.clearQuery( tags, 1, type,startDate,endDate);
+        List<Map<String, Object>> list2= PolygonCheck.getCoorShp(arr,list);
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", list2);
+        return result;
+    }
+
+    @Override
+    public List<Map<String, Object>> getSimilarData(String type) {
+
+        return dataListMapper.getSimilarData(type);
+
+    }
+
 }

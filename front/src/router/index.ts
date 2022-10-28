@@ -65,9 +65,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 }
             },
             {
-                path: "spaceSearch",
-                name: 'SpaceSearch',
-                component: () => import('@/views/data/SpaceSearch.vue')
+                path: "findMap",
+                name: 'FindMap',
+                component: () => import('@/components/scenePart/FindMap.vue')
             },
             {
                 path: ':id',

@@ -18,6 +18,10 @@
         <el-icon><Menu /></el-icon>
         <span>项目管理</span>
       </el-menu-item>
+      <el-menu-item index="4">
+        <el-icon><Menu /></el-icon>
+        <span>审核管理</span>
+      </el-menu-item>
     </el-menu>
   </div>
 </template>
@@ -45,6 +49,8 @@ export default defineComponent({
           return "2";
         case 3:
           return "3";
+        case 4:
+          return "4"
       }
     });
 
@@ -58,6 +64,9 @@ export default defineComponent({
           break;
         case "3":
           context.emit("nav", 3);
+          break;
+        case "4":
+          context.emit("nav", 4);
           break;
       }
     };

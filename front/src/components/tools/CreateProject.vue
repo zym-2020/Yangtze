@@ -78,7 +78,7 @@ export default defineComponent({
         if (valid) {
           if (props.info === undefined) {
             const formData = new FormData();
-            if (file === undefined) {
+            if (file.value === undefined) {
               formData.append("file", new Blob());
             } else {
               formData.append("file", file.value as File);
@@ -92,7 +92,7 @@ export default defineComponent({
             }
           } else {
             const formData = new FormData();
-            if (file === undefined) {
+            if (file.value === undefined) {
               formData.append("file", new Blob());
             } else {
               formData.append("file", file.value as File);

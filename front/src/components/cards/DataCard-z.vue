@@ -8,15 +8,12 @@
     >
       <div @click="toDetail">
         <el-row>
-          <el-col :span="23">
+          <el-col :span="18">
             <div class="top">
               <div class="text">{{ name }}</div>
               <slot name="creator"></slot>
               <slot name="status"></slot>
-              <div
-                v-show="watchs >= 20"
-                style="float: right; margin-left: auto"
-              >
+              <div v-show="watchs >= 20">
                 <el-tag
                   style="margin-top: 10px; margin-left: 5px"
                   type="danger"
@@ -28,12 +25,10 @@
               </div>
             </div>
           </el-col>
-          <el-col :span="1" style="margin-top: 10px">
+          <el-col :span="2" style="margin-top: 10px">
             <div style="text-align: right">
               <el-tooltip content="公开" placement="left-start" effect="light">
-                <el-icon :size="25" color="#00CD00" style="margin-right: 10px"
-                  ><Unlock
-                /></el-icon>
+                <el-icon :size="25" color="#00CD00"><Unlock /></el-icon>
               </el-tooltip>
             </div>
           </el-col>
@@ -43,7 +38,7 @@
             <el-col :span="5">
               <div class="block">
                 <el-image
-                  style="width: 250px; height: 152px"
+                  style="width: 180px; height: 160px"
                   :src="avatar"
                   fit="fill"
                 />
@@ -58,18 +53,18 @@
             </el-col>
           </el-row>
           <el-row>
-            <el-col :offset="5" :span="19">
-              <div style="position: relative; display: inline">
+            <el-col :offset="5">
+              <div>
                 <el-tag
                   v-for="(item, index) in tagList"
                   :key="index"
-                  size="large"
                   style="
                     margin-right: 8px;
                     background-color: rgba(21, 69, 153, 0.8);
-                    color: white;
+                    color: #e5cab9;
                   "
                   effect="dark"
+                  round
                 >
                   {{ item }}
                 </el-tag>
@@ -86,12 +81,12 @@
       </el-divider>
       <el-row>
         <el-col :span="1">
-          <div style="left: 10px; position: relative">
-            <el-avatar :size="42" :src="userAvatar"></el-avatar>
+          <div>
+            <el-avatar :size="35" :src="userAvatar"></el-avatar>
           </div>
         </el-col>
         <el-col :span="4">
-          <div style="margin-left: 20px; margin-top: 10px; font-size: 8px">
+          <div style="margin-left: 10px; margin-top: 6px; font-size: 8px">
             <span style="color: #6495ed">{{ creator }}</span>
           </div>
         </el-col>
@@ -99,67 +94,32 @@
           <div
             style="
               margin-left: 10px;
-              margin-top: 8px;
+              margin-top: 6px;
               font-size: 8px;
               text-align: left;
             "
           >
-            <strong>数据上传于：</strong>
-            {{ createTime }}
+            <strong>上传于：</strong>
+            {{ updateTime }}
           </div>
         </el-col>
-        <el-col :span="5">
-          <div
-            style="
-              margin-left: 10px;
-              margin-top: 8px;
-              font-size: 8px;
-              text-align: left;
-            "
-          >
-            <strong>数据时间：</strong>
-            {{ timeStamp }}
-          </div>
-        </el-col>
-        <el-col
-          :span="6"
-          style="text-align: right; position: relative; right: 50px"
-        >
-          <el-button color="#4682B4" plain @click="showDes">数据介绍</el-button>
-          <el-button color="#4682B4" plain @click="showSta">数据统计</el-button>
+        <el-col :span="11" style="text-align: right">
+          <el-button type="primary" plain @click="showDes">数据介绍</el-button>
+          <el-button type="primary" plain @click="showSta">数据统计</el-button>
         </el-col>
         <el-col :span="2">
-          <div
-            style="
-              margin-left: 10px;
-              margin-top: 6px;
-              text-align: right;
-              right: 15px;
-              position: relative;
-            "
-          >
+          <div style="margin-left: 10px; margin-top: 6px; text-align: right">
             <el-icon style="margin-right: 5px"><View /></el-icon>
             <span>{{ watchs }}</span>
           </div>
         </el-col>
-        <el-col
-          :span="1"
-          style="
-            margin-top: 6px;
-            text-align: right;
-            right: 15px;
-            position: relative;
-          "
-        >
+        <el-col :span="1" style="margin-top: 6px; text-align: right">
           <el-icon style="margin-right: 5px"><Download /></el-icon>
           <span>{{ download }}</span>
         </el-col>
       </el-row>
     </div>
     <slot name="border"></slot>
-  </div>
-  <div>
-    <hr style="border-color: #d8d8d8" />
   </div>
 </template>
 
@@ -176,10 +136,11 @@ export default defineComponent({
       type: Object,
     },
   },
-  emits: ["toDetail", "getDataSet"],
+  emits: ["toDetail"],
   setup(props, context) {
     const shdes = ref(true);
     const shsta = ref(false);
+    // const checkInData = ref("选中至资源集合");
     const checkInDataBoo = ref(false);
     const name = computed(() => {
       return (props.fileInfo as any).name;
@@ -195,7 +156,6 @@ export default defineComponent({
           (props.fileInfo as any).avatar
         );
       }
-
       return imgBase64(name.value);
     });
     const userAvatar = computed(() => {
@@ -222,15 +182,9 @@ export default defineComponent({
     const id = computed(() => {
       return (props.fileInfo as any).id;
     });
-    const timeStamp = computed(() => {
+    const updateTime = computed(() => {
       return dateFormat(
-        (props.fileInfo as any).timeStamp,
-        "yyyy年MM月dd日hh时"
-      );
-    });
-    const createTime = computed(() => {
-      return dateFormat(
-        (props.fileInfo as any).createTime,
+        (props.fileInfo as any).updateTime,
         "yyyy年MM月dd日hh时"
       );
     });
@@ -260,6 +214,30 @@ export default defineComponent({
     const toDetail = () => {
       context.emit("toDetail");
     };
+
+    // const fits = ["fill", "contain", "cover", "none", "scale-down"];
+    // const url =
+    //   "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg";
+    //监听父组件中的数组表格，注意对于数组要深度监听
+    // watch(
+    //   () => props.dataSelect,
+    //   (newValue, oldValue) => {
+    //     for (let i = 0; i < (props.dataSelect as any)?.length; i++) {
+    //       //如果发现表格中包含该条目，则将该条目的背景色调为浅蓝色，证明已经选中
+    //       if (
+    //         (props.dataSelect as any[])[i].name == (props.fileInfo as any).name
+    //       ) {
+    //         checkInDataBoo.value = true;
+    //         //break跳出了for循环，证明该条目已经在表格中
+    //         break;
+    //       } else {
+    //         checkInDataBoo.value = false;
+    //       }
+    //     }
+    //   },
+    //   { immediate: true, deep: true }
+    // );
+
     return {
       shdes,
       shsta,
@@ -269,8 +247,7 @@ export default defineComponent({
       name,
       description,
       checkInDataBoo,
-      timeStamp,
-      createTime,
+      updateTime,
       watchs,
       download,
       tagList,
@@ -285,11 +262,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-/deep/.el-card__body {
-  height: 25px;
-  padding: 5px;
-  font-size: 15px;
-}
 .data-card {
   margin-bottom: 5px;
 
@@ -299,16 +271,14 @@ export default defineComponent({
     height: 40px;
     line-height: 40px;
     .text {
-      margin-left: 20px;
-      margin-top: 5px;
-      font-size: 25px;
-      color: rgb(5, 59, 88);
+      //margin-left: 10px;
+      font-size: 22px;
+      color: #4fb5ea;
     }
   }
   .des {
     margin-top: 8px;
-    margin-left: 10px;
-    font-size: 15px;
+    font-size: 14px;
     display: flex;
     line-height: 30px;
     justify-content: center;
@@ -341,12 +311,11 @@ export default defineComponent({
 }
 
 .block {
-  margin-left: 5px;
   padding: 10px 0;
   text-align: center;
   border-right: solid 1px var(--el-border-color);
   display: inline-block;
-  width: 25%;
+  width: 20%;
   box-sizing: border-box;
   vertical-align: top;
 }

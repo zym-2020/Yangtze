@@ -27,9 +27,9 @@ public interface DataListService {
 
     Map<String, Object> fuzzyQuery(int page, int size, String keyword, String[] tags, String property, Boolean flag, String type);
 
-    Map<String, Object> fuzzyQueryAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag, String type);
+    Map<String, Object> fuzzyQueryAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag, String type, int status);
 
-    Map<String, Object> deleteByAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag, String id, String type);
+    Map<String, Object> deleteByAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag, String id, String type, int status);
 
     Map<String, Object> pageQueryByEmail(String email, int size, int page, String keyword);
 
@@ -42,4 +42,8 @@ public interface DataListService {
     void downloadAll(String userId, String id, HttpServletRequest request, HttpServletResponse response);
 
     List<Map<String, Object>> findFiles(String dataListId);
+
+    List<Map<String, Object>> getSimilarData(String type);
+
+    Map<String, Object> clearQuery( String[] tags,String type,String location,String startDate,String endDate);
 }

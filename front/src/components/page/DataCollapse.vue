@@ -1,34 +1,22 @@
 <template>
   <div>
-    <!-- <el-drawer
-      v-model="drawer"
-      title="资源类型的一些介绍！"
-      direction="ltr"
-      :before-close="handleClose"
-      size="320px"
-      :append-to-body="true"
-      style="overflow: auto"
-      ><div style="text-align: center">Hi, there!</div>
-    </el-drawer> -->
-    <el-collapse v-model="activeNames">
+    <el-collapse @change="handleChange" v-model="activeNames" accordion>
       <el-collapse-item
-        v-for="(item, indexs) in categoryList"
+        v-for="(item, indexs) in categoryList.list"
         :key="indexs"
         :title="item.title"
         :name="indexs"
-        active
       >
         <div v-for="(dataItem, index) in item.data" :key="index">
-          <el-card
-            shadow="always"
-            :style="[
-              { marginLeft: dataItem.count == false ? '110px' : '50px' },
-              { marginTop: '5px' },
-            ]"
-            class="video"
-          >
-            <el-checkbox :label="dataItem.name" size="default" @change="change(indexs, index)" />
-          </el-card>
+          <el-checkbox
+            :label="dataItem.name"
+            size="default"
+            @change="
+              change(dataItem);
+              getRealList(dataItem.name);
+              dataItem.count = !dataItem.count;
+            "
+          />
         </div>
       </el-collapse-item>
     </el-collapse>
@@ -38,364 +26,226 @@
 <script lang="ts">
 import { defineComponent, ref, reactive, computed } from "vue";
 export default defineComponent({
-  emits: ["selectList"],
+  emits: ["selectList", "selectTitle", "tagRealList"],
   setup(props, context) {
-    const activeNames = reactive([0, 1, 2, 3, 4]);
-    const categoryList = ref([
-      {
-        title: "一级分类（必选）",
-        data: [
-          {
-            name: "基础地形数据",
-            count: false,
-          },
-          {
-            name: "基础水文数据",
-            count: false,
-          },
-          {
-            name: "基础工程数据",
-            count: false,
-          },
-          {
-            name: "整合资料库",
-            count: false,
-          },
-          {
-            name: "数模案例库",
-            count: false,
-          },
-          {
-            name: "物模案例库",
-            count: false,
-          },
-          {
-            name: "影像资料库",
-            count: false,
-          },
-          {
-            name: "辅助资料库",
-            count: false,
-          },
-          {
-            name: "元数据",
-            count: false,
-          },
-        ],
-      },
-      {
-        title: "基础地形数据",
-        data: [
-          {
-            name: "栅格TXT文件",
-            count: false,
-          },
-          {
-            name: "栅格ASC文件",
-            count: false,
-          },
-        ],
-      },
-      {
-        title: "基础水文数据",
-        data: [
-          {
-            name: "潮位数据",
-            count: false,
-          },
-          {
-            name: "流速流向数据",
-            count: false,
-          },
-          {
-            name: "含沙量数据",
-            count: false,
-          },
-          {
-            name: "流量数据",
-            count: false,
-          },
-          {
-            name: "输沙率数据",
-            count: false,
-          },
-          {
-            name: "悬移质数据",
-            count: false,
-          },
-          {
-            name: "冲淤数据",
-            count: false,
-          },
-          {
-            name: "深泓线数据",
-            count: false,
-          },
-          {
-            name: "沙滩数据",
-            count: false,
-          },
-          {
-            name: "床沙数据",
-            count: false,
-          },
-          {
-            name: "含盐度数据",
-            count: false,
-          },
-          {
-            name: "风速风向数据",
-            count: false,
-          },
-          {
-            name: "报告文字数据",
-            count: false,
-          },
-          {
-            name: "水文测验布置",
-            count: false,
-          },
-        ],
-      },
+    const activeNames = reactive([]);
+    const desciription = reactive(["地形数据、水文数据、工程数据"]);
+    const tagList = ref<any[]>([]);
+    const categoryList = reactive({
+      list: [
+        {
+          title: "地形数据",
+          data: [
+            {
+              name: "DEM",
+              count: false,
+            },
+            {
+              name: "边界",
+              count: false,
+            },
+            {
+              name: "等高线",
+              count: false,
+            },
+            {
+              name: "DWG",
+              count: false,
+            },
+            {
+              name: "高程点",
+              count: false,
+            },
+            {
+              name: "固定断面线",
+              count: false,
+            },
 
-      {
-        title: "基础工程数据",
-        data: [
-          {
-            name: "DWG工程文件",
-            count: false,
-          },
-          {
-            name: "码头工程",
-            count: false,
-          },
-          {
-            name: "桥梁工程",
-            count: false,
-          },
-          {
-            name: "规划未实施工程",
-            count: false,
-          },
-          {
-            name: "水利工程",
-            count: false,
-          },
-          {
-            name: "护岸工程",
-            count: false,
-          },
-          {
-            name: "航道整治工程",
-            count: false,
-          },
-          {
-            name: "水利工程",
-            count: false,
-          },
-          {
-            name: "航标",
-            count: false,
-          },
-        ],
-      },
-      {
-        title: "整合地形数据",
-        data: [
-          {
-            name: "SHAPEFILE",
-            count: false,
-          },
-          {
-            name: "等高线",
-            count: false,
-          },
-          {
-            name: "等深线",
-            count: false,
-          },
-          {
-            name: "高程点",
-            count: false,
-          },
-          {
-            name: "边界",
-            count: false,
-          },
-          {
-            name: "TIN",
-            count: false,
-          },
-          {
-            name: "DEM",
-            count: false,
-          },
-        ],
-      },
-      {
-        title: "整合水文数据",
-        data: [
-          {
-            name: "MDB关系数据库",
-            count: false,
-          },
-        ],
-      },
-      {
-        title: "整合工程数据",
-        data: [
-          {
-            name: "DWG工程文件",
-            count: false,
-          },
-          {
-            name: "码头工程",
-            count: false,
-          },
-          {
-            name: "桥梁工程",
-            count: false,
-          },
-          {
-            name: "规划未实施工程",
-            count: false,
-          },
-          {
-            name: "水利工程",
-            count: false,
-          },
-          {
-            name: "护岸工程",
-            count: false,
-          },
-          {
-            name: "航道整治工程",
-            count: false,
-          },
-          {
-            name: "水利工程",
-            count: false,
-          },
-          {
-            name: "航标",
-            count: false,
-          },
-        ],
-      },
-      {
-        title: "数模案例库",
-        data: [
-          {
-            name: "流场",
-            count: false,
-          },
-        ],
-      },
-      {
-        title: "物模案例库",
-        data: [
-          {
-            name: "流速",
-            count: false,
-          },
-          {
-            name: "泥沙",
-            count: false,
-          },
-          {
-            name: "水位",
-            count: false,
-          },
-          {
-            name: "视频",
-            count: false,
-          },
-          {
-            name: "照片",
-            count: false,
-          },
-        ],
-      },
-      {
-        title: "影像资料库",
-        data: [
-          {
-            name: "遥感影像",
-            count: false,
-          },
-        ],
-      },
-      {
-        title: "辅助资料库",
-        data: [
-          {
-            name: "地名数据",
-            count: false,
-          },
-          {
-            name: "固定断面线",
-            count: false,
-          },
-          {
-            name: "制导线",
-            count: false,
-          },
-        ],
-      },
-      {
-        title: "元数据",
-        data: [
-          {
-            name: "Pdf",
-            count: false,
-          },
-          {
-            name: "Word",
-            count: false,
-          },
-          {
-            name: "PPT",
-            count: false,
-          },
-        ],
-      },
-    ]);
-    const selectList: string[] = [];
+            {
+              name: "深泓线",
+              count: false,
+            },
+          ],
+        },
+        {
+          title: "工程数据",
+          data: [
+            {
+              name: "航标",
+              count: false,
+            },
+            {
+              name: "护岸工程",
+              count: false,
+            },
+            {
+              name: "码头工程",
+              count: false,
+            },
+            {
+              name: "水利工程",
+              count: false,
+            },
+            {
+              name: "整治工程",
+              count: false,
+            },
+            {
+              name: "桥梁工程",
+              count: false,
+            },
+          ],
+        },
 
-
-    const change = (indexs: number, index: number) => {
-      const str = categoryList.value[indexs].data[index].name
-      for (let i = 0; i < selectList.length; i++) {
-        if(str === selectList[i]) {
-          selectList.splice(i, 1)
-          context.emit("selectList", selectList)
+        {
+          title: "物理模型",
+          data: [
+            {
+              name: "浓度场",
+              count: false,
+            },
+            {
+              name: "照片",
+              count: false,
+            },
+          ],
+        },
+        {
+          title: "水文数据",
+          data: [
+            {
+              name: "潮位",
+              count: false,
+            },
+            {
+              name: "断面输沙率",
+              count: false,
+            },
+            {
+              name: "含沙量",
+              count: false,
+            },
+            {
+              name: "含盐度",
+              count: false,
+            },
+            {
+              name: "流速流向",
+              count: false,
+            },
+            {
+              name: "悬移质",
+              count: false,
+            },
+          ],
+        },
+        {
+          title: "遥感影像",
+          data: [
+            {
+              name: "遥感影像",
+              count: false,
+            },
+          ],
+        },
+      ],
+    });
+    const selectList = ref<any[]>([]);
+    const drawer = ref(false);
+    const itemChosen = ref(false);
+    const preTitile = ref("");
+    //传递标签
+    const getRealList = (val: string) => {
+      let flag = 0;
+      for (let i = 0; i < tagList.value.length; i++) {
+        if (tagList.value[i] == val) {
+          tagList.value.splice(i, 1);
+          flag = 1;
+          break;
+        }
+      }
+      if (flag == 0) tagList.value.push(val);
+      context.emit("tagRealList", tagList.value);
+    };
+    const handleChange = (val: string[]) => {
+      if (
+        categoryList.list[val as any]?.title == undefined ||
+        categoryList.list[val as any]?.title != preTitile.value
+      ) {
+        selectList.value = [];
+        for (let i = 0; i < categoryList.list.length; i++)
+          for (let j = 0; j < categoryList.list[i].data.length; j++)
+            categoryList.list[i].data[j].count = false;
+      }
+      preTitile.value = categoryList.list[val as any]?.title;
+      context.emit("selectList", selectList.value);
+      context.emit("selectTitle", categoryList.list[val as any]?.title);
+    };
+    const setIconStyle = computed(() => {
+      return "marginTop: 5px; marginLeft: 100px";
+    });
+    const change = (val: any) => {
+      for (let i = 0; i < selectList.value.length; i++) {
+        if (val.name === selectList.value[i]) {
+          selectList.value.splice(i, 1);
+          context.emit("selectList", selectList.value);
           return;
         }
       }
-      selectList.push(str)
-      context.emit("selectList", selectList)
+      console.log("我在这走");
+      selectList.value.push(val.name);
+      context.emit("selectList", selectList.value);
     };
-
     return {
       activeNames,
+      desciription,
+      handleChange,
       categoryList,
       change,
+      setIconStyle,
+      drawer,
+      itemChosen,
+      getRealList,
     };
   },
 });
 </script>
 
 <style lang="scss" scoped>
+//用var来盛放--test变量名，用于js做动态修改，这里将后面的默认值去掉了后才可达到效果
+$fontColor: var(--test);
+/deep/.el-checkbox__inner {
+  border: none;
+  width: 0;
+}
+
+/deep/.el-collapse {
+  border: none;
+}
+.el-collapse /deep/.el-collapse-item__content {
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+}
+
+.el-collapse /deep/.el-checkbox__label {
+  font-size: 15px;
+  font-weight: bold;
+}
+
 .el-collapse /deep/ .el-collapse-item__header {
   background: #f6f7fa;
-  font-size: 16px;
+  font-size: 19px;
+  font-weight: bold;
+  color: $fontColor;
+}
+.el-collapse /deep/ .el-collapse-item__header.is-active {
+  color: #ff9933;
 }
 .el-collapse /deep/ .el-collapse-item__wrap {
   background: #f6f7fa;
 }
-
 .video {
-  width: 319px;
+  width: 250px;
   height: 60px;
   border-radius: 10px;
   background-color: rgb(255, 255, 255);
