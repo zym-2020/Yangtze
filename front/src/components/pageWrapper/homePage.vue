@@ -10,7 +10,7 @@
             <el-row id="links" justify="space-around">
               <el-col :span="6">
                 <el-dropdown>
-                  <el-button type="primary" class="dropdown-button" id="data" color="rgba(219, 219, 219, 0.2)" :dark="false">
+                  <el-button type="primary" class="dropdown-button data" id="data" color="rgba(219, 219, 219, 0.2)" :dark="false">
                     资源门户<el-icon class="el-icon--right"><arrow-down /></el-icon>
                   </el-button>
                   <template #dropdown>
@@ -27,7 +27,7 @@
               </el-col>
               <el-col :span="6">
                 <el-dropdown>
-                  <el-button type="primary" class="dropdown-button" id="amap" color="rgba(219, 219, 219, 0.2)" :dark="false">
+                  <el-button type="primary" class="dropdown-button amap" id="amap" color="rgba(219, 219, 219, 0.2)" :dark="false">
                     一张图<el-icon class="el-icon--right"><arrow-down /></el-icon>
                   </el-button>
                   <template #dropdown>
@@ -44,7 +44,7 @@
               </el-col>
               <el-col :span="6">
                 <el-dropdown>
-                  <el-button type="primary" class="dropdown-button" id="analysis" color="rgba(219, 219, 219, 0.2)" :dark="false">
+                  <el-button type="primary" class="dropdown-button analysis" id="analysis" color="rgba(219, 219, 219, 0.2)" :dark="false">
                     分析中心<el-icon class="el-icon--right"><arrow-down /></el-icon>
                   </el-button>
                   <template #dropdown>
@@ -377,21 +377,21 @@ onMounted(() => {
   -webkit-text-fill-color: transparent;
   -webkit-animation: hue 60s infinite linear;
 
-  &#data {
+  &.data {
     background-image: linear-gradient(30deg, #fffef0 0%, #9edcfc 10%, #fff352 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     -webkit-animation: hue 60s infinite linear;
   }
 
-  &#amap {
+  &.amap {
     background-image: linear-gradient(45deg, #fffef0 0%, #9edcfc 10%, #52ff52 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     -webkit-animation: hue 60s infinite linear;
   }
 
-  &#analysis {
+  &.analysis {
     background-image: linear-gradient(45deg, #fffef0 0%, #9edcfc 10%, #ff9252 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -400,7 +400,7 @@ onMounted(() => {
 }
 
 ul.el-dropdown-menu {
-  background-image: linear-gradient(30deg, #9dc7ff 0%, #3576d8 40%, #012063 100%);
+  background-image: linear-gradient(30deg, #6ea9f5 0%, #2662bb 40%, #012063 100%);
   font-size: 2vh;
   width: 10vw;
   border-color: #39d6fd;

@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts">
-import HeaderComponent from "./components/Header.vue";
+import HeaderComponent from "./components/HeaderNew.vue";
 import { computed, defineComponent, ref } from "vue";
 import router from "@/router";
 import UploadPage from "./components/UploadPage.vue";
