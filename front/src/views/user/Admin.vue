@@ -5,9 +5,10 @@
     </div>
     <div class="admin-main">
       <el-scrollbar class="scroll">
-        <resource-manage v-show="flag === 1" />
-        <scenario-manage v-show="flag === 2"></scenario-manage>
-        <project-manage v-show="flag === 3"></project-manage>
+        <resource-manage v-if="flag === 1" />
+        <scenario-manage v-if="flag === 2"></scenario-manage>
+        <project-manage v-if="flag === 3"></project-manage>
+        <audit-manage v-if="flag === 4"></audit-manage>
       </el-scrollbar>
     </div>
   </div>
@@ -19,12 +20,14 @@ import AdminLeft from "./components/AdminLeft.vue";
 import ResourceManage from "./views/ResourceManage.vue";
 import ProjectManage from "./views/ProjectManage.vue";
 import ScenarioManage from "./views/ScenarioManage.vue";
+import AuditManage from "./views/AuditManage.vue";
 export default defineComponent({
   components: {
     AdminLeft,
     ResourceManage,
     ProjectManage,
     ScenarioManage,
+    AuditManage,
   },
   setup() {
     const flag = ref(1);

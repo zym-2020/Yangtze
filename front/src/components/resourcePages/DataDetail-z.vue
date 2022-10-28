@@ -34,10 +34,10 @@
         <!-- ////////////////////////////////////////////////////////////////// -->
         <div>
           <el-row style="margin-top: 10px">
-            <el-col :span="7">
+            <el-col :span="5">
               <div class="block">
                 <el-image
-                  style="width: 250px; height: 160px"
+                  style="width: 180px; height: 160px"
                   :src="avatar"
                   fit="fill"
                   :previewSrcList="srcList"
@@ -45,7 +45,7 @@
                 />
               </div>
             </el-col>
-            <el-col :span="17">
+            <el-col :span="19">
               <el-row>
                 <div class="des">
                   {{ fileInfo?.description }}
@@ -97,7 +97,7 @@
                   <data-description
                     :data="{
                       key: '数据时间：',
-                      value: date(fileInfo.timeStamp),
+                      value: date(fileInfo.createTime),
                     }"
                   ></data-description>
                 </div>
@@ -662,10 +662,7 @@ export default defineComponent({
     });
     const avatar = computed(() => {
       if ((props.fileInfo as any).avatar != "") {
-        return (
-          "http://localhost:8002/visual/getAvatar/" +
-          (props.fileInfo as any).avatar
-        );
+        return "http://localhost:8002/visual/getAvatar/" + (props.fileInfo as any).avatar;
       }
       return imgBase64(
         (props.fileInfo as any).name === undefined
@@ -706,7 +703,6 @@ export default defineComponent({
       if (fileData != null && (fileData as any).code === 0) {
         fileList.value = fileData.data;
       }
-      console.log("gg", fileList.value);
       //获取file文件的可视化方法
       let MapFlag = false;
       let photoFlag = false;

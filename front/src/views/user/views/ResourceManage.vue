@@ -35,7 +35,7 @@
                         >
                         <el-dropdown-item
                           v-if="item.status === 1"
-                          @click="operate(2, item)"
+                          @click="operate(2, item, index)"
                           >下线</el-dropdown-item
                         >
                         <el-dropdown-item
@@ -69,9 +69,9 @@
         />
       </div>
     </div>
-    <el-dialog v-model="offlineFlag" width="600px" :modal="false">
+    <!-- <el-dialog v-model="offlineFlag" width="600px" :modal="false">
       <offline-dialog @commitInfo="commitInfo" />
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 
@@ -116,15 +116,25 @@ export default defineComponent({
           },
         });
       } else if (param === 2) {
-        offlineFlag.value = true;
-        offlineItem.value = fileInfo;
+        ElMessageBox.confirm("您确定要下线条目吗？", "警告", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        })
+          .then(async () => {
+            const data = await updateStatusById(fileInfo.id, -1);
+            if (data != null && (data as any).code === 0) {
+              console.log(fileList.value, index)
+              notice("success", "成功", "下线成功");
+              fileList.value[index].status = -1;
+            }
+          })
+          .catch(() => {});
       } else if (param === 3) {
         const data = await updateStatusById(fileInfo.id as string, 1);
-        if (data != null) {
-          if ((data as any).code === 0) {
-            fileList.value[index].status = 1;
-            notice("success", "成功", "条目上线成功");
-          }
+        if (data != null && (data as any).code === 0) {
+          fileList.value[index].status = 1;
+          notice("success", "成功", "条目上线成功");
         }
       } else if (param === 4) {
         ElMessageBox.confirm("确定删除该数据条目？", "警告", {
@@ -142,6 +152,7 @@ export default defineComponent({
               flag: true,
               tags: [],
               type: "",
+              status: 2,
             });
             if (data != null) {
               if ((data as any).code === 0) {
@@ -171,6 +182,7 @@ export default defineComponent({
         page: val - 1,
         size: 10,
         type: "",
+        status: 2,
       });
       if (data != null) {
         if ((data as any).code === 0) {
@@ -191,6 +203,7 @@ export default defineComponent({
         page: 0,
         size: 10,
         type: "",
+        status: 2,
       });
       if (data != null) {
         if ((data as any).code === 0) {
@@ -220,6 +233,7 @@ export default defineComponent({
         page: 0,
         size: 10,
         type: "",
+        status: 2,
       });
       if (data != null) {
         if ((data as any).code === 0) {
@@ -274,7 +288,7 @@ export default defineComponent({
     .creator {
       position: absolute;
       display: flex;
-      right: 50px;
+      right: 300px;
       .el-avatar {
         margin-top: 8px;
       }

@@ -172,8 +172,7 @@ public class ProjectServiceImpl implements ProjectService {
             LocalUploadUtil.uploadAvatar(pictureAddress + uuid + "." + suffix, file);
             avatar = uuid + "." + suffix;
         }
-        projectMapper.updateProjectInfo(id, projectName, isPublic, avatar);
-        return avatar;
+        return projectMapper.updateProjectInfo(id, projectName, isPublic, avatar);
     }
 
     @Override

@@ -245,7 +245,7 @@ export async function deleteAsMember(jsonData: { id: string, size: number, page:
     return await del(`/dataList/deleteAsMember`, jsonData)
 }
 
-export async function deleteByAdmin(jsonData: { page: number, size: number, keyword: string, tags: string[], property: string, flag: boolean, id: string, type: string }) {
+export async function deleteByAdmin(jsonData: { page: number, size: number, keyword: string, tags: string[], property: string, flag: boolean, id: string, type: string, status: number }) {
     return await del(`/dataList/deleteByAdmin`, jsonData)
 }
 
@@ -257,7 +257,7 @@ export async function getFileInfoAndUserInfo(id: string) {
     return await get(`/dataList/getFileInfoAndUserInfo/${id}`)
 }
 
-export async function fuzzyQueryAdmin(jsonData: { page: number, size: number, keyword: string, tags: string[], property: string, flag: boolean, type: string }) {
+export async function fuzzyQueryAdmin(jsonData: { page: number, size: number, keyword: string, tags: string[], property: string, flag: boolean, type: string, status: number }) {
     return await post(`/dataList/fuzzyQueryAdmin`, jsonData)
 }
 
@@ -271,6 +271,13 @@ export async function updateDataList(formData: FormData) {
 
 export async function pageQueryByEmail(jsonData: { page: number, size: number, keyword: string }) {
     return await post(`/dataList/pageQueryByEmail`, jsonData)
+}
+export async function clearQueryDataList(jsonData: { tags: string[], type: string, location: string, startDate: string, endDate: string }) {
+    return await post(`/dataList/clearQuery`, jsonData)
+}
+
+export async function getSimilarData(type: string) {
+    return await get(`/dataList/getSimilarData/${type}`)
 }
 
 //============================Visual相关接口====================================

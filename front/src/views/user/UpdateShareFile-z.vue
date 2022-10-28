@@ -1,9 +1,9 @@
 <template>
   <div class="upload-share">
-    <page-header :pageTitle="'创建共享条目'"></page-header>
+    <page-header :pageTitle="'修改共享条目'"></page-header>
     <div class="main">
       <div class="head">
-        <strong>创建新的共享文件条目</strong>
+        <strong>修改共享文件条目</strong>
       </div>
       <div class="des">
         请确保以下内容的<strong>真实性</strong>及<strong>完整性</strong>，以便管理员审核通过！审核工作预计在7个工作日内完成
@@ -52,16 +52,14 @@
         <el-form-item label="条目封面：">
           <avatar-upload
             @upload="upload"
-            :pictureName="''"
-            ref="avatarUpload"
+            :pictureName="avatarName"
           ></avatar-upload>
         </el-form-item>
 
         <el-form-item label="条目缩略图：">
           <avatar-upload
             @upload="uploadTh"
-            :pictureName="''"
-            ref="thumbUpload"
+            :pictureName="thumbName"
           ></avatar-upload>
         </el-form-item>
       </el-form>
@@ -85,49 +83,20 @@
           <el-input v-model="form.providerAddress" />
         </el-form-item>
         <el-form-item label="原始数据类型：" prop="type">
-          <el-select
-            v-model="form.type"
-            placeholder="数据类型"
-            size="large"
-            style="width: 300px"
-          >
-            <el-option-group
-              v-for="(group, groupIndex) in optionType"
-              :key="groupIndex"
-              :label="group.title"
-            >
-              <el-option
-                v-for="(item, index) in group.data"
-                :key="index"
-                :label="item.name"
-                :value="item.name"
-              />
-            </el-option-group>
-          </el-select>
+          <el-input v-model="form.type" />
         </el-form-item>
         <el-form-item label="数据时间描述：">
           <el-input v-model="form.time" />
         </el-form-item>
-        <el-form-item label="时间详细描述：">
-          <el-date-picker
-            v-model="form.timeStamp"
-            type="date"
-            placeholder="Pick a day"
-            size="default"
-          />
-        </el-form-item>
         <el-form-item label="数据范围描述：">
           <el-input v-model="form.range" />
         </el-form-item>
-
         <el-form-item label="数据条目定位：">
           <div ref="container" class="container"></div>
         </el-form-item>
-
         <el-form-item label="数据绑定：">
-          <data-bind @changeData="changeData" ref="dataBind" />
+          <data-bind @changeData="changeData" />
         </el-form-item>
-
         <el-form-item label="数据获取方式：" prop="getOnline">
           <el-radio-group v-model="form.getOnline">
             <el-radio :label="true">在线获取</el-radio>
@@ -155,29 +124,20 @@
     </div>
     <div class="btn">
       <el-button type="success" plain @click="commit(fileRef, metaRef)"
-        >提交</el-button
+        >更新</el-button
       >
     </div>
   </div>
 </template>
 
 <script lang="ts">
-type Form = {
+type TableDataType = {
   id: string;
   name: string;
-  description: string;
-  tags: string[];
-  location: string[];
-  provider: string;
-  time: string;
-  range: string;
-  detail: string;
-  type: string;
-  providerPhone: string;
-  providerEmail: string;
-  providerAddress: string;
-  getOnline: boolean;
-  timeStamp: string;
+  folder: boolean;
+  size: string;
+  flag: boolean;
+  parentId: string;
 };
 import {
   defineComponent,
@@ -191,23 +151,21 @@ import "@wangeditor/editor/dist/css/style.css"; // 引入 css
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
 import { IDomEditor } from "@wangeditor/editor";
 import PageHeader from "@/components/page/PageHeader.vue";
-import ResourceDialog from "@/components/dialog/ResourceDialog.vue";
-import { addDataList, addRelational } from "@/api/request";
-import { notice } from "@/utils/notice";
+import DataBind from "./components/DataBind.vue";
 import type { FormInstance } from "element-plus";
 import AvatarUpload from "@/components/upload/AvatarUpload.vue";
-import DataBind from "./components/DataBind.vue";
-
 import mapBoxGl, { AnySourceData } from "mapbox-gl";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
-import { uuid } from "@/utils/common";
+import { updateDataList, updateRelational } from "@/api/request";
+import router from "@/router";
+import { notice } from "@/utils/notice";
+
 export default defineComponent({
   components: {
     PageHeader,
     Editor,
     Toolbar,
-    ResourceDialog,
     AvatarUpload,
     DataBind,
   },
@@ -216,305 +174,30 @@ export default defineComponent({
       children: "children",
       label: "label",
     };
-    const container = ref<HTMLElement>();
-    const dataBind = ref();
-    const options = ref([
-      {
-        title: "时间",
-        data: [
-          {
-            name: "2002以前",
-            count: false,
-          },
-          {
-            name: "2002~2012",
-            count: false,
-          },
-          {
-            name: "2013~2022",
-            count: false,
-          },
-        ],
-      },
-      {
-        title: "范围",
-        data: [
-          {
-            name: "长江区域",
-            count: false,
-          },
-          {
-            name: "南京区域",
-            count: false,
-          },
-        ],
-      },
-      {
-        title: "地点",
-        data: [
-          {
-            name: "白茆小沙",
-            count: false,
-          },
-          {
-            name: "福中+福北",
-            count: false,
-          },
-          {
-            name: "横港沙",
-            count: false,
-          },
-          {
-            name: "黄铁沙",
-            count: false,
-          },
-          {
-            name: "护漕港边滩",
-            count: false,
-          },
-          {
-            name: "沪通大桥",
-            count: false,
-          },
-          {
-            name: "江阴大桥",
-            count: false,
-          },
-          {
-            name: "苏通大桥",
-            count: false,
-          },
-          {
-            name: "双涧沙",
-            count: false,
-          },
-          {
-            name: "通白",
-            count: false,
-          },
-          {
-            name: "通州沙",
-            count: false,
-          },
-          {
-            name: "民主沙",
-            count: false,
-          },
-          {
-            name: "福姜沙",
-            count: false,
-          },
-          {
-            name: "新开沙",
-            count: false,
-          },
-          {
-            name: "西水道",
-            count: false,
-          },
-        ],
-      },
-
-      {
-        title: "文件格式",
-        data: [
-          {
-            name: "shp",
-            count: false,
-          },
-          {
-            name: "dwg",
-            count: false,
-          },
-          {
-            name: "txt",
-            count: false,
-          },
-          {
-            name: "jpg",
-            count: false,
-          },
-          {
-            name: "excel",
-            count: false,
-          },
-        ],
-      },
-      {
-        title: "文件性质",
-        data: [
-          {
-            name: "栅格文件",
-            count: false,
-          },
-          {
-            name: "矢量文件",
-            count: false,
-          },
-          {
-            name: "文本数据",
-            count: false,
-          },
-          {
-            name: "图片",
-            count: false,
-          },
-          {
-            name: "遥感影像",
-            count: false,
-          },
-        ],
-      },
-    ]);
-    const optionType = ref([
-      {
-        title: "地形数据",
-        data: [
-          {
-            name: "DEM",
-            count: false,
-          },
-          {
-            name: "边界",
-            count: false,
-          },
-          {
-            name: "等高线",
-            count: false,
-          },
-          {
-            name: "DWG",
-            count: false,
-          },
-          {
-            name: "高程点",
-            count: false,
-          },
-          {
-            name: "固定断面线",
-            count: false,
-          },
-
-          {
-            name: "深泓线",
-            count: false,
-          },
-        ],
-      },
-      {
-        title: "工程数据",
-        data: [
-          {
-            name: "航标",
-            count: false,
-          },
-          {
-            name: "护岸工程",
-            count: false,
-          },
-          {
-            name: "码头工程",
-            count: false,
-          },
-          {
-            name: "水利工程",
-            count: false,
-          },
-          {
-            name: "整治工程",
-            count: false,
-          },
-          {
-            name: "桥梁工程",
-            count: false,
-          },
-        ],
-      },
-      {
-        title: "物理模型",
-        data: [
-          {
-            name: "浓度场",
-            count: false,
-          },
-          {
-            name: "照片",
-            count: false,
-          },
-        ],
-      },
-      {
-        title: "水文数据",
-        data: [
-          {
-            name: "潮位",
-            count: false,
-          },
-          {
-            name: "断面输沙率",
-            count: false,
-          },
-          {
-            name: "含沙量",
-            count: false,
-          },
-          {
-            name: "含盐度",
-            count: false,
-          },
-          {
-            name: "流速流向",
-            count: false,
-          },
-          {
-            name: "悬移质",
-            count: false,
-          },
-        ],
-      },
-      {
-        title: "遥感影像",
-        data: [
-          {
-            name: "遥感影像",
-            count: false,
-          },
-        ],
-      },
-    ]);
-    const form: Form = reactive({
-      id: uuid(),
-      name: "",
-      description: "",
-      tags: [],
-      location: [],
-      provider: "",
-      time: "",
-      range: "",
-      detail: "",
-      type: "",
-      providerPhone: "",
-      providerEmail: "",
-      providerAddress: "",
-      getOnline: true,
-      timeStamp: "",
-    });
-    const avatar = ref<File>();
-    const thumbnail = ref<File>();
-    const avatarUpload = ref();
-    const thumbUpload = ref();
 
     const editorRef = shallowRef<IDomEditor>();
     const toolbarConfig = {};
+    const tableData = ref<TableDataType[]>([]);
     const editorConfig = {
       scroll: true,
       autoFocus: true,
     };
+
+    const avatar = ref<File>();
+    const thumbnail = ref<File>();
+    const avatarName = ref<string>(
+      (router.currentRoute.value.params.fileInfo as any).avatar
+    );
+    const thumbName = ref<string>(
+      (router.currentRoute.value.params.fileInfo as any).thumbnail
+    );
     const fileList = ref<string[]>([]);
-    const fileRef = ref<HTMLElement | undefined>();
-    const metaRef = ref<HTMLElement | undefined>();
 
     let map: mapBoxGl.Map;
+    const container = ref<HTMLElement>();
+
+    const fileRef = ref<HTMLElement>();
+    const metaRef = ref<HTMLElement>();
 
     const handleCreated = (editor: any) => {
       editorRef.value = editor; // 记录 editor 实例，重要！
@@ -525,23 +208,26 @@ export default defineComponent({
     };
 
     const uploadTh = (val: any) => {
+      console.log("123");
       thumbnail.value = val;
     };
 
-    const changeData = (
-      val: {
-        id: string;
-        name: string;
-        folder: boolean;
-        size: string[];
-        flag: boolean;
-        parentId: string;
-      }[]
-    ) => {
+    const changeData = (val: TableDataType[]) => {
       fileList.value = [];
       val.forEach((item) => {
         fileList.value.push(item.id);
       });
+    };
+
+    const getCoordinates = (location: string[]) => {
+      const coordinates = [];
+      for (let i = 0; i + 1 < location.length; i = i + 2) {
+        coordinates.push([
+          parseFloat(location[i]),
+          parseFloat(location[i + 1]),
+        ]);
+      }
+      return coordinates;
     };
 
     const commit = async (
@@ -552,7 +238,7 @@ export default defineComponent({
       await formEl1.validate(async (valid1, fields) => {
         await formEl2.validate(async (valid2) => {
           if (valid1 && valid2) {
-            console.log(form, avatar.value, thumbnail.value);
+            console.log("1", avatar.value, thumbnail.value);
             const formData = new FormData();
             formData.append("jsonString", JSON.stringify(form));
             if (avatar.value != undefined) {
@@ -565,9 +251,8 @@ export default defineComponent({
             } else {
               formData.append("thumbnail", new Blob());
             }
-
-            const data = await addDataList(formData);
-            const data1 = await addRelational({
+            const data = await updateDataList(formData);
+            const data1 = await updateRelational({
               dataListId: form.id,
               fileIdList: fileList.value,
             });
@@ -577,33 +262,356 @@ export default defineComponent({
               data1 != null &&
               (data1 as any).code === 0
             ) {
-              notice("success", "成功", "请等待管理员审核通过！");
-              init();
+              notice("success", "成功", "更新成功！");
             }
           }
         });
       });
     };
+    const options = ref([
+      {
+        title: "一级分类（必选）",
+        data: [
+          {
+            name: "基础地形数据",
+            count: false,
+          },
+          {
+            name: "基础水文数据",
+            count: false,
+          },
+          {
+            name: "基础工程数据",
+            count: false,
+          },
+          {
+            name: "整合资料库",
+            count: false,
+          },
+          {
+            name: "数模案例库",
+            count: false,
+          },
+          {
+            name: "物模案例库",
+            count: false,
+          },
+          {
+            name: "影像资料库",
+            count: false,
+          },
+          {
+            name: "辅助资料库",
+            count: false,
+          },
+          {
+            name: "元数据",
+            count: false,
+          },
+        ],
+      },
+      {
+        title: "基础地形数据",
+        data: [
+          {
+            name: "栅格TXT文件",
+            count: false,
+          },
+          {
+            name: "栅格ASC文件",
+            count: false,
+          },
+        ],
+      },
+      {
+        title: "基础水文数据",
+        data: [
+          {
+            name: "潮位数据",
+            count: false,
+          },
+          {
+            name: "流速流向数据",
+            count: false,
+          },
+          {
+            name: "含沙量数据",
+            count: false,
+          },
+          {
+            name: "流量数据",
+            count: false,
+          },
+          {
+            name: "输沙率数据",
+            count: false,
+          },
+          {
+            name: "悬移质数据",
+            count: false,
+          },
+          {
+            name: "冲淤数据",
+            count: false,
+          },
+          {
+            name: "深泓线数据",
+            count: false,
+          },
+          {
+            name: "沙滩数据",
+            count: false,
+          },
+          {
+            name: "床沙数据",
+            count: false,
+          },
+          {
+            name: "含盐度数据",
+            count: false,
+          },
+          {
+            name: "风速风向数据",
+            count: false,
+          },
+          {
+            name: "报告文字数据",
+            count: false,
+          },
+          {
+            name: "水文测验布置",
+            count: false,
+          },
+        ],
+      },
 
-    const init = () => {
-      form.id = uuid();
-      form.name = "";
-      form.description = "";
-      form.location = [] as string[];
-      form.tags = [] as string[];
-      form.time = "";
-      form.range = "";
-      form.detail = "";
-      form.provider = "";
-      form.type = "";
-      form.providerPhone = "";
-      form.providerEmail = "";
-      form.providerAddress = "";
-      form.getOnline = true;
-      (form.timeStamp = ""), avatarUpload.value.initPicture();
-      thumbUpload.value.initPicture();
-      dataBind.value?.clearData();
-    };
+      {
+        title: "基础工程数据",
+        data: [
+          {
+            name: "DWG工程文件",
+            count: false,
+          },
+          {
+            name: "码头工程",
+            count: false,
+          },
+          {
+            name: "桥梁工程",
+            count: false,
+          },
+          {
+            name: "规划未实施工程",
+            count: false,
+          },
+          {
+            name: "水利工程",
+            count: false,
+          },
+          {
+            name: "护岸工程",
+            count: false,
+          },
+          {
+            name: "航道整治工程",
+            count: false,
+          },
+          {
+            name: "实施工程",
+            count: false,
+          },
+          {
+            name: "航标",
+            count: false,
+          },
+        ],
+      },
+      {
+        title: "整合地形数据",
+        data: [
+          {
+            name: "SHAPEFILE",
+            count: false,
+          },
+          {
+            name: "等高线",
+            count: false,
+          },
+          {
+            name: "等深线",
+            count: false,
+          },
+          {
+            name: "高程点",
+            count: false,
+          },
+          {
+            name: "边界",
+            count: false,
+          },
+          {
+            name: "TIN",
+            count: false,
+          },
+          {
+            name: "DEM",
+            count: false,
+          },
+        ],
+      },
+      {
+        title: "整合水文数据",
+        data: [
+          {
+            name: "MDB关系数据库",
+            count: false,
+          },
+        ],
+      },
+      {
+        title: "整合工程数据",
+        data: [
+          {
+            name: "DWG工程文件",
+            count: false,
+          },
+          {
+            name: "码头工程",
+            count: false,
+          },
+          {
+            name: "桥梁工程",
+            count: false,
+          },
+          {
+            name: "规划未实施工程",
+            count: false,
+          },
+          {
+            name: "水利工程",
+            count: false,
+          },
+          {
+            name: "护岸工程",
+            count: false,
+          },
+          {
+            name: "航道整治工程",
+            count: false,
+          },
+          {
+            name: "水利工程",
+            count: false,
+          },
+          {
+            name: "航标",
+            count: false,
+          },
+        ],
+      },
+      {
+        title: "数模案例库",
+        data: [
+          {
+            name: "流场",
+            count: false,
+          },
+        ],
+      },
+      {
+        title: "物模案例库",
+        data: [
+          {
+            name: "流速",
+            count: false,
+          },
+          {
+            name: "泥沙",
+            count: false,
+          },
+          {
+            name: "水位",
+            count: false,
+          },
+          {
+            name: "潮汐",
+            conut: false,
+          },
+          {
+            name: "视频",
+            count: false,
+          },
+          {
+            name: "照片",
+            count: false,
+          },
+        ],
+      },
+      {
+        title: "影像资料库",
+        data: [
+          {
+            name: "遥感影像",
+            count: false,
+          },
+        ],
+      },
+      {
+        title: "辅助资料库",
+        data: [
+          {
+            name: "地名数据",
+            count: false,
+          },
+          {
+            name: "固定断面线",
+            count: false,
+          },
+          {
+            name: "制导线",
+            count: false,
+          },
+        ],
+      },
+      {
+        title: "元数据",
+        data: [
+          {
+            name: "Pdf",
+            count: false,
+          },
+          {
+            name: "Word",
+            count: false,
+          },
+          {
+            name: "PPT",
+            count: false,
+          },
+        ],
+      },
+    ]);
+
+    const form = reactive({
+      id: (router.currentRoute.value.params.fileInfo as any).id,
+      name: (router.currentRoute.value.params.fileInfo as any).name,
+      description: (router.currentRoute.value.params.fileInfo as any)
+        .description,
+      tags: (router.currentRoute.value.params.fileInfo as any).tags,
+      location: (router.currentRoute.value.params.fileInfo as any).location,
+      provider: (router.currentRoute.value.params.fileInfo as any).provider,
+      time: (router.currentRoute.value.params.fileInfo as any).time,
+      range: (router.currentRoute.value.params.fileInfo as any).range,
+      detail: (router.currentRoute.value.params.fileInfo as any).detail,
+      type: (router.currentRoute.value.params.fileInfo as any).type,
+      providerPhone: (router.currentRoute.value.params.fileInfo as any)
+        .providerPhone,
+      providerEmail: (router.currentRoute.value.params.fileInfo as any)
+        .providerEmail,
+      providerAddress: (router.currentRoute.value.params.fileInfo as any)
+        .providerAddress,
+      getOnline: (router.currentRoute.value.params.fileInfo as any).getOnline,
+    });
 
     const fileRules = reactive({
       name: [{ required: true, message: "条目名不得为空！", trigger: "blur" }],
@@ -640,6 +648,7 @@ export default defineComponent({
           line_string: false,
         },
       });
+
       //绘制事件
       const updateArea = function (e: any) {
         if (e.type === "draw.create") {
@@ -669,6 +678,24 @@ export default defineComponent({
       map.on("draw.create", updateArea);
       map.on("draw.delete", updateArea);
       map.on("draw.update", updateArea);
+      map.on("load", () => {
+        if (
+          (router.currentRoute.value.params.fileInfo as any).location.length > 0
+        ) {
+          polygonDraw.add({
+            type: "Feature",
+            properties: {},
+            geometry: {
+              type: "Polygon",
+              coordinates: [
+                getCoordinates(
+                  (router.currentRoute.value.params.fileInfo as any).location
+                ),
+              ],
+            },
+          });
+        }
+      });
     };
 
     // 组件销毁时，也及时销毁编辑器
@@ -678,16 +705,19 @@ export default defineComponent({
       editor.destroy();
     });
 
-    onMounted(() => {
+    onMounted(async () => {
       initMap();
+      console.log(router.currentRoute.value.params);
+      (router.currentRoute.value.params.files as any[]).forEach((item) => {
+        fileList.value.push(item.id);
+      });
     });
 
     return {
-      container,
       form,
+      container,
       defaultProps,
       options,
-      optionType,
       editorRef,
       toolbarConfig,
       editorConfig,
@@ -699,10 +729,10 @@ export default defineComponent({
       metaRef,
       upload,
       uploadTh,
-      avatarUpload,
-      thumbUpload,
+      thumbName,
+      avatarName,
       changeData,
-      dataBind,
+      tableData,
     };
   },
 });
@@ -729,7 +759,6 @@ export default defineComponent({
       }
     }
   }
-
   .btn {
     text-align: center;
     height: 80px;

@@ -13,8 +13,11 @@
               <div v-if="item.status === 1" class="online">
                 <el-tag type="success">Online</el-tag>
               </div>
-              <div v-else class="offline">
+              <div v-if="item.status === -1" class="offline">
                 <el-tag type="info">Offline</el-tag>
+              </div>
+              <div v-if="item.status === 0" class="offline">
+                <el-tag type="info">审核中</el-tag>
               </div>
             </template>
             <template #creator>
@@ -28,7 +31,9 @@
                     </el-button>
                     <template #dropdown>
                       <el-dropdown-menu>
-                        <el-dropdown-item @click="operate(1, item)"
+                        <el-dropdown-item
+                          @click="operate(1, item)"
+                          v-if="item.status != 0"
                           >编辑</el-dropdown-item
                         >
                         <el-dropdown-item
@@ -77,6 +82,7 @@ import { pageQueryByEmail, updateStatusById } from "@/api/request";
 import DataCard from "@/components/cards/DataCard.vue";
 import { ElMessageBox } from "element-plus";
 import router from "@/router";
+import { notice } from "@/utils/notice";
 export default defineComponent({
   components: { DataCard },
   setup() {
@@ -122,7 +128,13 @@ export default defineComponent({
             cancelButtonText: "取消",
             type: "warning",
           }
-        ).then(async () => {});
+        )
+          .then(async () => {
+            await updateStatusById(info.id, 0);
+            notice("success", "成功", "请等待管理员审核");
+            fileList.value[index].status = 0;
+          })
+          .catch(() => {});
       } else if (number === 4) {
         ElMessageBox.confirm("您确定要删除该条目吗？", "警告", {
           confirmButtonText: "确定",
@@ -229,7 +241,7 @@ export default defineComponent({
     .creator {
       position: absolute;
       display: flex;
-      right: 50px;
+      right: 300px;
       .el-avatar {
         margin-top: 8px;
       }

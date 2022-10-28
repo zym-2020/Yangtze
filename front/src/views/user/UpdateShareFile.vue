@@ -83,10 +83,37 @@
           <el-input v-model="form.providerAddress" />
         </el-form-item>
         <el-form-item label="原始数据类型：" prop="type">
-          <el-input v-model="form.type" />
+          <el-select
+            v-model="form.type"
+            placeholder="数据类型"
+            size="large"
+            style="width: 300px"
+          >
+            <el-option-group
+              v-for="(group, groupIndex) in optionType"
+              :key="groupIndex"
+              :label="group.title"
+            >
+              <el-option
+                v-for="(item, index) in group.data"
+                :key="index"
+                :label="item.name"
+                :value="item.name"
+              />
+            </el-option-group>
+          </el-select>
         </el-form-item>
         <el-form-item label="数据时间描述：">
           <el-input v-model="form.time" />
+        </el-form-item>
+        <el-form-item label="时间详细描述：">
+          <el-date-picker
+            v-model="form.timeStamp"
+            type="date"
+            placeholder="Pick a day"
+            size="default"
+            @change="say(form.timeStamp)"
+          />
         </el-form-item>
         <el-form-item label="数据范围描述：">
           <el-input v-model="form.range" />
@@ -208,7 +235,6 @@ export default defineComponent({
     };
 
     const uploadTh = (val: any) => {
-      console.log("123");
       thumbnail.value = val;
     };
 
@@ -270,179 +296,158 @@ export default defineComponent({
     };
     const options = ref([
       {
-        title: "一级分类（必选）",
+        title: "时间",
         data: [
           {
-            name: "基础地形数据",
+            name: "2002以前",
             count: false,
           },
           {
-            name: "基础水文数据",
+            name: "2002~2012",
             count: false,
           },
           {
-            name: "基础工程数据",
-            count: false,
-          },
-          {
-            name: "整合资料库",
-            count: false,
-          },
-          {
-            name: "数模案例库",
-            count: false,
-          },
-          {
-            name: "物模案例库",
-            count: false,
-          },
-          {
-            name: "影像资料库",
-            count: false,
-          },
-          {
-            name: "辅助资料库",
-            count: false,
-          },
-          {
-            name: "元数据",
+            name: "2013~2022",
             count: false,
           },
         ],
       },
       {
-        title: "基础地形数据",
+        title: "范围",
         data: [
           {
-            name: "栅格TXT文件",
+            name: "长江区域",
             count: false,
           },
           {
-            name: "栅格ASC文件",
+            name: "南京区域",
             count: false,
           },
         ],
       },
       {
-        title: "基础水文数据",
+        title: "地点",
         data: [
           {
-            name: "潮位数据",
+            name: "白茆小沙",
             count: false,
           },
           {
-            name: "流速流向数据",
+            name: "福中+福北",
             count: false,
           },
           {
-            name: "含沙量数据",
+            name: "横港沙",
             count: false,
           },
           {
-            name: "流量数据",
+            name: "黄铁沙",
             count: false,
           },
           {
-            name: "输沙率数据",
+            name: "护漕港边滩",
             count: false,
           },
           {
-            name: "悬移质数据",
+            name: "沪通大桥",
             count: false,
           },
           {
-            name: "冲淤数据",
+            name: "江阴大桥",
             count: false,
           },
           {
-            name: "深泓线数据",
+            name: "苏通大桥",
             count: false,
           },
           {
-            name: "沙滩数据",
+            name: "双涧沙",
             count: false,
           },
           {
-            name: "床沙数据",
+            name: "通白",
             count: false,
           },
           {
-            name: "含盐度数据",
+            name: "通州沙",
             count: false,
           },
           {
-            name: "风速风向数据",
+            name: "民主沙",
             count: false,
           },
           {
-            name: "报告文字数据",
+            name: "福姜沙",
             count: false,
           },
           {
-            name: "水文测验布置",
+            name: "新开沙",
+            count: false,
+          },
+          {
+            name: "西水道",
             count: false,
           },
         ],
       },
 
       {
-        title: "基础工程数据",
+        title: "文件格式",
         data: [
           {
-            name: "DWG工程文件",
+            name: "shp",
             count: false,
           },
           {
-            name: "码头工程",
+            name: "dwg",
             count: false,
           },
           {
-            name: "桥梁工程",
+            name: "txt",
             count: false,
           },
           {
-            name: "规划未实施工程",
+            name: "jpg",
             count: false,
           },
           {
-            name: "水利工程",
-            count: false,
-          },
-          {
-            name: "护岸工程",
-            count: false,
-          },
-          {
-            name: "航道整治工程",
-            count: false,
-          },
-          {
-            name: "实施工程",
-            count: false,
-          },
-          {
-            name: "航标",
+            name: "excel",
             count: false,
           },
         ],
       },
       {
-        title: "整合地形数据",
+        title: "文件性质",
         data: [
           {
-            name: "SHAPEFILE",
+            name: "栅格文件",
             count: false,
           },
           {
-            name: "等高线",
+            name: "矢量文件",
             count: false,
           },
           {
-            name: "等深线",
+            name: "文本数据",
             count: false,
           },
           {
-            name: "高程点",
+            name: "图片",
+            count: false,
+          },
+          {
+            name: "遥感影像",
+            count: false,
+          },
+        ],
+      },
+    ]);
+    const optionType = ref([
+      {
+        title: "地形数据",
+        data: [
+          {
+            name: "DEM",
             count: false,
           },
           {
@@ -450,45 +455,33 @@ export default defineComponent({
             count: false,
           },
           {
-            name: "TIN",
+            name: "等高线",
             count: false,
           },
           {
-            name: "DEM",
+            name: "DWG",
+            count: false,
+          },
+          {
+            name: "高程点",
+            count: false,
+          },
+          {
+            name: "固定断面线",
+            count: false,
+          },
+
+          {
+            name: "深泓线",
             count: false,
           },
         ],
       },
       {
-        title: "整合水文数据",
+        title: "工程数据",
         data: [
           {
-            name: "MDB关系数据库",
-            count: false,
-          },
-        ],
-      },
-      {
-        title: "整合工程数据",
-        data: [
-          {
-            name: "DWG工程文件",
-            count: false,
-          },
-          {
-            name: "码头工程",
-            count: false,
-          },
-          {
-            name: "桥梁工程",
-            count: false,
-          },
-          {
-            name: "规划未实施工程",
-            count: false,
-          },
-          {
-            name: "水利工程",
+            name: "航标",
             count: false,
           },
           {
@@ -496,7 +489,7 @@ export default defineComponent({
             count: false,
           },
           {
-            name: "航道整治工程",
+            name: "码头工程",
             count: false,
           },
           {
@@ -504,41 +497,20 @@ export default defineComponent({
             count: false,
           },
           {
-            name: "航标",
+            name: "整治工程",
+            count: false,
+          },
+          {
+            name: "桥梁工程",
             count: false,
           },
         ],
       },
       {
-        title: "数模案例库",
+        title: "物理模型",
         data: [
           {
-            name: "流场",
-            count: false,
-          },
-        ],
-      },
-      {
-        title: "物模案例库",
-        data: [
-          {
-            name: "流速",
-            count: false,
-          },
-          {
-            name: "泥沙",
-            count: false,
-          },
-          {
-            name: "水位",
-            count: false,
-          },
-          {
-            name: "潮汐",
-            conut: false,
-          },
-          {
-            name: "视频",
+            name: "浓度场",
             count: false,
           },
           {
@@ -548,7 +520,40 @@ export default defineComponent({
         ],
       },
       {
-        title: "影像资料库",
+        title: "水文数据",
+        data: [
+          {
+            name: "潮位",
+            count: false,
+          },
+          {
+            name: "断面输沙率",
+            count: false,
+          },
+          {
+            name: "流量输沙率",
+            count: false,
+          },
+          {
+            name: "含沙量",
+            count: false,
+          },
+          {
+            name: "含盐度",
+            count: false,
+          },
+          {
+            name: "流速流向",
+            count: false,
+          },
+          {
+            name: "悬移质",
+            count: false,
+          },
+        ],
+      },
+      {
+        title: "遥感影像",
         data: [
           {
             name: "遥感影像",
@@ -556,42 +561,7 @@ export default defineComponent({
           },
         ],
       },
-      {
-        title: "辅助资料库",
-        data: [
-          {
-            name: "地名数据",
-            count: false,
-          },
-          {
-            name: "固定断面线",
-            count: false,
-          },
-          {
-            name: "制导线",
-            count: false,
-          },
-        ],
-      },
-      {
-        title: "元数据",
-        data: [
-          {
-            name: "Pdf",
-            count: false,
-          },
-          {
-            name: "Word",
-            count: false,
-          },
-          {
-            name: "PPT",
-            count: false,
-          },
-        ],
-      },
     ]);
-
     const form = reactive({
       id: (router.currentRoute.value.params.fileInfo as any).id,
       name: (router.currentRoute.value.params.fileInfo as any).name,
@@ -611,6 +581,7 @@ export default defineComponent({
       providerAddress: (router.currentRoute.value.params.fileInfo as any)
         .providerAddress,
       getOnline: (router.currentRoute.value.params.fileInfo as any).getOnline,
+      timeStamp: (router.currentRoute.value.params.fileInfo as any).timeStamp,
     });
 
     const fileRules = reactive({
@@ -628,7 +599,23 @@ export default defineComponent({
         { required: true, message: "数据获取方式不得为空！", trigger: "blur" },
       ],
     });
-
+    const say = (val: any) => {
+      form.timeStamp = String(formatDate(val));
+      console.log(typeof form.timeStamp);
+      console.log(form.timeStamp);
+    };
+    function formatDate(date: any) {
+      const year = date.getFullYear();
+      let month = date.getMonth() + 1;
+      let day = date.getDate();
+      if (month < 10) {
+        month = `0${month}`;
+      }
+      if (day < 10) {
+        day = `0${day}`;
+      }
+      return `${year}-${month}-${day}`;
+    }
     const initMap = () => {
       map = new mapBoxGl.Map({
         container: container.value as HTMLElement,
@@ -707,7 +694,6 @@ export default defineComponent({
 
     onMounted(async () => {
       initMap();
-      console.log(router.currentRoute.value.params);
       (router.currentRoute.value.params.files as any[]).forEach((item) => {
         fileList.value.push(item.id);
       });
@@ -721,6 +707,7 @@ export default defineComponent({
       editorRef,
       toolbarConfig,
       editorConfig,
+      optionType,
       handleCreated,
       commit,
       fileRules,
@@ -728,6 +715,7 @@ export default defineComponent({
       fileRef,
       metaRef,
       upload,
+      say,
       uploadTh,
       thumbName,
       avatarName,

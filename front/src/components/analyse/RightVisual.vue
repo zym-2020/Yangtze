@@ -116,6 +116,21 @@ export default defineComponent({
       });
       map.on("load", async () => {
         await initLayers();
+        // map.addSource("png", {
+        //   type: "image",
+        //   url: "/flowTex1.png",
+        //   coordinates: [
+        //     [120.04433328184923, 32.09360568405092],
+        //     [121.95857869699789, 32.09360568405092],
+        //     [121.95857869699789, 31.168340998477692],
+        //     [120.04433328184923, 31.168340998477692],
+        //   ],
+        // });
+        // map.addLayer({
+        //   id: "png",
+        //   type: "raster",
+        //   source: "png",
+        // });
       });
     };
 
