@@ -17,7 +17,7 @@ export default {
 import { ref } from 'vue';
 defineProps({
   cardID: String
-});
+}); 
 
 const cardData = ref(
     [
