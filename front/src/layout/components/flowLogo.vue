@@ -11,7 +11,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 
 .logo {
   font-family: "Lato", "Verdana", sans-serif;
