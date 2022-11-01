@@ -1,12 +1,12 @@
 import axios from 'axios';
 import mapboxgl from "mapbox-gl";
-import {Shader} from '../../utils/geoscratch/core/shader/shader';
-import {tbvsSymbols, BillboardSymbolManager} from "../../utils/geoscratch/function/tbvs";
+import { Shader } from '../../utils/geoscratch/core/shader/shader';
+import { tbvsSymbols, BillboardSymbolManager } from "../../utils/geoscratch/function/tbvs";
 import { Matrix4x4 } from "../../utils/geoscratch/core/math/matrix4";
-import {loadTexture} from "../../utils/geoscratch/resource/data/texture"
+import { loadTexture } from "../../utils/geoscratch/resource/data/texture"
 import { encodeFloatToDouble } from "../../utils/geoscratch/core/webglUtil/utils";
 import * as three from 'three';
-
+import { prefix } from '@/prefix'
 
 function degToRad(d: number): number {
     return d * Math.PI / 180;
@@ -22,7 +22,7 @@ class CustomLayer {
         this.type = type;
         this.renderingMode = renderingMode;
     }
-    
+
 
     onAdd(map: mapboxgl.Map, gl: WebGL2RenderingContext): void {
         console.log("custom layer on add");
@@ -45,16 +45,16 @@ class TBVSLayer extends CustomLayer {
     symblManager: BillboardSymbolManager;
 
     constructor(id: string, type: string, renderingMode: string, symbols: tbvsSymbols, manager: BillboardSymbolManager) {
-      super(id, type, renderingMode);
-      this.map = null;
-      this.shader = null;
-      this.texture = null;
-      this.symbols = symbols;
+        super(id, type, renderingMode);
+        this.map = null;
+        this.shader = null;
+        this.texture = null;
+        this.symbols = symbols;
 
-      this.framebuffer = [];
-      this.pixelRatio = window.devicePixelRatio;
+        this.framebuffer = [];
+        this.pixelRatio = window.devicePixelRatio;
 
-      this.symblManager = manager;
+        this.symblManager = manager;
     }
 
     async onAdd(map: mapboxgl.Map, gl: WebGL2RenderingContext) {
@@ -63,24 +63,24 @@ class TBVSLayer extends CustomLayer {
         this.framebuffer.push(gl.canvas.height);
 
         // Get vertex shader source
-        const vertexSource = await axios.get("http://localhost:8080/shaders/tbvs.vert")
-        .then((response) => {
-            return response.data;
-        })
+        const vertexSource = await axios.get(prefix + "shaders/tbvs.vert")
+            .then((response) => {
+                return response.data;
+            })
         // Get fragment shader source
-        const fragmentSource = await axios.get("http://localhost:8080/shaders/tbvs.frag")
-        .then((response) => {
-            return response.data;
-        })
+        const fragmentSource = await axios.get(prefix + "shaders/tbvs.frag")
+            .then((response) => {
+                return response.data;
+            })
         this.shader = new Shader(gl, vertexSource, fragmentSource);
 
         // Create a texture
-        this.texture = loadTexture(gl, "http://localhost:8080/images/TBVS_88.png", 0);
+        this.texture = loadTexture(gl, prefix + "images/TBVS_88.png", 0);
 
         // this.symbols?.setup(gl, this.shader);
 
         this.symblManager.setup(gl, this.shader);
-        
+
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
         gl.bindVertexArray(null);
         gl.bindTexture(gl.TEXTURE_2D, null);
@@ -97,7 +97,7 @@ class TBVSLayer extends CustomLayer {
         // this.symbols.use(gl);
 
         const center = this.map.getCenter();
-        const mercatorCenter = mapboxgl.MercatorCoordinate.fromLngLat({lng:center.lng, lat:center.lat});
+        const mercatorCenter = mapboxgl.MercatorCoordinate.fromLngLat({ lng: center.lng, lat: center.lat });
         const mercatorCenterX = encodeFloatToDouble(mercatorCenter.x);
         const mercatorCenterY = encodeFloatToDouble(mercatorCenter.y);
 
@@ -155,7 +155,7 @@ class TLayer extends CustomLayer {
 
     symblManager: BillboardSymbolManager;
 
-    
+
 
     constructor(id: string, type: string, renderingMode: string, symbols: tbvsSymbols, manager: BillboardSymbolManager) {
         super(id, type, renderingMode);
@@ -167,7 +167,7 @@ class TLayer extends CustomLayer {
         // this.mesh = null;
 
         this.symbols = symbols;
-  
+
         this.frameSize = [];
         this.pixelRatio = window.devicePixelRatio;
 
@@ -186,38 +186,38 @@ class TLayer extends CustomLayer {
         this.map = map;
         this.frameSize.push(gl.canvas.width);
         this.frameSize.push(gl.canvas.height);
-        this.renderer = new three.WebGLRenderer({canvas: map.getCanvas(), context: gl, antialias: true});
+        this.renderer = new three.WebGLRenderer({ canvas: map.getCanvas(), context: gl, antialias: true });
         console.log("drawing context:", gl);
         this.scene = new three.Scene();
         this.camera = new three.PerspectiveCamera();
 
-        this.texture = new three.TextureLoader().load('http://localhost:8080/textures/TBVS_88.png', (texture)=> {console.log("this is ", texture.image.width)});
+        this.texture = new three.TextureLoader().load(prefix + 'textures/TBVS_88.png', (texture) => { console.log("this is ", texture.image.width) });
         this.texture.flipY = false;
         console.log("texture? ", this.texture);
 
         this.geom = this.symbols?.Geometry4Three() as three.InstancedBufferGeometry;
 
         const uniforms = {
-            symbolTexture: { value:this.texture }, 
-            u_mercatorCenterHigh: {value: new three.Vector2()}, 
-            u_mercatorCenterLow: {value: new three.Vector2()}, 
-            u_matrix: {value: new three.Matrix4()}, 
-            u_symbolMatrix: {value: new three.Matrix4()}
+            symbolTexture: { value: this.texture },
+            u_mercatorCenterHigh: { value: new three.Vector2() },
+            u_mercatorCenterLow: { value: new three.Vector2() },
+            u_matrix: { value: new three.Matrix4() },
+            u_symbolMatrix: { value: new three.Matrix4() }
         };
-        const vertexShader = await axios.get("http://localhost:8080/shaders/tbvs_three.vert")
-                            .then((response) => {
-                                return response.data;
-                            });
-        const fragmentShader = await axios.get("http://localhost:8080/shaders/tbvs_three.frag")
-                            .then((response) => {
-                                return response.data;
-                            });
+        const vertexShader = await axios.get(prefix + "shaders/tbvs_three.vert")
+            .then((response) => {
+                return response.data;
+            });
+        const fragmentShader = await axios.get(prefix + "shaders/tbvs_three.frag")
+            .then((response) => {
+                return response.data;
+            });
 
         this.material = new three.RawShaderMaterial({
             glslVersion: three.GLSL3,
-            uniforms: uniforms, 
+            uniforms: uniforms,
             vertexShader: vertexShader,
-            fragmentShader:fragmentShader,
+            fragmentShader: fragmentShader,
             vertexColors: true,
             side: three.DoubleSide
         });
@@ -225,10 +225,10 @@ class TLayer extends CustomLayer {
 
 
         this.mesh = new three.Mesh(this.geom, this.material);
-    
+
         (this.scene as three.Scene).add(this.mesh);
         console.log(this.scene);
-    
+
         // this.mesh = new three.Mesh(geom, this.material);
         this.renderer.autoClear = false;
     }
@@ -237,12 +237,12 @@ class TLayer extends CustomLayer {
         if (this.texture === null || this.material === null || this.map === null || this.symbols === null || this.geom == null || this.scene == null || this.camera == null)
             return;
 
-        if (this.texture!== null) {
+        if (this.texture !== null) {
             this.material.needsUpdate = true;
         }
-        
+
         const center = this.map.getCenter();
-        const mercatorCenter = mapboxgl.MercatorCoordinate.fromLngLat({lng:center.lng, lat:center.lat});
+        const mercatorCenter = mapboxgl.MercatorCoordinate.fromLngLat({ lng: center.lng, lat: center.lat });
         const mercatorCenterX = encodeFloatToDouble(mercatorCenter.x);
         const mercatorCenterY = encodeFloatToDouble(mercatorCenter.y);
 
@@ -260,7 +260,7 @@ class TLayer extends CustomLayer {
         const rotationMatrix = new three.Matrix4().makeRotationX(radius).makeRotationY(radius).makeRotationZ(radius);
         const scaleMatrix = new three.Matrix4().makeScale(this.pixelRatio * symbolPixel / this.frameSize[0], this.pixelRatio * symbolPixel / this.frameSize[1], 1.0);
         const transformMatrix = new three.Matrix4().makeTranslation(0, 0, 0);
-        
+
         const modelMatrix = rotationMatrix.multiply(scaleMatrix).multiply(transformMatrix);
 
 
@@ -278,15 +278,15 @@ class TLayer extends CustomLayer {
         ((this.scene.children[0] as three.Mesh).material as three.RawShaderMaterial).needsUpdate = true;
 
         // const mesh = new three.Mesh(this.geom, this.material);
-    
+
         // (this.scene as three.Scene).add(mesh);
-        
+
         this.camera.projectionMatrix = relative2EyeMatrix;
 
-        this.rayCaster.setFromCamera( this.pointer, this.camera );
+        this.rayCaster.setFromCamera(this.pointer, this.camera);
         const intersections = this.rayCaster.intersectObjects(this.scene.children);
         // console.log(this.rayCaster);
-        if(intersections.length > 0) {
+        if (intersections.length > 0) {
             const intersect = intersections[0].object as THREE.Mesh;
             (intersect.material as THREE.Material).opacity = 0.2;
             console.log(intersect);
@@ -304,24 +304,24 @@ class TLayer extends CustomLayer {
 const modelOrigin = [148.9819, -35.39847];
 const modelAltitude = 0;
 const modelRotate = [Math.PI / 2, 0, 0];
- 
+
 const modelAsMercatorCoordinate = mapboxgl.MercatorCoordinate.fromLngLat(
-{lng: modelOrigin[0], lat: modelOrigin[1]},
-modelAltitude
+    { lng: modelOrigin[0], lat: modelOrigin[1] },
+    modelAltitude
 );
- 
+
 // transformation parameters to position, rotate and scale the 3D model onto the map
 const modelTransform = {
-translateX: modelAsMercatorCoordinate.x,
-translateY: modelAsMercatorCoordinate.y,
-translateZ: modelAsMercatorCoordinate.z,
-rotateX: modelRotate[0],
-rotateY: modelRotate[1],
-rotateZ: modelRotate[2],
-/* Since the 3D model is in real world meters, a scale transform needs to be
-* applied since the CustomLayerInterface expects units in MercatorCoordinates.
-*/
-scale: modelAsMercatorCoordinate.meterInMercatorCoordinateUnits()
+    translateX: modelAsMercatorCoordinate.x,
+    translateY: modelAsMercatorCoordinate.y,
+    translateZ: modelAsMercatorCoordinate.z,
+    rotateX: modelRotate[0],
+    rotateY: modelRotate[1],
+    rotateZ: modelRotate[2],
+    /* Since the 3D model is in real world meters, a scale transform needs to be
+    * applied since the CustomLayerInterface expects units in MercatorCoordinates.
+    */
+    scale: modelAsMercatorCoordinate.meterInMercatorCoordinateUnits()
 };
 
 class mLayer extends CustomLayer {
@@ -352,7 +352,7 @@ class mLayer extends CustomLayer {
         // this.mesh = null;
 
         this.symbols = symbols;
-  
+
         this.frameSize = [];
         this.pixelRatio = window.devicePixelRatio;
 
@@ -365,33 +365,33 @@ class mLayer extends CustomLayer {
     async onAdd(map: mapboxgl.Map, gl: WebGL2RenderingContext) {
         this.camera = new three.Camera();
         this.scene = new three.Scene();
-        
+
         // create two three.js lights to illuminate the model
         const directionalLight = new three.DirectionalLight(0xffffff);
         directionalLight.position.set(0, -70, 100).normalize();
         this.scene.add(directionalLight);
-        
+
         const directionalLight2 = new three.DirectionalLight(0xffffff);
         directionalLight2.position.set(0, 70, 100).normalize();
         this.scene.add(directionalLight2);
-        
-        this.geom = new three.BoxGeometry( 10, 10, 10 );
+
+        this.geom = new three.BoxGeometry(10, 10, 10);
         // const material = new three.MeshBasicMaterial( { color: 0x00ff00 } );
-        
-        this.material = new three.RawShaderMaterial( {
+
+        this.material = new three.RawShaderMaterial({
             glslVersion: three.GLSL3,
             uniforms: {
             },
-            vertexShader: await axios.get("http://localhost:8080/shaders/tbvs_three.vert")
-                                .then((response) => {
-                                    return response.data;
-                                }), 
-            fragmentShader: await axios.get("http://localhost:8080/shaders/tbvs_three.frag")
-                                .then((response) => {
-                                    return response.data;
-                                }),
+            vertexShader: await axios.get(prefix + "shaders/tbvs_three.vert")
+                .then((response) => {
+                    return response.data;
+                }),
+            fragmentShader: await axios.get(prefix + "shaders/tbvs_three.frag")
+                .then((response) => {
+                    return response.data;
+                }),
             side: three.BackSide
-        } );
+        });
         const cube = new three.Mesh(this.geom, this.material);
 
         // use the three.js GLTF loader to add the 3D model to the three.js scene
@@ -405,14 +405,14 @@ class mLayer extends CustomLayer {
         // );
         this.scene.add(cube);
         this.map = map;
-        
+
         // use the Mapbox GL JS map canvas for three.js
         this.renderer = new three.WebGLRenderer({
-        canvas: map.getCanvas(),
-        context: gl,
-        antialias: true
+            canvas: map.getCanvas(),
+            context: gl,
+            antialias: true
         });
-        
+
         this.renderer.autoClear = false;
     }
 
@@ -421,7 +421,7 @@ class mLayer extends CustomLayer {
             return;
 
         const rotationX = new three.Matrix4().makeRotationAxis(
-        new three.Vector3(1, 0, 0),
+            new three.Vector3(1, 0, 0),
             modelTransform.rotateX
         );
         const rotationY = new three.Matrix4().makeRotationAxis(
@@ -429,28 +429,28 @@ class mLayer extends CustomLayer {
             modelTransform.rotateY
         );
         const rotationZ = new three.Matrix4().makeRotationAxis(
-                new three.Vector3(0, 0, 1),
-                modelTransform.rotateZ
+            new three.Vector3(0, 0, 1),
+            modelTransform.rotateZ
         );
-        
+
         const m = new three.Matrix4().fromArray(matrix);
         const l = new three.Matrix4()
-        .makeTranslation(
-            modelTransform.translateX,
-            modelTransform.translateY,
-            modelTransform.translateZ!
-        )
-        .scale(
-            new three.Vector3(
-                modelTransform.scale,
-                -modelTransform.scale,
-                modelTransform.scale
+            .makeTranslation(
+                modelTransform.translateX,
+                modelTransform.translateY,
+                modelTransform.translateZ!
             )
-        )
-        .multiply(rotationX)
-        .multiply(rotationY)
-        .multiply(rotationZ);
-        
+            .scale(
+                new three.Vector3(
+                    modelTransform.scale,
+                    -modelTransform.scale,
+                    modelTransform.scale
+                )
+            )
+            .multiply(rotationX)
+            .multiply(rotationY)
+            .multiply(rotationZ);
+
         this.camera!.projectionMatrix = m.multiply(l);
         this.renderer!.resetState();
         this.renderer!.render(this.scene!, this.camera!);
@@ -458,9 +458,9 @@ class mLayer extends CustomLayer {
     }
 }
 
-export{
+export {
     CustomLayer,
-    TBVSLayer, 
+    TBVSLayer,
     TLayer,
     mLayer
 };

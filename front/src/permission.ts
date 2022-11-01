@@ -34,7 +34,6 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
                 }
             } else {
                 const code = await toIdPages(to)
-                console.log(to.name)
                 if (code === 1) {
                     next()
                 } else if (code === -1) {

@@ -5,6 +5,7 @@
 <script lang="ts">
 import { defineComponent, onBeforeUnmount, onMounted, ref } from "vue";
 import mapBoxGl, { AnySourceData } from "mapbox-gl";
+import { prefix } from "@/prefix";
 export default defineComponent({
   props: {
     shpArray: {
@@ -23,7 +24,7 @@ export default defineComponent({
   setup(props) {
     const container = ref<HTMLElement>();
     let map: mapBoxGl.Map;
-    let timeout: any
+    let timeout: any;
     const initMap = () => {
       map = new mapBoxGl.Map({
         container: container.value as HTMLElement,
@@ -38,9 +39,7 @@ export default defineComponent({
           (props.rasterTileArray as string[]).forEach((item) => {
             map.addSource(item, {
               type: "raster",
-              tiles: [
-                `http://localhost:8002/visual/getRaster/${item}/{x}/{y}/{z}`,
-              ],
+              tiles: [`${prefix}visual/getRaster/${item}/{x}/{y}/{z}`],
             });
             map.addLayer({
               id: item,
@@ -56,7 +55,7 @@ export default defineComponent({
           ).forEach((item) => {
             map.addSource(item.visualId, {
               type: "image",
-              url: `http://localhost:8002/visual/getPngResource/${item.visualId}`,
+              url: `${prefix}visual/getPngResource/${item.visualId}`,
               coordinates: item.coordinates,
             });
             map.addLayer({
@@ -76,7 +75,7 @@ export default defineComponent({
           ).forEach((item) => {
             map.addSource(item.visualId, {
               type: "image",
-              url: `http://localhost:8002/visual/getPngResource/${item.visualId}`,
+              url: `${prefix}visual/getPngResource/${item.visualId}`,
               coordinates: item.coordinates,
             });
             map.addLayer({
@@ -123,7 +122,7 @@ export default defineComponent({
             map.addSource(item.visualId, {
               type: "vector",
               tiles: [
-                `http://localhost:8002/visual/getVectorTiles/${item.visualId}/{x}/{y}/{z}`,
+                `${prefix}visual/getVectorTiles/${item.visualId}/{x}/{y}/{z}`,
               ],
             });
             map.addLayer({

@@ -11,16 +11,7 @@ import njnu.edu.back.pojo.support.TileBox;
  */
 public class TileUtil {
 
-//    public static FileInputStream in;
-//
-//    static {
-//        try {
-//            in = new FileInputStream(new File("E:\\Minio\\data\\test\\123@qq.com\\upload\\raster\\color.dem\\tiles\\8\\214\\152.png"));
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//            throw new MyException(-1, "TileUtil类生成静态FileInputStream时出错");
-//        }
-//    }
+
 
     /**
     * @Description:瓦片转经度

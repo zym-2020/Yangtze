@@ -28,6 +28,7 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
+import { prefix } from '@/prefix'
 export default defineComponent({
   emits: ["changeBasemap"],
   setup(_, contenxt) {
@@ -50,12 +51,12 @@ export default defineComponent({
       {
         src: "/basemap/basemap4.png",
         text: "天地图（CGCS2000 天地图在线底图）",
-        url: "http://localhost:8002/visual/getTianDiTu",
+        url: `${prefix}visual/getTianDiTu`,
       },
       {
         src: "/basemap/basemap5.png",
         text: "天地图-影像（CGCS2000 天地图在线底图）",
-        url: "http://localhost:8002/visual/getTianDiTuImage",
+        url: `${prefix}visual/getTianDiTuImage`,
       },
       {
         src: "https://www.arcgis.com/sharing/rest/content/items/74e992f4fce3450aaf57a9a0df0007c3/info/thumbnail/cn_canvas.jpg?f=json",

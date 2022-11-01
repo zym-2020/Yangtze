@@ -128,6 +128,7 @@ import { computed, defineComponent, onMounted, ref } from "vue";
 import { imgBase64, generateColorByText, dateFormat } from "@/utils/common";
 import BrowseStatistics from "../resourcePages/components/BrowseStatistics.vue";
 import DownLoadSta2 from "../resourcePages/components/DownSta2.vue";
+import { prefix } from '@/prefix'
 
 export default defineComponent({
   components: { BrowseStatistics, DownLoadSta2 },
@@ -152,7 +153,7 @@ export default defineComponent({
         (props.fileInfo as any).avatar != null
       ) {
         return (
-          "http://localhost:8002/visual/getAvatar/" +
+          prefix + "visual/getAvatar/" +
           (props.fileInfo as any).avatar
         );
       }
@@ -161,7 +162,7 @@ export default defineComponent({
     const userAvatar = computed(() => {
       if ((props.fileInfo as any).userAvatar != "") {
         return (
-          "http://localhost:8002/visual/getAvatar/" +
+          prefix + "visual/getAvatar/" +
           (props.fileInfo as any).userAvatar
         );
       } else {

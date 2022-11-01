@@ -26,6 +26,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -137,6 +139,13 @@ public class DataListServiceImpl implements DataListService {
         dataList.setProviderPhone(jsonObject.getString("providerPhone"));
         dataList.setGetOnline(jsonObject.getBoolean("getOnline"));
         dataList.setDetail(jsonObject.getString("detail"));
+        DateFormat fmt =new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            dataList.setTimeStamp(fmt.parse(jsonObject.getString("timeStamp")));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
         dataListMapper.updateDataList(jsonObject.getString("id"), dataList);
     }
 

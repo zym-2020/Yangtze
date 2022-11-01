@@ -35,6 +35,7 @@
 import { defineComponent, computed } from "vue";
 import { dateFormat } from "@/utils/common";
 import router from "@/router";
+import { prefix } from '@/prefix'
 export default defineComponent({
   props: {
     similarInfo: Object,
@@ -58,7 +59,7 @@ export default defineComponent({
     const avatar = computed(() => {
       if ((props.similarInfo as any).avatar != "") {
         return (
-          "http://localhost:8002/visual/getAvatar/" +
+          prefix + "visual/getAvatar/" +
           (props.similarInfo as any).avatar
         );
       } else {

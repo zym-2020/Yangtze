@@ -39,6 +39,8 @@ public interface AnalyticDataSetService {
 
     String addRegionFlush(String projectId, String regionId, String benchmarkId, String referId, String email);
 
+    String computeVolume(double deep, String projectId, String regionId, String demId, String email);
+
     Map<String, Object> addElevationFlush(String projectId, String benchmarkId, String referId, String email);
 
     Map<String, Object> addFlushContour(String projectId, String benchmarkId, String referId, String email);

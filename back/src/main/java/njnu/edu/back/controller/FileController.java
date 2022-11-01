@@ -33,8 +33,6 @@ public class FileController {
     @Autowired
     FileService fileService;
 
-    @Value("${basedir}")
-    String basedir;
 
     @AuthCheck
     @RequestMapping(value = "/addFile", method = RequestMethod.POST)

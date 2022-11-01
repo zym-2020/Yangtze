@@ -41,64 +41,7 @@ import java.util.Map;
 
 public class GeoToolsUtil {
 
-    public static void json2shape(JSONArray jsonArray, String fileName, String path, String type) {
-        File dirFile = new File(path);
-        if(!dirFile.exists()) {
-            dirFile.mkdirs();
-        }
-        File shape = new File(path + "\\" + fileName + ".shp");
-        generateCpgFile(path, fileName);
-        try {
-            Map<String, Serializable> param = new HashMap<>();
-            param.put(ShapefileDataStoreFactory.URLP.key, shape.toURI().toURL());
-            ShapefileDataStore shapefileDataStore = (ShapefileDataStore) new ShapefileDataStoreFactory().createNewDataStore(param);
-            shapefileDataStore.setCharset(StandardCharsets.UTF_8);
-            SimpleFeatureTypeBuilder simpleFeatureTypeBuilder = new SimpleFeatureTypeBuilder();
-            simpleFeatureTypeBuilder.setCRS(DefaultGeographicCRS.WGS84);
-            simpleFeatureTypeBuilder.setName("shapefile");
-            switch (type) {
-                case "points":
-                    simpleFeatureTypeBuilder.add("the_geom", MultiPoint.class);
-                    break;
-                case "lines":
-                    simpleFeatureTypeBuilder.add("the_geom", MultiLineString.class);
-                    break;
-                case "polygons":
-                    simpleFeatureTypeBuilder.add("the_geom", MultiPolygon.class);
-                    break;
-                default:
-                    throw new MyException(-1, "空间字段类型错误");
-            }
-            shapefileDataStore.createSchema(simpleFeatureTypeBuilder.buildFeatureType());
-            FeatureWriter<SimpleFeatureType, SimpleFeature> writer = shapefileDataStore.getFeatureWriter(shapefileDataStore.getTypeNames()[0], Transaction.AUTO_COMMIT);
-            generateCoordinateData(jsonArray, writer, type);
-            writer.write();
-            writer.close();
-            shapefileDataStore.dispose();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new MyException(-1, "生成shape文件出错");
-        }
-    }
 
-    /**
-    * @Description:创建cpg文件对象,设置字符编码
-    * @Author: Yiming
-    * @Date: 2022/4/15
-    */
-    
-    private static void generateCpgFile(String path, String fileName) {
-        File file = new File(path + "\\" + fileName + ".cpg");
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-            writer.write("GBK,GB2312,UTF-8");
-            writer.flush();
-            writer.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new MyException(-1, "创建cpg文件时出错");
-        }
-    }
 
     private static void generateCoordinateData(JSONArray jsonArray, FeatureWriter<SimpleFeatureType, SimpleFeature> writer, String type) {
         try {

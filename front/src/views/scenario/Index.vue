@@ -21,6 +21,7 @@ import { defineComponent, onMounted, ref } from "vue";
 import PageHeader from "@/components/page/PageHeader.vue";
 import ScenarioCard from "@/components/cards/ScenarioCard.vue";
 import mapBoxGl, { AnySourceData } from "mapbox-gl";
+import { prefix } from "@/prefix";
 export default defineComponent({
   components: { PageHeader, ScenarioCard },
   setup() {
@@ -45,7 +46,7 @@ export default defineComponent({
           map.addImage("tide", image as HTMLImageElement | ImageBitmap);
           map.addSource("tide", {
             type: "vector",
-            tiles: ["http://localhost:8002/visual/scenario/tide/{x}/{y}/{z}"],
+            tiles: [prefix + "visual/scenario/tide/{x}/{y}/{z}"],
           });
           map.addLayer({
             id: "tide",

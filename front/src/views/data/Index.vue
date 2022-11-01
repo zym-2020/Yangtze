@@ -109,7 +109,7 @@
                 <el-icon><star-filled /></el-icon>
               </el-divider>
             </div>
-            <div >
+            <div style="">
               <div class="statistics">
                 <div class="result">
                   共<span>{{ total }}</span
@@ -603,7 +603,7 @@ export default defineComponent({
         }
       }
       .right {
-        width: 1250px;
+        width: 1100px;
         //float:left;
 
         .list {
@@ -628,6 +628,7 @@ export default defineComponent({
         }
         .card {
           cursor: pointer;
+          width:100%;
           /deep/.el-tag__content {
             color: white;
           }

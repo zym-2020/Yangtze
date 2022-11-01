@@ -21,7 +21,7 @@
           >{{ projectInfo.projectName }}</el-avatar
         >
         <img
-          :src="'http://localhost:8002/visual/getAvatar/' + projectInfo.avatar"
+          :src="prefix + 'visual/getAvatar/' + projectInfo.avatar"
           width="248"
           height="180"
           v-else
@@ -49,6 +49,7 @@
 <script lang="ts">
 import { computed, defineComponent } from "vue";
 import { dateFormat } from "@/utils/common";
+import { prefix } from '@/prefix'
 export default defineComponent({
   props: {
     projectInfo: {
@@ -75,6 +76,7 @@ export default defineComponent({
       projectInfo,
       getDate,
       flag,
+      prefix
     };
   },
 });

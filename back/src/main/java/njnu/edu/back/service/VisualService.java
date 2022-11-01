@@ -48,6 +48,8 @@ public interface VisualService {
 
     Map<String, Object> getSectionFlush(String fileId);
 
+    JSONObject getVolume(String fileId);
+
     JSONObject getTianDiTu();
 
     JSONObject getTianDiTuImage();

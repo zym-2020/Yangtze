@@ -40,7 +40,7 @@
         </el-row>
         <div v-show="shdes">
           <el-row style="margin-top: 10px">
-            <el-col :span="5">
+            <el-col :span="6">
               <div class="block">
                 <el-image
                   style="width: 250px; height: 152px"
@@ -49,7 +49,7 @@
                 />
               </div>
             </el-col>
-            <el-col :span="19">
+            <el-col :span="18">
               <el-row>
                 <div class="des">
                   {{ description }}
@@ -58,7 +58,7 @@
             </el-col>
           </el-row>
           <el-row>
-            <el-col :offset="5" :span="19">
+            <el-col :offset="6" :span="16">
               <div style="position: relative; display: inline">
                 <el-tag
                   v-for="(item, index) in tagList"
@@ -70,9 +70,20 @@
                     color: white;
                   "
                   effect="dark"
+                  round
                 >
                   {{ item }}
                 </el-tag>
+              </div>
+              <div
+                style="
+                  position: relative;
+                  display: inline;
+                  margin-right: 30px;
+                  float: right;
+                "
+              >
+                <el-card shadow="always"> 已认证为可视化数据 </el-card>
               </div>
             </el-col>
           </el-row>
@@ -168,7 +179,7 @@ import { computed, defineComponent, onMounted, ref } from "vue";
 import { imgBase64, generateColorByText, dateFormat } from "@/utils/common";
 import BrowseStatistics from "../resourcePages/components/BrowseStatistics.vue";
 import DownLoadSta2 from "../resourcePages/components/DownSta2.vue";
-
+import { prefix } from '@/prefix'
 export default defineComponent({
   components: { BrowseStatistics, DownLoadSta2 },
   props: {
@@ -191,7 +202,7 @@ export default defineComponent({
         (props.fileInfo as any).avatar != null
       ) {
         return (
-          "http://localhost:8002/visual/getAvatar/" +
+          prefix + "visual/getAvatar/" +
           (props.fileInfo as any).avatar
         );
       }
@@ -201,7 +212,7 @@ export default defineComponent({
     const userAvatar = computed(() => {
       if ((props.fileInfo as any).userAvatar != "") {
         return (
-          "http://localhost:8002/visual/getAvatar/" +
+          prefix + "visual/getAvatar/" +
           (props.fileInfo as any).userAvatar
         );
       } else {

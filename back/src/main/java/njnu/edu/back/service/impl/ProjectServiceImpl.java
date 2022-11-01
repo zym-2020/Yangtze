@@ -61,7 +61,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         String projectId = projectMapper.addProject(projectName, email, avatar, new String[]{}, "mapbox://styles/johnnyt/cl9miecpn001t14rspop38nyk", isPublic);
-        File f = new File(basePath + email + "\\project\\" + projectId);
+        File f = new File(basePath + email + "/project/" + projectId);
         f.mkdirs();
         return projectId;
     }

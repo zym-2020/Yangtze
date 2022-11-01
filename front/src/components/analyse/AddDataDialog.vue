@@ -101,7 +101,7 @@ import { defineComponent, nextTick, onMounted, ref } from "vue";
 import { Search, ArrowLeft } from "@element-plus/icons-vue";
 import { fuzzyQueryDataList, findFiles } from "@/api/request";
 import { imgBase64 } from "@/utils/common";
-
+import { prefix } from '@/prefix'
 export default defineComponent({
   emits: ["returnData"],
   setup(_, context) {
@@ -157,7 +157,7 @@ export default defineComponent({
       if (avatar === "") {
         return imgBase64(name);
       } else {
-        return `http://localhost:8002/visual/getAvatar/${avatar}`;
+        return `${prefix}visual/getAvatar/${avatar}`;
       }
     };
 

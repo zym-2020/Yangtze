@@ -9,7 +9,7 @@
               :src="
                 avatarUrl === ''
                   ? 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
-                  : 'http://localhost:8002/visual/getAvatar/' + avatarUrl
+                  : prefix + 'visual/getAvatar/' + avatarUrl
               "
               fit="cover"
             />
@@ -164,7 +164,6 @@
             <el-tab-pane label="共享条目" name="share">
               <user-share-file></user-share-file>
             </el-tab-pane>
-            
           </el-tabs>
         </div>
       </el-col>
@@ -180,7 +179,7 @@ import { useStore } from "@/store";
 import { getUserByEmail } from "@/api/request";
 import AvatarUpload from "@/components/upload/AvatarUpload.vue";
 import UserShareFile from "./components/UserShareFile.vue";
-
+import { prefix } from "@/prefix";
 export default defineComponent({
   components: {
     UserResource,
@@ -247,6 +246,7 @@ export default defineComponent({
       upload,
       commit,
       avatarUrl,
+      prefix,
     };
   },
 });

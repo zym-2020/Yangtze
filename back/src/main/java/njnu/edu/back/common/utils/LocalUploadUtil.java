@@ -20,14 +20,8 @@ import java.util.List;
  */
 public class LocalUploadUtil {
 
-    public static boolean checkMD5(String MD5, String dir) {
-        String path = dir + "\\temp\\" + MD5;
-        File file = new File(path);
-        return file.exists();
-    }
-
     public static List<String> getNoUploadChunk(String MD5, String dir, int total) {
-        String path = dir + "\\temp\\" + MD5;
+        String path = dir + "/temp/" + MD5;
         File file = new File(path);
         List<String> result = new ArrayList<>();
         for(int i = 0; i < total; i++) {
@@ -44,7 +38,7 @@ public class LocalUploadUtil {
     }
 
     public static void UploadFile(MultipartFile multipartFile, String name, String dir, String MD5) {
-        String path = dir + "\\temp\\" + MD5;
+        String path = dir + "/temp/" + MD5;
         File file = new File(path);
         if(!file.exists()) {
             file.mkdirs();
@@ -53,7 +47,7 @@ public class LocalUploadUtil {
         FileOutputStream outs = null;
         try {
             ins = multipartFile.getInputStream();
-            outs = new FileOutputStream(path + "\\" + name);
+            outs = new FileOutputStream(path + "/" + name);
             int len;
             byte[] bytes = new byte[1024];
             while ((len = ins.read(bytes)) != -1) {
@@ -90,7 +84,7 @@ public class LocalUploadUtil {
             outChannel = out.getChannel();
             long start = 0;
             for(int i = 0; i < total; i++) {
-                File file = new File(from + "\\" + Integer.toString(i));
+                File file = new File(from + "/" + Integer.toString(i));
                 in = new FileInputStream(file);
                 inChannel = in.getChannel();
 

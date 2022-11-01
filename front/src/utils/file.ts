@@ -4,6 +4,7 @@ import axios from 'axios';
 import { checkMergeStateTemp } from '@/api/request'
 import { useStore } from '@/store';
 import { notice } from './notice';
+import { prefix } from '@/prefix'
 
 const store = useStore()
 export function getFileMd5(file: File, callback: (f: string) => void) {
@@ -62,14 +63,14 @@ export async function handlePostFiles(chunkList: string[], fileChunk: { file: Bl
                 formData.append("file", fileChunk[parseInt(name as string)].file)
                 formData.append("MD5", MD5)
                 formData.append("name", name as string)
-                axios.post('http://localhost:8080/Yangtze/file/uploadFile', formData, {
+                axios.post(prefix + 'Yangtze/file/uploadFile', formData, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 }).then(response => {
                     if (response.status === 200 && response.data.code === 0) {
                         successCount++
-                        store.commit("SET_UPLOAD_ITEM", {id: id, name: fileName, state: 2, progress: Math.ceil((fileChunk.length - chunkList.length) / fileChunk.length * 100)})
+                        store.commit("SET_UPLOAD_ITEM", { id: id, name: fileName, state: 2, progress: Math.ceil((fileChunk.length - chunkList.length) / fileChunk.length * 100) })
                         handle()
                     } else {
                         successCount++

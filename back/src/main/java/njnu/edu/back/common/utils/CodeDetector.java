@@ -168,33 +168,7 @@ public class CodeDetector {
         return bitSet;
     }
 
-    /**
-     * 将一指定编码的文件转换为另一编码的文件
-     *
-     * @param oldFullFileName
-     * @param oldCharsetName
-     * @param newFullFileName
-     * @param newCharsetName
-     */
-    public static void convert(String oldFullFileName, String oldCharsetName, String newFullFileName, String newCharsetName) throws Exception {
-        logger.info("the old file name is : {}, The oldCharsetName is : {}", oldFullFileName, oldCharsetName);
-        logger.info("the new file name is : {}, The newCharsetName is : {}", newFullFileName, newCharsetName);
 
-        StringBuffer content = new StringBuffer();
 
-        BufferedReader bin = new BufferedReader(new InputStreamReader(new FileInputStream(oldFullFileName), oldCharsetName));
-        String line;
-        while ((line = bin.readLine()) != null) {
-            content.append(line);
-            content.append(System.getProperty("line.separator"));
-        }
-        newFullFileName = newFullFileName.replace("\\", "/");
-        File dir = new File(newFullFileName.substring(0, newFullFileName.lastIndexOf("/")));
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-        Writer out = new OutputStreamWriter(new FileOutputStream(newFullFileName), newCharsetName);
-        out.write(content.toString());
-    }
 
 }

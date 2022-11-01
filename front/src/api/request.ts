@@ -151,6 +151,10 @@ export async function addSlope(projectId: string, demId: string) {
     return await post(`/analyticDataSet/addSlope/${projectId}/${demId}`)
 }
 
+export async function computeVolume(projectId: string, regionId: string, demId: string, deep: number) {
+    return await post(`/analyticDataSet/computeVolume/${projectId}/${regionId}/${demId}/${deep}`)
+}
+
 export async function checkState(key: string) {
     return await get(`/analyticDataSet/checkState/${key}`)
 }
@@ -163,9 +167,6 @@ export async function getUrl(id: string) {
     return await get(`/analyticDataSet/getUrl/${id}`)
 }
 
-export async function downloadAnalyticData(userId: string, id: string) {
-    return await get(`/analyticDataSet/downloadAnalyticData/${userId}/${id}`)
-}
 //========================analyticParameter相关接口=================================
 export async function findByType(type: string) {
     return await get(`/analyse/findByType/${type}`)
@@ -335,6 +336,10 @@ export async function getSectionContrast(fileId: string) {
 
 export async function getSectionFlush(fileId: string) {
     return await get(`/visual/getSectionFlush/${fileId}`)
+}
+
+export async function getVolume(fileId: string) {
+    return await get(`/visual/getVolume/${fileId}`)
 }
 
 //========================folder相关接口=================================

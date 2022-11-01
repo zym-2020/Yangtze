@@ -19,7 +19,7 @@
         update data_list
         set name = #{dataList.name}, location = #{dataList.location, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}, description = #{dataList.description}, tags = #{dataList.tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler},
             update_time = now(), provider = #{dataList.provider}, time = #{dataList.time}, range = #{dataList.range}, type = #{dataList.type}, provider_phone = #{dataList.providerPhone}, provider_email = #{dataList.providerEmail},
-            provider_address = #{dataList.providerAddress}, get_online = #{dataList.getOnline}, detail = #{dataList.detail}, time_stamp = #{timeStamp}
+            provider_address = #{dataList.providerAddress}, get_online = #{dataList.getOnline}, detail = #{dataList.detail}, time_stamp = #{dataList.timeStamp}
             <if test="dataList.avatar != ''">
                 ,avatar = #{dataList.avatar}
             </if>

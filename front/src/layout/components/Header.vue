@@ -21,18 +21,14 @@
                     :src="
                       avatarUrl === ''
                         ? 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
-                        : 'http://localhost:8002/visual/getAvatar/' +
-                          avatarUrl
+                        : prefix + 'visual/getAvatar/' + avatarUrl
                     "
                     :size="40"
                   />
                 </el-badge>
               </div>
               <template #dropdown>
-                <el-dropdown-menu
-                  :router="true"
-                  :default-active="$route.path"
-                >
+                <el-dropdown-menu :router="true" :default-active="$route.path">
                   <el-dropdown-item command="1">个人空间</el-dropdown-item>
                   <el-dropdown-item v-if="adminFlag" command="2"
                     >admin界面</el-dropdown-item
@@ -56,15 +52,16 @@
 </template>
 
 <script lang="ts">
+import { prefix } from "@/prefix";
 export default {
-    name: 'HeaderComponent'
-}
+  name: "HeaderComponent",
+};
 </script>
 
 
 
 <script lang="ts" setup>
-import { computed, defineEmits, ref } from 'vue'
+import { computed, defineEmits, ref } from "vue";
 import router from "@/router";
 import { useStore } from "@/store";
 import { getToken } from "@/utils/auth";
@@ -124,7 +121,6 @@ const ports = computed(() => {
 const toHome = () => {
   router.push({ path: "/" });
 };
-
 </script>
 
 <style scoped lang="scss">
@@ -145,7 +141,7 @@ header {
   background-color: rgb(8, 27, 87);
   transition: 0.7s all;
   z-index: 999;
-  font-family: 'Microsoft YaHei';
+  font-family: "Microsoft YaHei";
 }
 body {
   &.header-fixed {
@@ -195,7 +191,7 @@ nav {
     display: inline-block;
     color: rgb(245, 245, 245);
     text-decoration: none;
-    font-family: 'Microsoft YaHei';
+    font-family: "Microsoft YaHei";
     font-weight: 600;
     font-size: 1vw;
     padding: 24px;

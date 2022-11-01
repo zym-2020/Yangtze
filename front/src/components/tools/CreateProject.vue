@@ -44,7 +44,7 @@ import { defineComponent, onMounted, reactive, ref } from "vue";
 import { addProject, updateProjectInfo } from "@/api/request";
 import { notice } from "@/utils/notice";
 import type { FormInstance, UploadFile } from "element-plus";
-
+import { prefix } from '@/prefix'
 export default defineComponent({
   props: {
     info: {
@@ -120,7 +120,7 @@ export default defineComponent({
         form.name = (props.info as any).projectName;
         form.isPublic = (props.info as any).isPublic ? "true" : "false";
         imageUrl.value =
-          "http://localhost:8002/visual/getAvatar/" +
+          prefix + "visual/getAvatar/" +
           (props.info as any).avatar;
       }
     });

@@ -584,7 +584,7 @@ import router from "@/router";
 import MapVisual from "@/components/visual/MapVisual.vue";
 import PhotoVisual from "@/components/visual/PhotoVisual.vue";
 import ExcelVisual from "@/components/visual/ExcelVisual.vue";
-
+import { prefix } from "@/prefix";
 export default defineComponent({
   components: {
     DataDescription,
@@ -645,10 +645,7 @@ export default defineComponent({
 
     const thumbnail = computed(() => {
       if ((props.fileInfo as any).thumbnail != "") {
-        return (
-          "http://localhost:8002/visual/getAvatar/" +
-          (props.fileInfo as any).thumbnail
-        );
+        return prefix + "visual/getAvatar/" + (props.fileInfo as any).thumbnail;
       } else {
         return "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png";
       }
@@ -657,12 +654,11 @@ export default defineComponent({
     const avatarUrl = computed(() => {
       return (props.fileInfo as any).userAvatar === ""
         ? "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
-        : "http://localhost:8002/visual/getAvatar/" +
-            (props.fileInfo as any).userAvatar;
+        : prefix + "visual/getAvatar/" + (props.fileInfo as any).userAvatar;
     });
     const avatar = computed(() => {
       if ((props.fileInfo as any).avatar != "") {
-        return "http://localhost:8002/visual/getAvatar/" + (props.fileInfo as any).avatar;
+        return prefix + "visual/getAvatar/" + (props.fileInfo as any).avatar;
       }
       return imgBase64(
         (props.fileInfo as any).name === undefined
@@ -683,7 +679,8 @@ export default defineComponent({
       if (data != null) {
         if ((data as any).code === 0) {
           window.location.href =
-            "http://localhost:8002/file/downloadInList/" +
+            prefix +
+            "file/downloadInList/" +
             store.state.user.id +
             "/" +
             decrypt(data.data, store.state.user.id) +
@@ -769,7 +766,7 @@ export default defineComponent({
           }
           if (fileList.value[i].visualType === "photo") {
             photoList.value.push(
-              `http://localhost:8002/visual/getPhoto/${fileList.value[i].id}`
+              `${prefix}visual/getPhoto/${fileList.value[i].id}`
             );
             photoFlag = true;
           }

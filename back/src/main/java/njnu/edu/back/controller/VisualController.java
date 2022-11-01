@@ -179,6 +179,11 @@ public class VisualController {
         return ResultUtils.success(visualService.getSectionFlush(fileId));
     }
 
+    @RequestMapping(value = "/getVolume/{fileId}", method = RequestMethod.GET)
+    public JsonResult getVolume(@PathVariable String fileId) {
+        return ResultUtils.success(visualService.getVolume(fileId));
+    }
+
     @CrossOrigin
     @RequestMapping(value = "/getTianDiTu", method = RequestMethod.GET)
     public JSONObject getTianDiTu() {
