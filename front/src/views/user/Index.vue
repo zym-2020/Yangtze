@@ -155,13 +155,22 @@
       <el-col :span="20">
         <div class="right">
           <el-tabs v-model="activeName">
-            <el-tab-pane label="资源" name="resource">
+            <el-tab-pane name="resource">
+              <template #label>
+                <strong>资源</strong>
+              </template>
               <user-resource></user-resource>
             </el-tab-pane>
-            <el-tab-pane label="工程" name="project">
+            <el-tab-pane name="project">
+              <template #label>
+                <strong>工程</strong>
+              </template>
               <user-project />
             </el-tab-pane>
-            <el-tab-pane label="共享条目" name="share">
+            <el-tab-pane name="share">
+              <template #label>
+                <strong>共享条目</strong>
+              </template>
               <user-share-file></user-share-file>
             </el-tab-pane>
           </el-tabs>
@@ -255,58 +264,63 @@ export default defineComponent({
 <style lang="scss" scoped>
 .main {
   padding: 0 10%;
-  .left {
-    .avatar {
-      text-align: center;
-    }
-    margin-top: 20px;
-    .userInfo {
-      cursor: pointer;
-      .el-button {
-        width: 100%;
-        margin-top: 10px;
-      }
-      .info {
-        padding-left: 10px;
-        display: flex;
-        margin-top: 10px;
-        height: 20px;
-        .text {
-          height: 20px;
-          line-height: 20px;
-          margin-left: 10px;
-        }
-      }
-    }
-    .userEdit {
-      .info {
-        display: flex;
-        height: 25px;
-        margin-top: 10px;
-        .icon {
-          margin-right: 10px;
-        }
-      }
-      .edit-upload {
-        display: flex;
-        margin-top: 10px;
-        margin-top: 10px;
-        height: 110px;
-        .icon {
-          margin-right: 10px;
-        }
-        .upload {
-          height: 100%;
-          width: 100%;
-        }
-      }
-      .btn {
+  height: 100%;
+  .el-row {
+    height: 100%;
+    .left {
+      .avatar {
         text-align: center;
       }
+      margin-top: 50px;
+      .userInfo {
+        cursor: pointer;
+        .el-button {
+          width: 100%;
+          margin-top: 10px;
+        }
+        .info {
+          padding-left: 10px;
+          display: flex;
+          margin-top: 10px;
+          height: 20px;
+          .text {
+            height: 20px;
+            line-height: 20px;
+            margin-left: 10px;
+          }
+        }
+      }
+      .userEdit {
+        .info {
+          display: flex;
+          height: 25px;
+          margin-top: 10px;
+          .icon {
+            margin-right: 10px;
+          }
+        }
+        .edit-upload {
+          display: flex;
+          margin-top: 10px;
+          margin-top: 10px;
+          height: 110px;
+          .icon {
+            margin-right: 10px;
+          }
+          .upload {
+            height: 100%;
+            width: 100%;
+          }
+        }
+        .btn {
+          text-align: center;
+        }
+      }
     }
-  }
-  .right {
-    margin-top: 20px;
+    .right {
+      margin-top: 20px;
+      height: calc(100% - 20px);
+    }
   }
 }
 </style>

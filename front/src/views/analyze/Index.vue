@@ -14,8 +14,10 @@
       </template>
     </page-header>
 
-    <div class="body">
-      <el-row>
+    <el-skeleton :rows="5" animated v-if="skeletonFlag" />
+    <div class="body" v-else>
+      <el-empty description="暂无数据" v-if="projects.length === 0" />
+      <el-row v-else>
         <el-col :span="4" v-for="(item, index) in projects" :key="index">
           <div class="project">
             <project-card
@@ -36,6 +38,7 @@
         @current-change="currentChange"
         v-model:current-page="currentPage"
         :page-size="12"
+        :pager-count="5"
         :background="true"
       >
       </el-pagination>
@@ -75,8 +78,10 @@ export default defineComponent({
     const createFlag = ref(false);
     const keyword = ref("");
     const currentPage = ref(1);
+    const skeletonFlag = ref(true)
 
     onMounted(async () => {
+      skeletonFlag.value = true
       const data = await getAll({
         size: 12,
         page: 0,
@@ -86,6 +91,7 @@ export default defineComponent({
         projects.value = data.data.list;
         total.value = data.data.total;
       }
+      skeletonFlag.value = false
     });
 
     const searchClick = async () => {
@@ -108,6 +114,7 @@ export default defineComponent({
     };
 
     const currentChange = async (page: number) => {
+      NProgress.start();
       currentPage.value = page;
       const data = await getAll({
         size: 12,
@@ -119,6 +126,7 @@ export default defineComponent({
         total.value = data.data.total;
       }
       search.value = keyword.value;
+      NProgress.done();
     };
 
     const createProject = (val: string) => {
@@ -151,6 +159,7 @@ export default defineComponent({
       createProject,
       searchClick,
       currentPage,
+      skeletonFlag
     };
   },
 });
@@ -158,12 +167,9 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .main {
-  height: calc(100vh - 63px);
+  height: 100%;
   position: relative;
   .search {
-    // height: 50px;
-    // line-height: 50px;
-    // box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
     .el-input {
       width: 500px;
       margin-left: 50px;
@@ -175,7 +181,6 @@ export default defineComponent({
     width: 100%;
     .el-row {
       /deep/ .el-col {
-        // width: 20%;
         .project {
           width: 100%;
           .card {

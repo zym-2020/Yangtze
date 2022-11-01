@@ -14,7 +14,8 @@ export const constantRoutes: Array<RouteRecordRaw> = [
                 name: 'Home',
                 component: Home,
                 meta: {
-                    keepAlive: true
+                    keepAlive: true,
+                    title: '首页'
                 }
             },
         ]
@@ -22,17 +23,26 @@ export const constantRoutes: Array<RouteRecordRaw> = [
     {
         path: '/login',
         name: 'Login',
-        component: () => import('../views/login/Login.vue')
+        component: () => import('../views/login/Login.vue'),
+        meta: {
+            title: '登录'
+        }
     },
     {
         path: '/register',
         name: 'Register',
-        component: () => import('@/views/register/Index.vue')
+        component: () => import('@/views/register/Index.vue'),
+        meta: {
+            title: '注册'
+        }
     },
     {
         path: '/404',
         name: "404",
-        component: () => import('@/views/404/Index.vue')
+        component: () => import('@/views/404/Index.vue'),
+        meta: {
+            title: '404'
+        }
     }
 ]
 
@@ -48,9 +58,6 @@ export const asyncRouters: Array<RouteRecordRaw> = [
         path: "/data",
         name: 'Data',
         component: shallowRef(Layout),
-        meta: {
-            title: '数据列表'
-        },
         children: [
             {
                 path: '',
@@ -61,20 +68,25 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 name: 'List',
                 component: () => import('@/views/data/Index.vue'),
                 meta: {
-                    keepAlive: true
+                    keepAlive: true,
+                    title: '资源门户'
                 }
             },
             {
                 path: "findMap",
                 name: 'FindMap',
-                component: () => import('@/components/scenePart/FindMap.vue')
+                component: () => import('@/components/scenePart/FindMap.vue'),
+                meta: {
+                    title: '高级检索'
+                }
             },
             {
                 path: ':id',
                 name: 'shareFile',
                 component: () => import('@/views/data/ShareFileIndex.vue'),
                 meta: {
-                    role: ['member', 'admin']
+                    role: ['member', 'admin'],
+                    title: '数据详情'
                 }
             }
         ]
@@ -83,9 +95,6 @@ export const asyncRouters: Array<RouteRecordRaw> = [
         path: "/scenario",
         name: 'Scenario',
         component: shallowRef(Layout),
-        meta: {
-            title: '场景'
-        },
         children: [
             {
                 path: "",
@@ -96,7 +105,8 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 component: () => import('@/views/scenario/Index.vue'),
                 meta: {
                     role: ['member', 'admin'],
-                    keepAlive: true
+                    keepAlive: true,
+                    title: '一张图'
                 }
             },
             {
@@ -104,28 +114,32 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 component: () => import('@/views/scenario/realTimeMap.vue'),
                 meta: {
                     role: ['member', 'admin'],
-                    keepAlive: true
+                    keepAlive: true,
+                    title: '一张图'
                 }
             },
             {
                 path: 'scenarioTwo',
                 component: () => import('@/views/scenario/TheMap.vue'),
                 meta: {
-                    role: ['member', 'admin']
+                    role: ['member', 'admin'],
+                    title: '一张图'
                 }
             },
             {
                 path: 'scenarioThree',
                 component: () => import('@/views/scenario/shipMap.vue'),
                 meta: {
-                    role: ['member', 'admin']
+                    role: ['member', 'admin'],
+                    title: '一张图'
                 }
             },
             {
                 path: 'scenarioFour',
                 component: () => import('@/views/scenario/projectMap.vue'),
                 meta: {
-                    role: ['member', 'admin']
+                    role: ['member', 'admin'],
+                    title: '一张图'
                 }
             },
         ]
@@ -134,9 +148,6 @@ export const asyncRouters: Array<RouteRecordRaw> = [
         path: '/analyze',
         name: 'Analyze',
         component: shallowRef(Layout),
-        meta: {
-            title: '分析'
-        },
         children: [
             {
                 path: '',
@@ -148,6 +159,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 component: () => import('@/views/analyze/Index.vue'),
                 meta: {
                     role: ['member', 'admin'],
+                    title: '分析中心'
                     // keepAlive: true
                 }
             },
@@ -156,7 +168,8 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 name: 'project',
                 component: () => import('@/views/analyze/Project.vue'),
                 meta: {
-                    role: ['member', 'admin']
+                    role: ['member', 'admin'],
+                    title: '分析中心'
                 }
             }
         ]
@@ -165,9 +178,6 @@ export const asyncRouters: Array<RouteRecordRaw> = [
         path: '/user',
         name: 'User',
         component: shallowRef(Layout),
-        meta: {
-            title: '用户空间'
-        },
         children: [
             {
                 path: '',
@@ -180,7 +190,8 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 component: () => import('@/views/user/Index.vue'),
                 meta: {
                     role: ['member', 'admin'],
-                    keepAlive: true
+                    keepAlive: true,
+                    title: '个人空间'
                 }
             },
             {
@@ -188,7 +199,8 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 name: 'share',
                 component: () => import('@/views/user/UploadShareFile.vue'),
                 meta: {
-                    role: ['member', 'admin']
+                    role: ['member', 'admin'],
+                    title: '上传条目'
                 }
             },
             {
@@ -197,7 +209,8 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 component: () => import('@/views/user/UpdateShareFile.vue'),
                 meta: {
                     role: ['member', 'admin'],
-                    keepAlive: true
+                    keepAlive: true,
+                    title: '更新条目'
                 }
             },
             {
@@ -205,7 +218,9 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 name: 'UserAdmin',
                 component: () => import('@/views/user/Admin.vue'),
                 meta: {
-                    role: ['admin']
+                    role: ['admin'],
+                    title: '管理员空间',
+                    keepAlive: true,
                 }
 
             }

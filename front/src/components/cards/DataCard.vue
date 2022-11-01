@@ -21,7 +21,6 @@
                   style="margin-top: 10px; margin-left: 5px"
                   type="danger"
                   effect="dark"
-                  round
                 >
                   HOT
                 </el-tag>
@@ -70,20 +69,9 @@
                     color: white;
                   "
                   effect="dark"
-                  round
                 >
                   {{ item }}
                 </el-tag>
-              </div>
-              <div
-                style="
-                  position: relative;
-                  display: inline;
-                  margin-right: 30px;
-                  float: right;
-                "
-              >
-                <el-card shadow="always"> 已认证为可视化数据 </el-card>
               </div>
             </el-col>
           </el-row>
@@ -179,7 +167,7 @@ import { computed, defineComponent, onMounted, ref } from "vue";
 import { imgBase64, generateColorByText, dateFormat } from "@/utils/common";
 import BrowseStatistics from "../resourcePages/components/BrowseStatistics.vue";
 import DownLoadSta2 from "../resourcePages/components/DownSta2.vue";
-import { prefix } from '@/prefix'
+import { prefix } from "@/prefix";
 export default defineComponent({
   components: { BrowseStatistics, DownLoadSta2 },
   props: {
@@ -201,10 +189,7 @@ export default defineComponent({
         (props.fileInfo as any).avatar != undefined &&
         (props.fileInfo as any).avatar != null
       ) {
-        return (
-          prefix + "visual/getAvatar/" +
-          (props.fileInfo as any).avatar
-        );
+        return prefix + "visual/getAvatar/" + (props.fileInfo as any).avatar;
       }
 
       return imgBase64(name.value);
@@ -212,8 +197,7 @@ export default defineComponent({
     const userAvatar = computed(() => {
       if ((props.fileInfo as any).userAvatar != "") {
         return (
-          prefix + "visual/getAvatar/" +
-          (props.fileInfo as any).userAvatar
+          prefix + "visual/getAvatar/" + (props.fileInfo as any).userAvatar
         );
       } else {
         return "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png";

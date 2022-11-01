@@ -63,16 +63,17 @@
       </div>
     </el-scrollbar>
     <el-empty description="暂无数据" v-else />
-  </div>
-  <div class="pagination" v-if="fileList.length > 0">
-    <el-pagination
-      background
-      layout="prev, pager, next"
-      :total="total"
-      v-model:current-page="currentPage"
-      @current-change="currentChange"
-      :hide-on-single-page="true"
-    />
+    <div class="pagination">
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        v-model:current-page="currentPage"
+        @current-change="currentChange"
+        :hide-on-single-page="true"
+        :pager-count="5"
+      />
+    </div>
   </div>
 </template>
 
@@ -216,7 +217,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .share-main {
   height: 80vh;
-  border-bottom: solid 0.5px #ebeef5;
+  border-bottom: solid 2px #ebeef5;
   .head {
     height: 50px;
     .el-input {
@@ -225,7 +226,7 @@ export default defineComponent({
     }
   }
   .el-scrollbar {
-    height: calc(100% - 50px);
+    height: calc(100% - 100px);
   }
   .card {
     border: 1px solid #dcdfe6;

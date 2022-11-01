@@ -1,7 +1,7 @@
 <template>
   <div class="project-main">
     <el-scrollbar height="80vh" :always="false" v-if="data.length > 0">
-      <div style="padding: 0 10px">
+      <div style="padding: 80px 10px">
         <el-row :gutter="20">
           <el-col :span="6" v-for="(item, index) in data" :key="index">
             <project-card :flag="false" :projectInfo="item">
@@ -29,7 +29,7 @@
                         >
                         <el-dropdown-item
                           :command="{ type: 'nav', index: index }"
-                          >跳转</el-dropdown-item
+                          >查看项目</el-dropdown-item
                         >
                       </el-dropdown-menu>
                     </template>
@@ -39,6 +39,17 @@
             </project-card>
           </el-col>
         </el-row>
+      </div>
+      <div class="pagination">
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="total"
+          :pager-count="5"
+          v-model:current-page="currentPage"
+          @current-change="currentChange"
+          :hide-on-single-page="true"
+        />
       </div>
     </el-scrollbar>
     <el-empty description="暂无数据" v-else />
@@ -53,16 +64,6 @@
         @updateProject="updateProject"
       ></create-project>
     </el-dialog>
-  </div>
-  <div class="pagination">
-    <el-pagination
-      background
-      layout="prev, pager, next"
-      :total="total"
-      v-model:current-page="currentPage"
-      @current-change="currentChange"
-      :hide-on-single-page="true"
-    />
   </div>
 </template>
 
@@ -163,15 +164,24 @@ export default defineComponent({
 <style lang="scss" scoped>
 .project-main {
   height: 80vh;
-  border-bottom: solid 0.5px #ebeef5;
+  border-bottom: solid 2px #ebeef5;
   .project-card {
-    margin: 0 auto;
+    margin: 0 auto 30px;
     .operate {
       position: absolute;
       padding-left: 110px;
       display: flex;
       left: 50%;
     }
+  }
+  .pagination {
+    position: absolute;
+    bottom: 20px;
+    left: calc(50% - 200px);
+    width: 400px;
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-around;
   }
 }
 /deep/.el-dialog {
@@ -186,10 +196,5 @@ export default defineComponent({
   .el-dialog__body {
     padding: 0;
   }
-}
-.pagination {
-  margin-top: 10px;
-  display: flex;
-  justify-content: space-around;
 }
 </style>

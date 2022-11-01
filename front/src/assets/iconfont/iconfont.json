@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "32614336",
+      "name": "操作-copy",
+      "font_class": "caozuo-copy",
+      "unicode": "ee4a",
+      "unicode_decimal": 61002
+    },
+    {
       "icon_id": "7738371",
       "name": "操作",
       "font_class": "caozuo",

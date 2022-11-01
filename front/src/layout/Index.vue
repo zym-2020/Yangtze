@@ -1,6 +1,28 @@
 <template>
   <div class="main-body">
-    <el-container>
+    <div class="head">
+      <header-component @openUploadList="openUploadList"></header-component>
+    </div>
+    <div class="body">
+      <router-view v-slot="{ Component }">
+        <keep-alive>
+          <component
+            :is="Component"
+            v-if="route.meta.keepAlive"
+            :key="route.path"
+          />
+        </keep-alive>
+        <component
+          :is="Component"
+          :key="route.path"
+          v-if="!route.meta.keepAlive"
+        />
+      </router-view>
+      <el-drawer v-model="uploadPageFlag" size="300px" :with-header="false">
+        <upload-page class="upload"></upload-page>
+      </el-drawer>
+    </div>
+    <!-- <el-container>
       <el-header>
         <header-component @openUploadList="openUploadList"></header-component>
       </el-header>
@@ -13,13 +35,17 @@
               :key="route.path"
             />
           </keep-alive>
-          <component :is="Component" :key="route.path"  v-if="!route.meta.keepAlive" />
+          <component
+            :is="Component"
+            :key="route.path"
+            v-if="!route.meta.keepAlive"
+          />
         </router-view>
         <el-drawer v-model="uploadPageFlag" size="300px" :with-header="false">
           <upload-page class="upload"></upload-page>
         </el-drawer>
       </el-main>
-    </el-container>
+    </el-container> -->
   </div>
 </template>
 
@@ -36,7 +62,6 @@ export default defineComponent({
   setup() {
     const route = computed(() => {
       return router.currentRoute.value;
-      
     });
     const uploadPageFlag = ref(false);
 
@@ -58,22 +83,26 @@ export default defineComponent({
 <style lang="scss" scoped>
 .main-body {
   height: 100%;
-  .el-container {
-    height: 100%;
+  .head {
+    height: 7vh;
+  }
+  .body {
+    height: calc(100% - 7vh);
   }
 }
-/deep/.el-header {
-  padding: 0;
-  height: 6vh!important;
-}
-.el-main {
-  padding: 0;
-  height: 100%;
-  overflow: unset;
-  /deep/ .el-drawer__body{
-     padding: 0px;
-  }
-}
+// /deep/.el-header {
+//   padding: 0;
+//   height: 6vh !important;
+//   // height: 100%;
+// }
+// .el-main {
+//   padding: 0;
+//   height: 100%;
+//   overflow: unset;
+//   /deep/ .el-drawer__body {
+//     padding: 0px;
+//   }
+// }
 
 body,
 dl,

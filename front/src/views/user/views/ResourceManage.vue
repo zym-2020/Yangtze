@@ -1,77 +1,76 @@
 <template>
-  <div>
+  <div class="resource-manage">
     <div class="head">
       <el-input v-model="search" placeholder="搜索" @keyup.enter="searchFile" />
       <el-button type="primary" plain @click="searchFile">搜索</el-button>
       <el-button type="info" plain @click="toAdd">创建共享条目</el-button>
     </div>
-    <div class="body">
-      <div v-for="(item, index) in fileList" :key="index">
-        <div class="card">
-          <data-card :fileInfo="item">
-            <template #status>
-              <div v-if="item.status === 1" class="online">
-                <el-tag type="success">Online</el-tag>
-              </div>
-              <div v-else class="offline">
-                <el-tag type="info">Offline</el-tag>
-              </div>
-            </template>
-            <template #creator>
-              <div class="creator">
-                <div class="btn">
-                  <el-dropdown trigger="click">
-                    <el-button size="small">
-                      操作<el-icon class="el-icon--right"
-                        ><arrow-down
-                      /></el-icon>
-                    </el-button>
-                    <template #dropdown>
-                      <el-dropdown-menu>
-                        <el-dropdown-item
-                          v-if="email === item.creator"
-                          @click="operate(1, item)"
-                          >编辑</el-dropdown-item
-                        >
-                        <el-dropdown-item
-                          v-if="item.status === 1"
-                          @click="operate(2, item, index)"
-                          >下线</el-dropdown-item
-                        >
-                        <el-dropdown-item
-                          v-if="item.status === -1"
-                          @click="operate(3, item, index)"
-                          >上线</el-dropdown-item
-                        >
-                        <el-dropdown-item @click="operate(4, item)"
-                          >删除</el-dropdown-item
-                        >
-                        <el-dropdown-item @click="operate(5, item, index)"
-                          >跳转</el-dropdown-item
-                        >
-                      </el-dropdown-menu>
-                    </template>
-                  </el-dropdown>
+    <el-scrollbar>
+      <div class="resource-manage-body">
+        <div v-for="(item, index) in fileList" :key="index">
+          <div class="card">
+            <data-card :fileInfo="item">
+              <template #status>
+                <div v-if="item.status === 1" class="online">
+                  <el-tag type="success">Online</el-tag>
                 </div>
-              </div>
-            </template>
-          </data-card>
+                <div v-else class="offline">
+                  <el-tag type="info">Offline</el-tag>
+                </div>
+              </template>
+              <template #creator>
+                <div class="creator">
+                  <div class="btn">
+                    <el-dropdown trigger="click">
+                      <el-button size="small">
+                        操作<el-icon class="el-icon--right"
+                          ><arrow-down
+                        /></el-icon>
+                      </el-button>
+                      <template #dropdown>
+                        <el-dropdown-menu>
+                          <el-dropdown-item
+                            v-if="email === item.creator"
+                            @click="operate(1, item)"
+                            >编辑</el-dropdown-item
+                          >
+                          <el-dropdown-item
+                            v-if="item.status === 1"
+                            @click="operate(2, item, index)"
+                            >下线</el-dropdown-item
+                          >
+                          <el-dropdown-item
+                            v-if="item.status === -1"
+                            @click="operate(3, item, index)"
+                            >上线</el-dropdown-item
+                          >
+                          <el-dropdown-item @click="operate(4, item)"
+                            >删除</el-dropdown-item
+                          >
+                          <el-dropdown-item @click="operate(5, item, index)"
+                            >跳转</el-dropdown-item
+                          >
+                        </el-dropdown-menu>
+                      </template>
+                    </el-dropdown>
+                  </div>
+                </div>
+              </template>
+            </data-card>
+          </div>
         </div>
       </div>
-      <div class="pagination">
-        <el-pagination
-          background
-          layout="prev, pager, next"
-          :total="total"
-          v-model:current-page="currentPage"
-          @current-change="currentChange"
-          :hide-on-single-page="true"
-        />
-      </div>
+    </el-scrollbar>
+    <div class="pagination">
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        v-model:current-page="currentPage"
+        @current-change="currentChange"
+        :hide-on-single-page="true"
+      />
     </div>
-    <!-- <el-dialog v-model="offlineFlag" width="600px" :modal="false">
-      <offline-dialog @commitInfo="commitInfo" />
-    </el-dialog> -->
   </div>
 </template>
 
@@ -124,7 +123,7 @@ export default defineComponent({
           .then(async () => {
             const data = await updateStatusById(fileInfo.id, -1);
             if (data != null && (data as any).code === 0) {
-              console.log(fileList.value, index)
+              console.log(fileList.value, index);
               notice("success", "成功", "下线成功");
               fileList.value[index].status = -1;
             }
@@ -261,60 +260,64 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.head {
-  height: 70px;
-  margin-top: 20px;
-  .el-input {
-    width: 400px;
-    margin-left: 30px;
-
-    margin-right: 20px;
-  }
-}
-.body {
-  margin-left: 20px;
-  margin-right: 20px;
-  .card {
-    cursor: pointer;
-    border: 1px solid #dcdfe6;
-    box-sizing: border-box;
-    border-radius: 6px;
-    margin-bottom: 10px;
-    padding: 10px;
-    .online,
-    .offline {
-      margin-left: 10px;
-    }
-    .creator {
-      position: absolute;
-      display: flex;
-      right: 300px;
-      .el-avatar {
-        margin-top: 8px;
-      }
-      .name {
-        line-height: 40px;
-        margin: 0px 5px;
-      }
-      .btn {
-        margin-top: 10px;
-      }
+.resource-manage {
+  height: 100%;
+  .head {
+    height: 100px;
+    line-height: 100px;
+    .el-input {
+      width: 400px;
+      margin-left: 30px;
+      margin-right: 20px;
     }
   }
+  .el-scrollbar {
+    height: calc(100% - 150px);
+    .resource-manage-body {
+      margin-left: 20px;
+      margin-right: 20px;
+      .card {
+        cursor: pointer;
+        border: 1px solid #dcdfe6;
+        box-sizing: border-box;
+        border-radius: 6px;
+        margin-bottom: 10px;
+        padding: 10px;
+        .online,
+        .offline {
+          margin-left: 10px;
+        }
+        .creator {
+          position: absolute;
+          display: flex;
+          right: 300px;
+          .el-avatar {
+            margin-top: 8px;
+          }
+          .name {
+            line-height: 40px;
+            margin: 0px 5px;
+          }
+          .btn {
+            margin-top: 10px;
+          }
+        }
+      }
+    }
+  }
 
+  /deep/.el-dialog {
+    .el-dialog__header {
+      padding: 0;
+    }
+    .el-dialog__body {
+      padding: 0;
+    }
+  }
   .pagination {
-    margin-top: 40px;
-    margin-bottom: 40px;
+    margin-top: 5px;
     display: flex;
     justify-content: space-around;
-  }
-}
-/deep/.el-dialog {
-  .el-dialog__header {
-    padding: 0;
-  }
-  .el-dialog__body {
-    padding: 0;
   }
 }
 </style>

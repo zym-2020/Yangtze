@@ -213,7 +213,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .main {
-  height: calc(100vh - 60px);
+  height: 100%;
   .body {
     height: calc(100% - 50px);
     display: flex;

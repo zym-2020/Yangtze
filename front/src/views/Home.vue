@@ -1,21 +1,18 @@
 <template>
-    <!-- <HomeWrapper /> -->
-    <HomePage />
+  <!-- <HomeWrapper /> -->
+  <HomePage />
 </template>
 
 <script lang="ts">
-import HomeWrapper from '../components/pageWrapper/homeWrapper.vue';
-import HomePage from '../components/pageWrapper/homePage.vue';
+import HomePage from "../components/pageWrapper/homePage.vue";
 export default {
-    name:'Home', 
-    components: {
-        HomeWrapper, HomePage
-    }, 
-    setup() {
-    }
-}
+  name: "Home",
+  components: {
+    HomePage,
+  },
+  setup() {},
+};
 </script>
 
 <style lang="scss">
-
 </style>

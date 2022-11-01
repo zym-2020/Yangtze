@@ -446,6 +446,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .resource-main {
   position: relative;
+  height: 100%;
   .table-head {
     height: 25px;
     display: flex;
