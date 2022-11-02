@@ -290,6 +290,13 @@ public class VisualServiceImpl implements VisualService {
     }
 
     @Override
+    public JSONObject getAnalyticGeoJson(String fileId) {
+        Map<String, Object> map = analyticDataSetMapper.getInfoById(fileId);
+        String path = basePath + map.get("creator") + "/project/" +map.get("projectId") + "/" + map.get("address");
+        return readJson(path);
+    }
+
+    @Override
     public Map<String, Object> getSection(String fileId) {
         Map<String, Object> section = analyticDataSetMapper.getInfoById(fileId);
         String address = (String) section.get("address");

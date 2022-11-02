@@ -25,8 +25,9 @@ class BackApplicationTests {
 
     @Test
     void contextLoads() {
-        String str = CommonUtils.getRandomCharStr(8);
-        System.out.println(str);
+
+        String str = "123.json";
+        System.out.println(str.substring(str.lastIndexOf(".")));
     }
 
 }

@@ -5,8 +5,10 @@
       <el-button type="primary" plain @click="searchFile">搜索</el-button>
       <el-button type="info" plain @click="toAdd">创建共享条目</el-button>
     </div>
-    <el-scrollbar>
-      <div class="resource-manage-body">
+    <el-skeleton :rows="5" animated v-if="skeletonFlag" />
+    <el-scrollbar v-else>
+      <el-empty description="暂无数据" v-if="fileList.length === 0" />
+      <div class="resource-manage-body" v-else>
         <div v-for="(item, index) in fileList" :key="index">
           <div class="card">
             <data-card :fileInfo="item">
@@ -90,6 +92,7 @@ import { notice } from "@/utils/notice";
 export default defineComponent({
   components: { DataCard, OfflineDialog },
   setup() {
+    const skeletonFlag = ref(true);
     const search = ref("");
     const keyword = ref("");
     const fileList = ref<any[]>([]);
@@ -224,6 +227,7 @@ export default defineComponent({
     };
 
     onMounted(async () => {
+      skeletonFlag.value = true;
       const data = await fuzzyQueryAdmin({
         property: "update_time",
         flag: true,
@@ -240,9 +244,11 @@ export default defineComponent({
           total.value = data.data.total;
         }
       }
+      skeletonFlag.value = false;
     });
 
     return {
+      skeletonFlag,
       search,
       toAdd,
       fileList,

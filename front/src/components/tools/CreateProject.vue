@@ -41,17 +41,20 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, reactive, ref } from "vue";
-import { addProject, updateProjectInfo } from "@/api/request";
+import { addProject, updateProjectInfo, copyProject } from "@/api/request";
 import { notice } from "@/utils/notice";
 import type { FormInstance, UploadFile } from "element-plus";
-import { prefix } from '@/prefix'
+import { prefix } from "@/prefix";
 export default defineComponent({
   props: {
     info: {
       type: Object,
     },
+    projectInfo: {
+      type: Object,
+    },
   },
-  emits: ["createProject", "updateProject"],
+  emits: ["createProject", "updateProject", "copyProject"],
   setup(props, context) {
     const form = reactive({
       name: "",
@@ -77,18 +80,38 @@ export default defineComponent({
       await formEl.validate(async (valid) => {
         if (valid) {
           if (props.info === undefined) {
-            const formData = new FormData();
-            if (file.value === undefined) {
-              formData.append("file", new Blob());
-            } else {
-              formData.append("file", file.value as File);
-            }
-            formData.append("projectName", form.name);
-            formData.append("isPublic", form.isPublic);
-            const data = await addProject(formData);
+            if (props.projectInfo === undefined) {
+              const formData = new FormData();
+              if (file.value === undefined) {
+                formData.append("file", new Blob());
+              } else {
+                formData.append("file", file.value as File);
+              }
+              formData.append("projectName", form.name);
+              formData.append("isPublic", form.isPublic);
+              const data = await addProject(formData);
 
-            if (data != null && (data as any).code === 0) {
-              context.emit("createProject", data.data);
+              if (data != null && (data as any).code === 0) {
+                context.emit("createProject", data.data);
+              }
+            } else {
+              const formData = new FormData();
+              if (file.value === undefined) {
+                formData.append("file", new Blob());
+              } else {
+                formData.append("file", file.value as File);
+              }
+              const json = {
+                projectId: props.projectInfo.id,
+                creator: props.projectInfo.creator,
+                isPublic: form.isPublic === "true" ? true : false,
+                projectName: form.name,
+              };
+              formData.append("jsonString", JSON.stringify(json));
+              const data = await copyProject(formData);
+              if (data != null && (data as any).code === 0) {
+                context.emit("copyProject", data.data);
+              }
             }
           } else {
             const formData = new FormData();
@@ -120,8 +143,10 @@ export default defineComponent({
         form.name = (props.info as any).projectName;
         form.isPublic = (props.info as any).isPublic ? "true" : "false";
         imageUrl.value =
-          prefix + "visual/getAvatar/" +
-          (props.info as any).avatar;
+          prefix + "visual/getAvatar/" + (props.info as any).avatar;
+      } else if (props.projectInfo != undefined) {
+        console.log(props.projectInfo);
+        form.name = (props.projectInfo as any).projectName + "-副本";
       }
     });
 

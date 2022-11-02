@@ -44,7 +44,7 @@ export default defineComponent({
   }
 }
 .scenario-card {
-  height: 360px;
+  height: 330px;
   width: 550px;
   background: #f4f4f5;
   border-radius: 4px;

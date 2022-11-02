@@ -53,15 +53,19 @@
       </div>
     </el-scrollbar>
     <el-empty description="暂无数据" v-else />
+
     <el-dialog
-      v-model="updateFlag"
+      v-model="createFlag"
       width="500px"
       :show-close="false"
-      title="修改项目"
+      :title="title"
     >
       <create-project
-        :info="projectInfo"
+        v-if="createFlag"
+        :projectInfo="projectInfo"
+        :info="info"
         @updateProject="updateProject"
+        @copyProject="copyProject"
       ></create-project>
     </el-dialog>
   </div>
@@ -78,10 +82,13 @@ import { notice } from "@/utils/notice";
 export default defineComponent({
   components: { ProjectCard, CreateProject },
   setup() {
+    const title = ref("");
+    const projectInfo = ref<any>();
+
     const data = ref<any[]>([]);
     const total = ref(0);
-    const projectInfo = ref<any>();
-    const updateFlag = ref(false);
+    const info = ref<any>();
+    const createFlag = ref(false);
     const currentPage = ref(1);
 
     const getProjectList = async (page: number, size: number) => {
@@ -107,8 +114,10 @@ export default defineComponent({
           },
         });
       } else if (val.type === "update") {
-        projectInfo.value = data.value[val.index];
-        updateFlag.value = true;
+        projectInfo.value = undefined;
+        title.value = "修改项目";
+        info.value = data.value[val.index];
+        createFlag.value = true;
       } else if (val.type === "delete") {
         ElMessageBox.confirm("确定删除该项目吗?该操作执行后无法撤销", "警告", {
           confirmButtonText: "确定",
@@ -123,6 +132,11 @@ export default defineComponent({
             }
           })
           .catch(() => {});
+      } else if (val.type === "copy") {
+        info.value = undefined;
+        title.value = "修改项目";
+        projectInfo.value = data.value[val.index];
+        createFlag.value = true;
       }
     };
 
@@ -137,10 +151,20 @@ export default defineComponent({
           data.value[i].projectName = val.projectName;
           data.value[i].isPublic = val.isPublic;
           data.value[i].avatar = val.avatar;
-          updateFlag.value = false;
+          createFlag.value = false;
           return;
         }
       }
+    };
+
+    const copyProject = (val: string) => {
+      createFlag.value = false;
+      router.push({
+        name: "project",
+        params: {
+          id: val,
+        },
+      });
     };
 
     onMounted(async () => {
@@ -148,14 +172,17 @@ export default defineComponent({
     });
 
     return {
+      title,
       data,
       commandHandle,
-      projectInfo,
-      updateFlag,
+      info,
+      createFlag,
       updateProject,
       total,
       currentPage,
       currentChange,
+      projectInfo,
+      copyProject,
     };
   },
 });

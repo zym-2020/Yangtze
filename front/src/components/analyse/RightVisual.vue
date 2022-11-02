@@ -10,10 +10,9 @@
 <script lang="ts">
 import { computed, defineComponent, nextTick, onMounted, ref } from "vue";
 import mapBoxGl, { AnySourceData } from "mapbox-gl";
-import { getCoordinates, getGeoJson, updateBasemap } from "@/api/request";
+import { getCoordinates, getAnalyticGeoJson, updateBasemap } from "@/api/request";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import ChartVisual from "./ChartVisual.vue";
-import { notice } from "@/utils/notice";
 import { prefix } from '@/prefix'
 import router from "@/router";
 export default defineComponent({
@@ -222,17 +221,18 @@ export default defineComponent({
             });
           }
         } else if (
-          param.visualType === "geoJsonLine" ||
-          param.visualType === "geoJsonPoint" ||
-          param.visualType === "geoJsonPolygon"
+          param.visualType === "analyticGeoJsonLine" ||
+          param.visualType === "analyticGeoJsonPoint" ||
+          param.visualType === "analyticGeoJsonPolygon"
         ) {
           let type: "fill" | "circle" | "line" = "line";
-          if (param.visualType === "geoJsonPoint") {
+          if (param.visualType === "analyticGeoJsonPoint") {
             type = "circle";
-          } else if (param.visualType === "geoJsonPolygon") {
+          } else if (param.visualType === "analyticGeoJsonPolygon") {
             type = "fill";
           }
-          const geojson = await getGeoJson(param.id);
+          const geojson = await getAnalyticGeoJson(param.id);
+          console.log(geojson)
           if (geojson != null && (geojson as any).code === 0) {
             map.addSource(param.id, {
               type: "geojson",

@@ -20,4 +20,6 @@ public interface ProjectFileMapper {
     List<Map<String, Object>> getData(@Param("projectId") String projectId);
 
     void delData(@Param("projectId") String projectId, @Param("dataListId") String dataListId, @Param("fileId") String fileId);
+
+    void delByProjectId(@Param("projectId") String projectId);
 }

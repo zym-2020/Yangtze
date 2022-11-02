@@ -92,12 +92,6 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
             bw.flush();
             fw.close();
             bw.close();
-            fw = new FileWriter(visualPath + "/" + uuid + ".json");
-            bw = new BufferedWriter(fw);
-            bw.write(jsonString);
-            bw.flush();
-            fw.close();
-            bw.close();
         } catch (Exception e) {
             e.printStackTrace();
             throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
@@ -107,7 +101,11 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
 
     @Override
     public void delAnalyticData(String id) {
+        Map<String, Object> map = analyticDataSetMapper.getInfoById(id);
+        String creator = map.get("creator").toString();
+        String projectId = map.get("projectId").toString();
         analyticDataSetMapper.delAnalyticData(id);
+        AnalyseUtil.deleteFolder(basePath + creator + "/project/" + projectId + "/" +id);
     }
 
     private JSONObject readJsonFile(String path) {

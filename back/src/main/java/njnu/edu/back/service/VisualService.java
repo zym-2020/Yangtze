@@ -42,6 +42,8 @@ public interface VisualService {
 
     JSONObject getGeoJson(String fileId);
 
+    JSONObject getAnalyticGeoJson(String fileId);
+
     Map<String, Object> getSection(String fileId);
 
     List<List<Double>> getSectionContrast(String fileId);

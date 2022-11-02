@@ -40,7 +40,7 @@
           </svg>
           <strong class="text">{{ projectInfo.userName }}</strong>
         </div>
-        <slot name="operate" v-else />
+        <slot name="operate" />
       </div>
     </el-card>
   </div>

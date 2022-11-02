@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -249,6 +250,77 @@ public class AnalyseUtil {
                 e.printStackTrace();
                 throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
             }
+        }
+    }
+
+    public static void copyFile(String filePath, String destination) {
+        File file = new File(filePath);
+        if(!file.exists()) {
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
+        FileChannel inputChannel = null;
+        FileChannel outputChannel = null;
+        try {
+            inputChannel = new FileInputStream(file).getChannel();
+            outputChannel = new FileOutputStream(new File(destination)).getChannel();
+            outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
+            outputChannel.close();
+            inputChannel.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
+    }
+
+    public static boolean deleteFolder(String path) {
+        File file = new File(path);
+        if(!file.exists()) {
+            return false;
+        } else {
+            if(file.isFile()) {
+                return deleteFile(path);
+            } else {
+                return deleteDirectory(path);
+            }
+        }
+    }
+
+    private static boolean deleteFile(String path) {
+        File file = new File(path);
+        if(file.exists() && file.isFile()) {
+            file.delete();
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean deleteDirectory(String path) {
+        //如果sPath不以文件分隔符结尾，自动添加文件分隔符
+        if (!path.endsWith(File.separator)) {
+            path = path + File.separator;
+        }
+        File dirFile = new File(path);
+        //如果dir对应的文件不存在，或者不是一个目录，则退出
+        if (!dirFile.exists() || !dirFile.isDirectory()) {
+            return false;
+        }
+        boolean flag = true;
+        File[] files = dirFile.listFiles();
+        for(File f : files) {
+            if(f.isFile()) {
+                flag = deleteFile(f.getAbsolutePath());
+                if(!flag) break;
+            } else {
+                flag = deleteDirectory(f.getAbsolutePath());
+                if(!flag) break;
+            }
+        }
+        if(!flag) return false;
+
+        if(dirFile.delete()) {
+            return true;
+        } else {
+            return false;
         }
     }
 

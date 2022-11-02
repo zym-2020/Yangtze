@@ -326,6 +326,10 @@ export async function getGeoJson(fileId: string) {
     return await get(`/visual/getGeoJson/${fileId}`)
 }
 
+export async function getAnalyticGeoJson(fileId: string) {
+    return await get(`/visual/getAnalyticGeoJson/${fileId}`)
+}
+
 export async function getSection(fileId: string) {
     return await get(`/visual/getSection/${fileId}`)
 }
@@ -427,4 +431,8 @@ export async function deleteProject(projectId: string) {
 
 export async function getAllByAdmin(jsonData: { keyword: string, page: number, size: number }) {
     return await post(`/project/getAllByAdmin`, jsonData)
+}
+
+export async function copyProject(formData: FormData) {
+    return await post(`/project/copyProject`, formData)
 }

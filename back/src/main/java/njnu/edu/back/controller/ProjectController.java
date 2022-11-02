@@ -1,5 +1,6 @@
 package njnu.edu.back.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import njnu.edu.back.common.auth.AuthCheck;
@@ -114,6 +115,17 @@ public class ProjectController {
     public JsonResult deleteProject(@PathVariable String projectId, @JwtTokenParser("email") String email, @JwtTokenParser("role") String role) {
         projectService.deleteProject(projectId, email, role);
         return ResultUtils.success();
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/copyProject", method = RequestMethod.POST)
+    public JsonResult copyProject(@RequestParam MultipartFile file, @RequestParam String jsonString, @JwtTokenParser("email") String email) {
+        JSONObject jsonObject = JSON.parseObject(jsonString);
+        String projectId = jsonObject.getString("projectId");
+        String creator = jsonObject.getString("creator");
+        boolean isPublic = jsonObject.getBoolean("isPublic");
+        String projectName = jsonObject.getString("projectName");
+        return ResultUtils.success(projectService.copyProject(projectId, creator, projectName, isPublic, file, email));
     }
 
 

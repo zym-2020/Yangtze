@@ -46,6 +46,14 @@
                 and is_public = false
             </if>
         </if>
+        <if test="keyword == ''">
+            <if test="flag == 1">
+                where is_public = true
+            </if>
+            <if test="flag == -1">
+                where is_public = false
+            </if>
+        </if>
     </select>
 
     <select id="getProjectInfo" resultType="java.util.Map">

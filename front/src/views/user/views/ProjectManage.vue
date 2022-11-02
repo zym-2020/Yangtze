@@ -7,7 +7,7 @@
     <el-skeleton :rows="5" animated v-if="skeletonFlag" />
     <el-row v-else>
       <el-col :span="4" v-for="(item, index) in projectList" :key="index">
-        <project-card :flag="false" :projectInfo="item">
+        <project-card :flag="true" :projectInfo="item">
           <template #operate>
             <div class="operate">
               <el-dropdown trigger="click" @command="commandHandle">
@@ -40,17 +40,6 @@
         </project-card>
       </el-col>
     </el-row>
-    <el-dialog
-      v-model="updateFlag"
-      width="500px"
-      :show-close="false"
-      title="修改项目"
-    >
-      <create-project
-        :info="projectInfo"
-        @updateProject="updateProject"
-      ></create-project>
-    </el-dialog>
     <div class="pagination">
       <el-pagination
         background
@@ -62,6 +51,20 @@
         hide-on-single-page
       />
     </div>
+    <el-dialog
+      v-model="createFlag"
+      width="500px"
+      :show-close="false"
+      :title="title"
+    >
+      <create-project
+        v-if="createFlag"
+        :projectInfo="projectInfo"
+        :info="info"
+        @updateProject="updateProject"
+        @copyProject="copyProject"
+      ></create-project>
+    </el-dialog>
   </div>
 </template>
 
@@ -75,17 +78,21 @@ import { ElMessageBox } from "element-plus";
 import CreateProject from "@/components/tools/CreateProject.vue";
 import NProgress from "nprogress";
 NProgress.configure({ showSpinner: false });
+
 export default defineComponent({
   components: { ProjectCard, CreateProject },
   setup() {
+    const title = ref("修改项目");
+    const projectInfo = ref<any>();
+
     const search = ref("");
     const keyword = ref("");
 
     const projectList = ref<any[]>([]);
     const total = ref(0);
     const skeletonFlag = ref(true);
-    const projectInfo = ref<any>();
-    const updateFlag = ref(false);
+    const info = ref<any>();
+    const createFlag = ref(false);
     const currentPage = ref(1);
 
     const getData = async (page: number, size: number) => {
@@ -122,8 +129,10 @@ export default defineComponent({
           },
         });
       } else if (val.type === "update") {
-        projectInfo.value = projectList.value[val.index];
-        updateFlag.value = true;
+        title.value = "修改项目";
+        info.value = projectList.value[val.index];
+        projectInfo.value = undefined;
+        createFlag.value = true;
       } else if (val.type === "delete") {
         ElMessageBox.confirm("确定删除该项目吗?该操作执行后无法撤销", "警告", {
           confirmButtonText: "确定",
@@ -138,6 +147,11 @@ export default defineComponent({
             }
           })
           .catch(() => {});
+      } else if (val.type === "copy") {
+        title.value = "拷贝项目";
+        projectInfo.value = projectList.value[val.index];
+        info.value = undefined;
+        createFlag.value = true;
       }
     };
 
@@ -152,10 +166,20 @@ export default defineComponent({
           projectList.value[i].projectName = val.projectName;
           projectList.value[i].isPublic = val.isPublic;
           projectList.value[i].avatar = val.avatar;
-          updateFlag.value = false;
+          createFlag.value = false;
           return;
         }
       }
+    };
+
+    const copyProject = (val: string) => {
+      createFlag.value = false;
+      router.push({
+        name: "project",
+        params: {
+          id: val,
+        },
+      });
     };
 
     onMounted(async () => {
@@ -171,12 +195,15 @@ export default defineComponent({
       projectList,
       commandHandle,
       skeletonFlag,
-      updateFlag,
-      projectInfo,
+      createFlag,
+      info,
       updateProject,
       currentChange,
       currentPage,
       total,
+      title,
+      copyProject,
+      projectInfo
     };
   },
 });
