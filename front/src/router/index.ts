@@ -225,14 +225,15 @@ export const asyncRouters: Array<RouteRecordRaw> = [
 
             },
             {
-                path: 'upload',
-                name: 'Upload',
-                component: () => import('@/views/user/components/UploadFile.vue'),
+                path: 'visualBind/:id',
+                name: 'VisualBind',
+                component: () => import('@/views/user/views/VisualDataBind.vue'),
                 meta: {
-                    role: ['admin', 'member'],
-                    title: '上传文件'
+                    role: ['member', 'admin'],
+                    title: '数据可视化绑定'
                 }
             }
+
         ]
     },
     {

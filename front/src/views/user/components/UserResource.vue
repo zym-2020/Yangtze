@@ -31,7 +31,6 @@
       style="width: 100%"
       height="calc(80vh - 23px)"
       @cell-dblclick="dblclick"
-      @selection-change="handleChange"
       highlight-current-row
       class="table"
     >
@@ -77,19 +76,50 @@
           >
         </template>
         <template #default="scope">
-          <el-button size="small" type="primary" v-if="isVisual(scope.row)"
-            ><el-icon><View /></el-icon
-          ></el-button>
-          <el-button
-            size="small"
-            type="success"
-            v-if="!isFolder(scope.row)"
-            @click="downloadClick(scope.row)"
-            ><el-icon><Download /></el-icon
-          ></el-button>
-          <el-button size="small" type="danger" @click="deleteClick(scope.row)"
-            ><el-icon><Delete /></el-icon
-          ></el-button>
+          <el-tooltip effect="dark" content="预览" placement="top">
+            <span style="margin-right: 10px">
+              <el-button
+                size="small"
+                type="primary"
+                v-if="isVisual(scope.row)"
+                @click="viewClick(scope.row)"
+                ><el-icon><View /></el-icon
+              ></el-button>
+            </span>
+          </el-tooltip>
+
+          <el-tooltip effect="dark" content="绑定可视化数据" placement="top">
+            <span style="margin-right: 10px">
+              <el-button
+                size="small"
+                v-if="!isFolder(scope.row)"
+                @click="visualClick(scope.row)"
+                ><el-icon><Share /></el-icon
+              ></el-button>
+            </span>
+          </el-tooltip>
+
+          <el-tooltip effect="dark" content="下载" placement="top">
+            <span style="margin-right: 10px">
+              <el-button
+                size="small"
+                type="success"
+                v-if="!isFolder(scope.row)"
+                @click="downloadClick(scope.row)"
+                ><el-icon><Download /></el-icon
+              ></el-button>
+            </span>
+          </el-tooltip>
+
+          <el-tooltip effect="dark" content="下载" placement="top">
+            <el-button
+              size="small"
+              type="danger"
+              @click="deleteClick(scope.row)"
+              title="删除"
+              ><el-icon><Delete /></el-icon
+            ></el-button>
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
@@ -105,6 +135,10 @@
         v-if="dialogCreateFolder"
         :folderNames="folderNames"
       ></folder-dialog>
+    </el-dialog>
+
+    <el-dialog v-model="dataPreviewFlag" width="950px">
+      <data-preview :fileInfo="fileInfo" v-if="dataPreviewFlag"></data-preview>
     </el-dialog>
   </div>
 </template>
@@ -141,25 +175,29 @@ import { prefix } from "@/prefix";
 import { useStore } from "@/store";
 import { decrypt } from "@/utils/auth";
 import { uuid, getFileSize } from "@/utils/common";
+import DataPreview from "./DataPreview.vue";
+import router from "@/router";
 
 NProgress.configure({ showSpinner: false });
 export default defineComponent({
   components: {
     FolderDialog,
+    DataPreview,
   },
   setup() {
     const store = useStore();
     const tableData = ref<(Folder | File)[]>([]);
     const path = ref<{ name: string; parentId: string; id: string }[]>([]);
-    const dialogUpload = ref(false);
     const dialogCreateFolder = ref(false);
     const selectList = ref<{ id: string; type: string }[]>([]);
 
-    const selectTables = ref<any[]>([]);
     const folderNames = ref<string[]>([]);
 
     const upload = ref<HTMLElement>();
     const isShowFile = ref(true);
+
+    const dataPreviewFlag = ref(false);
+    const fileInfo = ref<any>();
 
     const getIcon = (item: Folder | File) => {
       if ("fileName" in item) {
@@ -250,11 +288,6 @@ export default defineComponent({
         }
         NProgress.done();
       }
-    };
-
-    const handleChange = (selection: any) => {
-      console.log(selection);
-      selectTables.value = selection;
     };
 
     const openCreateFolder = () => {
@@ -362,6 +395,20 @@ export default defineComponent({
       }
     };
 
+    const viewClick = (val: any) => {
+      fileInfo.value = val;
+      dataPreviewFlag.value = true;
+    };
+
+    const visualClick = (param: any) => {
+      router.push({
+        name: "VisualBind",
+        params: {
+          id: param.id,
+        },
+      });
+    };
+
     const flushed = async () => {
       NProgress.start();
       let id = "";
@@ -455,7 +502,6 @@ export default defineComponent({
       path,
       dblclick,
       backClick,
-      dialogUpload,
       uploadClick,
       dialogCreateFolder,
       openCreateFolder,
@@ -465,8 +511,6 @@ export default defineComponent({
       getSize,
       sortNameMethod,
       flushed,
-      handleChange,
-      selectTables,
       isFolder,
       deleteClick,
       downloadClick,
@@ -477,6 +521,10 @@ export default defineComponent({
       upload,
       checkFile,
       isShowFile,
+      viewClick,
+      dataPreviewFlag,
+      fileInfo,
+      visualClick,
     };
   },
 });
@@ -533,10 +581,6 @@ export default defineComponent({
     .el-dialog__body {
       padding: 0;
     }
-  }
-  .user-folder-context-menu {
-    position: absolute;
-    z-index: 99;
   }
 }
 </style>
