@@ -13,7 +13,7 @@ import java.util.Map;
  * @Description:
  */
 public interface UploadRecordService {
-    List<Map<String, Object>> getRecords(int number, String email);
+    List<Map<String, Object>> getRecords(String email);
 
     void delRecord(String id);
 

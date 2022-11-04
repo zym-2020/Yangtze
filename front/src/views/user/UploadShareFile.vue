@@ -191,7 +191,7 @@ import "@wangeditor/editor/dist/css/style.css"; // 引入 css
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
 import { IDomEditor } from "@wangeditor/editor";
 import PageHeader from "@/components/page/PageHeader.vue";
-import ResourceDialog from "@/components/dialog/ResourceDialog.vue";
+
 import { addDataList, addRelational } from "@/api/request";
 import { notice } from "@/utils/notice";
 import type { FormInstance } from "element-plus";
@@ -207,7 +207,7 @@ export default defineComponent({
     PageHeader,
     Editor,
     Toolbar,
-    ResourceDialog,
+
     AvatarUpload,
     DataBind,
   },

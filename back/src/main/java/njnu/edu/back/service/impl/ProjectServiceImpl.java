@@ -184,7 +184,7 @@ public class ProjectServiceImpl implements ProjectService {
             projectMapper.deleteProject(projectId);
             analyticDataSetMapper.delAnalyticDataByProjectId(projectId);
             projectFileMapper.delByProjectId(projectId);
-            AnalyseUtil.deleteFolder(basePath + creator + "/project/" + projectId);
+            LocalUploadUtil.deleteFolder(basePath + creator + "/project/" + projectId);
         } else {
             throw new MyException(-99, "没有权限");
         }

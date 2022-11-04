@@ -17,11 +17,11 @@
         union
         select f.* from folder f
         inner join temp_folder on temp_folder.id::text = f.parent_id
-        ) delete from data_relational where file_id in (select id from temp_files);
+        ) delete from data_relational where file_id in (select id::text from folder);
     </delete>
 
     <select id="findFilesByDataListId" resultType="java.util.Map">
-        select files.id as id, file_name as "fileName", size, time, location, visual_type as "visualType", visual_id as "visualId", address from files, data_relational where files.id::text = data_relational.file_id and data_relational.data_list_id = #{dataListId}
+        select files.id as id, file_name as "fileName", size, visual_type as "visualType", visual_id as "visualId", address from files, data_relational where files.id::text = data_relational.file_id and data_relational.data_list_id = #{dataListId}
     </select>
 
     <select id="findFileIdByDataListId" resultType="java.util.Map">

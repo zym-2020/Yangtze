@@ -18,40 +18,16 @@
           v-if="!route.meta.keepAlive"
         />
       </router-view>
-      <el-drawer v-model="uploadPageFlag" size="300px" :with-header="false">
-        <upload-page class="upload"></upload-page>
+      <el-drawer v-model="uploadPageFlag" size="400px" :with-header="false">
+        <upload-page class="upload" ></upload-page>
       </el-drawer>
     </div>
-    <!-- <el-container>
-      <el-header>
-        <header-component @openUploadList="openUploadList"></header-component>
-      </el-header>
-      <el-main>
-        <router-view v-slot="{ Component }">
-          <keep-alive>
-            <component
-              :is="Component"
-              v-if="route.meta.keepAlive"
-              :key="route.path"
-            />
-          </keep-alive>
-          <component
-            :is="Component"
-            :key="route.path"
-            v-if="!route.meta.keepAlive"
-          />
-        </router-view>
-        <el-drawer v-model="uploadPageFlag" size="300px" :with-header="false">
-          <upload-page class="upload"></upload-page>
-        </el-drawer>
-      </el-main>
-    </el-container> -->
   </div>
 </template>
 
 <script lang="ts">
 import HeaderComponent from "./components/HeaderNew.vue";
-import { computed, defineComponent, ref } from "vue";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import router from "@/router";
 import UploadPage from "./components/UploadPage.vue";
 export default defineComponent({

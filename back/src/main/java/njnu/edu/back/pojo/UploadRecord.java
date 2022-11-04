@@ -20,6 +20,6 @@ public class UploadRecord {
     String id;
     String fileName;
     String uploader;
-    Integer state;
     Date uploadTime;
+    String size;
 }

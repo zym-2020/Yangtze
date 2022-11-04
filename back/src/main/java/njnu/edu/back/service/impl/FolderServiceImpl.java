@@ -27,10 +27,6 @@ public class FolderServiceImpl implements FolderService {
     @Value("${basePath}")
     String basePath;
 
-    @Override
-    public List<Map<String, Object>> findByParentId(String parentId, String email) {
-        return folderMapper.findByParentId(parentId, email);
-    }
 
     @Override
     public Map<String, Object> addFolder(String parentId, String folderName, String email) {

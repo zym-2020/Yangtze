@@ -27,6 +27,7 @@ class BackApplicationTests {
     void contextLoads() {
 
         String str = "123.json";
+        System.out.println(str.substring(0, str.lastIndexOf(".")));
         System.out.println(str.substring(str.lastIndexOf(".")));
     }
 

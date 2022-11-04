@@ -29,27 +29,12 @@ public interface FileMapper {
 
     List<Map<String, Object>> findByFolderId(@Param("folderId")String folderId, @Param("email") String email);
 
-    void rename(@Param("id") String id, @Param("fileName") String fileName);
 
     void batchDelete(@Param("list") List<String> list);
 
     void batchDeleteFolder(@Param("list") List<String> list);
 
-    Map<String, Object> findById(@Param("id") String id);
-
     List<Map<String, Object>> findListById(@Param("list") List<String> list);
-
-//    int batchInsert(List<File> fileList);
-//
-//    List<Map<String, Object>> selectFolder(@Param("email") String email);
-//
-//    int updateFolderParentIdAndLevel(@Param("list") List<String> list, @Param("parentId") String parentId, @Param("levelDifference") int levelDifference);
-//
-//    int updateFileParentIdAndLevel(@Param("list") List<String> list, @Param("parentId") String parentId, @Param("levelDifference") int levelDifference);
-//
-//    List<Map<String, Object>> selectFolderPath(@Param("list") List<String> id);
-//
-//    List<Map<String, Object>> selectFilePath(@Param("list") List<String> id);
 
     List<Map<String, Object>> findListByVisualType(@Param("type") String type);
 

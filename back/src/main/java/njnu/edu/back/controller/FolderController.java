@@ -21,11 +21,6 @@ public class FolderController {
     @Autowired
     FolderService folderService;
 
-    @RequestMapping(value = "/findByParentId/{parentId}", method = RequestMethod.GET)
-    public JsonResult findByParentId(@PathVariable String parentId, @JwtTokenParser("email") String email) {
-        return ResultUtils.success(folderService.findByParentId(parentId, email));
-    }
-
     @RequestMapping(value = "/addFolder", method = RequestMethod.POST)
     public JsonResult addFolder(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
         return ResultUtils.success(folderService.addFolder(jsonObject.getString("parentId"), jsonObject.getString("folderName"), email));

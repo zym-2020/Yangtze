@@ -18,7 +18,7 @@ import java.util.Map;
 public interface UploadRecordMapper {
     void addUploadRecord(@Param("uploadRecord") UploadRecord uploadRecord);
 
-    List<Map<String, Object>> getRecords(@Param("date") String date, @Param("email") String email);
+    List<Map<String, Object>> getRecords(@Param("email") String email);
 
     void delRecord(@Param("id") String id);
 }

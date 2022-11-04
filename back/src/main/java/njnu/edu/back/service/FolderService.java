@@ -11,7 +11,6 @@ import java.util.Map;
  * @Description:
  */
 public interface FolderService {
-    List<Map<String, Object>> findByParentId(String parentId, String email);
 
     Map<String, Object> addFolder(String parentId, String folderName, String email);
 }

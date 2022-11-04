@@ -87,10 +87,9 @@ import {
 } from "@/api/request";
 import { useStore } from "@/store";
 import { ElMessageBox } from "element-plus";
-import OfflineDialog from "@/components/dialog/OfflineDialog.vue";
 import { notice } from "@/utils/notice";
 export default defineComponent({
-  components: { DataCard, OfflineDialog },
+  components: { DataCard },
   setup() {
     const skeletonFlag = ref(true);
     const search = ref("");

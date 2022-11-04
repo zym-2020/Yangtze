@@ -93,9 +93,6 @@ const adminFlag = computed(() => {
     return false;
   }
 });
-const dotFlag = computed(() => {
-  return store.state.other.uploadDotFlag;
-});
 
 const nav = (param: string) => {
   if (param === "home") {
@@ -117,8 +114,8 @@ const userNav = (param: string) => {
   } else if (param === "5") {
     store.dispatch("logout", undefined);
   } else if (param === "3") {
-    store.commit("SET_UPLOAD_DOT_FLAG", false);
     emit("openUploadList");
+    console.log(store.state.other.waitList)
   }
 };
 

@@ -23,9 +23,8 @@ public class UploadRecordServiceImpl implements UploadRecordService {
     UploadRecordMapper uploadRecordMapper;
 
     @Override
-    public List<Map<String, Object>> getRecords(int number, String email) {
-        String date = CommonUtils.getDate(number);
-        return uploadRecordMapper.getRecords(date, email);
+    public List<Map<String, Object>> getRecords(String email) {
+        return uploadRecordMapper.getRecords(email);
     }
 
     @Override

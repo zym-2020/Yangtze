@@ -37,8 +37,8 @@ public class LocalUploadUtil {
         return result;
     }
 
-    public static void UploadFile(MultipartFile multipartFile, String name, String dir, String MD5) {
-        String path = dir + "/temp/" + MD5;
+    public static void UploadFile(MultipartFile multipartFile, String name, String dir, String key) {
+        String path = dir + "/temp/" + key;
         File file = new File(path);
         if(!file.exists()) {
             file.mkdirs();

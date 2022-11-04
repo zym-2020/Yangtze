@@ -163,7 +163,7 @@ public class VisualServiceImpl implements VisualService {
 
     @Override
     public void getPhoto(String fileId, HttpServletResponse response) {
-        Map<String, Object> map = fileMapper.findById(fileId);
+        Map<String, Object> map = fileMapper.findInfoById(fileId);
         InputStream in = null;
         ServletOutputStream sos = null;
         try {

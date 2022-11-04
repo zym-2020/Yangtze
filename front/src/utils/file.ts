@@ -1,12 +1,12 @@
 import SparkMD5 from 'spark-md5'
 import { getToken } from './auth'
 import axios from 'axios';
-import { checkMergeStateTemp } from '@/api/request'
+import { checkMergeStateTemp, uploadFile } from '@/api/request'
 import { useStore } from '@/store';
 import { notice } from './notice';
 import { prefix } from '@/prefix'
 
-const store = useStore()
+
 export function getFileMd5(file: File, callback: (f: string) => void) {
 
     const chunkSize = 5242880
@@ -50,42 +50,57 @@ export function createFileChunk(file: File) {
     return fileChunkList
 }
 
-export async function handlePostFiles(chunkList: string[], fileChunk: { file: Blob }[], MD5: string, id: string, fileName: string) {
+export async function handlePostFiles(fileChunk: { file: Blob }[], key: string, id: string) {
+    const store = useStore()
+    const names: string[] = []
+    fileChunk.forEach((item, index) => {
+        names.push(index.toString())
+    })
     return new Promise((res, rej) => {
-        const totalChunks = chunkList.length
+        const totalChunks = fileChunk.length
         let successCount = 0
-        const handle = () => {
-            const store = useStore()
-            if (chunkList.length) {
-                const name = chunkList.shift()
-                const token = getToken()
-                const formData = new FormData()
-                formData.append("file", fileChunk[parseInt(name as string)].file)
-                formData.append("MD5", MD5)
-                formData.append("name", name as string)
-                axios.post(prefix + 'Yangtze/file/uploadFile', formData, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                }).then(response => {
-                    if (response.status === 200 && response.data.code === 0) {
-                        successCount++
-                        store.commit("SET_UPLOAD_ITEM", { id: id, name: fileName, state: 2, progress: Math.ceil((fileChunk.length - chunkList.length) / fileChunk.length * 100) })
-                        handle()
+        console.log(fileChunk)
+        const handle = async () => {
+            if (store.state.other.uploading[id] === undefined || store.state.other.uploading[id].state === 1) {
+                if (names.length > 0) {
+                    const name = names.shift()
+                    const formData = new FormData()
+                    formData.append("file", fileChunk[parseInt(name as string)].file)
+                    formData.append("key", key)
+                    formData.append("name", name as string)
+                    const data = await uploadFile(formData)
+                    if (data != null && (data as any).code === 0) {
+                        const temp = store.state.other.uploading[id]
+                        if (temp != undefined) {
+                            store.commit("UPDATE_UPLOADING", {
+                                id: id, value: {
+                                    name: temp.name,
+                                    size: temp.size,
+                                    state: temp.state,
+                                    progress: parseFloat(((totalChunks - names.length) * 100 / totalChunks).toFixed(2))
+                                }
+                            })
+                        }
                     } else {
-                        successCount++
-                        chunkList.push(name as string)
-                        handle()
+                        names.push(name as string)
                     }
-                }).catch(err => {
                     successCount++
-                    chunkList.push(name as string)
-                    handle()
-                })
-            }
-            if (successCount >= totalChunks) {
+                    await handle()
+
+                }
+                if (successCount >= totalChunks) {
+                    if (names.length === 0) {
+                        for (let i = 0; i < totalChunks; i++) {
+                            fileChunk.shift()
+                        }
+                    }
+                    res(undefined);
+                }
+            } else {
+                store.commit("REMOVE_UPLOADING", id)
                 res(undefined);
             }
+
         }
         for (let i = 0; i < 5; i++) {
             handle();
@@ -93,37 +108,35 @@ export async function handlePostFiles(chunkList: string[], fileChunk: { file: Bl
     })
 }
 
-export async function checkStatus(key: string, id: string, callback: () => void) {
+export async function checkStatus(key: string, id: string) {
     async function handle() {
         const store = useStore()
-        const response = await new Promise(async (res, rej) => {
-            res(await checkMerge(key));
-        });
+        const response = await checkMerge(key)
         if (response === 0) {
-            let result
             setTimeout(async () => {
-                result = await handle();
+                await handle();
             }, 2000);
-            return result
         } else {
-            for (let i = 0; i < store.state.other.uploadList.length; i++) {
-                if (store.state.other.uploadList[i].id === id) {
-                    const temp = store.state.other.uploadList[i]
-                    store.commit("REMOVE_UPLOAD_ITEM", i)
-                    store.commit("ADD_UPLOADED_ITEM", { id: temp.id, name: temp.name, state: response as number })
-                    store.commit("SET_UPLOAD_DOT_FLAG", true)
+            const temp = store.state.other.uploading[id]
+            store.commit("REMOVE_UPLOADING", id)
 
-                    callback()
-                    break
-                }
+            if (response === 1) {
+                store.commit("ADD_UPLOADED_ITEM", { id: id, name: temp.name, size: temp.size, time: new Date() })
+                notice("success", "成功", temp.name + "上传成功")
+            } else {
+                notice("error", "失败", temp.name + "上传失败")
             }
-            return response
+
         }
     }
-    return await handle()
+    await handle()
 }
 
 export async function checkMerge(key: string) {
     const state = await checkMergeStateTemp(key)
-    return state.data
+    if (state != null && (state as any).code === 0) {
+        return state.data
+    } else {
+        return -1
+    }
 }

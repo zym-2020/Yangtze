@@ -223,6 +223,15 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                     keepAlive: true,
                 }
 
+            },
+            {
+                path: 'upload',
+                name: 'Upload',
+                component: () => import('@/views/user/components/UploadFile.vue'),
+                meta: {
+                    role: ['admin', 'member'],
+                    title: '上传文件'
+                }
             }
         ]
     },

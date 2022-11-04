@@ -29,61 +29,6 @@ export async function setUserInfo(formData: FormData) {
     return await patch(`/user/setUserInfo`, formData)
 }
 
-
-
-
-//========================file相关接口=================================
-export async function getNoUpload(jsonData: GetNoUploadJsonData) {
-    return await post(`/file/getNoUpload`, jsonData)
-}
-
-export async function mergeFile(md5: string, uid: string) {
-    return await post(`/file/mergeFile/${md5}/${uid}`)
-}
-
-export async function checkMergeStateTemp(key: string) {
-    return await get(`/file/checkMergeState/${key}`)
-}
-
-export async function findByLevel(level: number) {
-    return await get(`/file/findByLevel/${level}`)
-}
-
-export async function findByParentId(parentId: string) {
-    return await get(`/file/findByParentId/${parentId}`)
-}
-
-export async function addFile(jsonData: AddFileJsonData) {
-    return await post(`/file/addFile`, jsonData)
-}
-
-export async function renameTemp(jsonData: RenameJsonData) {
-    return await patch(`/file/rename`, jsonData)
-}
-
-export async function deleteFilesOrFolders(jsonData: DeleteFilesOrFolders) {
-    return await del(`/file/deleteFilesOrFolders`, jsonData)
-}
-
-export async function unPack(jsonData: UnPackJsonData) {
-    return await post(`/file/unPack`, jsonData)
-}
-
-export async function getTree() {
-    return await get(`/file/getTree`)
-}
-
-export async function updateParentIdAndLevel(jsonData: UpdateParentIdAndLevelJsonData) {
-    return await post(`/file/updateParentIdAndLevel`, jsonData)
-}
-
-export async function compressFile(jsonData: CompressFileJsonData) {
-    return await post(`/file/compressFile`, jsonData)
-}
-
-export async function getFilePath(path: string) {
-    return await get(`/file/getFilePath/${path}`)
-}
 //========================share_file相关接口=================================
 
 export async function offlineById(id: string) {
@@ -94,8 +39,8 @@ export async function onlineById(id: string) {
 }
 
 //========================uploadRecord相关接口=================================
-export async function getRecords(number: number) {
-    return await get(`/uploadRecord/getRecords/${number}`)
+export async function getRecords() {
+    return await get(`/uploadRecord/getRecords`)
 }
 
 export async function delRecord(id: string) {
@@ -362,6 +307,20 @@ export async function findByFolderId(folderId: string) {
     return await get(`/file/findByFolderId/${folderId}`)
 }
 
+export async function uploadFile(formData: FormData) {
+    return await post(`/file/uploadFile`, formData)
+}
+
+export async function mergeFile(jsonData: { key: string, total: number, name: string, folderId: string }) {
+    return await post(`/file/mergeFile`, jsonData)
+}
+
+export async function checkMergeStateTemp(key: string) {
+    return await get(`/file/checkMergeState/${key}`)
+}
+export async function deleteFilesOrFolders(jsonData: DeleteFilesOrFolders) {
+    return await del(`/file/deleteFilesOrFolders`, jsonData)
+}
 //========================downloadHistory相关接口=================================
 export async function pageQueryDownloadHistory(size: number, page: number, id: string) {
     return await get(`/downloadHistory/pageQuery/${id}/${size}/${page}`)

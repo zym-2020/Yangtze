@@ -131,22 +131,7 @@ export default defineComponent({
     };
 
     const commit = () => {
-      // uploadFileList.value.forEach((item) => {
-      //   store.commit("ADD_WAIT_ITEM", {
-      //     id: uuid(),
-      //     name: item.name,
-      //     state: -2,
-      //     file: item.raw as File,
-      //   });
-      // });
-      // if (!store.state.other.uploadFlag) {
-      //   store.dispatch("uploadFiles", {
-      //     level: props.level as number,
-      //     parentId: props.parentId as string,
-      //   });
-      // }
-      // context.emit("commitFile");
-      // store.commit("SET_UPLOAD_DOT_FLAG", true);
+
     };
 
     return {

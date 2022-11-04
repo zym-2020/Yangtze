@@ -227,7 +227,7 @@
                     <el-table-column
                       prop="名称"
                       label="文件名称"
-                      width="450"
+                      width="650"
                       alignment="center"
                       :formatter="
                         (row) => {
@@ -246,33 +246,9 @@
                         }
                       "
                     />
-                    <el-table-column
-                      prop="文件时间"
-                      label="文件时间"
-                      width="150"
-                      alignment="center"
-                      :formatter="
-                        (row) => {
-                          return row.time;
-                        }
-                      "
-                    />
-                    <el-table-column
-                      prop="文件位置"
-                      label="文件位置"
-                      width="150"
-                      alignment="center"
-                      :formatter="
-                        (row) => {
-                          if (row.location) return row.location;
-                          else return Yang;
-                        }
-                      "
-                    >
-                    </el-table-column>
                     <!-- ------------------------新增功能，单文件下载------------------------ -->
 
-                    <el-table-column fixed="right" label="下载" width="80">
+                    <el-table-column fixed="right" label="下载">
                       <template #default="scope">
                         <el-button
                           type="success"

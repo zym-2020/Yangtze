@@ -3,15 +3,15 @@
 <mapper namespace="njnu.edu.back.dao.main.UploadRecordMapper">
     <insert id="addUploadRecord" parameterType="njnu.edu.back.pojo.UploadRecord">
         <if test="uploadRecord.id != null">
-            insert into upload_record values (#{uploadRecord.id}::uuid, #{uploadRecord.fileName}, #{uploadRecord.uploader}, #{uploadRecord.state}, now());
+            insert into upload_record values (#{uploadRecord.id}::uuid, #{uploadRecord.fileName}, #{uploadRecord.uploader}, now(), #{uploadRecord.size});
         </if>
         <if test="uploadRecord.id == null">
-            insert into upload_record values (default, #{uploadRecord.fileName}, #{uploadRecord.uploader}, #{uploadRecord.state}, now());
+            insert into upload_record values (default, #{uploadRecord.fileName}, #{uploadRecord.uploader}, now(), #{uploadRecord.size});
         </if>
     </insert>
 
     <select id="getRecords" resultType="java.util.HashMap">
-        select * from upload_record where uploader = #{email} and upload_time >= to_date(#{date}, 'YYYY-MM-DD') order by upload_time desc;
+        select id, file_name as "fileName", uploader, upload_time as "uploadTime", size from upload_record where uploader = #{email} order by upload_time desc;
     </select>
 
     <delete id="delRecord">

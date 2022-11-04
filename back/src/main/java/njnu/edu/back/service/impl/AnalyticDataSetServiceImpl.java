@@ -9,6 +9,7 @@ import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.common.utils.AnalyseUtil;
 import njnu.edu.back.common.utils.Encrypt;
+import njnu.edu.back.common.utils.LocalUploadUtil;
 import njnu.edu.back.common.utils.TileUtil;
 import njnu.edu.back.dao.main.AnalyticDataSetMapper;
 import njnu.edu.back.dao.main.AnalyticParameterMapper;
@@ -105,7 +106,7 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
         String creator = map.get("creator").toString();
         String projectId = map.get("projectId").toString();
         analyticDataSetMapper.delAnalyticData(id);
-        AnalyseUtil.deleteFolder(basePath + creator + "/project/" + projectId + "/" +id);
+        LocalUploadUtil.deleteFolder(basePath + creator + "/project/" + projectId + "/" +id);
     }
 
     private JSONObject readJsonFile(String path) {

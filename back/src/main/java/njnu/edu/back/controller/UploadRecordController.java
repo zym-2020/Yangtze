@@ -30,9 +30,9 @@ public class UploadRecordController {
     }
 
     @AuthCheck
-    @RequestMapping(value = "/getRecords/{number}", method = RequestMethod.GET)
-    public JsonResult getRecords(@PathVariable int number, @JwtTokenParser("email") String email) {
-        return ResultUtils.success(uploadRecordService.getRecords(number, email));
+    @RequestMapping(value = "/getRecords", method = RequestMethod.GET)
+    public JsonResult getRecords(@JwtTokenParser("email") String email) {
+        return ResultUtils.success(uploadRecordService.getRecords(email));
     }
 
     @AuthCheck
