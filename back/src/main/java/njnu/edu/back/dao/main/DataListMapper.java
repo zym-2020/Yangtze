@@ -42,5 +42,9 @@ public interface DataListMapper {
 
     List<Map<String, Object>> clearQuery( @Param("tags") String[] tags, @Param("status") int status, @Param("type") String type, @Param("startDate") String startDate, @Param("endDate") String endDate);
 
-    List<Map<String, Object>> getSimilarData(@Param("type") String type);
+    List<Map<String, Object>> getSimilarData(@Param("type") String type, @Param("size") int size, @Param("start") int start);
+
+    int getSimilarCount(@Param("type") String type);
+
+    List<Map<String, Object>> getHot(@Param("size") int size);
 }

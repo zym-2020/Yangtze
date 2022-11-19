@@ -226,6 +226,11 @@ public class DataListServiceImpl implements DataListService {
     }
 
     @Override
+    public List<Map<String, Object>> getHot(int size) {
+        return dataListMapper.getHot(size);
+    }
+
+    @Override
     public Map<String, Object> deleteAsMember(String id, String email, int page, int size) {
         Map<String, Object> fileInfo = dataListMapper.getFileInfo(id);
         if(!fileInfo.get("creator").equals(email)) {
@@ -306,9 +311,13 @@ public class DataListServiceImpl implements DataListService {
     }
 
     @Override
-    public List<Map<String, Object>> getSimilarData(String type) {
-
-        return dataListMapper.getSimilarData(type);
+    public Map<String, Object> getSimilarData(String type, int size, int page) {
+        Map<String, Object> map = new HashMap<>();
+        List<Map<String, Object>> list = dataListMapper.getSimilarData(type, size, size * page);
+        int total = dataListMapper.getSimilarCount(type);
+        map.put("list", list);
+        map.put("total", total);
+        return map;
 
     }
 

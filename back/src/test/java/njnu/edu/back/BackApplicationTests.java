@@ -1,6 +1,7 @@
 package njnu.edu.back;
 
 import njnu.edu.back.common.utils.CommonUtils;
+import njnu.edu.back.pojo.User;
 import njnu.edu.back.service.FileService;
 import njnu.edu.back.service.ProjectService;
 import njnu.edu.back.dao.main.ShpCoordinatesMapper;
@@ -26,9 +27,7 @@ class BackApplicationTests {
     @Test
     void contextLoads() {
 
-        String str = "123.json";
-        System.out.println(str.substring(0, str.lastIndexOf(".")));
-        System.out.println(str.substring(str.lastIndexOf(".")));
+
     }
 
 }

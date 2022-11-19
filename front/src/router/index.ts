@@ -68,7 +68,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 name: 'List',
                 component: () => import('@/views/data/Index.vue'),
                 meta: {
-                    keepAlive: true,
+                    // keepAlive: true,         //此处缓存与该也没的固钉会有页面的bug
                     title: '资源门户'
                 }
             },

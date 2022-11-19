@@ -65,7 +65,7 @@ export default defineComponent({
       const data = await fuzzyQueryAdmin({
         page: page,
         size: 10,
-        keyword: "",
+        titleKeyword: "",
         tags: [],
         property: "id",
         flag: false,

@@ -178,7 +178,7 @@ export default defineComponent({
       const data = await fuzzyQueryAdmin({
         property: "update_time",
         flag: true,
-        keyword: keyword.value,
+        titleKeyword: keyword.value,
         tags: [],
         page: val - 1,
         size: 10,
@@ -199,7 +199,7 @@ export default defineComponent({
       const data = await fuzzyQueryAdmin({
         property: "update_time",
         flag: true,
-        keyword: keyword.value,
+        titleKeyword: keyword.value,
         tags: [],
         page: 0,
         size: 10,
@@ -230,7 +230,7 @@ export default defineComponent({
       const data = await fuzzyQueryAdmin({
         property: "update_time",
         flag: true,
-        keyword: "",
+        titleKeyword: "",
         tags: [],
         page: 0,
         size: 10,

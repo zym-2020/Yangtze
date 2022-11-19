@@ -2,7 +2,7 @@
   <div class="data-manage">
     <div class="data-manage-body">
       <div class="input">
-        <!-- <strong style="margin-left: 30px">项目名：test</strong> -->
+        <!-- <strong style="margin-left: 30px">test</strong> -->
         <!-- <el-input v-model="serach" :suffix-icon="Search" /> -->
       </div>
       <div class="content">

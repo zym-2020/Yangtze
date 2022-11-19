@@ -131,9 +131,15 @@
     </update>
 
     <select id="getSimilarData" resultType="java.util.Map">
-        select *
+        select id, name
         from data_list
         where  type = #{type}
+        order by watch desc, download desc
+        limit #{size} offset #{start};
+    </select>
+
+    <select id="getSimilarCount" resultType="java.lang.Integer">
+        select count(*) from data_list where type = #{type}
     </select>
 
     <select id="clearQuery" resultType="java.util.Map">
@@ -154,5 +160,9 @@
         <if test="startDate !=null and startDate !='' and endDate !=null and endDate !=''">
             AND data_list.time_stamp BETWEEN #{startDate}::date AND #{endDate}::date
         </if>
+    </select>
+
+    <select id="getHot" resultType="java.util.Map">
+        select id, name as "dataListName" from data_list order by watch desc limit #{size} offset 0;
     </select>
 </mapper>

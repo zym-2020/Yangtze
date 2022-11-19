@@ -68,7 +68,7 @@ public class DataListController {
     public JsonResult fuzzyQuery(@RequestBody JSONObject jsonObject) {
         int page = jsonObject.getIntValue("page");
         int size = jsonObject.getIntValue("size");
-        String keyword = jsonObject.getString("keyword");
+        String keyword = jsonObject.getString("titleKeyword");
         String[] tags = jsonObject.getObject("tags", String[].class);
         String property = jsonObject.getString("property");
         Boolean flag = jsonObject.getBoolean("flag");
@@ -117,6 +117,12 @@ public class DataListController {
     public JsonResult updateStatusById(@PathVariable String id, @PathVariable int status, @JwtTokenParser("role") String role, @JwtTokenParser("email") String email) {
         dataListService.updateStatusById(id, status, role, email);
         return ResultUtils.success();
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/getHot/{size}", method = RequestMethod.GET)
+    public JsonResult getHot(@PathVariable Integer size) {
+        return ResultUtils.success(dataListService.getHot(size));
     }
 
 
@@ -169,9 +175,9 @@ public class DataListController {
     }
 
     @AuthCheck
-    @RequestMapping(value = "/getSimilarData/{type}", method = RequestMethod.GET)
-    public JsonResult getSimilarData(@PathVariable String type) {
-        return ResultUtils.success(dataListService.getSimilarData(type));
+    @RequestMapping(value = "/getSimilarData/{type}/{size}/{page}", method = RequestMethod.GET)
+    public JsonResult getSimilarData(@PathVariable String type, @PathVariable int size, @PathVariable int page) {
+        return ResultUtils.success(dataListService.getSimilarData(type, size, page));
     }
 
 }

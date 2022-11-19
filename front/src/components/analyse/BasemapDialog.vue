@@ -69,7 +69,7 @@ export default defineComponent({
         url: "",
       },
     ];
-    const selectNum = ref(1);
+    const selectNum = ref(-1);
 
     const clickHandle = (param: number) => {
       selectNum.value = param;

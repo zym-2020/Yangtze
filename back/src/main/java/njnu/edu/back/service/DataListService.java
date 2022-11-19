@@ -35,6 +35,8 @@ public interface DataListService {
 
     void updateStatusById(String id, int status, String role, String email);
 
+    List<Map<String, Object>> getHot(int size);
+
     Map<String, Object> deleteAsMember(String id, String email, int page, int size);
 
     String getDownloadURL(String id, String userId);
@@ -43,7 +45,7 @@ public interface DataListService {
 
     List<Map<String, Object>> findFiles(String dataListId);
 
-    List<Map<String, Object>> getSimilarData(String type);
+    Map<String, Object> getSimilarData(String type, int size, int page);
 
     Map<String, Object> clearQuery( String[] tags,String type,String location,String startDate,String endDate);
 }

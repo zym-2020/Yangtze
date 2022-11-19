@@ -353,9 +353,15 @@ export default defineComponent({
     .el-dialog__header {
       padding: 10px;
       margin: 0;
-      background: #25aef3;
+      background: #000000;
       .el-dialog__title {
         color: white;
+      }
+      .el-dialog__headerbtn {
+        height: 40px;
+        .el-icon {
+          color: white;
+        }
       }
     }
     .el-dialog__body {
