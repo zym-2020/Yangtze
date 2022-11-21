@@ -222,8 +222,8 @@ export async function clearQueryDataList(jsonData: { tags: string[], type: strin
     return await post(`/dataList/clearQuery`, jsonData)
 }
 
-export async function getSimilarData(type: string, size: number, page: number) {
-    return await get(`/dataList/getSimilarData/${type}/${size}/${page}`)
+export async function getSimilarData(type: string, id: string, size: number, page: number) {
+    return await get(`/dataList/getSimilarData/${type}/${id}/${size}/${page}`)
 }
 
 export async function getHot(size: number) {

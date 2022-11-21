@@ -165,26 +165,24 @@
       </el-affix>
     </div>
     <el-backtop :right="100" :bottom="100" />
-    <div class="bottom"></div>
+    <page-copyright />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, onMounted, ref, reactive } from "vue";
-import PageHeader from "@/components/page/PageHeader.vue";
-import DataCollapse from "@/components/page/DataCollapse.vue";
 import DataCard from "@/components/cards/DataCard.vue";
 import { fuzzyQueryDataList, getHot } from "@/api/request";
 import router from "@/router";
 import NProgress from "nprogress";
 import { Search } from "@element-plus/icons-vue";
+import PageCopyright from "@/components/page/PageCopyright.vue";
 NProgress.configure({ showSpinner: false });
 
 export default defineComponent({
   components: {
-    PageHeader,
-    DataCollapse,
     DataCard,
+    PageCopyright,
   },
 
   setup() {
@@ -589,8 +587,4 @@ export default defineComponent({
   justify-content: space-around;
 }
 
-.bottom {
-  height: 250px;
-  background: #424242;
-}
 </style>

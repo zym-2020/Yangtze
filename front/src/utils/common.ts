@@ -97,7 +97,7 @@ export function getLastOrNextFewDateBy(date: string, day: number) {
       timeList.push(getNextDate(date, i))
     }
   }
-  return timeList
+  return timeList.reverse()
 }
 
 export function getFileSize(fileByte: number) {

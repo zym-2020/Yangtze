@@ -205,8 +205,12 @@
       <div class="right">
         <div class="title"><strong>空间位置</strong></div>
         <location-map style="width: 100%; height: 300px"></location-map>
+        <div class="title"><strong>近10天访问记录</strong></div>
+        <div class="visit">
+          <statistics :dataListId="fileInfo.id"></statistics>
+        </div>
         <div class="title"><strong>相似数据</strong></div>
-        <el-skeleton :rows="5" animated v-if="similarSkeleton"/>
+        <el-skeleton :rows="5" animated v-if="similarSkeleton" />
         <div class="similar" v-else>
           <div v-if="similarDataList.length > 0">
             <div
@@ -214,6 +218,7 @@
               :key="index"
               class="similar-item"
               :title="item.name"
+              @click="similarClick(item.id)"
             >
               <el-icon><Right /></el-icon>
               {{ item.name }}
@@ -238,7 +243,7 @@
       </div>
     </div>
 
-    <div class="test-bottom"></div>
+    <page-copyright />
   </div>
 </template>
 
@@ -263,6 +268,8 @@ import router from "@/router";
 import MapVisual from "@/components/visual/MapVisual.vue";
 import PhotoVisual from "@/components/visual/PhotoVisual.vue";
 import ExcelVisual from "@/components/visual/ExcelVisual.vue";
+import Statistics from "@/components/visual/Statistics.vue";
+import PageCopyright from "@/components/page/PageCopyright.vue";
 import { prefix } from "@/prefix";
 export default defineComponent({
   components: {
@@ -272,6 +279,8 @@ export default defineComponent({
     MapVisual,
     PhotoVisual,
     ExcelVisual,
+    Statistics,
+    PageCopyright,
   },
   props: {
     fileInfo: {
@@ -352,14 +361,32 @@ export default defineComponent({
       }
     };
 
-    const pageChangeSimilar = () => {};
+    const similarClick = (val: string) => {
+      router.push({
+        name: "shareFile",
+        params: {
+          id: val,
+        },
+      });
+    };
+
+    const pageChangeSimilar = async (val: number) => {
+      const data = await getSimilarData(
+        fileInfo.value?.type,
+        fileInfo.value?.id,
+        10,
+        val - 1
+      );
+      if (data != null && (data as any).code === 0) {
+        similarDataList.value = data.data.list;
+        similarTotal.value = data.data.total;
+      }
+    };
 
     const initVisual = async () => {
       //  获取file文件
       fileSkeleton.value = true;
-      const fileData = await findFiles(
-        router.currentRoute.value.params.id as string
-      );
+      const fileData = await findFiles(fileInfo.value?.id);
       if (fileData != null && (fileData as any).code === 0) {
         fileList.value = fileData.data;
       }
@@ -477,7 +504,12 @@ export default defineComponent({
 
     const initSimilarData = async () => {
       similarSkeleton.value = true;
-      const data = await getSimilarData(fileInfo.value?.type, 10, 0);
+      const data = await getSimilarData(
+        fileInfo.value?.type,
+        fileInfo.value?.id,
+        10,
+        0
+      );
       if (data != null && (data as any).code === 0) {
         similarDataList.value = data.data.list;
         similarTotal.value = data.data.total;
@@ -489,8 +521,6 @@ export default defineComponent({
       await initVisual();
       await initSimilarData();
       await initDownloadHistory();
-
-      console.log(fileInfo.value);
     });
 
     return {
@@ -522,6 +552,7 @@ export default defineComponent({
       similarTotal,
       currentPageSimilar,
       pageChangeSimilar,
+      similarClick,
     };
   },
 });
@@ -686,11 +717,13 @@ export default defineComponent({
         margin-top: 5px;
       }
     }
+    .visit {
+      height: 300px;
+      width: 100%;
+      border: solid 1px #d6d6d6;
+      box-sizing: border-box;
+    }
   }
 }
 
-.test-bottom {
-  height: 250px;
-  background: #424242;
-}
 </style>

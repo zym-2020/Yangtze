@@ -133,7 +133,7 @@
     <select id="getSimilarData" resultType="java.util.Map">
         select id, name
         from data_list
-        where  type = #{type}
+        where  type = #{type} and id::text != #{id}
         order by watch desc, download desc
         limit #{size} offset #{start};
     </select>

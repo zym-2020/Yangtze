@@ -45,7 +45,7 @@ public interface DataListService {
 
     List<Map<String, Object>> findFiles(String dataListId);
 
-    Map<String, Object> getSimilarData(String type, int size, int page);
+    Map<String, Object> getSimilarData(String type, String id, int size, int page);
 
     Map<String, Object> clearQuery( String[] tags,String type,String location,String startDate,String endDate);
 }

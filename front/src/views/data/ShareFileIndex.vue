@@ -1,42 +1,20 @@
 <template>
-  <div class="share-file">
-    <!-- <data-detail-header
-      :name="fileInfo.name"
-      :info="{ watch: fileInfo.watch, download: fileInfo.download }"
-      @activeClick="activeClick"
-    ></data-detail-header> -->
-    <div class="main">
-      <data-detail
-        v-show="active === 1"
-        class="detail"
-        :fileInfo="fileInfo"
-      ></data-detail>
-      <data-statistics v-if="active === 2"></data-statistics>
-      
-    </div>
+  <div class="main">
+    <data-detail class="detail" :fileInfo="fileInfo"></data-detail>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, onMounted } from "vue";
 import { addWatchCount, addBrowseHistory } from "@/api/request";
-import DataDetailHeader from "@/components/page/DataDetailHeader.vue";
 import DataDetail from "@/components/resourcePages/DataDetail.vue";
-import DataStatistics from "@/components/resourcePages/DataStatistics.vue";
-import SimilarData from "@/components/resourcePages/SimilarData.vue";
 import router from "@/router";
 export default defineComponent({
-  components: { DataDetailHeader, DataDetail, DataStatistics, SimilarData },
+  components: { DataDetail },
   setup() {
-    const active = ref(1);
-    const similarList = ref<any[]>([]);
     const fileInfo = computed(() => {
       return router.currentRoute.value.params.fileInfo;
     });
-
-    const activeClick = (val: number) => {
-      active.value = val;
-    };
 
     onMounted(async () => {
       if (
@@ -46,26 +24,17 @@ export default defineComponent({
         addWatchCount(router.currentRoute.value.params.id as string);
         addBrowseHistory(router.currentRoute.value.params.id as string);
       }
-      console.log((router.currentRoute.value.params.fileInfo as any).type);
-
-      
     });
 
     return {
-      similarList,
       fileInfo,
-      active,
-      activeClick,
     };
   },
 });
 </script>
 
 <style lang="scss" scoped>
-.share-file {
-  overflow-y: hidden;
-  .main {
-    width: 100%;
-  }
+.main {
+  width: 100%;
 }
 </style>

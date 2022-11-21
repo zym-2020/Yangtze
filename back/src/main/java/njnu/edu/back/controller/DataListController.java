@@ -175,9 +175,9 @@ public class DataListController {
     }
 
     @AuthCheck
-    @RequestMapping(value = "/getSimilarData/{type}/{size}/{page}", method = RequestMethod.GET)
-    public JsonResult getSimilarData(@PathVariable String type, @PathVariable int size, @PathVariable int page) {
-        return ResultUtils.success(dataListService.getSimilarData(type, size, page));
+    @RequestMapping(value = "/getSimilarData/{type}/{id}/{size}/{page}", method = RequestMethod.GET)
+    public JsonResult getSimilarData(@PathVariable String type, @PathVariable String id, @PathVariable int size, @PathVariable int page) {
+        return ResultUtils.success(dataListService.getSimilarData(type, id, size, page));
     }
 
 }

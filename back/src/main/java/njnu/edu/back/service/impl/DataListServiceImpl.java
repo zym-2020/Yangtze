@@ -311,9 +311,9 @@ public class DataListServiceImpl implements DataListService {
     }
 
     @Override
-    public Map<String, Object> getSimilarData(String type, int size, int page) {
+    public Map<String, Object> getSimilarData(String type, String id, int size, int page) {
         Map<String, Object> map = new HashMap<>();
-        List<Map<String, Object>> list = dataListMapper.getSimilarData(type, size, size * page);
+        List<Map<String, Object>> list = dataListMapper.getSimilarData(type, id, size, size * page);
         int total = dataListMapper.getSimilarCount(type);
         map.put("list", list);
         map.put("total", total);
