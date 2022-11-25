@@ -20,37 +20,31 @@
       </div>
     </div>
     <div class="body">
-      <el-affix :offset="120">
-        <div class="left">
-          <div class="classify">
-            <div class="head">
-              <strong
-                >分类筛选（<span @click="classifyHandle('所有')">所有</span
-                >）</strong
-              >
-            </div>
-            <div
-              class="content"
-              v-for="(item, index) in classList"
-              :key="index"
+      <div class="left">
+        <div class="classify">
+          <div class="head">
+            <strong
+              >分类筛选（<span @click="classifyHandle('所有')">所有</span
+              >）</strong
             >
-              <div class="title">
-                <strong>{{ item.label }}</strong>
-              </div>
-              <div class="value">
-                <div
-                  class="value-item"
-                  v-for="value in item.value"
-                  :key="value"
-                  @click="classifyHandle(value)"
-                >
-                  {{ value }}
-                </div>
+          </div>
+          <div class="content" v-for="(item, index) in classList" :key="index">
+            <div class="title">
+              <strong>{{ item.label }}</strong>
+            </div>
+            <div class="value">
+              <div
+                class="value-item"
+                v-for="value in item.value"
+                :key="value"
+                @click="classifyHandle(value)"
+              >
+                {{ value }}
               </div>
             </div>
           </div>
         </div>
-      </el-affix>
+      </div>
 
       <div class="right">
         <div class="list">
@@ -91,6 +85,9 @@
             </div>
           </div>
           <div v-if="skeletonFlag">
+            <el-skeleton :rows="5" animated />
+          </div>
+          <div v-else>
             <div class="list-item" v-if="fileList.length > 0">
               <div v-for="(item, index) in fileList" :key="index" class="card">
                 <data-card
@@ -102,9 +99,6 @@
             <div v-else>
               <el-empty description="暂无数据" />
             </div>
-          </div>
-          <div v-else>
-            <el-skeleton :rows="5" animated v-for="item in 3" :key="item" />
           </div>
 
           <div class="pagination">
@@ -121,10 +115,14 @@
           </div>
         </div>
       </div>
-      <el-affix :offset="120">
-        <div class="special">
-          <div class="hot-data">
-            <div class="title"><strong>热门数据</strong></div>
+
+      <div class="special">
+        <div class="hot-data">
+          <div class="title"><strong>热门数据</strong></div>
+          <div v-if="hotSkeletonFlag">
+            <el-skeleton :rows="5" animated />
+          </div>
+          <div v-else>
             <div
               class="content"
               v-for="(item, index) in hotDataList"
@@ -136,33 +134,29 @@
               </div>
             </div>
           </div>
-          <div class="special-data">
-            <div class="title"><strong>特色数据</strong></div>
-            <ul
-              class="content"
-              v-for="(item, index) in specialList"
-              :key="index"
-            >
-              <li class="text">{{ item.dataListName }}</li>
-            </ul>
-            <div class="change">
-              <div>
-                <svg
-                  style="
-                    width: 16px;
-                    height: 16px;
-                    margin-top: 3px;
-                    margin-right: 5px;
-                  "
-                >
-                  <use xlink:href="#icon-reload"></use>
-                </svg>
-              </div>
-              <div>换一批</div>
+        </div>
+        <div class="special-data">
+          <div class="title"><strong>特色数据</strong></div>
+          <ul class="content" v-for="(item, index) in specialList" :key="index">
+            <li class="text">{{ item.dataListName }}</li>
+          </ul>
+          <div class="change">
+            <div>
+              <svg
+                style="
+                  width: 16px;
+                  height: 16px;
+                  margin-top: 3px;
+                  margin-right: 5px;
+                "
+              >
+                <use xlink:href="#icon-reload"></use>
+              </svg>
             </div>
+            <div>换一批</div>
           </div>
         </div>
-      </el-affix>
+      </div>
     </div>
     <el-backtop :right="100" :bottom="100" />
     <page-copyright />
@@ -244,7 +238,8 @@ export default defineComponent({
       },
     ]);
     const sortWord = ref("update_time");
-    const skeletonFlag = ref(false);
+    const skeletonFlag = ref(true);
+    const hotSkeletonFlag = ref(true);
     const input = ref("");
     const select = ref("name");
     const classValue = ref("所有");
@@ -370,14 +365,16 @@ export default defineComponent({
     onMounted(async () => {
       await searchData(0, 8, "", [], "update_time", "");
       const data = await getHot(8);
-      skeletonFlag.value = true;
       if (data != null && (data as any).code === 0) {
         hotDataList.value = data.data;
       }
+      skeletonFlag.value = false;
+      hotSkeletonFlag.value = false;
     });
 
     return {
       skeletonFlag,
+      hotSkeletonFlag,
       input,
       select,
       fileList,
@@ -545,9 +542,9 @@ export default defineComponent({
             border-radius: 6px;
             margin-right: 10px;
           }
+          &:nth-child(1),
           &:nth-child(2),
-          &:nth-child(3),
-          &:nth-child(4) {
+          &:nth-child(3) {
             .number {
               background: #107bce;
             }
@@ -586,5 +583,4 @@ export default defineComponent({
   display: flex;
   justify-content: space-around;
 }
-
 </style>

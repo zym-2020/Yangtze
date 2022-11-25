@@ -29,17 +29,15 @@
     <el-table
       :data="tableData"
       style="width: 100%"
-      height="calc(80vh - 23px)"
       @cell-dblclick="dblclick"
       highlight-current-row
-      class="table"
     >
       <el-table-column
         prop="name"
         label="名称"
         sortable
         :sort-method="sortNameMethod"
-        width="800"
+        width="700"
       >
         <template #default="scope">
           <div class="table-name">
@@ -48,11 +46,13 @@
               size="large"
               @change="changeHandle(scope.row)"
             />
-            <div style="display: flex; align-items: center">
-              <svg style="width: 20px; height: 20px" @click="open">
+            <div class="text">
+              <svg style="width: 20px; height: 20px; margin-top: 4px">
                 <use :xlink:href="getIcon(scope.row)"></use>
               </svg>
-              <span style="margin-left: 10px">{{ getName(scope.row) }}</span>
+              <div class="name" :title="getName(scope.row)">
+                {{ getName(scope.row) }}
+              </div>
             </div>
           </div>
         </template>
@@ -64,7 +64,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="right">
+      <el-table-column align="right" width="200" fixed="right">
         <template #header>
           <el-button
             size="small"
@@ -111,12 +111,11 @@
             </span>
           </el-tooltip>
 
-          <el-tooltip effect="dark" content="下载" placement="top">
+          <el-tooltip effect="dark" content="删除" placement="top">
             <el-button
               size="small"
               type="danger"
               @click="deleteClick(scope.row)"
-              title="删除"
               ><el-icon><Delete /></el-icon
             ></el-button>
           </el-tooltip>
@@ -124,12 +123,7 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog
-      v-model="dialogCreateFolder"
-      width="200px"
-      :show-close="false"
-      :modal="false"
-    >
+    <el-dialog v-model="dialogCreateFolder" width="200px" :show-close="false">
       <folder-dialog
         @createFolder="createFolder"
         v-if="dialogCreateFolder"
@@ -162,7 +156,7 @@ type File = {
 };
 import { defineComponent, onMounted, ref } from "vue";
 import { ElMessageBox } from "element-plus";
-import FolderDialog from "./FolderDialog.vue";
+import FolderDialog from "../components/FolderDialog.vue";
 import {
   findByFolderId,
   addFolder,
@@ -175,7 +169,7 @@ import { prefix } from "@/prefix";
 import { useStore } from "@/store";
 import { decrypt } from "@/utils/auth";
 import { uuid, getFileSize } from "@/utils/common";
-import DataPreview from "./DataPreview.vue";
+import DataPreview from "../components/DataPreview.vue";
 import router from "@/router";
 
 NProgress.configure({ showSpinner: false });
@@ -534,7 +528,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .resource-main {
   position: relative;
-  height: 100%;
+  height: 80vh;
   .table-head {
     height: 25px;
     display: flex;
@@ -563,14 +557,32 @@ export default defineComponent({
       right: 0px;
     }
   }
-  .table {
+  .el-table {
+    height: calc(100% - 50px);
     cursor: pointer;
     .table-name {
       display: flex;
+      .text {
+        display: flex;
+        line-height: 30px;
+
+        .name {
+          width: 620px;
+          margin-left: 10px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+
       .el-checkbox {
         margin-right: 5px;
         height: 30px;
       }
+    }
+
+    /deep/ .el-table__inner-wrapper::before {
+      width: 0;
     }
   }
 

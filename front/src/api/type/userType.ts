@@ -65,18 +65,7 @@ export interface RenameJsonData {
     name: string
 }
 
-export interface SetUserInfoWithoutAvatarJsonData {
-    name: string
-    contactEmail: string
-    occupation: string
-    department: string
-}
-export interface SetUserInfoWithoutAvatarJsonData {
-    name: string
-    contactEmail: string
-    occupation: string
-    department: string
-}
+
 
 export interface FuzzyQueryClassifyJsonData {
     size: number

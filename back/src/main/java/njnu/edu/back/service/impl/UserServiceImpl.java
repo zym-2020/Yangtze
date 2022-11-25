@@ -90,7 +90,6 @@ public class UserServiceImpl implements UserService {
         Map<String, Object> map = new HashMap<>();
         map.put("id", user.getId());
         map.put("avatar", user.getAvatar());
-        map.put("contactEmail", user.getContactEmail());
         map.put("department", user.getDepartment());
         map.put("email", user.getEmail());
         map.put("name", user.getName());
@@ -99,8 +98,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, String> setUserInfo(String email, String name, String contactEmail, String occupation, String department, MultipartFile avatar) {
-        User user = new User(null, name, email, null, null, contactEmail, "", occupation, department);
+    public Map<String, String> setUserInfo(String email, String name, String occupation, String department, MultipartFile avatar) {
+        User user = new User(null, name, email, null, null, "", occupation, department);
         Map<String, String> result = new HashMap<>();
         if(!avatar.isEmpty()) {
             String uuid = UUID.randomUUID().toString();

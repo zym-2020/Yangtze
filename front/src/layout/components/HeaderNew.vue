@@ -10,7 +10,7 @@
       <el-col :span="2" :offset="1">
         <div class="grid-content index" @click="nav('home')">首页</div>
       </el-col>
-      <el-col :span="2" :offset="0">
+      <el-col :span="2">
         <div class="grid-content data" @click="nav('resource')">资源门户</div>
       </el-col>
       <el-col :span="2">
@@ -25,7 +25,7 @@
         <div class="grid-content help">帮助</div>
       </el-col>
       <el-col :span="2" :offset="7">
-        <el-dropdown trigger="hover" @command="userNav">
+        <el-dropdown trigger="hover" @command="userNav" v-if="logined">
           <el-button
             type="primary"
             color="rgba(219, 219, 219, 0.5)"
@@ -42,7 +42,7 @@
             &nbsp;&nbsp;&nbsp;账号
           </el-button>
           <template #dropdown>
-            <el-dropdown-menu :router="true" :default-active="$route.path">
+            <el-dropdown-menu :router="true">
               <el-dropdown-item command="1">个人空间</el-dropdown-item>
               <el-dropdown-item v-if="adminFlag" command="2"
                 >admin界面</el-dropdown-item
@@ -54,20 +54,21 @@
             </el-dropdown-menu>
           </template>
         </el-dropdown>
+        <div class="login" @click="toLogin" v-else>登录</div>
       </el-col>
     </el-row>
   </div>
 </template>
 
 <script lang="ts">
-import { prefix } from '@/prefix'
+import { prefix } from "@/prefix";
 export default {
   name: "HeaderComponent",
 };
 </script>
 
 <script lang="ts" setup>
-import { computed, defineEmits, ref } from "vue";
+import { computed, defineEmits, onMounted, ref } from "vue";
 import router from "@/router";
 import { useStore } from "@/store";
 import { getToken } from "@/utils/auth";
@@ -75,14 +76,6 @@ import { getToken } from "@/utils/auth";
 const emit = defineEmits(["openUploadList"]);
 const store = useStore();
 
-const path = ref("/user/space");
-const login = computed(() => {
-  if (getToken() === null) {
-    return false;
-  } else {
-    return true;
-  }
-});
 const avatarUrl = computed(() => {
   return store.state.user.avatar;
 });
@@ -93,6 +86,18 @@ const adminFlag = computed(() => {
     return false;
   }
 });
+
+const logined = computed(() => {
+  if (store.state.user.role === '') {
+    return false;
+  } else {
+    return true;
+  }
+});
+
+const toLogin = () => {
+  router.push({ path: "/login" });
+};
 
 const nav = (param: string) => {
   if (param === "home") {
@@ -115,25 +120,10 @@ const userNav = (param: string) => {
     store.dispatch("logout", undefined);
   } else if (param === "3") {
     emit("openUploadList");
-    console.log(store.state.other.waitList)
+    console.log(store.state.other.waitList);
   }
 };
 
-const ports = computed(() => {
-  const tempPorts = [
-    { href: "#/data", text: "资源门户" },
-    { href: "#/scenario", text: "一张图" },
-    { href: "#/analyze", text: "分析中心" },
-  ];
-  if (getToken() === null) {
-    tempPorts.push({ href: "#/login", text: "登录" });
-  }
-  return tempPorts;
-});
-
-const toHome = () => {
-  router.push({ path: "/" });
-};
 </script>
 
 <style scoped lang="scss">
@@ -311,6 +301,28 @@ div.header-main {
           }
         }
       }
+    }
+  }
+  .login {
+    color: white;
+    font-size: 2vh;
+    font-weight: 600;
+    line-height: 6vh;
+    text-align: center;
+    cursor: pointer;
+    transition-duration: 0.5s;
+    &:hover {
+      font-size: 2.5vh;
+      transition-duration: 0.3s;
+      background-image: linear-gradient(
+        30deg,
+        #fffcd2 0%,
+        #ebbfb0 40%,
+        #ff443a 100%
+      );
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      -webkit-animation: hue 60s infinite linear;
     }
   }
 }

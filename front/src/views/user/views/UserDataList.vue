@@ -5,7 +5,7 @@
       <el-button type="primary" plain @click="searchFile">搜索</el-button>
       <el-button type="info" plain @click="toAdd">创建共享条目</el-button>
     </div>
-    <el-scrollbar :always="false" v-if="fileList.length > 0">
+    <div v-if="fileList.length > 0">
       <div v-for="(item, index) in fileList" :key="index">
         <div class="card">
           <data-card :fileInfo="item">
@@ -61,7 +61,7 @@
           </data-card>
         </div>
       </div>
-    </el-scrollbar>
+    </div>
     <el-empty description="暂无数据" v-else />
     <div class="pagination">
       <el-pagination
@@ -216,8 +216,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .share-main {
-  height: 80vh;
-  border-bottom: solid 2px #ebeef5;
   .head {
     height: 50px;
     .el-input {
@@ -225,9 +223,7 @@ export default defineComponent({
       margin-right: 20px;
     }
   }
-  .el-scrollbar {
-    height: calc(100% - 100px);
-  }
+
   .card {
     border: 1px solid #dcdfe6;
     box-sizing: border-box;
