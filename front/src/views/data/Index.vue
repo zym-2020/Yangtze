@@ -85,7 +85,7 @@
             </div>
           </div>
           <div v-if="skeletonFlag">
-            <el-skeleton :rows="5" animated />
+            <el-skeleton :rows="10" animated />
           </div>
           <div v-else>
             <div class="list-item" v-if="fileList.length > 0">

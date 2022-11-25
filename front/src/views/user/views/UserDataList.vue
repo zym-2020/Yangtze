@@ -5,68 +5,62 @@
       <el-button type="primary" plain @click="searchFile">搜索</el-button>
       <el-button type="info" plain @click="toAdd">创建共享条目</el-button>
     </div>
-    <div v-if="fileList.length > 0">
-      <div v-for="(item, index) in fileList" :key="index">
-        <div class="card">
-          <data-card :fileInfo="item">
-            <template #status>
-              <div v-if="item.status === 1" class="online">
-                <el-tag type="success">Online</el-tag>
-              </div>
-              <div v-if="item.status === -1" class="offline">
-                <el-tag type="info">Offline</el-tag>
-              </div>
-              <div v-if="item.status === 0" class="offline">
-                <el-tag type="info">审核中</el-tag>
-              </div>
-            </template>
-            <template #creator>
-              <div class="creator">
-                <div class="btn">
-                  <el-dropdown trigger="click">
-                    <el-button size="small">
-                      操作<el-icon class="el-icon--right"
-                        ><arrow-down
-                      /></el-icon>
-                    </el-button>
-                    <template #dropdown>
-                      <el-dropdown-menu>
-                        <el-dropdown-item
-                          @click="operate(1, item)"
-                          v-if="item.status != 0"
-                          >编辑</el-dropdown-item
-                        >
-                        <el-dropdown-item
-                          v-if="item.status === 1"
-                          @click="operate(2, item, index)"
-                          >下线</el-dropdown-item
-                        >
-                        <el-dropdown-item
-                          v-if="item.status === -1"
-                          @click="operate(3, item)"
-                          >上线</el-dropdown-item
-                        >
-                        <el-dropdown-item @click="operate(4, item)"
-                          >删除</el-dropdown-item
-                        >
-                        <el-dropdown-item @click="operate(5, item, index)"
-                          >跳转</el-dropdown-item
-                        >
-                      </el-dropdown-menu>
-                    </template>
-                  </el-dropdown>
+    <div v-if="skeletonFlag">
+      <el-skeleton :rows="5" animated />
+    </div>
+    <div v-else>
+      <div v-if="fileList.length > 0">
+        <div v-for="(item, index) in fileList" :key="index">
+          <div class="card">
+            <div class="left">
+              <div class="name">
+                <div class="text">{{ item.name }}</div>
+                <div v-if="item.status === 1" class="online">
+                  <el-tag type="success">Online</el-tag>
+                </div>
+                <div v-if="item.status === -1" class="offline">
+                  <el-tag type="info">Offline</el-tag>
+                </div>
+                <div v-if="item.status === 0" class="offline">
+                  <el-tag type="info">审核中</el-tag>
                 </div>
               </div>
-            </template>
-          </data-card>
+              <div class="watch-download">
+                <el-icon style="margin-right: 5px"><View /></el-icon>
+                <span>{{ item.watch }}</span>
+                <el-icon style="margin: 0 5px 0 30px"><Download /></el-icon>
+                <span>{{ item.download }}</span>
+              </div>
+              <div class="update-time">
+                <strong>上次更新于：</strong>
+                {{ dateFormat(item.updateTime, "yyyy年MM月dd日hh时") }}
+              </div>
+              <div class="tag">
+                <div
+                  class="tag-item"
+                  v-for="(tag, index) in item.tags"
+                  :key="index"
+                >
+                  <div
+                    class="circle"
+                    :style="'background:' + generateColorByText(tag)"
+                  ></div>
+                  <div class="text">{{ tag }}</div>
+                </div>
+              </div>
+            </div>
+            <div class="right">
+              <img :src="getAvatar(item.avatar, item.name)" alt="" />
+            </div>
+          </div>
         </div>
       </div>
+      <el-empty description="暂无数据" v-else />
     </div>
-    <el-empty description="暂无数据" v-else />
     <div class="pagination">
       <el-pagination
         background
-        layout="prev, pager, next"
+        layout="total, jumper, prev, pager, next"
         :total="total"
         v-model:current-page="currentPage"
         @current-change="currentChange"
@@ -84,6 +78,9 @@ import DataCard from "@/components/cards/DataCard.vue";
 import { ElMessageBox } from "element-plus";
 import router from "@/router";
 import { notice } from "@/utils/notice";
+import { generateColorByText, dateFormat, imgBase64 } from "@/utils/common";
+
+import { prefix } from "@/prefix";
 export default defineComponent({
   components: { DataCard },
   setup() {
@@ -92,6 +89,15 @@ export default defineComponent({
     const currentPage = ref(1);
     const search = ref("");
     const keyword = ref("");
+    const skeletonFlag = ref(true)
+
+    const getAvatar = (avatar: string, name: string) => {
+      if (avatar === "") {
+        return imgBase64(name);
+      } else {
+        return prefix + "visual/getAvatar/" + avatar;
+      }
+    };
 
     const operate = async (number: number, info: any, index: number) => {
       if (number === 1) {
@@ -198,6 +204,7 @@ export default defineComponent({
         fileList.value = data.data.list;
         total.value = data.data.total;
       }
+      skeletonFlag.value = false
     });
 
     return {
@@ -209,6 +216,10 @@ export default defineComponent({
       search,
       searchFile,
       toAdd,
+      generateColorByText,
+      dateFormat,
+      getAvatar,
+      skeletonFlag
     };
   },
 });
@@ -225,35 +236,79 @@ export default defineComponent({
   }
 
   .card {
-    border: 1px solid #dcdfe6;
+    border-top: 1px solid #dcdfe6;
     box-sizing: border-box;
-    border-radius: 6px;
-    margin-bottom: 10px;
-    padding: 10px;
-    cursor: pointer;
-    .online,
-    .offline {
-      margin-left: 10px;
-    }
-    .creator {
-      position: absolute;
-      display: flex;
-      right: 300px;
-      .el-avatar {
-        margin-top: 8px;
-      }
+    padding: 25px 0;
+    display: flex;
+
+    .left {
+      width: calc(100% - 200px);
       .name {
-        line-height: 40px;
-        margin: 0px 5px;
+        font-weight: 900;
+        font-size: 20px;
+        color: #58a6ff;
+        display: flex;
+        height: 24px;
+
+        .text {
+          line-height: 30px;
+          &:hover {
+            text-decoration: underline;
+            cursor: pointer;
+          }
+        }
+
+        .online,
+        .offline {
+          margin-left: 10px;
+        }
       }
-      .btn {
+      .watch-download {
         margin-top: 10px;
+        color: #7f8992;
+      }
+      .update-time {
+        margin-top: 10px;
+        color: #7f8992;
+        font-size: 14px;
+      }
+      .tag {
+        display: flex;
+        margin-top: 20px;
+        flex-wrap: wrap;
+        // justify-content: space-between;
+        .tag-item {
+          display: flex;
+          height: 20px;
+          .circle {
+            height: 14px;
+            width: 14px;
+            margin-top: 3px;
+            border-radius: 50%;
+          }
+          .text {
+            margin-left: 3px;
+            margin-right: 15px;
+            font-size: 14px;
+            line-height: 20px;
+            color: #7f8992;
+          }
+        }
+      }
+    }
+
+    .right {
+      width: 200px;
+      img {
+        height: 125px;
+        width: 100%;
       }
     }
   }
 }
 .pagination {
   margin-top: 10px;
+  margin-bottom: 30px;
   display: flex;
   justify-content: space-around;
 }

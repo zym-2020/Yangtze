@@ -219,7 +219,6 @@ export default defineComponent({
     watch(
       () => router.currentRoute.value.name,
       (newVal) => {
-        console.log(1)
         if (newVal === "UserSpaceFile") {
           activeName.value = "file";
         } else if (newVal === "UserSpaceDataList") {
@@ -426,12 +425,7 @@ export default defineComponent({
         border-bottom: solid 1px #dcdfe6;
         display: flex;
         margin-bottom: 20px;
-        &:first-child {
-          margin-right: 20px;
-        }
-        &:last-child {
-          margin-left: 20px;
-        }
+
         .head-item {
           width: 200px;
           text-align: center;

@@ -1,58 +1,45 @@
 <template>
   <div class="project-main">
-    <el-scrollbar height="80vh" :always="false" v-if="data.length > 0">
-      <div style="padding: 80px 10px">
-        <el-row :gutter="20">
-          <el-col :span="6" v-for="(item, index) in data" :key="index">
-            <project-card :flag="false" :projectInfo="item">
-              <template #operate>
-                <div class="operate">
-                  <el-dropdown trigger="click" @command="commandHandle">
-                    <svg style="width: 16px; height: 16px; margin-top: 5px">
-                      <use xlink:href="#icon-caozuo"></use>
-                    </svg>
-                    <template #dropdown>
-                      <el-dropdown-menu>
-                        <el-dropdown-item
-                          :command="{ type: 'update', index: index }"
-                          >修改信息</el-dropdown-item
-                        >
-
-                        <el-dropdown-item
-                          :command="{ type: 'copy', index: index }"
-                          >拷贝项目</el-dropdown-item
-                        >
-
-                        <el-dropdown-item
-                          :command="{ type: 'delete', index: index }"
-                          >删除项目</el-dropdown-item
-                        >
-                        <el-dropdown-item
-                          :command="{ type: 'nav', index: index }"
-                          >查看项目</el-dropdown-item
-                        >
-                      </el-dropdown-menu>
-                    </template>
-                  </el-dropdown>
-                </div>
-              </template>
-            </project-card>
-          </el-col>
-        </el-row>
+    <div v-if="skeletonFlag">
+      <el-skeleton :rows="5" animated />
+    </div>
+    <div v-else>
+      <div class="card">
+        <div class="head"></div>
+        <div v-if="data.length > 0">
+          <div class="card-item" v-for="(item, index) in data" :key="index">
+            <div class="name">
+              <div class="icon">
+                <el-icon v-if="item.isPublic" color="#21d86d"
+                  ><Unlock
+                /></el-icon>
+                <el-icon v-else color="#dd001b"><Lock /></el-icon>
+              </div>
+              <div class="text">
+                {{ item.projectName }}
+              </div>
+            </div>
+            <div class="time">
+              {{ dateFormat(item.createTime, "yyyy年MM月dd日hh时") }}
+            </div>
+          </div>
+        </div>
+        <div v-else>
+          <el-empty description="暂无数据" />
+        </div>
       </div>
-      <div class="pagination">
-        <el-pagination
-          background
-          layout="prev, pager, next"
-          :total="total"
-          :pager-count="5"
-          v-model:current-page="currentPage"
-          @current-change="currentChange"
-          :hide-on-single-page="true"
-        />
-      </div>
-    </el-scrollbar>
-    <el-empty description="暂无数据" v-else />
+    </div>
+    <div class="pagination">
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :pager-count="5"
+        v-model:current-page="currentPage"
+        @current-change="currentChange"
+        :hide-on-single-page="true"
+      />
+    </div>
 
     <el-dialog
       v-model="createFlag"
@@ -79,9 +66,12 @@ import CreateProject from "@/components/tools/CreateProject.vue";
 import { ElMessageBox } from "element-plus";
 import router from "@/router";
 import { notice } from "@/utils/notice";
+import { prefix } from "@/prefix";
+import { dateFormat } from "@/utils/common";
 export default defineComponent({
   components: { ProjectCard, CreateProject },
   setup() {
+    const skeletonFlag = ref(true);
     const title = ref("");
     const projectInfo = ref<any>();
 
@@ -100,7 +90,7 @@ export default defineComponent({
     };
 
     const currentChange = async (val: number) => {
-      await getProjectList(val - 1, 8);
+      await getProjectList(val - 1, 10);
     };
 
     const commandHandle = (val: { type: string; index: number }) => {
@@ -168,7 +158,9 @@ export default defineComponent({
     };
 
     onMounted(async () => {
-      await getProjectList(0, 8);
+      await getProjectList(0, 10);
+      console.log(data.value);
+      skeletonFlag.value = false;
     });
 
     return {
@@ -183,6 +175,9 @@ export default defineComponent({
       currentChange,
       projectInfo,
       copyProject,
+      skeletonFlag,
+      prefix,
+      dateFormat,
     };
   },
 });
@@ -190,23 +185,44 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .project-main {
-  height: 80vh;
-  border-bottom: solid 2px #ebeef5;
-  .project-card {
-    margin: 0 auto 30px;
-    .operate {
-      position: absolute;
-      padding-left: 110px;
-      display: flex;
-      left: 50%;
+  .card {
+    border: solid #dcdfe6 1px;
+    border-radius: 6px;
+    overflow: hidden;
+
+    .head {
+      height: 50px;
+      border-bottom: solid #dcdfe6 1px;
+      background: #4c4c4c;
+    }
+    .card-item {
+      border-bottom: solid #dcdfe6 1px;
+      padding: 15px 20px;
+      .name {
+        display: flex;
+        height: 30px;
+        font-size: 18px;
+        color: #25aef3;
+        line-height: 30px;
+        .icon {
+          margin-right: 10px;
+          margin-top: 3px;
+        }
+        .text:hover {
+          cursor: pointer;
+          text-decoration: underline;
+        }
+      }
+      .time {
+        font-size: 12px;
+        margin-top: 5px;
+        color: #7f8992;
+      }
     }
   }
   .pagination {
-    position: absolute;
-    bottom: 20px;
-    left: calc(50% - 200px);
-    width: 400px;
-    margin-top: 10px;
+    margin-top: 30px;
+    margin-bottom: 50px;
     display: flex;
     justify-content: space-around;
   }
