@@ -82,7 +82,9 @@ public class DataListController {
         int size = jsonObject.getIntValue("size");
         int page = jsonObject.getIntValue("page");
         String keyword = jsonObject.getString("keyword");
-        return ResultUtils.success(dataListService.pageQueryByEmail(email, size, page, keyword));
+        String type = jsonObject.getString("type");
+        String property = jsonObject.getString("property");
+        return ResultUtils.success(dataListService.pageQueryByEmail(email, size, page, keyword, type, property));
     }
 
     @AuthCheck
@@ -91,7 +93,9 @@ public class DataListController {
         String id = jsonObject.getString("id");
         int size = jsonObject.getIntValue("size");
         int page = jsonObject.getIntValue("page");
-        return ResultUtils.success(dataListService.deleteAsMember(id, email, page, size));
+        String type = jsonObject.getString("type");
+        String property = jsonObject.getString("property");
+        return ResultUtils.success(dataListService.deleteAsMember(id, email, page, size, type, property));
     }
 
     @AuthCheck

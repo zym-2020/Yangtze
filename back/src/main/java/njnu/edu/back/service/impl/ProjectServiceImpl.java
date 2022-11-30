@@ -81,13 +81,26 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Map<String, Object> getAllByEmail(String email, int page, int size) {
-        List<Map<String, Object>> list = projectMapper.fuzzyQueryByEmail(email, size, page * size);
-        int total = projectMapper.fuzzyCountByEmail(email);
+    public Map<String, Object> getAllByEmail(String email, int page, int size, int status) {
+        List<Map<String, Object>> list = projectMapper.fuzzyQueryByEmail(email, size, page * size, status);
+        int total = projectMapper.fuzzyCountByEmail(email, status);
+
         Map<String, Object> result = new HashMap<>();
         result.put("list", list);
         result.put("total", total);
         return result;
+    }
+
+    @Override
+    public Map<String, Integer> getCount(String email) {
+        int allTotal = projectMapper.fuzzyCountByEmail(email, 0);
+        int publicTotal = projectMapper.fuzzyCountByEmail(email, 1);
+        int privateTotal = projectMapper.fuzzyCountByEmail(email, -1);
+        Map<String, Integer> map = new HashMap<>();
+        map.put("allTotal", allTotal);
+        map.put("publicTotal", publicTotal);
+        map.put("privateTotal", privateTotal);
+        return map;
     }
 
     @Override

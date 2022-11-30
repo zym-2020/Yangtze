@@ -29,8 +29,8 @@ import java.util.Scanner;
 @Slf4j
 public class AnalyseUtil {
 
-//    static String pythonDir = "D:\\zhuomian\\水科院\\python\\";
-    static String pythonDir = "/home/zym/python/";
+    static String pythonDir = "D:\\zhuomian\\水科院\\python\\";
+//    static String pythonDir = "/home/zym/python/";
     static String pythonStr = "python";
 //    static String pythonStr = "python3";
 

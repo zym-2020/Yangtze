@@ -198,12 +198,12 @@ public class DataListServiceImpl implements DataListService {
     }
 
     @Override
-    public Map<String, Object> pageQueryByEmail(String email, int size, int page, String keyword) {
+    public Map<String, Object> pageQueryByEmail(String email, int size, int page, String keyword, String type, String property) {
         if(!keyword.equals("")) {
             keyword = "%" + keyword + "%";
         }
-        List<Map<String, Object>> list = dataListMapper.pageQueryByEmail(email, size, size * page, keyword);
-        int count = dataListMapper.countPageQueryByEmail(email, keyword);
+        List<Map<String, Object>> list = dataListMapper.pageQueryByEmail(email, size, size * page, keyword, type, property);
+        int count = dataListMapper.countPageQueryByEmail(email, keyword, type);
         Map<String, Object> map = new HashMap<>();
         map.put("list", list);
         map.put("total", count);
@@ -231,13 +231,13 @@ public class DataListServiceImpl implements DataListService {
     }
 
     @Override
-    public Map<String, Object> deleteAsMember(String id, String email, int page, int size) {
+    public Map<String, Object> deleteAsMember(String id, String email, int page, int size, String type, String property) {
         Map<String, Object> fileInfo = dataListMapper.getFileInfo(id);
         if(!fileInfo.get("creator").equals(email)) {
             throw new MyException(-99, "没有权限！");
         }
         dataListMapper.deleteById(id);
-        return pageQueryByEmail(email, size, page, "");
+        return pageQueryByEmail(email, size, page, "", type, property);
     }
 
     @Override

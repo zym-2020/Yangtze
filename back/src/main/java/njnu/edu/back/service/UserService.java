@@ -23,8 +23,8 @@ public interface UserService {
 
     Map<String, String> setUserInfo(String email, String name, String occupation, String department, MultipartFile avatar);
 
-    String getAvatarURL(String email);
-
     Map<String, Object> getUserInfo(String email);
+
+    Map<String, Integer> getResourceCount(String email);
 
 }

@@ -115,15 +115,15 @@
           <el-divider />
           <div class="resource-count">
             <div class="text">
-              <div class="count">3510</div>
+              <div class="count">{{ fileTotal }}</div>
               <div class="classify">文件</div>
             </div>
             <div class="text">
-              <div class="count">74</div>
+              <div class="count">{{ dataListTotal }}</div>
               <div class="classify">数据条目</div>
             </div>
             <div class="text">
-              <div class="count">10</div>
+              <div class="count">{{ projectTotal }}</div>
               <div class="classify">工程</div>
             </div>
           </div>
@@ -170,7 +170,7 @@
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref, watch } from "vue";
 import { useStore } from "@/store";
-import { getUserByEmail } from "@/api/request";
+import { getUserByEmail, getResourceCount } from "@/api/request";
 import AvatarUpload from "@/components/upload/AvatarUpload.vue";
 import { prefix } from "@/prefix";
 import PageCopyright from "@/components/page/PageCopyright.vue";
@@ -186,6 +186,9 @@ export default defineComponent({
     const store = useStore();
     const editFlag = ref(false);
     const avatar = ref<File>();
+    const fileTotal = ref(0);
+    const dataListTotal = ref(0);
+    const projectTotal = ref(0);
 
     const route = computed(() => {
       return router.currentRoute.value;
@@ -291,6 +294,12 @@ export default defineComponent({
     onMounted(async () => {
       console.log("123");
       skeletonFlag.value = true;
+      const data = await getResourceCount();
+      if (data != null && (data as any).code === 0) {
+        fileTotal.value = data.data.fileTotal;
+        dataListTotal.value = data.data.dataListTotal;
+        projectTotal.value = data.data.projectTotal;
+      }
       await getUserInfo();
       skeletonFlag.value = false;
     });
@@ -309,6 +318,9 @@ export default defineComponent({
       editClick,
       editInfo,
       headClick,
+      fileTotal,
+      dataListTotal,
+      projectTotal,
     };
   },
 });

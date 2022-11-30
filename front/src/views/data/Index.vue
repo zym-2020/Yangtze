@@ -85,7 +85,7 @@
             </div>
           </div>
           <div v-if="skeletonFlag">
-            <el-skeleton :rows="10" animated />
+            <el-skeleton :rows="15" animated />
           </div>
           <div v-else>
             <div class="list-item" v-if="fileList.length > 0">
@@ -171,7 +171,7 @@ import router from "@/router";
 import NProgress from "nprogress";
 import { Search } from "@element-plus/icons-vue";
 import PageCopyright from "@/components/page/PageCopyright.vue";
-NProgress.configure({ showSpinner: false });
+// NProgress.configure({ showSpinner: false });
 
 export default defineComponent({
   components: {

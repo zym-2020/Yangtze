@@ -19,9 +19,9 @@ public interface ProjectMapper {
 
     List<Map<String, Object>> fuzzyQuery(@Param("keyword") String keyword, @Param("size") int size, @Param("start") int start, @Param("flag") int flag);
 
-    List<Map<String, Object>> fuzzyQueryByEmail(@Param("email") String email, @Param("size") int size, @Param("start") int start);
+    List<Map<String, Object>> fuzzyQueryByEmail(@Param("email") String email, @Param("size") int size, @Param("start") int start, @Param("status") int status);
 
-    int fuzzyCountByEmail(@Param("email") String email);
+    int fuzzyCountByEmail(@Param("email") String email, @Param("status") int status);
 
     int fuzzyCount(@Param("keyword") String keyword, @Param("flag") int flag);
 

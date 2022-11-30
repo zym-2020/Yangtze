@@ -26,102 +26,109 @@
         />
       </div>
     </div>
-    <el-table
-      :data="tableData"
-      style="width: 100%"
-      @cell-dblclick="dblclick"
-      highlight-current-row
-    >
-      <el-table-column
-        prop="name"
-        label="名称"
-        sortable
-        :sort-method="sortNameMethod"
-        width="700"
+    <div v-if="!skeletonFlag">
+      <el-empty description="暂无数据" v-if="tableData.length === 0" />
+      <el-table
+        v-else
+        :data="tableData"
+        style="width: 100%"
+        @cell-dblclick="dblclick"
+        highlight-current-row
       >
-        <template #default="scope">
-          <div class="table-name">
-            <el-checkbox
-              v-model="scope.row.flag"
-              size="large"
-              @change="changeHandle(scope.row)"
-            />
-            <div class="text">
-              <svg style="width: 20px; height: 20px; margin-top: 4px">
-                <use :xlink:href="getIcon(scope.row)"></use>
-              </svg>
-              <div class="name" :title="getName(scope.row)">
-                {{ getName(scope.row) }}
+        <el-table-column
+          prop="name"
+          label="名称"
+          sortable
+          :sort-method="sortNameMethod"
+          width="700"
+        >
+          <template #default="scope">
+            <div class="table-name">
+              <el-checkbox
+                v-model="scope.row.flag"
+                size="large"
+                @change="changeHandle(scope.row)"
+              />
+              <div class="text">
+                <svg style="width: 20px; height: 20px; margin-top: 4px">
+                  <use :xlink:href="getIcon(scope.row)"></use>
+                </svg>
+                <div class="name" :title="getName(scope.row)">
+                  {{ getName(scope.row) }}
+                </div>
               </div>
             </div>
-          </div>
-        </template>
-      </el-table-column>
+          </template>
+        </el-table-column>
 
-      <el-table-column prop="size" label="大小">
-        <template #default="scope">
-          <span>{{ getSize(scope.row) }}</span>
-        </template>
-      </el-table-column>
+        <el-table-column prop="size" label="大小">
+          <template #default="scope">
+            <span>{{ getSize(scope.row) }}</span>
+          </template>
+        </el-table-column>
 
-      <el-table-column align="right" width="200" fixed="right">
-        <template #header>
-          <el-button
-            size="small"
-            text
-            type="danger"
-            :disabled="selectList.length === 0"
-            @click="batDelete"
-            ><strong>批量删除</strong></el-button
-          >
-        </template>
-        <template #default="scope">
-          <el-tooltip effect="dark" content="预览" placement="top">
-            <span style="margin-right: 10px">
-              <el-button
-                size="small"
-                type="primary"
-                v-if="isVisual(scope.row)"
-                @click="viewClick(scope.row)"
-                ><el-icon><View /></el-icon
-              ></el-button>
-            </span>
-          </el-tooltip>
-
-          <el-tooltip effect="dark" content="绑定可视化数据" placement="top">
-            <span style="margin-right: 10px">
-              <el-button
-                size="small"
-                v-if="!isFolder(scope.row)"
-                @click="visualClick(scope.row)"
-                ><el-icon><Share /></el-icon
-              ></el-button>
-            </span>
-          </el-tooltip>
-
-          <el-tooltip effect="dark" content="下载" placement="top">
-            <span style="margin-right: 10px">
-              <el-button
-                size="small"
-                type="success"
-                v-if="!isFolder(scope.row)"
-                @click="downloadClick(scope.row)"
-                ><el-icon><Download /></el-icon
-              ></el-button>
-            </span>
-          </el-tooltip>
-
-          <el-tooltip effect="dark" content="删除" placement="top">
+        <el-table-column align="right" width="200" fixed="right">
+          <template #header>
             <el-button
               size="small"
+              text
               type="danger"
-              @click="deleteClick(scope.row)"
-              ><el-icon><Delete /></el-icon
-            ></el-button>
-          </el-tooltip>
-        </template>
-      </el-table-column>
-    </el-table>
+              :disabled="selectList.length === 0"
+              @click="batDelete"
+              ><strong>批量删除</strong></el-button
+            >
+          </template>
+          <template #default="scope">
+            <el-tooltip effect="dark" content="预览" placement="top">
+              <span style="margin-right: 10px">
+                <el-button
+                  size="small"
+                  type="primary"
+                  v-if="isVisual(scope.row)"
+                  @click="viewClick(scope.row)"
+                  ><el-icon><View /></el-icon
+                ></el-button>
+              </span>
+            </el-tooltip>
+
+            <el-tooltip effect="dark" content="绑定可视化数据" placement="top">
+              <span style="margin-right: 10px">
+                <el-button
+                  size="small"
+                  v-if="!isFolder(scope.row)"
+                  @click="visualClick(scope.row)"
+                  ><el-icon><Share /></el-icon
+                ></el-button>
+              </span>
+            </el-tooltip>
+
+            <el-tooltip effect="dark" content="下载" placement="top">
+              <span style="margin-right: 10px">
+                <el-button
+                  size="small"
+                  type="success"
+                  v-if="!isFolder(scope.row)"
+                  @click="downloadClick(scope.row)"
+                  ><el-icon><Download /></el-icon
+                ></el-button>
+              </span>
+            </el-tooltip>
+
+            <el-tooltip effect="dark" content="删除" placement="top">
+              <el-button
+                size="small"
+                type="danger"
+                @click="deleteClick(scope.row)"
+                ><el-icon><Delete /></el-icon
+              ></el-button>
+            </el-tooltip>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+    <div v-else>
+        <el-skeleton :rows="5" animated />
+    </div>
 
     <el-dialog v-model="dialogCreateFolder" width="200px" :show-close="false">
       <folder-dialog
@@ -179,6 +186,7 @@ export default defineComponent({
     DataPreview,
   },
   setup() {
+    const skeletonFlag = ref(true);
     const store = useStore();
     const tableData = ref<(Folder | File)[]>([]);
     const path = ref<{ name: string; parentId: string; id: string }[]>([]);
@@ -488,6 +496,7 @@ export default defineComponent({
         console.log(tableList.data);
         transitionData(tableList.data);
       }
+      skeletonFlag.value = false;
     });
 
     return {
@@ -519,6 +528,7 @@ export default defineComponent({
       dataPreviewFlag,
       fileInfo,
       visualClick,
+      skeletonFlag,
     };
   },
 });

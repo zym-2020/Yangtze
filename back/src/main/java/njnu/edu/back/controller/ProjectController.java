@@ -44,9 +44,15 @@ public class ProjectController {
     }
 
     @AuthCheck
-    @RequestMapping(value = "/getAllByEmail/{page}/{size}", method = RequestMethod.GET)
-    public JsonResult getAllByEmail(@JwtTokenParser("email") String email, @PathVariable int page, @PathVariable int size) {
-        return ResultUtils.success(projectService.getAllByEmail(email, page, size));
+    @RequestMapping(value = "/getAllByEmail/{page}/{size}/{status}", method = RequestMethod.GET)
+    public JsonResult getAllByEmail(@JwtTokenParser("email") String email, @PathVariable int page, @PathVariable int size, @PathVariable int status) {
+        return ResultUtils.success(projectService.getAllByEmail(email, page, size, status));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/getCount", method = RequestMethod.GET)
+    public JsonResult getCount(@JwtTokenParser("email") String email) {
+        return ResultUtils.success(projectService.getCount(email));
     }
 
     @AuthCheck

@@ -80,4 +80,8 @@
             #{item}
         </foreach>
     </select>
+
+    <select id="getCountByEmail" resultType="java.lang.Integer">
+        select count(*) from files where uploader = #{email}
+    </select>
 </mapper>

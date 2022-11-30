@@ -31,13 +31,13 @@ public interface DataListService {
 
     Map<String, Object> deleteByAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag, String id, String type, int status);
 
-    Map<String, Object> pageQueryByEmail(String email, int size, int page, String keyword);
+    Map<String, Object> pageQueryByEmail(String email, int size, int page, String keyword, String type, String property);
 
     void updateStatusById(String id, int status, String role, String email);
 
     List<Map<String, Object>> getHot(int size);
 
-    Map<String, Object> deleteAsMember(String id, String email, int page, int size);
+    Map<String, Object> deleteAsMember(String id, String email, int page, int size, String type, String property);
 
     String getDownloadURL(String id, String userId);
 

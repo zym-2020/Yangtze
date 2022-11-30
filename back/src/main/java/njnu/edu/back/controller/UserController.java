@@ -54,15 +54,11 @@ public class UserController {
         return ResultUtils.success(userService.setUserInfo(email, name, occupation, department, avatar));
     }
 
-
-    /**
-    * @Description:获取用户头像
-    * @Author: Yiming
-    * @Date: 2022/9/13
-    */
     @AuthCheck
-    @RequestMapping(value = "/getAvatarURL/{email}", method = RequestMethod.GET)
-    public JsonResult getAvatarURL(@PathVariable String email) {
-        return ResultUtils.success(userService.getAvatarURL(email));
+    @RequestMapping(value = "/getResourceCount", method = RequestMethod.GET)
+    public JsonResult getResourceCount(@JwtTokenParser("email") String email) {
+        return ResultUtils.success(userService.getResourceCount(email));
     }
+
+
 }

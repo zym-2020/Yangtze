@@ -5,7 +5,38 @@
     </div>
     <div v-else>
       <div class="card">
-        <div class="head"></div>
+        <div class="head">
+          <div
+            :class="active === 0 ? 'head-item active' : 'head-item'"
+            @click="headClick(0)"
+          >
+            <div class="icon">
+              <el-icon><Film /></el-icon>
+            </div>
+            <div class="text">{{ allTotal }}&nbsp;个项目</div>
+          </div>
+          <div
+            :class="active === 1 ? 'head-item active' : 'head-item'"
+            @click="headClick(1)"
+          >
+            <div class="icon">
+              <el-icon><Unlock /></el-icon>
+            </div>
+            <div class="text">{{ publicTotal }}&nbsp;个公开项目</div>
+          </div>
+          <div
+            :class="active === -1 ? 'head-item active' : 'head-item'"
+            @click="headClick(-1)"
+          >
+            <div class="icon">
+              <el-icon><Lock /></el-icon>
+            </div>
+            <div class="text">{{ privateTotal }}&nbsp;个私有项目</div>
+          </div>
+          <div class="btn">
+            <el-button plain @click="createHandle">创建项目</el-button>
+          </div>
+        </div>
         <div v-if="data.length > 0">
           <div class="card-item" v-for="(item, index) in data" :key="index">
             <div class="name">
@@ -15,8 +46,32 @@
                 /></el-icon>
                 <el-icon v-else color="#dd001b"><Lock /></el-icon>
               </div>
-              <div class="text">
+              <div class="text" :title="item.projectName" @click="nav(index)">
                 {{ item.projectName }}
+              </div>
+              <div class="more">
+                <el-dropdown trigger="hover">
+                  <el-icon><MoreFilled /></el-icon>
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item
+                        @click="commandHandle({ type: 'update', index: index })"
+                        ><el-icon><Edit /></el-icon
+                        >修改项目信息</el-dropdown-item
+                      >
+                      <el-dropdown-item
+                        @click="commandHandle({ type: 'copy', index: index })"
+                        ><el-icon><CopyDocument /></el-icon
+                        >拷贝项目</el-dropdown-item
+                      >
+                      <el-dropdown-item
+                        @click="commandHandle({ type: 'delete', index: index })"
+                        ><el-icon><DeleteFilled /></el-icon
+                        >删除项目</el-dropdown-item
+                      >
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
               </div>
             </div>
             <div class="time">
@@ -32,7 +87,7 @@
     <div class="pagination">
       <el-pagination
         background
-        layout="prev, pager, next"
+        layout="total, jumper, prev, pager, next"
         :total="total"
         :pager-count="5"
         v-model:current-page="currentPage"
@@ -53,6 +108,7 @@
         :info="info"
         @updateProject="updateProject"
         @copyProject="copyProject"
+        @createProject="createProject"
       ></create-project>
     </el-dialog>
   </div>
@@ -60,7 +116,7 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
-import { getAllByEmail, deleteProject } from "@/api/request";
+import { getAllByEmail, deleteProject, getCount } from "@/api/request";
 import ProjectCard from "@/components/cards/ProjectCard.vue";
 import CreateProject from "@/components/tools/CreateProject.vue";
 import { ElMessageBox } from "element-plus";
@@ -68,6 +124,8 @@ import router from "@/router";
 import { notice } from "@/utils/notice";
 import { prefix } from "@/prefix";
 import { dateFormat } from "@/utils/common";
+import NProgress from "nprogress";
+
 export default defineComponent({
   components: { ProjectCard, CreateProject },
   setup() {
@@ -80,33 +138,61 @@ export default defineComponent({
     const info = ref<any>();
     const createFlag = ref(false);
     const currentPage = ref(1);
+    const active = ref(0);
+    const allTotal = ref(0);
+    const publicTotal = ref(0);
+    const privateTotal = ref(0);
 
-    const getProjectList = async (page: number, size: number) => {
-      const projectList = await getAllByEmail(page, size);
+    const nav = (index: number) => {
+      router.push({
+        name: "project",
+        params: {
+          id: data.value[index].id,
+          projectInfo: JSON.stringify(data.value[index]),
+        },
+      });
+    };
+
+    const createHandle = () => {
+      projectInfo.value = undefined;
+      info.value = undefined;
+      createFlag.value = true;
+      title.value = "创建项目"
+    };
+
+    const headClick = async (param: number) => {
+      await getProjectList(0, 10, param);
+      active.value = param;
+    };
+
+    const getProjectList = async (
+      page: number,
+      size: number,
+      status: number
+    ) => {
+      NProgress.start();
+      const projectList = await getAllByEmail(page, size, status);
       if (projectList != null) {
         data.value = projectList.data.list;
         total.value = projectList.data.total;
       }
+      NProgress.done();
     };
 
     const currentChange = async (val: number) => {
-      await getProjectList(val - 1, 10);
+      await getProjectList(val - 1, 10, active.value);
     };
 
     const commandHandle = (val: { type: string; index: number }) => {
-      console.log(val);
-      if (val.type === "nav") {
-        router.push({
-          name: "project",
-          params: {
-            id: data.value[val.index].id,
-            projectInfo: JSON.stringify(data.value[val.index]),
-          },
-        });
-      } else if (val.type === "update") {
+      if (val.type === "update") {
         projectInfo.value = undefined;
         title.value = "修改项目";
         info.value = data.value[val.index];
+        createFlag.value = true;
+      } else if (val.type === "copy") {
+        info.value = undefined;
+        title.value = "拷贝项目";
+        projectInfo.value = data.value[val.index];
         createFlag.value = true;
       } else if (val.type === "delete") {
         ElMessageBox.confirm("确定删除该项目吗?该操作执行后无法撤销", "警告", {
@@ -122,11 +208,6 @@ export default defineComponent({
             }
           })
           .catch(() => {});
-      } else if (val.type === "copy") {
-        info.value = undefined;
-        title.value = "修改项目";
-        projectInfo.value = data.value[val.index];
-        createFlag.value = true;
       }
     };
 
@@ -157,9 +238,24 @@ export default defineComponent({
       });
     };
 
+    const createProject = (val: string) => {
+      createFlag.value = false;
+      router.push({
+        name: "project",
+        params: {
+          id: val,
+        },
+      });
+    };
+
     onMounted(async () => {
-      await getProjectList(0, 10);
-      console.log(data.value);
+      const data = await getCount();
+      if (data != null && (data as any).code === 0) {
+        allTotal.value = data.data.allTotal;
+        publicTotal.value = data.data.publicTotal;
+        privateTotal.value = data.data.privateTotal;
+      }
+      await getProjectList(0, 10, active.value);
       skeletonFlag.value = false;
     });
 
@@ -178,6 +274,14 @@ export default defineComponent({
       skeletonFlag,
       prefix,
       dateFormat,
+      nav,
+      active,
+      headClick,
+      allTotal,
+      publicTotal,
+      privateTotal,
+      createHandle,
+      createProject,
     };
   },
 });
@@ -194,6 +298,34 @@ export default defineComponent({
       height: 50px;
       border-bottom: solid #dcdfe6 1px;
       background: #4c4c4c;
+      display: flex;
+      position: relative;
+      .head-item {
+        color: #848c96;
+        line-height: 50px;
+        display: flex;
+        margin-left: 10px;
+        margin-right: 20px;
+        cursor: pointer;
+
+        .icon {
+          margin-top: 3px;
+          margin-right: 3px;
+          font-size: 20px;
+        }
+        .text {
+          font-size: 16px;
+        }
+      }
+      .active {
+        font-weight: 700;
+        color: white;
+      }
+      .btn {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+      }
     }
     .card-item {
       border-bottom: solid #dcdfe6 1px;
@@ -204,13 +336,28 @@ export default defineComponent({
         font-size: 18px;
         color: #25aef3;
         line-height: 30px;
+        position: relative;
         .icon {
           margin-right: 10px;
           margin-top: 3px;
         }
-        .text:hover {
+        .text {
+          max-width: calc(100% - 100px);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          &:hover {
+            cursor: pointer;
+            text-decoration: underline;
+          }
+        }
+
+        .more {
+          position: absolute;
+          right: 0px;
+          top: 10px;
+          color: black;
           cursor: pointer;
-          text-decoration: underline;
         }
       }
       .time {
@@ -231,7 +378,7 @@ export default defineComponent({
   .el-dialog__header {
     padding: 10px;
     margin: 0;
-    background: #25aef3;
+    background: #050d21;
     .el-dialog__title {
       color: white;
     }

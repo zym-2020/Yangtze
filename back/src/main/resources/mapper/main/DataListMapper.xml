@@ -114,7 +114,16 @@
         <if test="keyword != ''">
             and data_list.name like #{keyword}
         </if>
-        order by create_time asc
+        <if test="type == 'online'">
+            and status = 1
+        </if>
+        <if test="type == 'offline'">
+            and status = -1
+        </if>
+        <if test="type == 'waiting'">
+            and status = 0
+        </if>
+        order by ${property} desc
         limit #{size} offset #{start};
     </select>
 
@@ -122,6 +131,15 @@
         select count(*) from data_list where creator = #{email}
         <if test="keyword != ''">
             and data_list.name like #{keyword}
+        </if>
+        <if test="type == 'online'">
+            and status = 1
+        </if>
+        <if test="type == 'offline'">
+            and status = -1
+        </if>
+        <if test="type == 'waiting'">
+            and status = 0
         </if>
     </select>
 
