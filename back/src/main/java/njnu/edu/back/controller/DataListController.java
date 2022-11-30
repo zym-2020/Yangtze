@@ -142,13 +142,13 @@ public class DataListController {
     public JsonResult fuzzyQueryAdmin(@RequestBody JSONObject jsonObject) {
         int page = jsonObject.getIntValue("page");
         int size = jsonObject.getIntValue("size");
-        String keyword = jsonObject.getString("keyword");
+        String titleKeyword = jsonObject.getString("titleKeyword");
         String[] tags = jsonObject.getObject("tags", String[].class);
         String property = jsonObject.getString("property");
         Boolean flag = jsonObject.getBoolean("flag");
         String type = jsonObject.getString("type");
         int status = jsonObject.getIntValue("status");
-        return ResultUtils.success(dataListService.fuzzyQueryAdmin(page, size, keyword, tags, property, flag, type, status));
+        return ResultUtils.success(dataListService.fuzzyQueryAdmin(page, size, titleKeyword, tags, property, flag, type, status));
     }
 
     @AuthCheck

@@ -1,7 +1,6 @@
 package njnu.edu.back.dao.main;
 
 import njnu.edu.back.pojo.File;
-import njnu.edu.back.pojo.dto.AddFileDTO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 

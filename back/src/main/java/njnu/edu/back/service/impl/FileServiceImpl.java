@@ -12,7 +12,6 @@ import njnu.edu.back.dao.main.*;
 import njnu.edu.back.pojo.DownloadHistory;
 import njnu.edu.back.pojo.File;
 import njnu.edu.back.pojo.UploadRecord;
-import njnu.edu.back.pojo.dto.AddFileDTO;
 import njnu.edu.back.service.FileService;
 import njnu.edu.back.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;

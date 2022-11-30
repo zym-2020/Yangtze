@@ -155,7 +155,10 @@
               工程
             </div>
           </div>
-          <router-view v-slot="{ Component }">
+          <router-view
+            v-slot="{ Component }"
+            v-if="route.meta.key === 'UserSpace'"
+          >
             <keep-alive>
               <component :is="Component" />
             </keep-alive>

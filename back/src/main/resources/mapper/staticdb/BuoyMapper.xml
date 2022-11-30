@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="njnu.edu.back.dao.staticdb.BuoyMapper">
+    <select id="getBuoyByBox" resultType="java.util.Map">
+        select * from buoy where jdwz_84jd &gt; #{left} and jdwz_84jd &lt; #{right} and jdwz_84wd &gt; #{bottom} and jdwz_84wd &lt; #{top}
+    </select>
+</mapper>

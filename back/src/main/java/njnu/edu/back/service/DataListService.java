@@ -27,7 +27,7 @@ public interface DataListService {
 
     Map<String, Object> fuzzyQuery(int page, int size, String keyword, String[] tags, String property, Boolean flag, String type);
 
-    Map<String, Object> fuzzyQueryAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag, String type, int status);
+    Map<String, Object> fuzzyQueryAdmin(int page, int size, String titleKeyword, String[] tags, String property, Boolean flag, String type, int status);
 
     Map<String, Object> deleteByAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag, String id, String type, int status);
 

@@ -179,12 +179,12 @@ public class DataListServiceImpl implements DataListService {
     }
 
     @Override
-    public Map<String, Object> fuzzyQueryAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag, String type, int status) {
-        if(!keyword.equals("")) {
-            keyword = "%" + keyword + "%";
+    public Map<String, Object> fuzzyQueryAdmin(int page, int size, String titleKeyword, String[] tags, String property, Boolean flag, String type, int status) {
+        if(!titleKeyword.equals("")) {
+            titleKeyword = "%" + titleKeyword + "%";
         }
-        int total = dataListMapper.countFuzzyQuery(keyword, tags, 2, type);
-        List<Map<String, Object>> list = dataListMapper.fuzzyQuery(size * page, size, keyword, tags, property, flag, status, type);
+        int total = dataListMapper.countFuzzyQuery(titleKeyword, tags, status, type);
+        List<Map<String, Object>> list = dataListMapper.fuzzyQuery(size * page, size, titleKeyword, tags, property, flag, status, type);
         Map<String, Object> result = new HashMap<>();
         result.put("total", total);
         result.put("list", list);

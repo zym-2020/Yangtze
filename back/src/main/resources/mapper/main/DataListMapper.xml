@@ -60,9 +60,6 @@
             <if test="status == -1 or status == 0 or status == 1">
                 and status = #{status}
             </if>
-            <if test="status == 2">
-                and (status = 1 or status = -1)
-            </if>
             <if test="keyword != ''">
                 and data_list.name like #{keyword}
             </if>
