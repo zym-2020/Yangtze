@@ -21,4 +21,6 @@ public interface MultiSourceService {
     List<Map<String, Object>> getParkInfoByBox(double top, double right, double bottom, double left);
 
     List<Map<String, Object>> getAnchorInfoByBox(double top, double right, double bottom, double left);
+
+    List<Map<String, Object>> getOtherInfoBox(double top, double right, double bottom, double left);
 }

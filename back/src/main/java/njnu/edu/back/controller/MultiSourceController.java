@@ -21,11 +21,13 @@ public class MultiSourceController {
     @Autowired
     MultiSourceService multiSourceService;
 
+    @CrossOrigin
     @RequestMapping(value = "/getBuoyByBox/{top}/{right}/{bottom}/{left}", method = RequestMethod.GET)
     public JsonResult getBuoyByBox(@PathVariable double top, @PathVariable double right, @PathVariable double bottom, @PathVariable double left) {
         return ResultUtils.success(multiSourceService.getBuoyByBox(top, right, bottom, left));
     }
 
+    @CrossOrigin
     @RequestMapping(value = "/getBuoyMoveInfoByTimestamp/{startTime}/{endTime}", method = RequestMethod.GET)
     public JsonResult getBuoyMoveInfoByTimestamp(@PathVariable long startTime, @PathVariable long endTime) {
         return ResultUtils.success(multiSourceService.getBuoyMoveInfoByTimestamp(startTime, endTime));
@@ -48,6 +50,7 @@ public class MultiSourceController {
     * @Date: 2022/12/1
     */
 
+    @CrossOrigin
     @RequestMapping(value = "/getParkInfoByBox/{top}/{right}/{bottom}/{left}", method = RequestMethod.GET)
     public JsonResult getParkInfoByBox(@PathVariable double top, @PathVariable double right, @PathVariable double bottom, @PathVariable double left) {
         return ResultUtils.success(multiSourceService.getParkInfoByBox(top, right, bottom, left));
@@ -58,9 +61,21 @@ public class MultiSourceController {
     * @Author: Yiming
     * @Date: 2022/12/1
     */
+    @CrossOrigin
     @RequestMapping(value = "/getAnchorInfoByBox/{top}/{right}/{bottom}/{left}", method = RequestMethod.GET)
     public JsonResult getAnchorInfoByBox(@PathVariable double top, @PathVariable double right, @PathVariable double bottom, @PathVariable double left) {
-        return ResultUtils.success();
+        return ResultUtils.success(multiSourceService.getAnchorInfoByBox(top, right, bottom, left));
+    }
+
+    /**
+    * @Description:其他信息
+    * @Author: Yiming
+    * @Date: 2022/12/1
+    */
+    @CrossOrigin
+    @RequestMapping(value = "/getOtherInfoBox/{top}/{right}/{bottom}/{left}", method = RequestMethod.GET)
+    public JsonResult getOtherInfoBox(@PathVariable double top, @PathVariable double right, @PathVariable double bottom, @PathVariable double left) {
+        return ResultUtils.success(multiSourceService.getOtherInfoBox(top, right, bottom, left));
     }
 
 }

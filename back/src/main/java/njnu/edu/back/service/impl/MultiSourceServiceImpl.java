@@ -41,6 +41,9 @@ public class MultiSourceServiceImpl implements MultiSourceService {
     @Autowired
     AnchorMapper anchorMapper;
 
+    @Autowired
+    OtherMapper otherMapper;
+
     @Override
     public List<Map<String, Object>> getBuoyByBox(double top, double right, double bottom, double left) {
         return buoyMapper.getBuoyByBox(top, right, bottom, left);
@@ -155,6 +158,37 @@ public class MultiSourceServiceImpl implements MultiSourceService {
             }
         }
 
+        return result;
+    }
+
+    @Override
+    public List<Map<String, Object>> getOtherInfoBox(double top, double right, double bottom, double left) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        List<Map<String, Object>> otherList = otherMapper.getAllInfo();
+        for (Map<String, Object> map : otherList) {
+            JSONObject jsonObject = JSON.parseObject((String) map.get("qyfw"));
+            JSONArray jsonArray = jsonObject.getJSONArray("points");
+            double tempTop = jsonArray.getJSONArray(0).getDouble(1);
+            double tempBottom = jsonArray.getJSONArray(0).getDouble(1);
+            double tempRight = jsonArray.getJSONArray(0).getDouble(0);
+            double tempLeft = jsonArray.getJSONArray(0).getDouble(0);
+            for (int i = 1; i < jsonArray.size(); i++) {
+                double lon = jsonArray.getJSONArray(i).getDouble(0);
+                double lat = jsonArray.getJSONArray(i).getDouble(1);
+                if (lon > tempRight) {
+                    tempRight = lon;
+                } else if (lon < tempLeft) {
+                    tempLeft = lon;
+                } else if (lat > tempTop) {
+                    tempTop = lat;
+                } else if (lat < tempBottom) {
+                    tempBottom = lat;
+                }
+            }
+            if (!(tempLeft > right || tempRight < left || tempTop < bottom || tempBottom > top)) {
+                result.add(map);
+            }
+        }
         return result;
     }
 }
