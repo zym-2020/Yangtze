@@ -10,6 +10,7 @@ import njnu.edu.back.dao.main.AnalyticDataSetMapper;
 import njnu.edu.back.dao.main.FileMapper;
 import njnu.edu.back.dao.main.VisualFileMapper;
 import njnu.edu.back.dao.shp.VectorTileMapper;
+import njnu.edu.back.dao.staticdb.PhotoMapper;
 import njnu.edu.back.pojo.VisualFile;
 import njnu.edu.back.pojo.support.TileBox;
 import njnu.edu.back.service.VisualService;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Repository;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +60,8 @@ public class VisualServiceImpl implements VisualService {
 
     @Autowired
     AnalyticDataSetMapper analyticDataSetMapper;
+
+
 
     @Override
     public void getAvatar(String fileName, HttpServletResponse response) {
