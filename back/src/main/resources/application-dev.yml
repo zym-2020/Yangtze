@@ -81,3 +81,7 @@ analyseAddress:
   E:\yangtze\other\analyse\
 mapAddress:
   E:\yangtze\other\map\
+
+
+meteorologyAddress:
+  E:\codes\PycharmProjects\connect_sqlite\meteorology.json

@@ -8,10 +8,14 @@ import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.dao.staticdb.*;
 import njnu.edu.back.service.MultiSourceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +30,10 @@ import java.util.Map;
  */
 @Service
 public class MultiSourceServiceImpl implements MultiSourceService {
+
+    @Value("${meteorologyAddress}")
+    String meteorologyAddress;
+
     @Autowired
     BuoyMapper buoyMapper;
 
@@ -190,5 +198,47 @@ public class MultiSourceServiceImpl implements MultiSourceService {
             }
         }
         return result;
+    }
+
+    @Override
+    public JSONArray getMeteorologyBox(double top, double right, double bottom, double left) {
+        File file = new File(meteorologyAddress);
+        JSONArray jsonArray;
+        if(!file.exists()) {
+            throw new MyException(ResultEnum.NO_OBJECT);
+        }
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader(meteorologyAddress));
+            String jsonString = "";
+            String line = "";
+            while((line = br.readLine()) != null) {
+                jsonString += line;
+            }
+            br.close();
+            jsonArray = JSON.parseArray(jsonString);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        } finally {
+            try {
+                if(br != null) {
+                    br.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+            }
+        }
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            double lon = jsonObject.getDouble("longitude");
+            double lat = jsonObject.getDouble("latitude");
+            if (lon > right || lon < left || lat > top || lat < bottom) {
+                jsonArray.remove(i);
+                i--;
+            }
+        }
+        return jsonArray;
     }
 }

@@ -1,5 +1,7 @@
 package njnu.edu.back.controller;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import njnu.edu.back.common.result.JsonResult;
 import njnu.edu.back.common.result.ResultUtils;
 import njnu.edu.back.service.MultiSourceService;
@@ -7,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,8 +27,8 @@ public class MultiSourceController {
 
     @CrossOrigin
     @RequestMapping(value = "/getBuoyByBox/{top}/{right}/{bottom}/{left}", method = RequestMethod.GET)
-    public JsonResult getBuoyByBox(@PathVariable double top, @PathVariable double right, @PathVariable double bottom, @PathVariable double left) {
-        return ResultUtils.success(multiSourceService.getBuoyByBox(top, right, bottom, left));
+    public List<Map<String, Object>> getBuoyByBox(@PathVariable double top, @PathVariable double right, @PathVariable double bottom, @PathVariable double left) {
+        return multiSourceService.getBuoyByBox(top, right, bottom, left);
     }
 
     @CrossOrigin
@@ -52,8 +56,8 @@ public class MultiSourceController {
 
     @CrossOrigin
     @RequestMapping(value = "/getParkInfoByBox/{top}/{right}/{bottom}/{left}", method = RequestMethod.GET)
-    public JsonResult getParkInfoByBox(@PathVariable double top, @PathVariable double right, @PathVariable double bottom, @PathVariable double left) {
-        return ResultUtils.success(multiSourceService.getParkInfoByBox(top, right, bottom, left));
+    public List<Map<String, Object>> getParkInfoByBox(@PathVariable double top, @PathVariable double right, @PathVariable double bottom, @PathVariable double left) {
+        return multiSourceService.getParkInfoByBox(top, right, bottom, left);
     }
 
     /**
@@ -63,8 +67,8 @@ public class MultiSourceController {
     */
     @CrossOrigin
     @RequestMapping(value = "/getAnchorInfoByBox/{top}/{right}/{bottom}/{left}", method = RequestMethod.GET)
-    public JsonResult getAnchorInfoByBox(@PathVariable double top, @PathVariable double right, @PathVariable double bottom, @PathVariable double left) {
-        return ResultUtils.success(multiSourceService.getAnchorInfoByBox(top, right, bottom, left));
+    public List<Map<String, Object>> getAnchorInfoByBox(@PathVariable double top, @PathVariable double right, @PathVariable double bottom, @PathVariable double left) {
+        return multiSourceService.getAnchorInfoByBox(top, right, bottom, left);
     }
 
     /**
@@ -74,8 +78,14 @@ public class MultiSourceController {
     */
     @CrossOrigin
     @RequestMapping(value = "/getOtherInfoBox/{top}/{right}/{bottom}/{left}", method = RequestMethod.GET)
-    public JsonResult getOtherInfoBox(@PathVariable double top, @PathVariable double right, @PathVariable double bottom, @PathVariable double left) {
-        return ResultUtils.success(multiSourceService.getOtherInfoBox(top, right, bottom, left));
+    public List<Map<String, Object>> getOtherInfoBox(@PathVariable double top, @PathVariable double right, @PathVariable double bottom, @PathVariable double left) {
+        return multiSourceService.getOtherInfoBox(top, right, bottom, left);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/getMeteorologyBox/{top}/{right}/{bottom}/{left}", method = RequestMethod.GET)
+    public JSONArray getMeteorologyBox(@PathVariable double top, @PathVariable double right, @PathVariable double bottom, @PathVariable double left) {
+        return multiSourceService.getMeteorologyBox(top, right, bottom, left);
     }
 
 }
