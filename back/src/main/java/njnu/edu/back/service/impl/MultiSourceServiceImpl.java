@@ -7,6 +7,7 @@ import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.dao.staticdb.*;
 import njnu.edu.back.service.MultiSourceService;
+import njnu.edu.back.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -17,9 +18,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -51,6 +51,9 @@ public class MultiSourceServiceImpl implements MultiSourceService {
 
     @Autowired
     OtherMapper otherMapper;
+
+    @Autowired
+    RedisService redisService;
 
     @Override
     public List<Map<String, Object>> getBuoyByBox(double top, double right, double bottom, double left) {
@@ -202,34 +205,67 @@ public class MultiSourceServiceImpl implements MultiSourceService {
 
     @Override
     public JSONArray getMeteorologyBox(double top, double right, double bottom, double left) {
-        File file = new File(meteorologyAddress);
-        JSONArray jsonArray;
-        if(!file.exists()) {
-            throw new MyException(ResultEnum.NO_OBJECT);
-        }
-        BufferedReader br = null;
+        boolean flag = false;
         try {
-            br = new BufferedReader(new FileReader(meteorologyAddress));
-            String jsonString = "";
-            String line = "";
-            while((line = br.readLine()) != null) {
-                jsonString += line;
+            SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm");
+            Date date1 = sdf1.parse(sdf1.format(new Date()));
+            Date date2 = sdf1.parse("09:04");
+            Calendar cal1 = Calendar.getInstance();
+            Calendar cal2 = Calendar.getInstance();
+            cal1.setTime(date1);
+            cal2.setTime(date2);
+            if (cal1.after(cal2)) {
+                flag = true;
             }
-            br.close();
-            jsonArray = JSON.parseArray(jsonString);
         } catch (Exception e) {
             e.printStackTrace();
             throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
-        } finally {
+        }
+        String key;
+        if (flag) {
+            Date date = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd");
+            key = "meteorology-" + sdf.format(date);
+        } else {
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.DATE, -1); //得到前一天
+            Date date = calendar.getTime();
+            SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd");
+            key = "meteorology-" + sdf.format(date);
+        }
+
+        JSONArray jsonArray = (JSONArray) redisService.get(key);
+        if (jsonArray == null) {
+            File file = new File(meteorologyAddress);
+            if(!file.exists()) {
+                throw new MyException(ResultEnum.NO_OBJECT);
+            }
+            BufferedReader br = null;
             try {
-                if(br != null) {
-                    br.close();
+                br = new BufferedReader(new FileReader(meteorologyAddress));
+                String jsonString = "";
+                String line = "";
+                while((line = br.readLine()) != null) {
+                    jsonString += line;
                 }
+                br.close();
+                jsonArray = JSON.parseArray(jsonString);
+                redisService.set(key, jsonArray, 60*24l);
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+            } finally {
+                try {
+                    if(br != null) {
+                        br.close();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+                }
             }
         }
+
         for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             double lon = jsonObject.getDouble("longitude");
