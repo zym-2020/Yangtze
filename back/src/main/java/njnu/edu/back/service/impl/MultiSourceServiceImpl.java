@@ -10,7 +10,12 @@ import njnu.edu.back.service.MultiSourceService;
 import njnu.edu.back.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -51,6 +56,9 @@ public class MultiSourceServiceImpl implements MultiSourceService {
 
     @Autowired
     OtherMapper otherMapper;
+
+    @Autowired
+    StationMapper stationMapper;
 
     @Autowired
     RedisService redisService;
@@ -250,7 +258,7 @@ public class MultiSourceServiceImpl implements MultiSourceService {
                 }
                 br.close();
                 jsonArray = JSON.parseArray(jsonString);
-                redisService.set(key, jsonArray, 60*24l);
+                redisService.set(key, jsonArray, 60*25l);
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
@@ -276,5 +284,99 @@ public class MultiSourceServiceImpl implements MultiSourceService {
             }
         }
         return jsonArray;
+    }
+
+    @Override
+    public List<Map<String, Object>> getStationBox(double top, double right, double bottom, double left) {
+        List<Map<String, Object>> result = stationMapper.getStationByBox(top, right, bottom, left);
+        try {
+            Date date = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            SimpleDateFormat ymd = new SimpleDateFormat("yyyyMMdd");
+            date = sdf.parse(sdf.format(date));
+            String times;
+            String oldTimes;
+            if (date.after(sdf.parse("20:30"))) {
+                times = ymd.format(new Date()) + "2000";
+                oldTimes = ymd.format(new Date()) + "1200";
+            } else if (date.after(sdf.parse("12:30"))) {
+                times = ymd.format(new Date()) + "1200";
+                oldTimes = ymd.format(new Date()) + "0800";
+            } else if (date.after(sdf.parse("08:30"))) {
+                times = ymd.format(new Date()) + "0800";
+                oldTimes = ymd.format(new Date()) + "0600";
+            } else {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(new Date());
+                times = ymd.format(calendar.getTime()) + "0600";
+                calendar.add(Calendar.DATE, -1);
+                oldTimes = ymd.format(calendar.getTime()) + "2000";
+            }
+            JSONArray jsonArray = (JSONArray) redisService.get(times);
+            if (jsonArray == null || jsonArray.size() == 0) {
+                jsonArray = (JSONArray) redisService.get(oldTimes);
+            }
+            if (jsonArray == null || jsonArray.size() == 0) {
+                throw new MyException(-99, "远程接口错误");
+            } else {
+                for (int i = 0; i < result.size(); i++) {
+                    for (int j = 0; j < jsonArray.size(); j++) {
+                        if (result.get(i).get("id").equals(jsonArray.getJSONObject(j).get("STATION")) && jsonArray.getJSONObject(j).get("TIME_STEP").equals("000")) {
+                            result.get(i).put("info", jsonArray.getJSONObject(j));
+                        }
+                    }
+                }
+            }
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
+    }
+
+    @Override
+    public List<JSONObject> getWeatherInfoById(String id) {
+        try {
+            List<JSONObject> list = new ArrayList<>();
+            Date date = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            SimpleDateFormat ymd = new SimpleDateFormat("yyyyMMdd");
+            date = sdf.parse(sdf.format(date));
+            String times;
+            String oldTimes;
+            if (date.after(sdf.parse("20:30"))) {
+                times = ymd.format(new Date()) + "2000";
+                oldTimes = ymd.format(new Date()) + "1200";
+            } else if (date.after(sdf.parse("12:30"))) {
+                times = ymd.format(new Date()) + "1200";
+                oldTimes = ymd.format(new Date()) + "0800";
+            } else if (date.after(sdf.parse("08:30"))) {
+                times = ymd.format(new Date()) + "0800";
+                oldTimes = ymd.format(new Date()) + "0600";
+            } else {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(new Date());
+                times = ymd.format(calendar.getTime()) + "0600";
+                calendar.add(Calendar.DATE, -1);
+                oldTimes = ymd.format(calendar.getTime()) + "2000";
+            }
+            JSONArray jsonArray = (JSONArray) redisService.get(times);
+            if (jsonArray == null || jsonArray.size() == 0) {
+                jsonArray = (JSONArray) redisService.get(oldTimes);
+            }
+            if (jsonArray == null || jsonArray.size() == 0) {
+                throw new MyException(-99, "远程接口错误");
+            } else {
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    if (jsonArray.getJSONObject(i).getString("STATION").equals(id)) {
+                        list.add(jsonArray.getJSONObject(i));
+                    }
+                }
+            }
+            return list;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
     }
 }

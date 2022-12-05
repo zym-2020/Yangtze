@@ -88,4 +88,16 @@ public class MultiSourceController {
         return multiSourceService.getMeteorologyBox(top, right, bottom, left);
     }
 
+    @CrossOrigin
+    @RequestMapping(value = "/getStationBox/{top}/{right}/{bottom}/{left}", method = RequestMethod.GET)
+    public List<Map<String, Object>> getStationBox(@PathVariable double top, @PathVariable double right, @PathVariable double bottom, @PathVariable double left) {
+        return multiSourceService.getStationBox(top, right, bottom, left);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/getWeatherInfoById/{id}", method = RequestMethod.GET)
+    public JsonResult getWeatherInfoById(@PathVariable String id) {
+        return ResultUtils.success(multiSourceService.getWeatherInfoById(id));
+    }
+
 }

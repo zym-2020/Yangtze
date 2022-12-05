@@ -28,4 +28,8 @@ public interface MultiSourceService {
     List<Map<String, Object>> getOtherInfoBox(double top, double right, double bottom, double left);
 
     JSONArray getMeteorologyBox(double top, double right, double bottom, double left);
+
+    List<Map<String, Object>> getStationBox(double top, double right, double bottom, double left);
+
+    List<JSONObject> getWeatherInfoById(String id);
 }

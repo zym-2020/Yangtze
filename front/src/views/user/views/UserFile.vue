@@ -26,7 +26,7 @@
         />
       </div>
     </div>
-    <div v-if="!skeletonFlag">
+    <div v-if="!skeletonFlag" class="table">
       <el-empty description="暂无数据" v-if="tableData.length === 0" />
       <el-table
         v-else
@@ -127,7 +127,7 @@
       </el-table>
     </div>
     <div v-else>
-        <el-skeleton :rows="5" animated />
+      <el-skeleton :rows="5" animated />
     </div>
 
     <el-dialog v-model="dialogCreateFolder" width="200px" :show-close="false">
@@ -567,32 +567,35 @@ export default defineComponent({
       right: 0px;
     }
   }
-  .el-table {
+  .table {
     height: calc(100% - 50px);
-    cursor: pointer;
-    .table-name {
-      display: flex;
-      .text {
+    .el-table {
+      height: 100%;
+      cursor: pointer;
+      .table-name {
         display: flex;
-        line-height: 30px;
+        .text {
+          display: flex;
+          line-height: 30px;
 
-        .name {
-          width: 620px;
-          margin-left: 10px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
+          .name {
+            width: 620px;
+            margin-left: 10px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+        }
+
+        .el-checkbox {
+          margin-right: 5px;
+          height: 30px;
         }
       }
 
-      .el-checkbox {
-        margin-right: 5px;
-        height: 30px;
+      /deep/ .el-table__inner-wrapper::before {
+        width: 0;
       }
-    }
-
-    /deep/ .el-table__inner-wrapper::before {
-      width: 0;
     }
   }
 
