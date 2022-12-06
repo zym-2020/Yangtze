@@ -32,4 +32,10 @@ public interface MultiSourceService {
     List<Map<String, Object>> getStationBox(double top, double right, double bottom, double left);
 
     List<JSONObject> getWeatherInfoById(String id);
+
+    List<Map<String, Object>> getShipInfoByBox(double top, double right, double bottom, double left);
+
+    Map<String, Object> getShipInfoByMMSI(String mmsi);
+
+    List<Map<String, Object>> record(String mmsi);
 }

@@ -100,4 +100,28 @@ public class MultiSourceController {
         return ResultUtils.success(multiSourceService.getWeatherInfoById(id));
     }
 
+
+    /**
+    * @Description:获取区域船只信息
+    * @Author: Yiming
+    * @Date: 2022/12/6
+    */
+    @CrossOrigin
+    @RequestMapping(value = "/getShipInfoByBox/{top}/{right}/{bottom}/{left}", method = RequestMethod.GET)
+    public List<Map<String, Object>> getShipInfoByBox(@PathVariable double top, @PathVariable double right, @PathVariable double bottom, @PathVariable double left) {
+        return multiSourceService.getShipInfoByBox(top, right, bottom, left);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/getShipInfoByMMSI/{mmsi}", method = RequestMethod.GET)
+    public JsonResult getShipInfoByMMSI(@PathVariable String mmsi) {
+        return ResultUtils.success(multiSourceService.getShipInfoByMMSI(mmsi));
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/record/{mmsi}", method = RequestMethod.GET)
+    public List<Map<String, Object>> record (@PathVariable String mmsi) {
+        return multiSourceService.record(mmsi);
+    }
+
 }

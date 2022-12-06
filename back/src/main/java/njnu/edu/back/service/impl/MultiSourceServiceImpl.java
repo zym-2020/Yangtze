@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
+import njnu.edu.back.dao.ship.LocusMapper;
 import njnu.edu.back.dao.staticdb.*;
 import njnu.edu.back.service.MultiSourceService;
 import njnu.edu.back.service.RedisService;
@@ -25,6 +26,7 @@ import java.io.FileReader;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Created with IntelliJ IDEA.
@@ -59,6 +61,9 @@ public class MultiSourceServiceImpl implements MultiSourceService {
 
     @Autowired
     StationMapper stationMapper;
+
+    @Autowired
+    LocusMapper locusMapper;
 
     @Autowired
     RedisService redisService;
@@ -109,6 +114,7 @@ public class MultiSourceServiceImpl implements MultiSourceService {
                 double lon = jsonArray.getDouble(0);
                 double lat = jsonArray.getDouble(1);
                 if (lon > left && lon < right && lat > bottom && lat < top) {
+                    map.replace("qyfw", jsonObject);
                     result.add(map);
                 }
             } else {
@@ -132,6 +138,7 @@ public class MultiSourceServiceImpl implements MultiSourceService {
                         }
                     }
                     if (!(tempLeft > right || tempRight < left || tempTop < bottom || tempBottom > top)) {
+                        map.replace("qyfw", jsonObject);
                         result.add(map);
                     }
                 } else {
@@ -140,6 +147,7 @@ public class MultiSourceServiceImpl implements MultiSourceService {
                     double tempBottom = jsonArray.getJSONArray(1).getDouble(1);
                     double tempLeft = jsonArray.getJSONArray(1).getDouble(0);
                     if (!(tempLeft > right || tempRight < left || tempTop < bottom || tempBottom > top)) {
+                        map.replace("qyfw", jsonObject);
                         result.add(map);
                     }
                 }
@@ -173,6 +181,7 @@ public class MultiSourceServiceImpl implements MultiSourceService {
                 }
             }
             if (!(tempLeft > right || tempRight < left || tempTop < bottom || tempBottom > top)) {
+                map.replace("qyfw", jsonObject);
                 result.add(map);
             }
         }
@@ -205,6 +214,7 @@ public class MultiSourceServiceImpl implements MultiSourceService {
                 }
             }
             if (!(tempLeft > right || tempRight < left || tempTop < bottom || tempBottom > top)) {
+                map.replace("qyfw", jsonObject);
                 result.add(map);
             }
         }
@@ -378,5 +388,46 @@ public class MultiSourceServiceImpl implements MultiSourceService {
             e.printStackTrace();
             throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
         }
+    }
+
+    @Override
+    public List<Map<String, Object>> getShipInfoByBox(double top, double right, double bottom, double left) {
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        String tableName = "locus" + sdf.format(date);
+        return locusMapper.getShipByBox(tableName, top, right, bottom, left);
+    }
+
+    @Override
+    public Map<String, Object> getShipInfoByMMSI(String mmsi) {
+        return getShipInfoByMMSI(mmsi);
+    }
+
+    @Override
+    public List<Map<String, Object>> record(String mmsi) {
+        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        String todayTable = "locus" + sdf1.format(date);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, -1);
+        String yesterdayTable = "locus" + sdf1.format(cal.getTime());
+        String time = sdf2.format(cal.getTime());
+        if (locusMapper.existTable(yesterdayTable) == 0) {
+            return locusMapper.record(todayTable, mmsi, "");
+        } else {
+            CompletableFuture<List<Map<String, Object>>> completableFuture = CompletableFuture.supplyAsync(() -> locusMapper.record(yesterdayTable, mmsi, time));
+            List<Map<String, Object>> mapList = locusMapper.record(todayTable, mmsi, "");
+            try {
+                mapList.addAll(completableFuture.get());
+                return mapList;
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+            }
+        }
+
+
     }
 }

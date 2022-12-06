@@ -23,6 +23,9 @@ spring:
     staticdb:
       jdbc-url: jdbc:sqlite:D:\zhuomian\水科院\python\data\static_database.db
       driver-class-name: org.sqlite.JDBC
+    ship:
+      jdbc-url: jdbc:sqlite:D:\zhuomian\水科院\python\data\ais.db
+      driver-class-name: org.sqlite.JDBC
     #配置druid连接池
     druid:
       initial-size: 5 #连接池初始化大小
