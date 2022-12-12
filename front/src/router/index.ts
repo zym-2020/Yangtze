@@ -141,6 +141,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
             },
             {
                 path: 'scenarioThree',
+                name: 'ScenarioThree',
                 component: () => import('@/views/scenario/aisShip.vue'),
                 meta: {
                     role: ['member', 'admin'],
