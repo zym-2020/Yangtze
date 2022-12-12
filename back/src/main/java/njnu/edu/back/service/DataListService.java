@@ -27,13 +27,15 @@ public interface DataListService {
 
     Map<String, Object> fuzzyQuery(int page, int size, String keyword, String[] tags, String property, Boolean flag, String type);
 
-    Map<String, Object> fuzzyQueryAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag, String type);
+    Map<String, Object> fuzzyQueryAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag, String type, int status);
 
-    Map<String, Object> deleteByAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag, String id, String type);
+    Map<String, Object> deleteByAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag, String id, String type, int status);
 
     Map<String, Object> pageQueryByEmail(String email, int size, int page, String keyword);
 
     void updateStatusById(String id, int status, String role, String email);
+
+    List<Map<String, Object>> getHot(int size);
 
     Map<String, Object> deleteAsMember(String id, String email, int page, int size);
 
@@ -42,4 +44,8 @@ public interface DataListService {
     void downloadAll(String userId, String id, HttpServletRequest request, HttpServletResponse response);
 
     List<Map<String, Object>> findFiles(String dataListId);
+
+    Map<String, Object> getSimilarData(String type, String id, int size, int page);
+
+    Map<String, Object> clearQuery( String[] tags,String type,String location,String startDate,String endDate);
 }

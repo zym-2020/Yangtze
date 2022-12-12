@@ -1,268 +1,136 @@
 <template>
-  <div class="upload-page">
-    <div class="head">
-      <p class="title">上传列表</p>
+  <el-skeleton :rows="5" animated v-if="skeleton" />
+  <div class="upload-page" v-else>
+    <div class="gif">
+      <img src="/gif/upload.gif" alt="" />
     </div>
-    <div class="main">
-      <el-scrollbar height="calc(100vh)">
-        <div v-if="skeletonFlag">
-          <el-skeleton :animated="true" />
-          <br />
-          <el-skeleton :animated="true" />
-          <br />
-          <el-skeleton :animated="true" />
-          <br />
-          <el-skeleton :animated="true" />
+    <el-empty
+      description="暂无记录"
+      v-if="
+        uploadedList.length === 0 &&
+        Object.keys(uploading).length === 0 &&
+        waitList.length === 0
+      "
+    />
+    <div class="scroll" v-else>
+      <el-scrollbar>
+        <div class="card" v-for="(value, key) in uploading" :key="key">
+          <div class="file-name" :title="value.name">{{ value.name }}</div>
+          <el-progress
+            :text-inside="true"
+            :stroke-width="16"
+            :percentage="value.progress"
+          />
+          <div class="file-size">{{ value.size }}</div>
+          <div class="icon" @click="closeHandle('uploading', index, key)">
+            <el-icon><CircleClose /></el-icon>
+          </div>
         </div>
 
-        <div v-else>
-          <div
-            v-if="
-              uploadList.length > 0 ||
-              uploadedList.length > 0 ||
-              waitList.length > 0
-            "
-          >
-            <div v-for="(item, index) in uploadList" :key="index" class="data">
-              <el-tooltip :content="item.name" placement="left" effect="light">
-                <div class="cover"></div>
-              </el-tooltip>
-              <div class="content">
-                <div class="icon">
-                  <svg
-                    style="
-                      width: 30px;
-                      height: 30px;
-                      margin-left: 10px;
-                      margin-top: 10px;
-                    "
-                  >
-                    <use :xlink:href="getIcon(item.name)"></use>
-                  </svg>
-                </div>
-                <div class="progress">
-                  <div class="name">{{ item.name }}</div>
-
-                  <el-progress
-                    :percentage="getPercentage(item)"
-                    :status="getStatus(item)"
-                    :indeterminate="item.state === 0 ? true : false"
-                  >
-                    <template #default="{ percentage }">
-                      <span class="percentage-value">{{
-                        getText(percentage, item.state)
-                      }}</span>
-                    </template>
-                  </el-progress>
-                </div>
-                <div class="operate">
-                  <el-icon v-if="item.state != 0"><VideoPause /></el-icon>
-                </div>
-              </div>
+        <div class="card" v-for="(item, index) in waitList" :key="index">
+          <div class="file-name" :title="item.name">{{ item.name }}</div>
+          <el-progress :text-inside="true" :stroke-width="16" :percentage="0">
+            <span>等待上传...</span>
+          </el-progress>
+          <div class="file-size">{{ item.size }}</div>
+          <div class="icon" @click="closeHandle('wait', index)">
+            <el-icon><CircleClose /></el-icon>
+          </div>
+        </div>
+        <div class="card" v-for="(item, index) in uploadedList" :key="index">
+          <div class="file-name" :title="item.name">
+            {{ item.name }}
+          </div>
+          <el-progress
+            :text-inside="true"
+            :stroke-width="16"
+            :percentage="100"
+            status="success"
+          />
+          <div class="size-time">
+            <div class="file-size">
+              {{ item.size }}
             </div>
-
-            <div v-for="(item, index) in waitList" :key="index" class="data">
-              <el-tooltip :content="item.name" placement="left" effect="light">
-                <div class="cover"></div>
-              </el-tooltip>
-              <div class="content">
-                <div class="icon">
-                  <svg
-                    style="
-                      width: 30px;
-                      height: 30px;
-                      margin-left: 10px;
-                      margin-top: 10px;
-                    "
-                  >
-                    <use :xlink:href="getIcon(item.name)"></use>
-                  </svg>
-                </div>
-                <div class="progress">
-                  <div class="name">{{ item.name }}</div>
-                  <el-progress
-                    :percentage="getPercentage(item)"
-                    :status="getStatus(item)"
-                    :indeterminate="item.state === 0 ? true : false"
-                  >
-                    <template #default="{ percentage }">
-                      <span class="percentage-value">{{
-                        getText(percentage, item.state)
-                      }}</span>
-                    </template>
-                  </el-progress>
-                </div>
-                <div class="operate">
-                  <el-icon @click="deleteRecord(index)"
-                    ><CircleClose
-                  /></el-icon>
-                </div>
-              </div>
-            </div>
-
-            <div
-              v-for="(item, index) in uploadedList"
-              :key="index"
-              class="data"
-            >
-              <el-tooltip :content="item.name" placement="left" effect="light">
-                <div class="cover"></div>
-              </el-tooltip>
-
-              <div class="content">
-                <div class="icon">
-                  <svg
-                    style="
-                      width: 30px;
-                      height: 30px;
-                      margin-left: 10px;
-                      margin-top: 10px;
-                    "
-                  >
-                    <use :xlink:href="getIcon(item.name)"></use>
-                  </svg>
-                </div>
-                <div class="progress">
-                  <div class="name">{{ item.name }}</div>
-                  <el-progress
-                    :percentage="getPercentage(item)"
-                    :status="getStatus(item)"
-                    :indeterminate="item.state === 0 ? true : false"
-                  >
-                    <template #default="{ percentage }">
-                      <span class="percentage-value">{{
-                        getText(percentage, item.state)
-                      }}</span>
-                    </template>
-                  </el-progress>
-                </div>
-                <div class="operate">
-                  <el-icon @click="deleteRecord(index)"
-                    ><CircleClose
-                  /></el-icon>
-                </div>
-              </div>
+            <div class="file-time">
+              {{ getDate(item.time) }}
             </div>
           </div>
-          <div v-else>
-            <el-empty description="暂无记录" />
+
+          <div class="icon" @click="closeHandle('uploaded', index, item.id)">
+            <el-icon><CircleClose /></el-icon>
           </div>
         </div>
       </el-scrollbar>
     </div>
+    <div></div>
   </div>
 </template>
 
 <script lang="ts">
+type Record = {
+  id: string;
+  fileName: string;
+  uploader: string;
+  uploadTime: string;
+  size: string;
+};
 import { computed, defineComponent, onMounted, ref, watch } from "vue";
-import { getRecords } from "@/api/request";
 import { useStore } from "@/store";
-
+import { dateFormat } from "@/utils/common";
 export default defineComponent({
   setup() {
-    const skeletonFlag = ref(false);
-    const dataList = ref<any[]>([]);
     const store = useStore();
+    const skeleton = ref(true);
+
+    const waitList = computed(() => {
+      return store.state.other.waitList;
+    });
+
+    const uploading = computed(() => {
+      return store.state.other.uploading;
+    });
 
     const uploadedList = computed(() => {
       return store.state.other.uploadedList;
     });
-    const waitList = computed(() => {
-      return store.state.other.waitList;
-    });
-    const uploadList = computed(() => {
-      return store.state.other.uploadList;
-    });
 
-    const getIcon = (fileName: string) => {
-      const fileExtName = fileName.substring(
-        fileName.lastIndexOf("."),
-        fileName.length
-      );
-      if (
-        fileExtName === ".zip" ||
-        fileExtName === ".7z" ||
-        fileExtName === ".tar" ||
-        fileExtName === ".rar"
-      ) {
-        return "#icon-zip";
-      } else {
-        return "#icon-wenjian";
-      }
-    };
-    const getPercentage = (item: any) => {
-      if (item.state === 1) {
-        return 100;
-      } else if (item.state === -1) {
-        return 33;
-      } else if (item.state === 0) {
-        return 33;
-      } else if (item.state === 2) {
-        return item.progress;
-      } else if (item.state === -2) {
-        return 0;
-      }
-    };
-    const getStatus = (item: any) => {
-      if (item.state === 1) {
-        return "success";
-      } else if (item === -1) {
-        return "exception";
-      } else {
-        return "";
-      }
-    };
-    const getText = (percentage: number, state: number) => {
-      if (state === 0) {
-        return "loading";
-      } else if (state === -2) {
-        return "waiting";
-      } else {
-        return percentage + "%";
-      }
+    const getDate = (date: string) => {
+      return dateFormat(date, "yyyy-MM-dd hh:mm");
     };
 
-    const test = () => {
-      console.log(uploadList);
-      console.log(uploadedList);
-      console.log(waitList);
-    };
-
-    const deleteRecord = async (index: number) => {
-      await store.dispatch("delUploadedItem", index);
+    const closeHandle = async (param: string, index: number, id: string) => {
+      if (param === "wait") {
+        store.commit("REMOVE_WIAT_ITEM", index);
+      } else if (param === "uploaded") {
+        await store.dispatch("delUploadedItem", id);
+      } else {
+        const temp = store.state.other.uploading[id];
+        console.log(temp);
+        store.commit("UPDATE_UPLOADING", {
+          id: id,
+          value: {
+            name: temp.name,
+            size: temp.size,
+            state: -1,
+            progress: temp.progress,
+          },
+        });
+      }
     };
 
     onMounted(async () => {
-      skeletonFlag.value = true;
-      store.commit("SET_UPLOADED_LIST", []);
-      const data = await getRecords(-6);
-      if (data != null) {
-        if ((data as any).code === 0) {
-          for (let i = data.data.length - 1; i >= 0; i--) {
-            store.commit("ADD_UPLOADED_ITEM", {
-              id: data.data[i].id,
-              name: data.data[i].file_name,
-              state: data.data[i].state,
-            });
-          }
-        }
-      }
-
-      skeletonFlag.value = false;
+      skeleton.value = true;
+      await store.dispatch("initUploadedList", undefined);
+      skeleton.value = false;
     });
 
     return {
-      dataList,
-      skeletonFlag,
-      getIcon,
-      getPercentage,
-      getStatus,
-      getText,
-      deleteRecord,
-      uploadedList,
-      uploadList,
+      skeleton,
       waitList,
-      test,
+      uploading,
+      uploadedList,
+      closeHandle,
+      getDate,
     };
   },
 });
@@ -270,72 +138,72 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .upload-page {
-  width: 300px;
   height: 100%;
-  background: #4a4a4a;
-  .head {
-    height: 30px;
-    border-bottom: 1px solid rgba($color: #ebeef5, $alpha: 0.5);
-    box-sizing: border-box;
-    .title {
-      line-height: 30px;
-      margin-left: 20px;
-      margin-top: 0px;
-      margin-bottom: 0px;
-      color: white;
+  .gif {
+    margin: 0 auto;
+    width: 300px;
+    height: 300px;
+    img {
+      width: 100%;
     }
   }
-  .main {
-    height: calc(100vh - 50px);
-    .el-scrollbar {
-      height: calc(100vh - 50px);
-      .data {
+  .scroll {
+    height: calc(100% - 350px);
+    .card {
+      height: 100px;
+      border: 1px solid #c4c4c4;
+      box-shadow: 0px 2px 4px rgba(196, 196, 196, 0.5);
+      border-radius: 10px;
+      margin-bottom: 15px;
+      position: relative;
+      .file-name {
+        height: 40px;
+        font-family: "Inter";
+        font-style: normal;
+        font-weight: 400;
+        font-size: 18px;
+        line-height: 45px;
+        margin-left: 10%;
+        width: 80%;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        // margin-bottom: 5px;
+      }
+      .el-progress {
+        width: 80%;
+        margin: 0 auto;
+        /deep/ .el-progress-bar__innerText {
+          color: black;
+          line-height: 12px;
+        }
+      }
+      .size-time {
+        height: 20px;
+        font-family: "Inter";
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 20px;
+        margin: 5px 10% 0;
+        color: #8c8c8c;
         position: relative;
-        height: 50px;
-        cursor: pointer;
-        &:hover {
-          .cover {
-            opacity: 0.2;
-          }
-        }
-        .content {
-          margin-top: 10px;
-          height: 50px;
-          margin: 0px 10px;
-          display: flex;
-          color: white;
-          /deep/ .el-progress__text {
-            color: white;
-          }
-          .icon {
-            width: 50px;
-          }
-          .progress {
-            margin-top: 10px;
-            font-size: 14px;
-            width: 180px;
-            .name {
-              width: 120px;
-              overflow: hidden;
-              white-space: nowrap;
-              text-overflow: ellipsis;
-              -o-text-overflow: ellipsis;
-            }
-          }
-          .operate {
-            .el-icon {
-              margin-top: 27px;
-            }
-          }
-        }
-        .cover {
+        .file-size {
           position: absolute;
-          height: 50px;
-          width: 100%;
-          opacity: 0;
-          background: white;
-          top: 0px;
+          left: 0;
         }
+        .file-time {
+          position: absolute;
+          right: 0;
+        }
+      }
+
+      .icon {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        color: #8c8c8c;
+        cursor: pointer;
       }
     }
   }

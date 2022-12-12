@@ -29,61 +29,6 @@ export async function setUserInfo(formData: FormData) {
     return await patch(`/user/setUserInfo`, formData)
 }
 
-
-
-
-//========================file相关接口=================================
-export async function getNoUpload(jsonData: GetNoUploadJsonData) {
-    return await post(`/file/getNoUpload`, jsonData)
-}
-
-export async function mergeFile(md5: string, uid: string) {
-    return await post(`/file/mergeFile/${md5}/${uid}`)
-}
-
-export async function checkMergeStateTemp(key: string) {
-    return await get(`/file/checkMergeState/${key}`)
-}
-
-export async function findByLevel(level: number) {
-    return await get(`/file/findByLevel/${level}`)
-}
-
-export async function findByParentId(parentId: string) {
-    return await get(`/file/findByParentId/${parentId}`)
-}
-
-export async function addFile(jsonData: AddFileJsonData) {
-    return await post(`/file/addFile`, jsonData)
-}
-
-export async function renameTemp(jsonData: RenameJsonData) {
-    return await patch(`/file/rename`, jsonData)
-}
-
-export async function deleteFilesOrFolders(jsonData: DeleteFilesOrFolders) {
-    return await del(`/file/deleteFilesOrFolders`, jsonData)
-}
-
-export async function unPack(jsonData: UnPackJsonData) {
-    return await post(`/file/unPack`, jsonData)
-}
-
-export async function getTree() {
-    return await get(`/file/getTree`)
-}
-
-export async function updateParentIdAndLevel(jsonData: UpdateParentIdAndLevelJsonData) {
-    return await post(`/file/updateParentIdAndLevel`, jsonData)
-}
-
-export async function compressFile(jsonData: CompressFileJsonData) {
-    return await post(`/file/compressFile`, jsonData)
-}
-
-export async function getFilePath(path: string) {
-    return await get(`/file/getFilePath/${path}`)
-}
 //========================share_file相关接口=================================
 
 export async function offlineById(id: string) {
@@ -94,8 +39,8 @@ export async function onlineById(id: string) {
 }
 
 //========================uploadRecord相关接口=================================
-export async function getRecords(number: number) {
-    return await get(`/uploadRecord/getRecords/${number}`)
+export async function getRecords() {
+    return await get(`/uploadRecord/getRecords`)
 }
 
 export async function delRecord(id: string) {
@@ -151,6 +96,10 @@ export async function addSlope(projectId: string, demId: string) {
     return await post(`/analyticDataSet/addSlope/${projectId}/${demId}`)
 }
 
+export async function computeVolume(projectId: string, regionId: string, demId: string, deep: number) {
+    return await post(`/analyticDataSet/computeVolume/${projectId}/${regionId}/${demId}/${deep}`)
+}
+
 export async function checkState(key: string) {
     return await get(`/analyticDataSet/checkState/${key}`)
 }
@@ -163,9 +112,6 @@ export async function getUrl(id: string) {
     return await get(`/analyticDataSet/getUrl/${id}`)
 }
 
-export async function downloadAnalyticData(userId: string, id: string) {
-    return await get(`/analyticDataSet/downloadAnalyticData/${userId}/${id}`)
-}
 //========================analyticParameter相关接口=================================
 export async function findByType(type: string) {
     return await get(`/analyse/findByType/${type}`)
@@ -245,11 +191,11 @@ export async function deleteAsMember(jsonData: { id: string, size: number, page:
     return await del(`/dataList/deleteAsMember`, jsonData)
 }
 
-export async function deleteByAdmin(jsonData: { page: number, size: number, keyword: string, tags: string[], property: string, flag: boolean, id: string, type: string }) {
+export async function deleteByAdmin(jsonData: { page: number, size: number, keyword: string, tags: string[], property: string, flag: boolean, id: string, type: string, status: number }) {
     return await del(`/dataList/deleteByAdmin`, jsonData)
 }
 
-export async function fuzzyQueryDataList(jsonData: { page: number, size: number, keyword: string, tags: string[], property: string, flag: boolean, type: string }) {
+export async function fuzzyQueryDataList(jsonData: { page: number, size: number, titleKeyword: string, tags: string[], property: string, flag: boolean, type: string }) {
     return await post(`/dataList/fuzzyQuery`, jsonData)
 }
 
@@ -257,7 +203,7 @@ export async function getFileInfoAndUserInfo(id: string) {
     return await get(`/dataList/getFileInfoAndUserInfo/${id}`)
 }
 
-export async function fuzzyQueryAdmin(jsonData: { page: number, size: number, keyword: string, tags: string[], property: string, flag: boolean, type: string }) {
+export async function fuzzyQueryAdmin(jsonData: { page: number, size: number, titleKeyword: string, tags: string[], property: string, flag: boolean, type: string, status: number }) {
     return await post(`/dataList/fuzzyQueryAdmin`, jsonData)
 }
 
@@ -271,6 +217,17 @@ export async function updateDataList(formData: FormData) {
 
 export async function pageQueryByEmail(jsonData: { page: number, size: number, keyword: string }) {
     return await post(`/dataList/pageQueryByEmail`, jsonData)
+}
+export async function clearQueryDataList(jsonData: { tags: string[], type: string, location: string, startDate: string, endDate: string }) {
+    return await post(`/dataList/clearQuery`, jsonData)
+}
+
+export async function getSimilarData(type: string, id: string, size: number, page: number) {
+    return await get(`/dataList/getSimilarData/${type}/${id}/${size}/${page}`)
+}
+
+export async function getHot(size: number) {
+    return await get(`/dataList/getHot/${size}`)
 }
 
 //============================Visual相关接口====================================
@@ -318,6 +275,10 @@ export async function getGeoJson(fileId: string) {
     return await get(`/visual/getGeoJson/${fileId}`)
 }
 
+export async function getAnalyticGeoJson(fileId: string) {
+    return await get(`/visual/getAnalyticGeoJson/${fileId}`)
+}
+
 export async function getSection(fileId: string) {
     return await get(`/visual/getSection/${fileId}`)
 }
@@ -328,6 +289,10 @@ export async function getSectionContrast(fileId: string) {
 
 export async function getSectionFlush(fileId: string) {
     return await get(`/visual/getSectionFlush/${fileId}`)
+}
+
+export async function getVolume(fileId: string) {
+    return await get(`/visual/getVolume/${fileId}`)
 }
 
 //========================folder相关接口=================================
@@ -346,6 +311,20 @@ export async function findByFolderId(folderId: string) {
     return await get(`/file/findByFolderId/${folderId}`)
 }
 
+export async function uploadFile(formData: FormData) {
+    return await post(`/file/uploadFile`, formData)
+}
+
+export async function mergeFile(jsonData: { key: string, total: number, name: string, folderId: string }) {
+    return await post(`/file/mergeFile`, jsonData)
+}
+
+export async function checkMergeStateTemp(key: string) {
+    return await get(`/file/checkMergeState/${key}`)
+}
+export async function deleteFilesOrFolders(jsonData: DeleteFilesOrFolders) {
+    return await del(`/file/deleteFilesOrFolders`, jsonData)
+}
 //========================downloadHistory相关接口=================================
 export async function pageQueryDownloadHistory(size: number, page: number, id: string) {
     return await get(`/downloadHistory/pageQuery/${id}/${size}/${page}`)
@@ -415,4 +394,8 @@ export async function deleteProject(projectId: string) {
 
 export async function getAllByAdmin(jsonData: { keyword: string, page: number, size: number }) {
     return await post(`/project/getAllByAdmin`, jsonData)
+}
+
+export async function copyProject(formData: FormData) {
+    return await post(`/project/copyProject`, formData)
 }

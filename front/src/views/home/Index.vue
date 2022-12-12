@@ -7,7 +7,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import mapBoxGl, { AnySourceData } from "mapbox-gl";
-
+import { prefix } from "@/prefix";
 export default defineComponent({
   setup() {
     const container = ref<HTMLElement>();
@@ -22,7 +22,7 @@ export default defineComponent({
     const tdtCva: AnySourceData = {
       type: "vector",
       tiles: [
-        "http://localhost:8002/vector/cwz1/{x}/{y}/{z}",
+        prefix + "vector/cwz1/{x}/{y}/{z}",
         // "http://t0.tianditu.gov.cn/DataServer?T=cia_w&x={x}&y={y}&l={z}&tk=35a94ab5985969d0b93229c30db6abd6",
         // "http://t0.tianditu.com/cva_w/wmts?tk=35a94ab5985969d0b93229c30db6abd6&SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=cva&STYLE=default&TILEMATRIXSET=w&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=tiles",
       ],
@@ -91,7 +91,7 @@ export default defineComponent({
       container,
       tdtVec,
       tdtCva,
-      initMap
+      initMap,
     };
   },
 });

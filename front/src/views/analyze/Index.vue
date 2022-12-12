@@ -1,21 +1,21 @@
 <template>
   <div class="main">
-    <page-header :pageTitle="'分析中心'">
-      <template #search>
-        <div class="search">
-          <el-input v-model="search" placeholder="搜索" :autofocus="true" />
-          <el-button class="btn" type="primary" plain @click="searchClick"
-            >搜索</el-button
-          >
-          <el-button class="btn" type="info" plain @click="createFlag = true"
-            >创建项目</el-button
-          >
+    <div class="head">
+      <div class="bg"></div>
+      <div class="input">
+        <div class="name">分析中心</div>
+        <el-input v-model="search" placeholder="搜索项目..." size="large" />
+        <el-button type="primary">搜索</el-button>
+        <div class="text">
+          综合研究分析平台以数据和模型分析库及分析功能为驱动，以中心数据库为中心，结合本地数据库的数据，支撑应用层的各种分析操作
         </div>
-      </template>
-    </page-header>
+      </div>
+    </div>
 
-    <div class="body">
-      <el-row>
+    <el-skeleton :rows="5" animated v-if="skeletonFlag" />
+    <div class="body" v-else>
+      <el-empty description="暂无数据" v-if="projects.length === 0" />
+      <el-row v-else>
         <el-col :span="4" v-for="(item, index) in projects" :key="index">
           <div class="project">
             <project-card
@@ -36,10 +36,12 @@
         @current-change="currentChange"
         v-model:current-page="currentPage"
         :page-size="12"
+        :pager-count="5"
         :background="true"
       >
       </el-pagination>
     </div>
+    <page-copyright />
 
     <el-dialog
       v-model="createFlag"
@@ -49,6 +51,7 @@
     >
       <create-project @createProject="createProject"></create-project>
     </el-dialog>
+    <el-backtop :right="100" :bottom="100" />
   </div>
 </template>
 
@@ -59,6 +62,7 @@ import ProjectCard from "@/components/cards/ProjectCard.vue";
 import router from "@/router";
 import CreateProject from "@/components/tools/CreateProject.vue";
 import PageHeader from "@/components/page/PageHeader.vue";
+import PageCopyright from "@/components/page/PageCopyright.vue";
 import NProgress from "nprogress";
 
 NProgress.configure({ showSpinner: false });
@@ -67,6 +71,7 @@ export default defineComponent({
     ProjectCard,
     CreateProject,
     PageHeader,
+    PageCopyright,
   },
   setup() {
     const projects = ref<any[]>([]);
@@ -75,8 +80,10 @@ export default defineComponent({
     const createFlag = ref(false);
     const keyword = ref("");
     const currentPage = ref(1);
+    const skeletonFlag = ref(true);
 
     onMounted(async () => {
+      skeletonFlag.value = true;
       const data = await getAll({
         size: 12,
         page: 0,
@@ -86,6 +93,7 @@ export default defineComponent({
         projects.value = data.data.list;
         total.value = data.data.total;
       }
+      skeletonFlag.value = false;
     });
 
     const searchClick = async () => {
@@ -108,6 +116,7 @@ export default defineComponent({
     };
 
     const currentChange = async (page: number) => {
+      NProgress.start();
       currentPage.value = page;
       const data = await getAll({
         size: 12,
@@ -119,6 +128,7 @@ export default defineComponent({
         total.value = data.data.total;
       }
       search.value = keyword.value;
+      NProgress.done();
     };
 
     const createProject = (val: string) => {
@@ -151,31 +161,65 @@ export default defineComponent({
       createProject,
       searchClick,
       currentPage,
+      skeletonFlag,
     };
   },
 });
 </script>
 
 <style lang="scss" scoped>
+@keyframes ibannerbg {
+  50% {
+    transform: scale(1.2, 1.2);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
 .main {
-  height: calc(100vh - 63px);
-  position: relative;
-  .search {
-    // height: 50px;
-    // line-height: 50px;
-    // box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
-    .el-input {
-      width: 500px;
-      margin-left: 50px;
-      margin-right: 20px;
+  .head {
+    height: 93vh;
+    overflow: hidden;
+    position: relative;
+    .input {
+      position: absolute;
+      width: 40%;
+      left: 30%;
+      top: 13%;
+      font-family: "Microsoft YaHei";
+      .name {
+        color: #ffc200;
+        font-weight: 900;
+        font-size: 200px;
+        text-align: center;
+      }
+      .el-input {
+        height: 60px;
+        width: calc(100% - 150px);
+        margin-right: 10px;
+      }
+      .el-button {
+        height: 60px;
+        width: 140px;
+      }
+      .text {
+        margin-top: 20px;
+        color: white;
+      }
+    }
+    .bg {
+      height: 100%;
+      background: url("/resource/analyse3.png");
+      background-size: cover;
+      animation: ibannerbg 60s linear infinite;
     }
   }
+
   .body {
-    margin-top: 30px;
+    margin-top: 50px;
     width: 100%;
     .el-row {
       /deep/ .el-col {
-        // width: 20%;
         .project {
           width: 100%;
           .card {
@@ -188,11 +232,10 @@ export default defineComponent({
   }
 
   .page {
-    position: absolute;
     width: 100%;
-    bottom: 100px;
     display: flex;
     justify-content: space-around;
+    margin-bottom: 30px;
   }
 }
 /deep/.el-dialog {

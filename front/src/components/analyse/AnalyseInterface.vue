@@ -29,6 +29,9 @@
         <strong v-if="analyseType === 'slope'"
           >选择河床参数，计算河床坡度</strong
         >
+        <strong v-if="analyseType === 'volume'"
+          >选择河床参数与区域，设置最大深度计算河道容积</strong
+        >
       </div>
       <el-select
         v-model="sectionValue"
@@ -42,16 +45,33 @@
           :value="item.id"
         />
       </el-select>
+      <div class="deep">
+        <span><strong>最大深度：</strong></span>
+        <el-input-number
+          v-model="deep"
+          :min="1"
+          :max="30"
+          controls-position="right"
+          :precision="1"
+          :step="0.1"
+        />
+      </div>
+
       <div
         v-if="
           analyseType === 'section' ||
           analyseType === 'sectionCompare' ||
-          analyseType === 'slope'
+          analyseType === 'slope' ||
+          analyseType === 'volume'
         "
       >
         <div
           class="text"
-          v-if="analyseType === 'section' || analyseType === 'slope'"
+          v-if="
+            analyseType === 'section' ||
+            analyseType === 'slope' ||
+            analyseType === 'volume'
+          "
         >
           选择DEM数据，DEM将默认添加至数据与图层中
         </div>
@@ -267,12 +287,18 @@ export default defineComponent({
     const benchmarkDem = ref<AnalyticParameter>();
     const referDem = ref<AnalyticParameter>();
 
+    const deep = ref(5);
+
     const backClick = () => {
       context.emit("back");
     };
 
     const changeClick = (val: TreeData, type: string) => {
-      if (props.analyseType === "section" || props.analyseType === "slope") {
+      if (
+        props.analyseType === "section" ||
+        props.analyseType === "slope" ||
+        props.analyseType === "volume"
+      ) {
         treeData.value.forEach((item) => {
           item.children.forEach((c) => {
             if (c.id != val.id) {
@@ -366,7 +392,6 @@ export default defineComponent({
     const btnClick = () => {
       if (props.analyseType === "section") {
         if (sectionValue.value != "" && sectionDem.value != undefined) {
-          console.log(sectionDem.value);
           context.emit("returnParameter", {
             section: sectionValue.value,
             dem: sectionDem.value,
@@ -376,6 +401,20 @@ export default defineComponent({
             "warning",
             "警告",
             (sectionValue.value === "" ? "断面" : "DEM") + "不得为空"
+          );
+        }
+      } else if (props.analyseType === "volume") {
+        if (sectionValue.value != "" && sectionDem.value != undefined) {
+          context.emit("returnParameter", {
+            region: sectionValue.value,
+            dem: sectionDem.value,
+            deep: deep.value,
+          });
+        } else {
+          notice(
+            "warning",
+            "警告",
+            (sectionValue.value === "" ? "区域" : "DEM") + "不得为空"
           );
         }
       } else if (props.analyseType === "sectionCompare") {
@@ -515,7 +554,7 @@ export default defineComponent({
               });
             }
           });
-        } else if (type === "regionFlush") {
+        } else {
           options.value = [];
           analyticDataList.value.forEach((item) => {
             if (item.visualType === "geoJsonPolygon") {
@@ -552,6 +591,7 @@ export default defineComponent({
       skeletonFlag,
       placeholder,
       selectFlag,
+      deep,
     };
   },
 });
@@ -566,6 +606,9 @@ export default defineComponent({
 .analyse {
   .el-select {
     width: 100%;
+  }
+  .deep {
+    margin: 10px 0;
   }
   .text {
     height: 20px;

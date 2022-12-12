@@ -17,4 +17,8 @@
     <delete id="delData">
         delete from project_file where project_id = #{projectId} and file_id = #{fileId} and data_list_id = #{dataListId}
     </delete>
+
+    <delete id="delByProjectId">
+        delete from project_file where project_id = #{projectId}
+    </delete>
 </mapper>

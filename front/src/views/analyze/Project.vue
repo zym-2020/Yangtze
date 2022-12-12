@@ -98,7 +98,7 @@ export default defineComponent({
             clientY = (bodyHeight - 50) * 0.5 + 50;
           }
           bottom.style.height = bodyHeight - clientY - 11 + "px";
-          top.style.height = clientY - 120 + "px";
+          top.style.height = clientY - 133 + "px";
         };
         document.onmouseup = function () {
           document.onmousemove = null;
@@ -129,7 +129,7 @@ export default defineComponent({
         visualId: string;
       };
     }) => {
-      console.log(val)
+      console.log(val);
       if (val.type === "add") {
         layerManage.value.addLayer(val.content);
         rightMap.value.addMapLayer(val.content);
@@ -173,7 +173,6 @@ export default defineComponent({
       rightMap.value.changeBasemap(layers, val);
     };
 
-
     onUpdated(() => {
       dropSize();
     });
@@ -213,7 +212,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .main {
-  height: calc(100vh - 60px);
+  height: 100%;
   .body {
     height: calc(100% - 50px);
     display: flex;

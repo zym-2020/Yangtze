@@ -1,224 +1,354 @@
 <template>
   <div class="data-main">
-    <page-header :pageTitle="'数据门户'"></page-header>
-    <div class="data-body">
-      <div class="body">
+    <div class="search">
+      <div class="top">
+        <el-input
+          v-model="input"
+          placeholder="数据检索"
+          @keydown.enter="searchHandle"
+        >
+          <template #prepend>
+            <el-select v-model="select" style="width: 115px">
+              <el-option label="条目名" value="name" />
+              <el-option label="标签" value="tag" />
+            </el-select>
+          </template>
+        </el-input>
+        <el-button :icon="Search" color="black" @click="searchHandle"
+          >搜索</el-button
+        >
+      </div>
+    </div>
+    <div class="body">
+      <el-affix :offset="120">
         <div class="left">
-          <div class="content">
-            <div class="video" style="margin-bottom: 30px">
-              <div>
-                <el-card style="text-align: center">
-                  <strong>资源类别</strong>
-                </el-card>
+          <div class="classify">
+            <div class="head">
+              <strong
+                >分类筛选（<span @click="classifyHandle('所有')">所有</span
+                >）</strong
+              >
+            </div>
+            <div
+              class="content"
+              v-for="(item, index) in classList"
+              :key="index"
+            >
+              <div class="title">
+                <strong>{{ item.label }}</strong>
+              </div>
+              <div class="value">
+                <div
+                  class="value-item"
+                  v-for="value in item.value"
+                  :key="value"
+                  @click="classifyHandle(value)"
+                >
+                  {{ value }}
+                </div>
               </div>
             </div>
-
-            <data-collapse @selectList="getSelectList"></data-collapse>
           </div>
         </div>
+      </el-affix>
 
-        <div class="right">
-          <div class="list">
-            <el-input v-model="input" placeholder="请输入关键字">
-              <template #append>
-                <el-button @click="search"
-                  ><el-icon><Search /></el-icon
-                ></el-button>
-              </template>
-            </el-input>
-            <div class="statistics">
-              <div class="result">
-                共<span>{{ total }}</span
-                >条结果
-              </div>
-              <div class="sort">
-                排序方式
-                <el-select v-model="selectValue" @change="search">
-                  <el-option
-                    v-for="(item, index) in options"
-                    :key="index"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-              </div>
+      <div class="right">
+        <div class="list">
+          <div class="statistics">
+            <div class="class">
+              <strong
+                >当前类别：<span style="color: #409eff">{{
+                  classValue
+                }}</span></strong
+              >
             </div>
-            <el-divider />
-            <div v-if="skeletonFlag">
-              <div v-for="(item, index) in fileList" :key="index">
+            <div
+              :class="sortWord != 'update_time' ? 'sort' : 'sort focus'"
+              @click="sortHandle('update_time')"
+            >
+              <strong>更新时间</strong
+              ><el-icon style="margin-left: 5px"><ArrowDownBold /></el-icon>
+            </div>
+            <div
+              :class="sortWord != 'download' ? 'sort' : 'sort focus'"
+              @click="sortHandle('download')"
+            >
+              <strong>下载量</strong
+              ><el-icon style="margin-left: 5px"><ArrowDownBold /></el-icon>
+            </div>
+            <div
+              :class="sortWord != 'watch' ? 'sort' : 'sort focus'"
+              @click="sortHandle('watch')"
+            >
+              <strong>浏览量</strong
+              ><el-icon style="margin-left: 5px"><ArrowDownBold /></el-icon>
+            </div>
+            <div class="result">
+              <strong
+                >共
+                <span style="color: #409eff">{{ total }}</span> 条结果</strong
+              >
+            </div>
+          </div>
+          <div v-if="skeletonFlag">
+            <div class="list-item" v-if="fileList.length > 0">
+              <div v-for="(item, index) in fileList" :key="index" class="card">
                 <data-card
                   :fileInfo="item"
-                  class="card"
-                  @toDetail="toDetail(index)"
-                >
-                  <template #border>
-                    <hr style="border-color: #d8d8d8" />
-                  </template>
-                </data-card>
+                  @click="toDetail(index)"
+                ></data-card>
               </div>
             </div>
             <div v-else>
-              <el-skeleton :rows="5" animated v-for="item in 3" :key="item" />
-            </div>
-
-            <div class="pagination">
-              <el-pagination
-                background
-                :page-size="10"
-                layout="prev, pager, next"
-                :total="total"
-                v-model:current-page="currentPage"
-                @current-change="pageChange"
-                :hide-on-single-page="true"
-              />
+              <el-empty description="暂无数据" />
             </div>
           </div>
-        </div>
-        <div>
-          <div>
-            <el-card
-              shadow="always"
-              style="margin-top: 110px"
-              class="video2"
-              @click="isCoor"
-              >空间位置查询
-            </el-card>
+          <div v-else>
+            <el-skeleton :rows="5" animated v-for="item in 3" :key="item" />
+          </div>
+
+          <div class="pagination">
+            <el-pagination
+              background
+              :page-size="8"
+              layout="total, jumper, prev, pager, next"
+              :pager-count="5"
+              :total="total"
+              v-model:current-page="currentPage"
+              @current-change="pageChange"
+              :hide-on-single-page="true"
+            />
           </div>
         </div>
       </div>
+      <el-affix :offset="120">
+        <div class="special">
+          <div class="hot-data">
+            <div class="title"><strong>热门数据</strong></div>
+            <div
+              class="content"
+              v-for="(item, index) in hotDataList"
+              :key="index"
+            >
+              <div class="number">{{ index + 1 }}</div>
+              <div class="text" @click="toHotData(index)">
+                {{ item.dataListName }}
+              </div>
+            </div>
+          </div>
+          <div class="special-data">
+            <div class="title"><strong>特色数据</strong></div>
+            <ul
+              class="content"
+              v-for="(item, index) in specialList"
+              :key="index"
+            >
+              <li class="text">{{ item.dataListName }}</li>
+            </ul>
+            <div class="change">
+              <div>
+                <svg
+                  style="
+                    width: 16px;
+                    height: 16px;
+                    margin-top: 3px;
+                    margin-right: 5px;
+                  "
+                >
+                  <use xlink:href="#icon-reload"></use>
+                </svg>
+              </div>
+              <div>换一批</div>
+            </div>
+          </div>
+        </div>
+      </el-affix>
     </div>
+    <el-backtop :right="100" :bottom="100" />
+    <page-copyright />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
-import PageHeader from "@/components/page/PageHeader.vue";
-import DataCollapse from "@/components/page/DataCollapse.vue";
+import { defineComponent, onMounted, ref, reactive } from "vue";
 import DataCard from "@/components/cards/DataCard.vue";
-import { fuzzyQueryDataList } from "@/api/request";
+import { fuzzyQueryDataList, getHot } from "@/api/request";
 import router from "@/router";
-
 import NProgress from "nprogress";
+import { Search } from "@element-plus/icons-vue";
+import PageCopyright from "@/components/page/PageCopyright.vue";
 NProgress.configure({ showSpinner: false });
+
 export default defineComponent({
   components: {
-    PageHeader,
-    DataCollapse,
     DataCard,
+    PageCopyright,
   },
 
   setup() {
-    const skeletonFlag = ref(false);
-    const input = ref("");
-    const keyWord = ref("");
-    const selectValue = ref("watch");
-    const fileList = ref<any[]>([]);
-    let classify: string[] = [];
-    const total = ref(0);
-    const currentPage = ref(1);
-    const searchMap = ref(false);
+    const classList = [
+      {
+        label: "地形数据",
+        value: [
+          "DEM",
+          "边界",
+          "等高线",
+          "DWG",
+          "高程点",
+          "固定断面线",
+          "深泓线",
+        ],
+      },
+      {
+        label: "工程数据",
+        value: [
+          "航标",
+          "护岸工程",
+          "码头工程",
+          "水利工程",
+          "整治工程",
+          "桥梁工程",
+        ],
+      },
+      {
+        label: "物理模型",
+        value: ["浓度场", "照片"],
+      },
+      {
+        label: "水文数据",
+        value: ["潮位", "断面输沙率", "含沙量", "含盐度", "流速流向", "悬移质"],
+      },
+      {
+        label: "遥感影像",
+        value: ["遥感影像"],
+      },
+    ];
 
-    const options = ref<{ label: string; value: string }[]>([
+    const hotDataList = ref<{ dataListName: string; id: string }[]>([]);
+    const specialList = ref<{ dataListName: string; id: string }[]>([
       {
-        label: "下载量",
-        value: "download",
+        dataListName: "浓度场",
+        id: "123",
       },
       {
-        label: "浏览量",
-        value: "watch",
+        dataListName: "浓度场",
+        id: "123",
       },
       {
-        label: "上次更新时间",
-        value: "update",
+        dataListName: "浓度场",
+        id: "123",
       },
       {
-        label: "名称",
-        value: "name",
+        dataListName: "浓度场",
+        id: "123",
       },
     ]);
+    const sortWord = ref("update_time");
+    const skeletonFlag = ref(false);
+    const input = ref("");
+    const select = ref("name");
+    const classValue = ref("所有");
 
-    const isCoor = () => {
-      searchMap.value = !searchMap.value;
+    const titleKeyword = ref("");
+    const tagList = ref<string[]>([]);
+
+    const fileList = ref<any[]>([]);
+    const total = ref(0);
+    const currentPage = ref(1);
+
+    const searchData = async (
+      page: number,
+      size: number,
+      titleKeyword: string,
+      tags: string[],
+      property: string,
+      type: string
+    ) => {
+      const jsonData = {
+        page: page,
+        size: size,
+        titleKeyword: titleKeyword,
+        tags: tags,
+        property: property,
+        flag: false,
+        type: type,
+      };
+      NProgress.start();
+      const data = await fuzzyQueryDataList(jsonData);
+      if (data != null && (data as any).code === 0) {
+        fileList.value = data.data.list;
+        total.value = data.data.total;
+      }
+      NProgress.done();
+    };
+
+    const searchHandle = async () => {
+      if (select.value === "name") {
+        titleKeyword.value = input.value;
+        tagList.value = [];
+      } else {
+        tagList.value = input.value != "" ? [input.value] : [];
+        titleKeyword.value = "";
+      }
+      await searchData(
+        0,
+        8,
+        titleKeyword.value,
+        tagList.value,
+        sortWord.value,
+        classValue.value === "所有" ? "" : classValue.value
+      );
+      currentPage.value = 1;
+    };
+
+    const classifyHandle = async (val: string) => {
+      classValue.value = val;
+      await searchData(
+        0,
+        8,
+        "",
+        [],
+        sortWord.value,
+        classValue.value === "所有" ? "" : classValue.value
+      );
+      currentPage.value = 1;
+      input.value = "";
+      (titleKeyword.value = ""), (tagList.value = []);
+    };
+
+    const sortHandle = async (val: string) => {
+      sortWord.value = val;
+      await searchData(
+        currentPage.value - 1,
+        8,
+        titleKeyword.value,
+        tagList.value,
+        sortWord.value,
+        classValue.value === "所有" ? "" : classValue.value
+      );
+    };
+
+    const pageChange = async (val: number) => {
+      await searchData(
+        val - 1,
+        8,
+        titleKeyword.value,
+        tagList.value,
+        sortWord.value,
+        classValue.value === "所有" ? "" : classValue.value
+      );
+      if (titleKeyword.value === "") {
+        input.value = tagList.value[0];
+      } else {
+        input.value = titleKeyword.value;
+      }
+    };
+
+    const toMap = () => {
       router.push({
-        path: "/data/spaceSearch",
+        path: "/data/findMap",
       });
     };
-
-    const search = async () => {
-      NProgress.start();
-      keyWord.value = input.value;
-      const jsonData = {
-        page: 0,
-        size: 10,
-        keyword: keyWord.value,
-        tags: classify,
-        property: "",
-        flag: false,
-        type: "",
-      };
-
-      switch (selectValue.value) {
-        case "download":
-          jsonData.property = "download";
-          break;
-        case "watch":
-          jsonData.property = "watch";
-          break;
-        case "update":
-          jsonData.property = "update_time";
-          break;
-        case "name":
-          jsonData.property = "name";
-          break;
-      }
-      const data = await fuzzyQueryDataList(jsonData);
-      if (data != null) {
-        if ((data as any).code === 0) {
-          fileList.value = (data as any).data.list;
-          total.value = (data as any).data.total;
-          currentPage.value = 1;
-        }
-      }
-      NProgress.done();
-    };
-
-    const pageChange = async () => {
-      const jsonData = {
-        page: currentPage.value - 1,
-        size: 10,
-        keyword: keyWord.value,
-        tags: classify,
-        property: "",
-        flag: false,
-        type: "",
-      };
-
-      NProgress.start();
-      switch (selectValue.value) {
-        case "download":
-          jsonData.property = "download";
-          break;
-        case "watch":
-          jsonData.property = "watch";
-          break;
-        case "update":
-          jsonData.property = "update_time";
-          break;
-        case "name":
-          jsonData.property = "name";
-          break;
-      }
-      const data = await fuzzyQueryDataList(jsonData);
-      console.log(data);
-      if (data != null) {
-        if ((data as any).code === 0) {
-          fileList.value = (data as any).data.list;
-          total.value = (data as any).data.total;
-        }
-      }
-      NProgress.done();
-    };
-
     const toDetail = (index: number) => {
       router.push({
         name: "shareFile",
@@ -228,193 +358,228 @@ export default defineComponent({
         },
       });
     };
-
-    const getSelectList = async (val: string[]) => {
-      NProgress.start();
-      classify = val;
-      const jsonData = {
-        page: 0,
-        size: 10,
-        keyword: keyWord.value,
-        tags: classify,
-        property: "",
-        flag: false,
-        type: "",
-      };
-
-      switch (selectValue.value) {
-        case "download":
-          jsonData.property = "download";
-          break;
-        case "watch":
-          jsonData.property = "watch";
-          break;
-        case "update":
-          jsonData.property = "update_time";
-          break;
-        case "name":
-          jsonData.property = "name";
-          break;
-      }
-      const data = await fuzzyQueryDataList(jsonData);
-      if (data != null) {
-        if ((data as any).code === 0) {
-          fileList.value = data.data.list;
-          total.value = data.data.total;
-          currentPage.value = 1;
-        }
-      }
-      NProgress.done();
+    const toHotData = (val: number) => {
+      router.push({
+        name: "shareFile",
+        params: {
+          id: hotDataList.value[val].id,
+        },
+      });
     };
 
     onMounted(async () => {
-      let jsonData = {
-        page: currentPage.value - 1,
-        size: 10,
-        keyword: keyWord.value,
-        tags: classify,
-        property: "watch",
-        flag: false,
-        type: "",
-      };
-      const data = await fuzzyQueryDataList(jsonData);
-
+      await searchData(0, 8, "", [], "update_time", "");
+      const data = await getHot(8);
       skeletonFlag.value = true;
-      if (data != null) {
-        if ((data as any).code === 0) {
-          fileList.value = data.data.list;
-          total.value = data.data.total;
-        }
+      if (data != null && (data as any).code === 0) {
+        hotDataList.value = data.data;
       }
     });
 
     return {
       skeletonFlag,
       input,
-      searchMap,
-      options,
-      selectValue,
+      select,
       fileList,
       total,
       toDetail,
       currentPage,
-
+      toMap,
       pageChange,
-      search,
-      getSelectList,
-      isCoor,
+      sortWord,
+      classList,
+      hotDataList,
+      specialList,
+      Search,
+      searchHandle,
+      classValue,
+      classifyHandle,
+      sortHandle,
+      toHotData,
     };
   },
 });
 </script>
 
 <style lang="scss" scoped>
-.warning-row {
-  background: #0c90b8;
-}
-.success-row {
-  background: #0c90b8;
-}
-
-.video2 {
-  width: 60px;
-  height: 180px;
-  border-radius: 15px;
-  background-color: rgb(255, 255, 255);
-  //opacity: 0.6;
-  transition: all 0.3s ease-in-out;
-  margin-left: 45px;
-  margin-right: 45px;
-  // -webkit-animation适配-webkit内核的浏览器
-  // -webkit-animation: ripple 1s linear infinite;
-  //animation: ripple 1s linear infinite;
-  cursor: pointer;
-}
-
-.video2:hover {
-  background-color: #859ecc;
-  transform: scale(1.2);
-}
-@-webkit-keyframes ripple {
-  0% {
-    /* 在box四周添加三层白色阴影 */
-    box-shadow: 0 0 0 0 rgb(255, 255, 255 / 25%),
-      0 0 0 10px rgb(255, 255, 255 / 25%), 0 0 0 20px rgb(255, 255, 255 / 25%);
-  }
-
-  100% {
-    /* 分别改变三层阴影的距离
-          形成两帧的动画,然后在transition的过渡下形成动画 */
-    box-shadow: 0 0 0 10px rgb(255, 255, 255 / 25%),
-      0 0 0 20px rgb(255, 255, 255 / 25%), 0 0 0 40px rgba(50, 100, 245, 0);
-  }
-}
-@keyframes ripple {
-  0% {
-    box-shadow: 0 0 0 0 rgb(255, 255, 255 / 25%),
-      0 0 0 10px rgb(255, 255, 255 / 25%), 0 0 0 20px rgb(255, 255, 255 / 25%);
-  }
-  100% {
-    box-shadow: 0 0 0 10px rgb(255, 255, 255 / 25%),
-      0 0 0 20px rgb(255, 255, 255 / 25%), 0 0 0 40px rgba(255, 255, 255, 0);
-  }
-}
 .data-main {
-  .data-body {
-    .body {
-      width: 1550px;
-      margin-left: 100px;
-      margin: 0 auto;
-      margin-top: 10px;
-      display: flex;
-      .left {
-        width: 400px;
-        background: #f6f7fa;
-        min-height: calc(100vh - 170px);
-        .content {
-          margin: 20px 15px 10px 15px;
-          .title {
-            height: 50px;
-            border-bottom: solid 1px #d2d2d2;
-            text-align: center;
+  .search {
+    width: calc(80vw + 20px);
+    margin-left: 10vw;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    height: 60px;
+    background: #f0f3f5;
+    .top {
+      padding-top: 15px;
+      width: 80%;
+      margin-left: 10%;
+      .el-input {
+        width: calc(100% - 100px);
+        margin-right: 10px;
+      }
+      .el-button {
+        width: 90px;
+      }
+    }
+  }
+  .body {
+    margin-left: 10vw;
+    display: flex;
+    .left {
+      width: 16vw;
+      margin-right: 10px;
+      .classify {
+        border: solid 1px #d6d6d6;
+        box-sizing: border-box;
+        .head {
+          background: rgba($color: #000000, $alpha: 0.7);
+          height: 50px;
+          line-height: 50px;
+          color: white;
+          text-align: center;
+          font-size: 20px;
+          span {
+            color: #409eff;
+            &:hover {
+              text-decoration: underline;
+              cursor: pointer;
+            }
           }
         }
-      }
-      .right {
-        width: 1000px;
-        //float:left;
-
-        .list {
-          margin: 30px 20px 10px 20px;
-          .statistics {
-            height: 50px;
-            position: relative;
-            .result {
-              position: absolute;
-              left: 0px;
-              top: 20px;
-              span {
-                color: #22a4f1;
+        .content {
+          .title {
+            padding-left: 10px;
+            height: 40px;
+            line-height: 40px;
+            background: #e5ecf4;
+            font-style: italic;
+          }
+          .value {
+            display: flex;
+            padding: 10px 15px 0;
+            flex-wrap: wrap;
+            cursor: pointer;
+            .value-item {
+              margin-right: 15px;
+              margin-bottom: 10px;
+              &:hover {
+                text-decoration: underline;
+                color: #409eff;
               }
             }
-            .sort {
-              position: absolute;
-              right: 0px;
-              top: 20px;
-            }
           }
-        }
-        .card {
-          cursor: pointer;
-          margin-bottom: 40px;
         }
       }
     }
-    .body2 {
-      width: 150px;
+    .right {
+      width: 48vw;
+      .list {
+        .statistics {
+          height: 50px;
+          background: rgba($color: #000000, $alpha: 0.7);
+          color: white;
+          display: flex;
+          line-height: 50px;
+          text-align: center;
+          position: relative;
+          cursor: pointer;
+          .class {
+            width: 200px;
+          }
+          .sort {
+            width: 150px;
+          }
+          .focus {
+            background: black;
+          }
+          .result {
+            position: absolute;
+            right: 25px;
+          }
+        }
+        .list-item {
+          padding: 0 10px;
+          border: solid 1px #d6d6d6;
+          .card {
+            cursor: pointer;
+            width: 100%;
+            /deep/.el-tag__content {
+              color: white;
+            }
+            &:last-child {
+              /deep/ .data-card {
+                border-bottom: none;
+              }
+            }
+          }
+        }
+      }
+    }
+    .special {
+      width: 16vw;
+      margin-left: 10px;
+      .title {
+        height: 50px;
+        background: rgba($color: #000000, $alpha: 0.7);
+        color: white;
+        line-height: 50px;
+        text-align: center;
+        font-size: 20px;
+      }
+      .hot-data {
+        border: solid 1px #d6d6d6;
+        box-sizing: border-box;
+        .content {
+          padding: 7px 10px;
+          display: flex;
+          line-height: 25px;
+          cursor: pointer;
+
+          .number {
+            height: 25px;
+            width: 25px;
+            background: #999999;
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            margin-right: 10px;
+          }
+          &:nth-child(2),
+          &:nth-child(3),
+          &:nth-child(4) {
+            .number {
+              background: #107bce;
+            }
+          }
+          .text {
+            &:hover {
+              text-decoration: underline;
+              color: #409eff;
+            }
+          }
+        }
+      }
+      .special-data {
+        margin-top: 30px;
+        border: solid 1px #d6d6d6;
+        box-sizing: border-box;
+        cursor: pointer;
+        .text:hover {
+          text-decoration: underline;
+          color: #409eff;
+        }
+        .change {
+          height: 30px;
+          line-height: 20px;
+          margin-left: calc(100% - 90px);
+          display: flex;
+        }
+      }
     }
   }
 }
+
 .pagination {
   margin-top: 40px;
   margin-bottom: 40px;
@@ -422,44 +587,4 @@ export default defineComponent({
   justify-content: space-around;
 }
 
-.video {
-  width: 366px;
-  height: 61px;
-  border-radius: 10px;
-  background-color: rgba(255, 255, 255, 0.6);
-  //opacity: 0.6;
-  transition: all 0.3s ease-in-out;
-  // -webkit-animation适配-webkit内核的浏览器
-  //-webkit-animation: ripple 1s linear infinite;
-  //animation: ripple 1s linear infinite;
-}
-
-.video:hover {
-  background-color: #ffffff;
-  transform: scale(1.2);
-}
-@-webkit-keyframes ripple {
-  0% {
-    /* 在box四周添加三层白色阴影 */
-    box-shadow: 0 0 0 0 rgb(255, 255, 255 / 25%),
-      0 0 0 10px rgb(255, 255, 255 / 25%), 0 0 0 20px rgb(255, 255, 255 / 25%);
-  }
-
-  100% {
-    /* 分别改变三层阴影的距离
-          形成两帧的动画,然后在transition的过渡下形成动画 */
-    box-shadow: 0 0 0 10px rgb(255, 255, 255 / 25%),
-      0 0 0 20px rgb(255, 255, 255 / 25%), 0 0 0 40px rgba(50, 100, 245, 0);
-  }
-}
-@keyframes ripple {
-  0% {
-    box-shadow: 0 0 0 0 rgb(255, 255, 255 / 25%),
-      0 0 0 10px rgb(255, 255, 255 / 25%), 0 0 0 20px rgb(255, 255, 255 / 25%);
-  }
-  100% {
-    box-shadow: 0 0 0 10px rgb(255, 255, 255 / 25%),
-      0 0 0 20px rgb(255, 255, 255 / 25%), 0 0 0 40px rgba(50, 100, 245, 0);
-  }
-}
 </style>

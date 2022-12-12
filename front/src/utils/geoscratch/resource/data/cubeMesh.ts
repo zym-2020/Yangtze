@@ -3,6 +3,7 @@ import { Vector3 } from "../../core/math/vector3";
 import { Shader } from "../../core/shader/shader";
 import axios from "axios";
 import { assetManager } from "../asset_manager";
+import { prefix } from '@/prefix'
 
 const cubeVertices = Array<number>(
     // Back face
@@ -74,7 +75,7 @@ export class CubeMesh {
     }
 
     async setup(gl: WebGL2RenderingContext, shader: Shader) {
-        const meshData = await axios.get("http://localhost:8080/json/cube.json")
+        const meshData = await axios.get(prefix + "json/cube.json")
             .then((response) => {
                 return response.data;
             });

@@ -2,7 +2,7 @@
   <div class="data-manage">
     <div class="data-manage-body">
       <div class="input">
-        <!-- <strong style="margin-left: 30px">项目名：test</strong> -->
+        <!-- <strong style="margin-left: 30px">test</strong> -->
         <!-- <el-input v-model="serach" :suffix-icon="Search" /> -->
       </div>
       <div class="content">
@@ -50,19 +50,19 @@
         </li>
         <li
           :class="renameAble ? 'menu-item' : 'menu-item disabled'"
-          @click="operateLayer('rename', !renameAble)"
+          @click="operateLayer('rename', renameAble)"
         >
           <span>重命名</span>
         </li>
         <li
           :class="downloadAble ? 'menu-item' : 'menu-item disabled'"
-          @click="operateLayer('download', !downloadAble)"
+          @click="operateLayer('download', downloadAble)"
         >
           <span>下载</span>
         </li>
         <li
           :class="isDelete ? 'menu-item' : 'menu-item disabled'"
-          @click="operateLayer('del', !isDelete)"
+          @click="operateLayer('del', isDelete)"
         >
           <span>删除</span>
         </li>
@@ -112,13 +112,14 @@ import {
   addElevationFlush,
   addFlushContour,
   addSlope,
+  computeVolume,
   rename,
   getUrl,
-  downloadAnalyticData,
 } from "@/api/request";
 import { decrypt } from "@/utils/auth";
 import { useStore } from "@/store";
 import { notice } from "@/utils/notice";
+import { prefix } from '@/prefix'
 export default defineComponent({
   emits: ["operateLayer"],
   setup(_, context) {
@@ -450,6 +451,27 @@ export default defineComponent({
           });
           notice("success", "成功", "河床坡度计算成功！");
         }
+      } else if (param.type === "volume") {
+        console.log(param);
+        addData([param.value.dem]);
+        context.emit("operateLayer", {
+          content: {
+            id: param.value.dem.fileId,
+            name: param.value.dem.fileName,
+            visualType: param.value.dem.visualType,
+            visualId: param.value.dem.visualId,
+          },
+          type: "add",
+        });
+        const data = await computeVolume(
+          router.currentRoute.value.params.id as string,
+          param.value.region as string,
+          param.value.dem.fileId,
+          param.value.deep
+        );
+        if (data != null && (data as any).code === 0) {
+          await checkStateHandle(data.data, "容积计算");
+        }
       }
     };
 
@@ -539,7 +561,7 @@ export default defineComponent({
           const data = await getUrl(selectedData.value?.id as string);
           if (data != null && (data as any).code === 0) {
             window.location.href =
-              "http://localhost:8002/analyticDataSet/downloadAnalyticData/" +
+              prefix + "analyticDataSet/downloadAnalyticData/" +
               store.state.user.id +
               "/" +
               decrypt(data.data, store.state.user.id);

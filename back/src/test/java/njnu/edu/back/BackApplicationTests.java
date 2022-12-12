@@ -1,6 +1,7 @@
 package njnu.edu.back;
 
 import njnu.edu.back.common.utils.CommonUtils;
+import njnu.edu.back.pojo.User;
 import njnu.edu.back.service.FileService;
 import njnu.edu.back.service.ProjectService;
 import njnu.edu.back.dao.main.ShpCoordinatesMapper;
@@ -25,8 +26,8 @@ class BackApplicationTests {
 
     @Test
     void contextLoads() {
-        String str = CommonUtils.getRandomCharStr(8);
-        System.out.println(str);
+
+
     }
 
 }

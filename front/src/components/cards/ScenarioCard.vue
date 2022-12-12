@@ -1,14 +1,14 @@
 <template>
   <div class="scenario-card">
-    <div class="image">
-      <img :src="info.img" />
+    <div>
+      <div class="image">
+        <img :src="info.img" />
+      </div>
     </div>
     <div class="text">
       <div class="title">
         <strong>{{ info.title }}</strong>
       </div>
-      <div class="creator">发布：{{ info.creator }}</div>
-      <div class="time">时间：{{ info.time }}</div>
     </div>
   </div>
 </template>
@@ -34,25 +34,42 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@keyframes move {
+  0% {
+    transform: scale(1);
+  }
+
+  100% {
+    transform: scale(1.1);
+  }
+}
 .scenario-card {
-  width: 400px;
+  height: 330px;
+  width: 550px;
+  background: #f4f4f5;
+  border-radius: 4px;
+  padding: 20px;
+  cursor: pointer;
   .image {
-    height: 220px;
+    width: 500px;
+    height: 300px;
+    // padding-top: 20px;
+    margin: 0 auto 10px;
+    overflow: hidden;
     img {
-      height: 100%;
       width: 100%;
+      height: 300px;
     }
   }
+
   .text {
-    margin: 20px 15px 0px;
-    .title {
-      height: 30px;
-      line-height: 30px;
-    }
-    .creator,
-    .time {
-      height: 25px;
-      line-height: 25px;
+    text-align: center;
+    font-size: 20px;
+  }
+
+  &:hover {
+    img {
+      animation: move 0.3s linear forwards;
     }
   }
 }

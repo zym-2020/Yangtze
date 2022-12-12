@@ -32,6 +32,7 @@
       :visualId="chartInfo.visualId"
       v-if="chartInfo.visualType === 'suspension'"
     />
+    <volumn-visual :chartInfo="chartInfo" v-if="chartInfo.visualType === 'volume'" />
   </div>
 </template>
 
@@ -45,6 +46,7 @@ import RateAndDirection from "@/components/visual/RateAndDirection.vue";
 import Salinity from "@/components/visual/Salinity.vue";
 import SandContent from "@/components/visual/SandContent.vue";
 import Suspension from "@/components/visual/Suspension.vue";
+import VolumnVisual from "@/components/visual/VolumeVisual.vue";
 export default defineComponent({
   components: {
     SectionVisual,
@@ -55,6 +57,7 @@ export default defineComponent({
     Salinity,
     SandContent,
     Suspension,
+    VolumnVisual,
   },
   props: {
     chartVisualInfo: {

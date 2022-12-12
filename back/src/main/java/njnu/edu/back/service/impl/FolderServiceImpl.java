@@ -27,15 +27,11 @@ public class FolderServiceImpl implements FolderService {
     @Value("${basePath}")
     String basePath;
 
-    @Override
-    public List<Map<String, Object>> findByParentId(String parentId, String email) {
-        return folderMapper.findByParentId(parentId, email);
-    }
 
     @Override
     public Map<String, Object> addFolder(String parentId, String folderName, String email) {
         if(parentId.equals("")) {
-            String address = email + "\\" + "upload\\" + folderName;
+            String address = email + "/" + "upload/" + folderName;
             String path = basePath + address;
             File file = new File(path);
             if(!file.mkdirs()) {
@@ -45,12 +41,12 @@ public class FolderServiceImpl implements FolderService {
         } else {
             Map<String, Object> map = folderMapper.findById(parentId);
             String address = (String) map.get("address");
-            String path = basePath + address + "\\" + folderName;
+            String path = basePath + address + "/" + folderName;
             File file = new File(path);
             if(!file.mkdirs()) {
                 throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
             }
-            return folderMapper.addFolder(parentId, folderName, email, address + "\\" + folderName);
+            return folderMapper.addFolder(parentId, folderName, email, address + "/" + folderName);
         }
     }
 }

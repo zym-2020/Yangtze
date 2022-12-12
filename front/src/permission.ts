@@ -13,6 +13,7 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
     NProgress.start()
     if (getToken() != null) {
         if (to.path === '/login' || to.path === '/register') {
+            window.document.title = '首页'
             next({ path: '/' })
             NProgress.done()
         } else {
@@ -24,22 +25,26 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
                     store.state.permission.addRouters.forEach(item => {
                         router.addRoute(item)
                     })
+                    window.document.title = to.meta.title as string;
                     next({ ...to, replace: true })
                     NProgress.done()
 
                 } catch (err) {
                     store.dispatch("logout", undefined)
+                    window.document.title = '登录'
                     next('/login')
                     NProgress.done()
                 }
             } else {
                 const code = await toIdPages(to)
-                console.log(to.name)
                 if (code === 1) {
+                    window.document.title = to.meta.title as string;
                     next()
                 } else if (code === -1) {
+                    window.document.title = '404'
                     next('/404')
                 } else if (code === 0) {
+                    window.document.title = to.meta.title as string;
                     next()
                 }
 
@@ -48,9 +53,11 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
         }
     } else {
         if (to.path === '/login' || to.path === '/register' || to.path === '/') {
+            window.document.title = to.meta.title as string;
             next()
             NProgress.done
         } else {
+            window.document.title = '登录'
             next('/login')
             NProgress.done
         }

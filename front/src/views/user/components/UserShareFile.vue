@@ -13,8 +13,11 @@
               <div v-if="item.status === 1" class="online">
                 <el-tag type="success">Online</el-tag>
               </div>
-              <div v-else class="offline">
+              <div v-if="item.status === -1" class="offline">
                 <el-tag type="info">Offline</el-tag>
+              </div>
+              <div v-if="item.status === 0" class="offline">
+                <el-tag type="info">审核中</el-tag>
               </div>
             </template>
             <template #creator>
@@ -28,7 +31,9 @@
                     </el-button>
                     <template #dropdown>
                       <el-dropdown-menu>
-                        <el-dropdown-item @click="operate(1, item)"
+                        <el-dropdown-item
+                          @click="operate(1, item)"
+                          v-if="item.status != 0"
                           >编辑</el-dropdown-item
                         >
                         <el-dropdown-item
@@ -58,16 +63,17 @@
       </div>
     </el-scrollbar>
     <el-empty description="暂无数据" v-else />
-  </div>
-  <div class="pagination" v-if="fileList.length > 0">
-    <el-pagination
-      background
-      layout="prev, pager, next"
-      :total="total"
-      v-model:current-page="currentPage"
-      @current-change="currentChange"
-      :hide-on-single-page="true"
-    />
+    <div class="pagination">
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        v-model:current-page="currentPage"
+        @current-change="currentChange"
+        :hide-on-single-page="true"
+        :pager-count="5"
+      />
+    </div>
   </div>
 </template>
 
@@ -77,6 +83,7 @@ import { pageQueryByEmail, updateStatusById } from "@/api/request";
 import DataCard from "@/components/cards/DataCard.vue";
 import { ElMessageBox } from "element-plus";
 import router from "@/router";
+import { notice } from "@/utils/notice";
 export default defineComponent({
   components: { DataCard },
   setup() {
@@ -122,7 +129,13 @@ export default defineComponent({
             cancelButtonText: "取消",
             type: "warning",
           }
-        ).then(async () => {});
+        )
+          .then(async () => {
+            await updateStatusById(info.id, 0);
+            notice("success", "成功", "请等待管理员审核");
+            fileList.value[index].status = 0;
+          })
+          .catch(() => {});
       } else if (number === 4) {
         ElMessageBox.confirm("您确定要删除该条目吗？", "警告", {
           confirmButtonText: "确定",
@@ -204,7 +217,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .share-main {
   height: 80vh;
-  border-bottom: solid 0.5px #ebeef5;
+  border-bottom: solid 2px #ebeef5;
   .head {
     height: 50px;
     .el-input {
@@ -213,7 +226,7 @@ export default defineComponent({
     }
   }
   .el-scrollbar {
-    height: calc(100% - 50px);
+    height: calc(100% - 100px);
   }
   .card {
     border: 1px solid #dcdfe6;
@@ -229,7 +242,7 @@ export default defineComponent({
     .creator {
       position: absolute;
       display: flex;
-      right: 50px;
+      right: 300px;
       .el-avatar {
         margin-top: 8px;
       }

@@ -15,11 +15,12 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import type { UploadFile } from "element-plus";
+import { prefix } from "@/prefix";
 export default defineComponent({
   props: {
     pictureName: {
-      type: String
-    }
+      type: String,
+    },
   },
   emits: ["upload"],
   setup(props, context) {
@@ -36,12 +37,12 @@ export default defineComponent({
     };
 
     const initPicture = () => {
-      imageUrl.value = ""
-    }
+      imageUrl.value = "";
+    };
 
     onMounted(() => {
-      if(props.pictureName != "") {
-        imageUrl.value = `http://localhost:8002/visual/getAvatar/${props.pictureName}`
+      if (props.pictureName != "") {
+        imageUrl.value = `${prefix}visual/getAvatar/${props.pictureName}`;
       }
     });
 

@@ -3,7 +3,7 @@
 <mapper namespace="njnu.edu.back.dao.main.AnalyticDataSetMapper">
 
     <select id="getAnalyticData" resultType="java.util.Map">
-        select id, file_name as "fileName", visual_type as "visualType", visual_id as "visualId" from analytic_dataset where project_id = #{projectId} order by create_time
+        select id, file_name as "fileName", address, visual_type as "visualType", visual_id as "visualId" from analytic_dataset where project_id = #{projectId} order by create_time
     </select>
 
     <select id="addDraw" resultType="java.lang.String">
@@ -17,6 +17,10 @@
 
     <delete id="delAnalyticData">
         delete from analytic_dataset where id::text = #{id}
+    </delete>
+
+    <delete id="delAnalyticDataByProjectId">
+        delete from analytic_dataset where project_id = #{projectId}
     </delete>
 
     <select id="getInfoById" resultType="java.util.Map">

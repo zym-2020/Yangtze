@@ -21,6 +21,8 @@ public interface AnalyticDataSetMapper {
 
     void delAnalyticData(@Param("id") String id);
 
+    void delAnalyticDataByProjectId(@Param("projectId") String projectId);
+
     Map<String, Object> getInfoById(@Param("id") String id);
 
     void rename(@Param("id") String id, @Param("name") String name);

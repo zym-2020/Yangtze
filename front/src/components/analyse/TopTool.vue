@@ -102,6 +102,18 @@
     >
       <text-draw @createGeoJson="createGeoJson" />
     </el-dialog>
+
+    <el-dialog
+      v-model="createFlag"
+      width="500px"
+      :show-close="false"
+      title="拷贝项目"
+    >
+      <create-project
+        :projectInfo="projectInfo"
+        @copyProject="copyProject"
+      ></create-project>
+    </el-dialog>
   </div>
 </template>
 
@@ -115,8 +127,15 @@ import BasemapDialog from "./BasemapDialog.vue";
 import TextDraw from "./TextDraw.vue";
 import { MoreFilled } from "@element-plus/icons-vue";
 import { updatePublicState } from "@/api/request";
+import CreateProject from "@/components/tools/CreateProject.vue";
 export default defineComponent({
-  components: { AddDataDialog, AnalyseDialog, BasemapDialog, TextDraw },
+  components: {
+    AddDataDialog,
+    AnalyseDialog,
+    BasemapDialog,
+    TextDraw,
+    CreateProject,
+  },
   emits: [
     "returnFileList",
     "operateDraw",
@@ -125,12 +144,18 @@ export default defineComponent({
     "createGeoJson",
   ],
   setup(_, context) {
+    const createFlag = ref(false);
     const dialogAddData = ref(false);
     const dialogAnalyse = ref(false);
     const dialogBasemap = ref(false);
     const dialogTextDraw = ref(false);
     const state = ref(0);
-    const isPublic = ref<boolean>((router.currentRoute.value.params.projectInfo as any).isPublic)
+    const projectInfo = computed(() => {
+      return router.currentRoute.value.params.projectInfo;
+    });
+    const isPublic = ref<boolean>(
+      (router.currentRoute.value.params.projectInfo as any).isPublic
+    );
 
     const flag = computed(() => {
       if (router.currentRoute.value.params.role === "creator") {
@@ -232,11 +257,23 @@ export default defineComponent({
           });
           if (data != null && (data as any).code === 0) {
             notice("success", "成功", "项目权限更新成功");
-            isPublic.value = state
-            console.log((router.currentRoute.value.params.projectInfo as any))
+            isPublic.value = state;
+            console.log(router.currentRoute.value.params.projectInfo as any);
           }
         }
+      } else if (val === "copy") {
+        createFlag.value = true;
       }
+    };
+
+    const copyProject = (val: string) => {
+      createFlag.value = false;
+      router.push({
+        name: "project",
+        params: {
+          id: val,
+        },
+      });
     };
 
     return {
@@ -257,6 +294,9 @@ export default defineComponent({
       publicFlag,
       privateFlag,
       commandHandle,
+      createFlag,
+      projectInfo,
+      copyProject,
     };
   },
 });
@@ -306,6 +346,26 @@ export default defineComponent({
   /deep/ .text-draw {
     .el-dialog__body {
       padding-top: 0px;
+    }
+  }
+
+  /deep/.el-dialog {
+    .el-dialog__header {
+      padding: 10px;
+      margin: 0;
+      background: #000000;
+      .el-dialog__title {
+        color: white;
+      }
+      .el-dialog__headerbtn {
+        height: 40px;
+        .el-icon {
+          color: white;
+        }
+      }
+    }
+    .el-dialog__body {
+      padding: 0;
     }
   }
 }

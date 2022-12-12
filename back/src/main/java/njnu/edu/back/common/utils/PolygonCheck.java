@@ -24,22 +24,35 @@ public class PolygonCheck {
     */
     public static List getCoorShp(String[] arrayString, List<Map<String,Object>> map){
         //生成的是散列码
-        System.out.println(map.size());
+        int size=map.size();
         ArrayList<List> lis=new ArrayList<List>();
         ArrayList<List> lis2=new ArrayList<List>();
-        for(int i=0;i<arrayString.length;i=i+2){
+        for(int k=0;k<arrayString.length;k=k+2){
             //lis.add(new ArrayList(Arrays.asList(new Double[]{Double.parseDouble(String.valueOf(listt.get(i))),Double.parseDouble(String.valueOf(listt.get(i+1)))})));
-            lis.add(new ArrayList(Arrays.asList(new Double[]{Double.parseDouble(arrayString[i]),Double.parseDouble(arrayString[i+1])})));
+            lis.add(new ArrayList(Arrays.asList(new Double[]{Double.parseDouble(arrayString[k]),Double.parseDouble(arrayString[k+1])})));
         }
 
-        for(int i=0;i<map.size();i++) {
-            String[] coordins = (String[]) map.get(i).get("coordinates");
-            lis2.add(new ArrayList(Arrays.asList(new Double[]{Double.parseDouble(coordins[0]), Double.parseDouble(coordins[1])})));
-            lis2.add(new ArrayList(Arrays.asList(new Double[]{Double.parseDouble(coordins[2]), Double.parseDouble(coordins[3])})));
-            lis2.add(new ArrayList(Arrays.asList(new Double[]{Double.parseDouble(coordins[4]), Double.parseDouble(coordins[5])})));
-            lis2.add(new ArrayList(Arrays.asList(new Double[]{Double.parseDouble(coordins[6]), Double.parseDouble(coordins[7])})));
-            if(!PolygonCheck.check(lis,lis2))
+        for(int i=map.size()-1;i>=0;i--) {
+            String[] coordins = (String[]) map.get(i).get("location");
+            if(coordins.length==0) {
                 map.remove(i);
+                continue;
+            }
+            //System.out.println(Arrays.asList(coordins));
+            for(int j=0;j<coordins.length;j=j+2){
+                //lis.add(new ArrayList(Arrays.asList(new Double[]{Double.parseDouble(String.valueOf(listt.get(i))),Double.parseDouble(String.valueOf(listt.get(i+1)))})));
+                lis2.add(new ArrayList(Arrays.asList(new Double[]{Double.parseDouble(coordins[j]),Double.parseDouble(coordins[j+1])})));
+            }
+//            lis2.add(new ArrayList(Arrays.asList(new Double[]{Double.parseDouble(coordins[0]), Double.parseDouble(coordins[1])})));
+//            lis2.add(new ArrayList(Arrays.asList(new Double[]{Double.parseDouble(coordins[2]), Double.parseDouble(coordins[3])})));
+//            lis2.add(new ArrayList(Arrays.asList(new Double[]{Double.parseDouble(coordins[4]), Double.parseDouble(coordins[5])})));
+//            lis2.add(new ArrayList(Arrays.asList(new Double[]{Double.parseDouble(coordins[6]), Double.parseDouble(coordins[7])})));
+            if(!PolygonCheck.check(lis,lis2) ) {
+                //System.out.println(lis2);
+                //System.out.println(map.get(i));
+                map.remove(i);
+            }
+
             lis2=new ArrayList<List>();
         }
         return map;

@@ -3,6 +3,7 @@ package njnu.edu.back.common.utils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.pojo.support.Point;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,10 +26,13 @@ import java.util.Scanner;
  * @Description:
  */
 
+@Slf4j
 public class AnalyseUtil {
 
     static String pythonDir = "D:\\zhuomian\\水科院\\python\\";
-
+//    static String pythonDir = "/home/zym/python/";
+    static String pythonStr = "python";
+//    static String pythonStr = "python3";
 
     public static Process saveSectionValue(String tempPath, String rasterPath, JSONArray jsonArray, String resultPath) throws IOException {
         BufferedWriter out = null;
@@ -53,10 +58,10 @@ public class AnalyseUtil {
                 }
             }
         }
-
+        log.info(pythonStr + " " + pythonDir + "section.py " + tempPath);
         ProcessBuilder processBuilder = new ProcessBuilder();
         List<String> commands = new ArrayList<>();
-        commands.add("python");
+        commands.add(pythonStr);
         commands.add(pythonDir + "section.py");
         commands.add(tempPath);
         processBuilder.command(commands);
@@ -93,7 +98,7 @@ public class AnalyseUtil {
 
         ProcessBuilder processBuilder = new ProcessBuilder();
         List<String> commands = new ArrayList<>();
-        commands.add("python");
+        commands.add(pythonStr);
         commands.add(pythonDir + "SectionContrast.py");
         commands.add(tempPath);
         processBuilder.command(commands);
@@ -129,90 +134,47 @@ public class AnalyseUtil {
         }
         ProcessBuilder processBuilder = new ProcessBuilder();
         List<String> commands = new ArrayList<>();
-        commands.add("python");
+        commands.add(pythonStr);
         commands.add(pythonDir + "section_flush.py");
         commands.add(tempPath);
         processBuilder.command(commands);
         return processBuilder.start();
     }
 
-    public static Process createContour(String exePath, String interval, String rasterPath, String resultPath) {
-        ProcessBuilder processBuilder = new ProcessBuilder();
-        List<String> commands = new ArrayList<>();
-        commands.add(exePath + "gdal_contour.exe");
-        commands.add("-b");
-        commands.add("1");
-        commands.add("-a");
-        commands.add("DEEP");
-        commands.add("-i");
-        commands.add(interval);
-        commands.add(rasterPath);
-        commands.add(resultPath);
-        processBuilder.command(commands);
-        try {
-            Process start = processBuilder.start();
-            return start;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
-        }
-    }
 
-    public static Process uploadShpToDataBase(String exePath, String shpPath, String shpName, String srid) {
-        ProcessBuilder processBuilder = new ProcessBuilder();
-        List<String> commands = new ArrayList<>();
-        commands.add("cmd.exe");
-        commands.add("/c");
-        commands.add(exePath + "shp2pgsql");
-        commands.add("-s");
-        commands.add(srid);
-        commands.add("-c");
-        commands.add(shpPath + "\\" + shpName + ".shp");
-        commands.add(shpName);
-        commands.add("|");
-        commands.add(exePath + "psql");
-        commands.add("-U");
-        commands.add("postgres");
-        commands.add("-d");
-        commands.add("shp_data");
-        processBuilder.environment().put("PGPASSWORD", "123");
-        processBuilder.command(commands);
+    public static Process computeVolume(String tempPath, double deep, String rasterPath, String resultPath, String visualPath, JSONArray jsonArray) {
+        BufferedWriter out = null;
         try {
-            Process process = processBuilder.start();
-            return process;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
-        }
-    }
-
-    private static void showOutput(final InputStream src, final PrintStream dest) {
-        new Thread(new Runnable() {
-            public void run() {
-                Scanner sc = new Scanner(src);
-                while (sc.hasNextLine()) {
-                    dest.println(sc.nextLine());
-                }
+            out = new BufferedWriter(new FileWriter(tempPath));
+            out.write(deep + "\n");
+            out.write(jsonArray.getJSONArray(0).size() - 1 + "\n");
+            for(int i = 0; i < jsonArray.getJSONArray(0).size() - 1; i++) {
+                out.write(jsonArray.getJSONArray(0).getJSONArray(i).getString(0) + "," + jsonArray.getJSONArray(0).getJSONArray(i).getString(1) + "\n");
             }
-        }).start();
-    }
+            out.write(rasterPath + "\n");
+            out.write(resultPath + "\n");
+            out.write(visualPath + "\n");
+            out.close();
 
-    /**
-    * @Description:判断生成等深线的四个shp文件是否已经存在
-    * @Author: Yiming
-    * @Date: 2022/7/19
-    */
-    public static boolean shpFileIsExist(String path, String fileName) {
-        File dbf = new File(path + "\\" + fileName + ".dbf");
-        File prj = new File(path + "\\" + fileName + ".prj");
-        File shp = new File(path + "\\" + fileName + ".shp");
-        File shx = new File(path + "\\" + fileName + ".shx");
-        if(dbf.exists() && prj.exists() && shp.exists() && shx.exists()) {
-            return true;
-        } else {
-            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        List<String> commands = new ArrayList<>();
+        commands.add(pythonStr);
+        commands.add(pythonDir + "dem.py");
+        commands.add(tempPath);
+        processBuilder.command(commands);
+        try {
+            return processBuilder.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
         }
     }
+
+
 
     public static Process rasterCrop(String tempPath, String rasterPath, String outputPng, String outputTif, String outputJson, JSONArray jsonArray) {
         BufferedWriter out = null;
@@ -242,7 +204,7 @@ public class AnalyseUtil {
         }
         ProcessBuilder processBuilder = new ProcessBuilder();
         List<String> commands = new ArrayList<>();
-        commands.add("python");
+        commands.add(pythonStr);
         commands.add(pythonDir + "raster_clip.py");
         commands.add(tempPath);
         processBuilder.command(commands);
@@ -288,6 +250,25 @@ public class AnalyseUtil {
                 e.printStackTrace();
                 throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
             }
+        }
+    }
+
+    public static void copyFile(String filePath, String destination) {
+        File file = new File(filePath);
+        if(!file.exists()) {
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
+        FileChannel inputChannel = null;
+        FileChannel outputChannel = null;
+        try {
+            inputChannel = new FileInputStream(file).getChannel();
+            outputChannel = new FileOutputStream(new File(destination)).getChannel();
+            outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
+            outputChannel.close();
+            inputChannel.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
         }
     }
 

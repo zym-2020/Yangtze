@@ -68,7 +68,7 @@ public class DataListController {
     public JsonResult fuzzyQuery(@RequestBody JSONObject jsonObject) {
         int page = jsonObject.getIntValue("page");
         int size = jsonObject.getIntValue("size");
-        String keyword = jsonObject.getString("keyword");
+        String keyword = jsonObject.getString("titleKeyword");
         String[] tags = jsonObject.getObject("tags", String[].class);
         String property = jsonObject.getString("property");
         Boolean flag = jsonObject.getBoolean("flag");
@@ -119,6 +119,12 @@ public class DataListController {
         return ResultUtils.success();
     }
 
+    @AuthCheck
+    @RequestMapping(value = "/getHot/{size}", method = RequestMethod.GET)
+    public JsonResult getHot(@PathVariable Integer size) {
+        return ResultUtils.success(dataListService.getHot(size));
+    }
+
 
     /**
     * @Description:以下是Admin用户接口
@@ -137,7 +143,8 @@ public class DataListController {
         String property = jsonObject.getString("property");
         Boolean flag = jsonObject.getBoolean("flag");
         String type = jsonObject.getString("type");
-        return ResultUtils.success(dataListService.fuzzyQueryAdmin(page, size, keyword, tags, property, flag, type));
+        int status = jsonObject.getIntValue("status");
+        return ResultUtils.success(dataListService.fuzzyQueryAdmin(page, size, keyword, tags, property, flag, type, status));
     }
 
     @AuthCheck
@@ -151,7 +158,26 @@ public class DataListController {
         Boolean flag = jsonObject.getBoolean("flag");
         String id = jsonObject.getString("id");
         String type = jsonObject.getString("type");
-        return ResultUtils.success(dataListService.deleteByAdmin(page, size, keyword, tags, property, flag, id, type));
+        int status = jsonObject.getIntValue("status");
+        return ResultUtils.success(dataListService.deleteByAdmin(page, size, keyword, tags, property, flag, id, type, status));
+    }
+
+    @AuthCheck
+    @CrossOrigin
+    @RequestMapping(value = "/clearQuery", method = RequestMethod.POST)
+    public JsonResult clearQuery(@RequestBody JSONObject jsonObject) {
+        String[] tags = jsonObject.getObject("tags", String[].class);
+        String type = jsonObject.getString("type");
+        String location = jsonObject.getString("location");
+        String startDate = jsonObject.getString("startDate");
+        String endDate = jsonObject.getString("endDate");
+        return ResultUtils.success(dataListService.clearQuery( tags, type,location,startDate,endDate));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/getSimilarData/{type}/{id}/{size}/{page}", method = RequestMethod.GET)
+    public JsonResult getSimilarData(@PathVariable String type, @PathVariable String id, @PathVariable int size, @PathVariable int page) {
+        return ResultUtils.success(dataListService.getSimilarData(type, id, size, page));
     }
 
 }

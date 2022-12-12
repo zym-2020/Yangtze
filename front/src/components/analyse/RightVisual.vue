@@ -10,10 +10,10 @@
 <script lang="ts">
 import { computed, defineComponent, nextTick, onMounted, ref } from "vue";
 import mapBoxGl, { AnySourceData } from "mapbox-gl";
-import { getCoordinates, getGeoJson, updateBasemap } from "@/api/request";
+import { getCoordinates, getAnalyticGeoJson, updateBasemap } from "@/api/request";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import ChartVisual from "./ChartVisual.vue";
-import { notice } from "@/utils/notice";
+import { prefix } from '@/prefix'
 import router from "@/router";
 export default defineComponent({
   components: { ChartVisual },
@@ -116,6 +116,21 @@ export default defineComponent({
       });
       map.on("load", async () => {
         await initLayers();
+        // map.addSource("png", {
+        //   type: "image",
+        //   url: "/flowTex1.png",
+        //   coordinates: [
+        //     [120.04433328184923, 32.09360568405092],
+        //     [121.95857869699789, 32.09360568405092],
+        //     [121.95857869699789, 31.168340998477692],
+        //     [120.04433328184923, 31.168340998477692],
+        //   ],
+        // });
+        // map.addLayer({
+        //   id: "png",
+        //   type: "raster",
+        //   source: "png",
+        // });
       });
     };
 
@@ -162,7 +177,7 @@ export default defineComponent({
           map.addSource(param.id, {
             type: "vector",
             tiles: [
-              `http://localhost:8002/visual/getVectorTiles/${param.visualId}/{x}/{y}/{z}`,
+              `${prefix}visual/getVectorTiles/${param.visualId}/{x}/{y}/{z}`,
             ],
           });
           map.addLayer({
@@ -179,7 +194,7 @@ export default defineComponent({
           map.addSource(param.id, {
             type: "raster",
             tiles: [
-              `http://localhost:8002/visual/getRaster/${param.visualId}/{x}/{y}/{z}`,
+              `${prefix}visual/getRaster/${param.visualId}/{x}/{y}/{z}`,
             ],
           });
           map.addLayer({
@@ -196,7 +211,7 @@ export default defineComponent({
           if (coordinates != null && (coordinates as any).code === 0) {
             map.addSource(param.id, {
               type: "image",
-              url: `http://localhost:8002/visual/getPngResource/${param.visualId}`,
+              url: `${prefix}visual/getPngResource/${param.visualId}`,
               coordinates: coordinates.data,
             });
             map.addLayer({
@@ -206,17 +221,18 @@ export default defineComponent({
             });
           }
         } else if (
-          param.visualType === "geoJsonLine" ||
-          param.visualType === "geoJsonPoint" ||
-          param.visualType === "geoJsonPolygon"
+          param.visualType === "analyticGeoJsonLine" ||
+          param.visualType === "analyticGeoJsonPoint" ||
+          param.visualType === "analyticGeoJsonPolygon"
         ) {
           let type: "fill" | "circle" | "line" = "line";
-          if (param.visualType === "geoJsonPoint") {
+          if (param.visualType === "analyticGeoJsonPoint") {
             type = "circle";
-          } else if (param.visualType === "geoJsonPolygon") {
+          } else if (param.visualType === "analyticGeoJsonPolygon") {
             type = "fill";
           }
-          const geojson = await getGeoJson(param.id);
+          const geojson = await getAnalyticGeoJson(param.id);
+          console.log(geojson)
           if (geojson != null && (geojson as any).code === 0) {
             map.addSource(param.id, {
               type: "geojson",

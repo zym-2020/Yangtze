@@ -96,7 +96,7 @@ public class VisualServiceImpl implements VisualService {
     public void getRaster(String visualId, int x, int y, int z, HttpServletResponse response) {
         Map<String, Object> raster = visualFileMapper.findById(visualId);
         y = (int) Math.pow(2, z) - y - 1;
-        String path = visualAddress + raster.get("content") + "\\" + z + "\\" + x + "\\" + y + ".png";
+        String path = visualAddress + raster.get("content") + "/" + z + "/" + x + "/" + y + ".png";
         InputStream in = null;
         ServletOutputStream sos = null;
         try {
@@ -163,7 +163,7 @@ public class VisualServiceImpl implements VisualService {
 
     @Override
     public void getPhoto(String fileId, HttpServletResponse response) {
-        Map<String, Object> map = fileMapper.findById(fileId);
+        Map<String, Object> map = fileMapper.findInfoById(fileId);
         InputStream in = null;
         ServletOutputStream sos = null;
         try {
@@ -285,7 +285,14 @@ public class VisualServiceImpl implements VisualService {
 
     @Override
     public JSONObject getGeoJson(String fileId) {
-        String path = visualAddress + "geoJson\\" + fileId + ".json";
+        String path = visualAddress + "geoJson/" + fileId + ".json";
+        return readJson(path);
+    }
+
+    @Override
+    public JSONObject getAnalyticGeoJson(String fileId) {
+        Map<String, Object> map = analyticDataSetMapper.getInfoById(fileId);
+        String path = basePath + map.get("creator") + "/project/" +map.get("projectId") + "/" + map.get("address");
         return readJson(path);
     }
 
@@ -293,7 +300,7 @@ public class VisualServiceImpl implements VisualService {
     public Map<String, Object> getSection(String fileId) {
         Map<String, Object> section = analyticDataSetMapper.getInfoById(fileId);
         String address = (String) section.get("address");
-        String path = basePath + section.get("creator") + "\\project\\" + section.get("projectId") + "\\" + address;
+        String path = basePath + section.get("creator") + "/project/" + section.get("projectId") + "/" + address;
         File file = new File(path);
         if(!file.exists()) {
             throw new MyException(ResultEnum.NO_OBJECT);
@@ -332,7 +339,7 @@ public class VisualServiceImpl implements VisualService {
     public List<List<Double>> getSectionContrast(String fileId) {
         Map<String, Object> section = analyticDataSetMapper.getInfoById(fileId);
         String address = (String) section.get("address");
-        String path = basePath + section.get("creator") + "\\project\\" + section.get("projectId") + "\\" + address;
+        String path = basePath + section.get("creator") + "/project/" + section.get("projectId") + "/" + address;
         File file = new File(path);
         List<List<Double>> result = new ArrayList<>();
         if(!file.exists()) {
@@ -369,7 +376,7 @@ public class VisualServiceImpl implements VisualService {
     public Map<String, Object> getSectionFlush(String fileId) {
         Map<String, Object> sectionFlush = analyticDataSetMapper.getInfoById(fileId);
         String address = (String) sectionFlush.get("address");
-        String path = basePath + sectionFlush.get("creator") + "\\project\\" + sectionFlush.get("projectId") + "\\" + address;
+        String path = basePath + sectionFlush.get("creator") + "/project/" + sectionFlush.get("projectId") + "/" + address;
         File file = new File(path);
         Map<String, Object> result = new HashMap<>();
         if(!file.exists()) {
@@ -405,6 +412,17 @@ public class VisualServiceImpl implements VisualService {
             e.printStackTrace();
             throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
         }
+    }
+
+    @Override
+    public JSONObject getVolume(String fileId) {
+        Map<String, Object> volume = analyticDataSetMapper.getInfoById(fileId);
+        String visualId = volume.get("visualId").toString();
+        Map<String, Object> visualMap = visualFileMapper.findById(visualId);
+        String address = visualMap.get("content").toString();
+        String path = visualAddress + address;
+
+        return readJson(path);
     }
 
     @Override

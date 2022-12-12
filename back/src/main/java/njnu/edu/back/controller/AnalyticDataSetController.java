@@ -76,6 +76,12 @@ public class AnalyticDataSetController {
     }
 
     @AuthCheck
+    @RequestMapping(value = "/computeVolume/{projectId}/{regionId}/{demId}/{deep}", method = RequestMethod.POST)
+    public JsonResult computeVolume(@PathVariable String projectId, @PathVariable String regionId, @PathVariable String demId, @PathVariable double deep, @JwtTokenParser("email") String email) {
+        return ResultUtils.success(analyticDataSetService.computeVolume(deep, projectId, regionId, demId, email));
+    }
+
+    @AuthCheck
     @RequestMapping(value = "/addElevationFlush/{projectId}/{benchmarkId}/{referId}", method = RequestMethod.POST)
     public JsonResult addElevationFlush(@PathVariable String projectId, @PathVariable String benchmarkId, @PathVariable String referId, @JwtTokenParser("email") String email) {
         return ResultUtils.success(analyticDataSetService.addElevationFlush(projectId, benchmarkId, referId, email));

@@ -164,6 +164,11 @@ public class VisualController {
         return ResultUtils.success(visualService.getGeoJson(fileId));
     }
 
+    @RequestMapping(value = "/getAnalyticGeoJson/{fileId}", method = RequestMethod.GET)
+    public JsonResult getAnalyticGeoJson(@PathVariable String fileId) {
+        return ResultUtils.success(visualService.getAnalyticGeoJson(fileId));
+    }
+
     @RequestMapping(value = "/getSection/{fileId}", method = RequestMethod.GET)
     public JsonResult getSection(@PathVariable String fileId) {
         return ResultUtils.success(visualService.getSection(fileId));
@@ -177,6 +182,11 @@ public class VisualController {
     @RequestMapping(value = "/getSectionFlush/{fileId}", method = RequestMethod.GET)
     public JsonResult getSectionFlush(@PathVariable String fileId) {
         return ResultUtils.success(visualService.getSectionFlush(fileId));
+    }
+
+    @RequestMapping(value = "/getVolume/{fileId}", method = RequestMethod.GET)
+    public JsonResult getVolume(@PathVariable String fileId) {
+        return ResultUtils.success(visualService.getVolume(fileId));
     }
 
     @CrossOrigin

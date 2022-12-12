@@ -46,6 +46,14 @@
                 and is_public = false
             </if>
         </if>
+        <if test="keyword == ''">
+            <if test="flag == 1">
+                where is_public = true
+            </if>
+            <if test="flag == -1">
+                where is_public = false
+            </if>
+        </if>
     </select>
 
     <select id="getProjectInfo" resultType="java.util.Map">
@@ -74,13 +82,14 @@
         update project set is_public = #{flag} where id::text = #{projectId}
     </update>
 
-    <update id="updateProjectInfo" >
+    <select id="updateProjectInfo" resultType="java.lang.String">
         update project set project_name = #{projectName}, is_public = #{isPublic}
         <if test="avatar != ''">
             ,avatar = #{avatar}
         </if>
         where id::text = #{projectId}
-    </update>
+        returning avatar
+    </select>
 
     <delete id="deleteProject">
         delete from project where id::text = #{projectId}

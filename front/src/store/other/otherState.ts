@@ -1,23 +1,13 @@
 export interface OtherState {
-    dataSelect: {id: string, name: string},
-    dataSelects: {id: string, name: string}[],
-    editState: {type: string, flag: boolean, state: string}
-    uploadList: {id: string, name: string, state: number, progress: number}[]
-    waitList: {id: string, name: string, state: number, file: File}[]
-    uploadedList: {id: string, name: string, state: number}[]
-    uploadFlag: boolean
-    uploadDotFlag: boolean
-    messageBadge: boolean
+    uploading: { [id: string]: { name: string, size: string, state: number, progress: number } }
+    waitList: { name: string, file: File, size: string }[]
+    uploadedList: { id: string, name: string, size: string, time: Date }[]
+
 }
 
 export const state: OtherState = {
-    dataSelect: {id: '', name: ''},
-    dataSelects: [],
-    editState: {type: "", flag: false, state: ""},
-    uploadList: [],
+    uploading: {},
     waitList: [],
-    uploadedList: [],
-    uploadFlag: false,
-    uploadDotFlag: false,
-    messageBadge: false,
+    uploadedList: []
+
 }

@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="loading">
+  <div v-loading="loading" class="text-draw">
     <el-radio-group v-model="radio">
       <el-radio label="section" size="large">断面</el-radio>
       <el-radio label="region" size="large">区域</el-radio>
@@ -141,8 +141,11 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.btn {
-  text-align: center;
-  margin-top: 10px;
+.text-draw {
+  padding: 0 10px 10px;
+  .btn {
+    text-align: center;
+    margin-top: 10px;
+  }
 }
 </style>

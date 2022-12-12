@@ -2,6 +2,7 @@ package njnu.edu.back.service.impl;
 
 
 import njnu.edu.back.common.exception.MyException;
+import njnu.edu.back.common.utils.AnalyseUtil;
 import njnu.edu.back.common.utils.LocalUploadUtil;
 import njnu.edu.back.dao.main.AnalyticDataSetMapper;
 import njnu.edu.back.dao.main.ProjectFileMapper;
@@ -61,7 +62,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         String projectId = projectMapper.addProject(projectName, email, avatar, new String[]{}, "mapbox://styles/johnnyt/cl9miecpn001t14rspop38nyk", isPublic);
-        File f = new File(basePath + email + "\\project\\" + projectId);
+        File f = new File(basePath + email + "/project/" + projectId);
         f.mkdirs();
         return projectId;
     }
@@ -172,8 +173,7 @@ public class ProjectServiceImpl implements ProjectService {
             LocalUploadUtil.uploadAvatar(pictureAddress + uuid + "." + suffix, file);
             avatar = uuid + "." + suffix;
         }
-        projectMapper.updateProjectInfo(id, projectName, isPublic, avatar);
-        return avatar;
+        return projectMapper.updateProjectInfo(id, projectName, isPublic, avatar);
     }
 
     @Override
@@ -182,6 +182,9 @@ public class ProjectServiceImpl implements ProjectService {
         String creator = (String) map.get("creator");
         if(creator.equals(email) || role.equals("admin")) {
             projectMapper.deleteProject(projectId);
+            analyticDataSetMapper.delAnalyticDataByProjectId(projectId);
+            projectFileMapper.delByProjectId(projectId);
+            LocalUploadUtil.deleteFolder(basePath + creator + "/project/" + projectId);
         } else {
             throw new MyException(-99, "没有权限");
         }
@@ -202,4 +205,50 @@ public class ProjectServiceImpl implements ProjectService {
         result.put("total", total);
         return result;
     }
+
+    @Override
+    public String copyProject(String projectId, String creator, String projectName, boolean isPublic, MultipartFile file, String email) {
+        String avatar = "";
+        if(!file.isEmpty()) {
+            String uuid = UUID.randomUUID().toString();
+            String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
+            LocalUploadUtil.uploadAvatar(pictureAddress + uuid + "." + suffix, file);
+            avatar = uuid + "." + suffix;
+        }
+        List<Map<String, Object>> analyticData = analyticDataSetMapper.getAnalyticData(projectId);
+        String newProjectId = projectMapper.addProject(projectName, email, avatar, new String[]{}, "mapbox://styles/johnnyt/cl9miecpn001t14rspop38nyk", isPublic);
+        File f = new File(basePath + email + "/project/" + newProjectId);
+        f.mkdirs();
+        copyAnalyticDataset(analyticData, email, newProjectId, projectId, creator);
+        List<Map<String, Object>> list = projectFileMapper.getData(projectId);
+        List<Map<String, String>> fileList = new ArrayList<>();
+        for(Map<String, Object> m : list) {
+            Map<String, String> temp = new HashMap<>();
+            temp.put("fileId", m.get("fileId").toString());
+            temp.put("dataListId", m.get("dataListId").toString());
+            fileList.add(temp);
+        }
+        projectFileMapper.addRecord(newProjectId, fileList);
+        return newProjectId;
+    }
+
+    private void copyAnalyticDataset(List<Map<String, Object>> list, String email, String projectId, String oldProjectId, String creator) {
+        for(int i = 0; i < list.size(); i++) {
+            Map<String, Object> map = list.get(i);
+            String address = map.get("address").toString();
+            String fileName = map.get("fileName").toString();
+            String visualType = map.get("visualType").toString();
+            String visualId = map.get("visualId").toString();
+            int index = address.lastIndexOf(".");
+            String newAddress;
+            if(index != -1) {
+                newAddress = UUID.randomUUID().toString() + address.substring(address.lastIndexOf("."));
+                AnalyseUtil.copyFile(basePath + creator + "/project/" + oldProjectId + "/" + address, basePath + email + "/project/" + projectId + "/" + newAddress);
+            } else {
+                newAddress = address;
+            }
+            analyticDataSetMapper.addDraw("", fileName, newAddress, email, visualType, visualId, projectId);
+        }
+    }
+
 }

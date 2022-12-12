@@ -22,8 +22,6 @@ public class File {
     String fileName;
     String address;
     String size;
-    String time;
-    String location;
     String uploader;
     String visualType;
     String visualId;

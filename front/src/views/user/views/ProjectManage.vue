@@ -1,5 +1,5 @@
 <template>
-  <div class="body">
+  <div class="project-manage-body">
     <div class="head">
       <el-input v-model="search" placeholder="搜索" @keyup.enter="searchFile" />
       <el-button type="primary" plain @click="searchFile">搜索</el-button>
@@ -7,7 +7,7 @@
     <el-skeleton :rows="5" animated v-if="skeletonFlag" />
     <el-row v-else>
       <el-col :span="4" v-for="(item, index) in projectList" :key="index">
-        <project-card :flag="false" :projectInfo="item">
+        <project-card :flag="true" :projectInfo="item">
           <template #operate>
             <div class="operate">
               <el-dropdown trigger="click" @command="commandHandle">
@@ -30,7 +30,7 @@
                       >删除项目</el-dropdown-item
                     >
                     <el-dropdown-item :command="{ type: 'nav', index: index }"
-                      >跳转</el-dropdown-item
+                      >查看项目</el-dropdown-item
                     >
                   </el-dropdown-menu>
                 </template>
@@ -40,27 +40,31 @@
         </project-card>
       </el-col>
     </el-row>
-    <el-dialog
-      v-model="updateFlag"
-      width="500px"
-      :show-close="false"
-      title="修改项目"
-    >
-      <create-project
-        :info="projectInfo"
-        @updateProject="updateProject"
-      ></create-project>
-    </el-dialog>
     <div class="pagination">
       <el-pagination
         background
         layout="prev, pager, next"
         :total="total"
+        :pager-count="5"
         v-model:current-page="currentPage"
         @current-change="currentChange"
         hide-on-single-page
       />
     </div>
+    <el-dialog
+      v-model="createFlag"
+      width="500px"
+      :show-close="false"
+      :title="title"
+    >
+      <create-project
+        v-if="createFlag"
+        :projectInfo="projectInfo"
+        :info="info"
+        @updateProject="updateProject"
+        @copyProject="copyProject"
+      ></create-project>
+    </el-dialog>
   </div>
 </template>
 
@@ -72,23 +76,27 @@ import router from "@/router";
 import { notice } from "@/utils/notice";
 import { ElMessageBox } from "element-plus";
 import CreateProject from "@/components/tools/CreateProject.vue";
-import NProgress from 'nprogress'
-NProgress.configure({ showSpinner: false })
+import NProgress from "nprogress";
+NProgress.configure({ showSpinner: false });
+
 export default defineComponent({
   components: { ProjectCard, CreateProject },
   setup() {
+    const title = ref("修改项目");
+    const projectInfo = ref<any>();
+
     const search = ref("");
     const keyword = ref("");
 
     const projectList = ref<any[]>([]);
     const total = ref(0);
     const skeletonFlag = ref(true);
-    const projectInfo = ref<any>();
-    const updateFlag = ref(false);
+    const info = ref<any>();
+    const createFlag = ref(false);
     const currentPage = ref(1);
 
     const getData = async (page: number, size: number) => {
-      NProgress.start()
+      NProgress.start();
       const data = await getAllByAdmin({
         keyword: keyword.value,
         page: page,
@@ -98,17 +106,17 @@ export default defineComponent({
         projectList.value = data.data.list;
         total.value = data.data.total;
       }
-      NProgress.done()
+      NProgress.done();
     };
 
     const searchFile = async () => {
       keyword.value = search.value;
-      await getData(0, 10);
+      await getData(0, 12);
+      currentPage.value = 1;
     };
 
     const currentChange = async (val: number) => {
-      await getData(val - 1, 10);
-      currentPage.value = 1;
+      await getData(val - 1, 12);
       search.value = keyword.value;
     };
     const commandHandle = (val: { type: string; index: number }) => {
@@ -121,8 +129,10 @@ export default defineComponent({
           },
         });
       } else if (val.type === "update") {
-        projectInfo.value = projectList.value[val.index];
-        updateFlag.value = true;
+        title.value = "修改项目";
+        info.value = projectList.value[val.index];
+        projectInfo.value = undefined;
+        createFlag.value = true;
       } else if (val.type === "delete") {
         ElMessageBox.confirm("确定删除该项目吗?该操作执行后无法撤销", "警告", {
           confirmButtonText: "确定",
@@ -137,6 +147,11 @@ export default defineComponent({
             }
           })
           .catch(() => {});
+      } else if (val.type === "copy") {
+        title.value = "拷贝项目";
+        projectInfo.value = projectList.value[val.index];
+        info.value = undefined;
+        createFlag.value = true;
       }
     };
 
@@ -151,16 +166,26 @@ export default defineComponent({
           projectList.value[i].projectName = val.projectName;
           projectList.value[i].isPublic = val.isPublic;
           projectList.value[i].avatar = val.avatar;
-          updateFlag.value = false;
+          createFlag.value = false;
           return;
         }
       }
     };
 
+    const copyProject = (val: string) => {
+      createFlag.value = false;
+      router.push({
+        name: "project",
+        params: {
+          id: val,
+        },
+      });
+    };
+
     onMounted(async () => {
-      console.log(1)
+      console.log(1);
       skeletonFlag.value = true;
-      await getData(0, 10);
+      await getData(0, 12);
       skeletonFlag.value = false;
     });
 
@@ -170,19 +195,22 @@ export default defineComponent({
       projectList,
       commandHandle,
       skeletonFlag,
-      updateFlag,
-      projectInfo,
+      createFlag,
+      info,
       updateProject,
       currentChange,
       currentPage,
       total,
+      title,
+      copyProject,
+      projectInfo
     };
   },
 });
 </script>
 
 <style lang="scss" scoped>
-.body {
+.project-manage-body {
   height: 100%;
   position: relative;
   .head {
@@ -195,7 +223,7 @@ export default defineComponent({
     }
   }
   .project-card {
-    margin: 0 auto;
+    margin: 0 auto 40px;
     .operate {
       position: absolute;
       padding-left: 110px;
@@ -219,7 +247,7 @@ export default defineComponent({
 }
 .pagination {
   position: absolute;
-  bottom: 150px;
+  bottom: 100px;
   width: 450px;
   left: calc(50% - 225px);
   margin-top: 10px;

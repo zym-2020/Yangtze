@@ -1,7 +1,7 @@
 <template>
   <div class="project-main">
     <el-scrollbar height="80vh" :always="false" v-if="data.length > 0">
-      <div style="padding: 0 10px">
+      <div style="padding: 80px 10px">
         <el-row :gutter="20">
           <el-col :span="6" v-for="(item, index) in data" :key="index">
             <project-card :flag="false" :projectInfo="item">
@@ -29,7 +29,7 @@
                         >
                         <el-dropdown-item
                           :command="{ type: 'nav', index: index }"
-                          >跳转</el-dropdown-item
+                          >查看项目</el-dropdown-item
                         >
                       </el-dropdown-menu>
                     </template>
@@ -40,29 +40,34 @@
           </el-col>
         </el-row>
       </div>
+      <div class="pagination">
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="total"
+          :pager-count="5"
+          v-model:current-page="currentPage"
+          @current-change="currentChange"
+          :hide-on-single-page="true"
+        />
+      </div>
     </el-scrollbar>
     <el-empty description="暂无数据" v-else />
+
     <el-dialog
-      v-model="updateFlag"
+      v-model="createFlag"
       width="500px"
       :show-close="false"
-      title="修改项目"
+      :title="title"
     >
       <create-project
-        :info="projectInfo"
+        v-if="createFlag"
+        :projectInfo="projectInfo"
+        :info="info"
         @updateProject="updateProject"
+        @copyProject="copyProject"
       ></create-project>
     </el-dialog>
-  </div>
-  <div class="pagination">
-    <el-pagination
-      background
-      layout="prev, pager, next"
-      :total="total"
-      v-model:current-page="currentPage"
-      @current-change="currentChange"
-      :hide-on-single-page="true"
-    />
   </div>
 </template>
 
@@ -77,10 +82,13 @@ import { notice } from "@/utils/notice";
 export default defineComponent({
   components: { ProjectCard, CreateProject },
   setup() {
+    const title = ref("");
+    const projectInfo = ref<any>();
+
     const data = ref<any[]>([]);
     const total = ref(0);
-    const projectInfo = ref<any>();
-    const updateFlag = ref(false);
+    const info = ref<any>();
+    const createFlag = ref(false);
     const currentPage = ref(1);
 
     const getProjectList = async (page: number, size: number) => {
@@ -106,8 +114,10 @@ export default defineComponent({
           },
         });
       } else if (val.type === "update") {
-        projectInfo.value = data.value[val.index];
-        updateFlag.value = true;
+        projectInfo.value = undefined;
+        title.value = "修改项目";
+        info.value = data.value[val.index];
+        createFlag.value = true;
       } else if (val.type === "delete") {
         ElMessageBox.confirm("确定删除该项目吗?该操作执行后无法撤销", "警告", {
           confirmButtonText: "确定",
@@ -122,6 +132,11 @@ export default defineComponent({
             }
           })
           .catch(() => {});
+      } else if (val.type === "copy") {
+        info.value = undefined;
+        title.value = "修改项目";
+        projectInfo.value = data.value[val.index];
+        createFlag.value = true;
       }
     };
 
@@ -136,10 +151,20 @@ export default defineComponent({
           data.value[i].projectName = val.projectName;
           data.value[i].isPublic = val.isPublic;
           data.value[i].avatar = val.avatar;
-          updateFlag.value = false;
+          createFlag.value = false;
           return;
         }
       }
+    };
+
+    const copyProject = (val: string) => {
+      createFlag.value = false;
+      router.push({
+        name: "project",
+        params: {
+          id: val,
+        },
+      });
     };
 
     onMounted(async () => {
@@ -147,14 +172,17 @@ export default defineComponent({
     });
 
     return {
+      title,
       data,
       commandHandle,
-      projectInfo,
-      updateFlag,
+      info,
+      createFlag,
       updateProject,
       total,
       currentPage,
       currentChange,
+      projectInfo,
+      copyProject,
     };
   },
 });
@@ -163,15 +191,24 @@ export default defineComponent({
 <style lang="scss" scoped>
 .project-main {
   height: 80vh;
-  border-bottom: solid 0.5px #ebeef5;
+  border-bottom: solid 2px #ebeef5;
   .project-card {
-    margin: 0 auto;
+    margin: 0 auto 30px;
     .operate {
       position: absolute;
       padding-left: 110px;
       display: flex;
       left: 50%;
     }
+  }
+  .pagination {
+    position: absolute;
+    bottom: 20px;
+    left: calc(50% - 200px);
+    width: 400px;
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-around;
   }
 }
 /deep/.el-dialog {
@@ -186,10 +223,5 @@ export default defineComponent({
   .el-dialog__body {
     padding: 0;
   }
-}
-.pagination {
-  margin-top: 10px;
-  display: flex;
-  justify-content: space-around;
 }
 </style>

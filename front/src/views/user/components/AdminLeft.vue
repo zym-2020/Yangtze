@@ -7,16 +7,16 @@
     >
       <el-menu-item index="1">
         <el-icon><MessageBox /></el-icon>
-        <span>资源门户管理</span>
+        <span><strong>资源门户管理</strong></span>
       </el-menu-item>
 
       <el-menu-item index="2">
         <el-icon><Film /></el-icon>
-        <span>一张图管理</span>
+        <span><strong>项目管理</strong></span>
       </el-menu-item>
       <el-menu-item index="3">
         <el-icon><Menu /></el-icon>
-        <span>项目管理</span>
+        <span><strong>审核管理</strong></span>
       </el-menu-item>
     </el-menu>
   </div>
@@ -74,7 +74,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .admin-left {
-  height: calc(100vh - 63px);
+  height: 100%;
   width: 100%;
   .el-menu {
     height: 100%;

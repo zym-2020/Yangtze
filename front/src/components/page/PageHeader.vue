@@ -9,6 +9,7 @@
       <div class="title">{{ pageTitle }}</div>
       <slot name="search"></slot>
     </div>
+    <slot name="other"></slot>
   </div>
 </template>
 
@@ -42,10 +43,11 @@ export default defineComponent({
   height: 100px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
   padding: 0 10%;
+  position: relative;
   .nav {
     display: flex;
     height: 40px;
-    line-height: 40px;
+    line-height: 60px;
     cursor: pointer;
     .Separator {
       margin: 0 5px;

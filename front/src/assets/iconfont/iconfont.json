@@ -6,6 +6,48 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "1526605",
+      "name": "reload",
+      "font_class": "reload",
+      "unicode": "e895",
+      "unicode_decimal": 59541
+    },
+    {
+      "icon_id": "11349193",
+      "name": "specialsence-l",
+      "font_class": "specialsence-l",
+      "unicode": "e64c",
+      "unicode_decimal": 58956
+    },
+    {
+      "icon_id": "12842616",
+      "name": "w_hot",
+      "font_class": "w_hot",
+      "unicode": "e65e",
+      "unicode_decimal": 58974
+    },
+    {
+      "icon_id": "28835529",
+      "name": "classify",
+      "font_class": "classify",
+      "unicode": "e6db",
+      "unicode_decimal": 59099
+    },
+    {
+      "icon_id": "6151158",
+      "name": "cloud upload-fill",
+      "font_class": "cloudupload-fill",
+      "unicode": "e7da",
+      "unicode_decimal": 59354
+    },
+    {
+      "icon_id": "32614336",
+      "name": "操作-copy",
+      "font_class": "caozuo-copy",
+      "unicode": "ee4a",
+      "unicode_decimal": 61002
+    },
+    {
       "icon_id": "7738371",
       "name": "操作",
       "font_class": "caozuo",
