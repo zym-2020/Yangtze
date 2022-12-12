@@ -22,4 +22,14 @@
         </if>
         order by jssj desc
     </select>
+
+    <select id="getShipInfoByBoxAndTime" resultType="java.util.Map">
+        select l.mmsi, l.jssj as "update_time", s.cjsj as "register_time", s.cbmc as "name", s.zwmc as "name_cn", s.cbhx as "direction", s.dqhs as "velocity", s.cd as "length", s.kd as "width", l.zbjd as "lon", l.zbwd as "lat" from
+        (
+            select * from ${tableName}
+            where zbjd &gt; #{left} and zbjd &lt; #{right} and zbwd &gt; #{bottom} and zbwd &lt; #{top} and jssj &gt; #{startTime} and jssj &lt; #{endTime}
+            group by mmsi
+        ) l, ship s
+        where l.mmsi = s.mmsi
+    </select>
 </mapper>

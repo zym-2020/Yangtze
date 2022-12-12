@@ -33,6 +33,29 @@ export async function getResourceCount() {
     return await get(`/user/getResourceCount`)
 }
 
+export async function getAllUserInfo(page: number, size: number, keyword: string) {
+    if (keyword === '') {
+        return await get(`/user/getAllUserInfo/${page}/${size}`)
+    } else {
+        return await get(`/user/getAllUserInfo/${page}/${size}/${keyword}`)
+    }
+}
+
+export async function resetPassword(jsonData: { id: string, password: string }) {
+    return await patch(`/user/resetPassword`, jsonData)
+}
+
+export async function deleteUser(id: string) {
+    return await del(`/user/delete/${id}`)
+}
+
+export async function batchDelete(ids: string[]) {
+    return await del(`/user/batchDelete`, ids)
+}
+
+export async function adminAddUser(formData: FormData) {
+    return await post(`/user/adminAddUser`, formData)
+}
 //========================share_file相关接口=================================
 
 export async function offlineById(id: string) {

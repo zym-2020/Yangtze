@@ -20,4 +20,6 @@ public interface LocusMapper {
     Integer existTable(@Param("tableName") String tableName);
 
     List<Map<String, Object>> record(@Param("tableName") String tableName, @Param("mmsi") String mmsi, @Param("time") String time);
+
+    List<Map<String, Object>> getShipInfoByBoxAndTime(@Param("tableName") String tableName, @Param("top") double top, @Param("right") double right, @Param("bottom") double bottom, @Param("left") double left, @Param("startTime") String startTime, @Param("endTime") String endTime);
 }
