@@ -28,7 +28,7 @@
         ><Download
       /></el-icon>
       <span>{{ info.download }}</span>
-      <el-button type="primary" text>查看详情</el-button>
+      <el-button type="primary" text @click="clickHandle">查看详情</el-button>
     </div>
   </div>
 </template>
@@ -60,11 +60,16 @@ export default defineComponent({
       return dateFormat(time, "yyyy-MM-dd hh:mm");
     };
 
+    const clickHandle = () => {
+      
+    }
+
 
     return {
       info,
       getAvatar,
       getTime,
+      clickHandle
     };
   },
 });
