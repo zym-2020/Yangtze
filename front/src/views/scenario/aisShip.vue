@@ -120,6 +120,7 @@ import { InfoStyle, PopupHelper, ViewState } from '../../utils/popupHelper';
 import { MixLayer } from '../../utils/mixLayer';
 // import {ScenegraphLayer} from '@deck.gl/mesh-layers/typed';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { prefix } from '../../../src/prefix'
 // import Stats from 'three/examples/jsm/libs/stats.module';
 
 // let stats: Stats;
@@ -184,8 +185,8 @@ const cardActive = ref(false);
 const controlActive = ref(false);
 
 let toggleURLList = [
-  'http://172.21.212.10:8080/layer.png', 
-  'http://172.21.212.10:8080/angle-double-left.png'
+  './layer.png', 
+  './angle-double-left.png'
 ];
 let toggleUrlIndex = 0;
 let toggleURL = ref(toggleURLList[toggleUrlIndex]);
@@ -248,7 +249,7 @@ const buoyInfo = ref({
   color: '黑色', 
   shape: '柱形', 
   belong: '白茆沙水道', 
-  url: 'http://172.21.212.10:8002/multiSource/img/1577929305273upload0.jpg'
+  url:  prefix + 'multiSource/img/1577929305273upload0.jpg'
 });
 
 function HideInfo(){
@@ -293,7 +294,7 @@ onMounted(async () => {
   map.on('load', () => {
     map.addSource('bg', {
       type: 'raster', 
-      tiles: ['http://172.21.212.10:8002/visual/getRaster/3884904c-7fc6-4811-b3a1-588853da8942/{x}/{y}/{z}']
+      tiles: [prefix + 'visual/getRaster/3884904c-7fc6-4811-b3a1-588853da8942/{x}/{y}/{z}']
     });
     map.addLayer({
       id: 'bg', 
@@ -336,7 +337,7 @@ onMounted(async () => {
   // console.log(infoCardStyles);
 
   // const demLayer = new TileLayer({
-  //   data: 'http://172.21.212.10:8002/visual/getRaster/3884904c-7fc6-4811-b3a1-588853da8942/{x}/{y}/{z}', 
+  //   data: prefix + 'visual/getRaster/3884904c-7fc6-4811-b3a1-588853da8942/{x}/{y}/{z}', 
   //   tileSize: 256, 
   //   renderSubLayers: props => {
   //     let { bbox } = props.tile;
@@ -363,7 +364,7 @@ onMounted(async () => {
   const renderLayer = async () => {
 
     let parkMixData = await axios.get(
-      'http://172.21.212.10:8002/multiSource/getParkInfoByBox/'
+      prefix + 'multiSource/getParkInfoByBox/'
       + b.lat + '/' + b.lng + '/' + d.lat + '/' + d.lng,
       {responseType: 'json'}
     ).then((res) => {
@@ -373,7 +374,7 @@ onMounted(async () => {
 
     // const otherLayer = new PolygonLayer({
     //   id:'other', 
-    //   data: "http://172.21.212.10:8002/multiSource/getOtherInfoBox/" + 
+    //   data: prefix + "multiSource/getOtherInfoBox/" + 
     //           b.lat + '/' + b.lng + '/' + d.lat + '/' + d.lng, 
     //   onDataLoad: (val, ctx) => {
     //     console.log(val);
@@ -401,7 +402,7 @@ onMounted(async () => {
 
     const anchorLayer = new PolygonLayer({
       id: 'anchor', 
-      data: "http://172.21.212.10:8002/multiSource/getAnchorInfoByBox/" + 
+      data: prefix + "multiSource/getAnchorInfoByBox/" + 
               b.lat + '/' + b.lng + '/' + d.lat + '/' + d.lng, 
       // onDataLoad: (val, ctx) => {
       //   console.log(val);
@@ -434,14 +435,14 @@ onMounted(async () => {
       id: 'ship', 
       // data: shipJSONData, 
       // data: shipGeoData, 
-      data: "http://172.21.212.10:8002/multiSource/getShipInfoByBoxAndTime/" + 
+      data: prefix + "multiSource/getShipInfoByBoxAndTime/" + 
               b.lat + '/' + b.lng + '/' + d.lat + '/' + d.lng + '/' +
               shipTimeInterval[0] + '/' + shipTimeInterval[1], 
       // onDataLoad: (val, ctx) => {
       //   console.log(val);
       // }, 
       pickable: true, 
-      iconAtlas: 'http://172.21.212.10:8080/ship-from-above-cut.png', // icon image url
+      iconAtlas: './ship-from-above-cut.png', // icon image url
       iconMapping: ICON_MAPPING,
       getIcon: d => 'shipMarker',  
       getPosition: d => [d["lon"], d["lat"]], // deck.gl call back function for retrieve ship positions from [data]
@@ -489,14 +490,14 @@ onMounted(async () => {
     const buoyLayer = new IconLayer({
       id: 'buoy', 
       // data: shipJSONData, 
-      data: "http://172.21.212.10:8002/multiSource/getBuoyByBox/" + 
+      data: prefix + "multiSource/getBuoyByBox/" + 
             b.lat + '/' + b.lng + '/' + d.lat + '/' + d.lng, 
       // onDataLoad: (val, ctx) => {
       //   console.log(val);
       // }, 
       pickable: true, 
       getIcon: d => ({
-        url: 'http://172.21.212.10:8002/multiSource/img/' + d.hbtlpz, 
+        url: prefix + 'multiSource/img/' + d.hbtlpz, 
         width: 50, 
         height: 50
       }), // static marker, return only a strrin
@@ -530,7 +531,7 @@ onMounted(async () => {
         }
         buoyInfo.value.shape = info.object.hbxz;
         buoyInfo.value.belong = info.object.sshd;
-        buoyInfo.value.url = 'http://172.21.212.10:8002/multiSource/img/' + info.object.hbphoto;
+        buoyInfo.value.url = prefix + 'multiSource/img/' + info.object.hbphoto;
         // console.log(buoyCardSize);
         // console.log(buoyInfoStyle);
       },
