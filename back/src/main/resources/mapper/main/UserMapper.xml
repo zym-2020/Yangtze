@@ -16,9 +16,9 @@
         select * from users where email = #{email};
     </select>
 
-    <insert id="addUser">
-        insert into users values (default, #{user.name}, #{user.email}, #{user.password}, #{user.avatar}, #{user.occupation}, #{user.department}, #{user.role})
-    </insert>
+    <select id="addUser" resultType="java.lang.String">
+        insert into users values (default, #{user.name}, #{user.email}, #{user.password}, #{user.avatar}, #{user.occupation}, #{user.department}, #{user.role}) returning id::text
+    </select>
 
     <select id="updateUserInfo" parameterType="njnu.edu.back.pojo.User" resultMap="UserResultMap">
         update users set name = #{name}, occupation = #{occupation}, department = #{department}
@@ -32,4 +32,45 @@
     <select id="getAvatarURL" resultType="java.lang.String">
         select avatar from users where email = #{email}
     </select>
+
+    <select id="getAllUserInfo" resultType="java.util.Map">
+        select id, name, email, avatar, role, occupation, department from users
+        <if test="keyword != null">
+            where id::text like #{keyword} or name like #{keyword} or email like #{keyword}
+        </if>
+        order by role asc limit #{size} offset #{start}
+    </select>
+
+    <select id="countAll" resultType="java.lang.Integer">
+        select count(*) from users
+        <if test="keyword != null">
+            where id::text like #{keyword} or name like #{keyword} or email like #{keyword}
+        </if>
+    </select>
+
+    <select id="resetPassword" resultType="java.lang.String">
+        update users set password = #{password} where id::text = #{id} returning email
+    </select>
+
+    <select id="findById" resultType="java.util.Map">
+        select * from users where id::text = #{id}
+    </select>
+
+    <delete id="deleteById">
+        delete from users where id::text = #{id}
+    </delete>
+
+    <select id="findByIds" resultType="java.util.Map">
+        select * from users
+        <foreach collection="ids" item="item" open="where id::text in (" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+    <delete id="batchDelete">
+        delete from users
+        <foreach collection="ids" item="item" open="where id::text in (" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
 </mapper>

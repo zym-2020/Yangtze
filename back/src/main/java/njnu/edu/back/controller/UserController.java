@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  *
@@ -60,5 +62,36 @@ public class UserController {
         return ResultUtils.success(userService.getResourceCount(email));
     }
 
+    @AuthCheck
+    @RequestMapping(value = {"/getAllUserInfo/{page}/{size}", "/getAllUserInfo/{page}/{size}/{keyword}"}, method = RequestMethod.GET)
+    public JsonResult getAllUserInfo(@JwtTokenParser("role") String role, @PathVariable Integer page, @PathVariable Integer size, @PathVariable(required = false) String keyword) {
+        return ResultUtils.success(userService.getAllUserInfo(role, page, size, keyword));
+    }
 
+    @AuthCheck
+    @RequestMapping(value = "/resetPassword", method = RequestMethod.PATCH)
+    public JsonResult resetPassword(@JwtTokenParser("role") String role, @RequestBody JSONObject jsonObject) {
+        userService.resetPassword(role, jsonObject.getStr("id"), jsonObject.getStr("password"));
+        return ResultUtils.success();
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
+    public JsonResult delete(@PathVariable String id, @JwtTokenParser("role") String role) {
+        userService.delete(id, role);
+        return ResultUtils.success();
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/batchDelete", method = RequestMethod.DELETE)
+    public JsonResult batchDelete(@RequestBody List<String> ids, @JwtTokenParser("role") String role) {
+        userService.batchDelete(ids, role);
+        return ResultUtils.success();
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/adminAddUser", method = RequestMethod.POST)
+    public JsonResult adminAddUser(@RequestParam MultipartFile file, @RequestParam String jsonString, @JwtTokenParser("role") String role) {
+        return ResultUtils.success(userService.adminAddUser(file, jsonString, role));
+    }
 }

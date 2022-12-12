@@ -131,7 +131,8 @@ public class MultiSourceServiceImpl implements MultiSourceService {
                             tempRight = lon;
                         } else if (lon < tempLeft) {
                             tempLeft = lon;
-                        } else if (lat > tempTop) {
+                        }
+                        if (lat > tempTop) {
                             tempTop = lat;
                         } else if (lat < tempBottom) {
                             tempBottom = lat;
@@ -174,7 +175,8 @@ public class MultiSourceServiceImpl implements MultiSourceService {
                     tempRight = lon;
                 } else if (lon < tempLeft) {
                     tempLeft = lon;
-                } else if (lat > tempTop) {
+                }
+                if (lat > tempTop) {
                     tempTop = lat;
                 } else if (lat < tempBottom) {
                     tempBottom = lat;
@@ -207,7 +209,8 @@ public class MultiSourceServiceImpl implements MultiSourceService {
                     tempRight = lon;
                 } else if (lon < tempLeft) {
                     tempLeft = lon;
-                } else if (lat > tempTop) {
+                }
+                if (lat > tempTop) {
                     tempTop = lat;
                 } else if (lat < tempBottom) {
                     tempBottom = lat;
@@ -392,9 +395,10 @@ public class MultiSourceServiceImpl implements MultiSourceService {
 
     @Override
     public List<Map<String, Object>> getShipInfoByBox(double top, double right, double bottom, double left) {
-        Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-        String tableName = "locus" + sdf.format(date);
+//        Date date = new Date();
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+//        String tableName = "locus" + sdf.format(date);
+        String tableName = "locus20221207";
         return locusMapper.getShipByBox(tableName, top, right, bottom, left);
     }
 
@@ -405,15 +409,18 @@ public class MultiSourceServiceImpl implements MultiSourceService {
 
     @Override
     public List<Map<String, Object>> record(String mmsi) {
-        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMdd");
-        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date = new Date();
-        String todayTable = "locus" + sdf1.format(date);
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        cal.add(Calendar.DATE, -1);
-        String yesterdayTable = "locus" + sdf1.format(cal.getTime());
-        String time = sdf2.format(cal.getTime());
+//        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMdd");
+//        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        Date date = new Date();
+//        String todayTable = "locus" + sdf1.format(date);
+//        Calendar cal = Calendar.getInstance();
+//        cal.setTime(date);
+//        cal.add(Calendar.DATE, -1);
+//        String yesterdayTable = "locus" + sdf1.format(cal.getTime());
+        String todayTable = "locus20221206";
+        String yesterdayTable = "locus20221207";
+//        String time = sdf2.format(cal.getTime());
+        String time = "2022-12-06 14:55:00";
         if (locusMapper.existTable(yesterdayTable) == 0) {
             return locusMapper.record(todayTable, mmsi, "");
         } else {
@@ -427,7 +434,13 @@ public class MultiSourceServiceImpl implements MultiSourceService {
                 throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
             }
         }
+    }
 
-
+    @Override
+    public List<Map<String, Object>> getShipInfoByBoxAndTime(double top, double right, double bottom, double left, String startTime, String endTime) {
+        String tableName = "locus20221207";
+        startTime = "2022-12-07 " + startTime;
+        endTime = "2022-12-07 " + endTime;
+        return locusMapper.getShipInfoByBoxAndTime(tableName, top, right, bottom, left, startTime, endTime);
     }
 }

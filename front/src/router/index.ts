@@ -59,11 +59,8 @@ export const asyncRouters: Array<RouteRecordRaw> = [
         path: "/data",
         name: 'Data',
         component: shallowRef(Layout),
+        redirect: "/data/list",
         children: [
-            {
-                path: '',
-                redirect: '/data/list'
-            },
             {
                 path: 'list',
                 name: 'DataList',
@@ -318,6 +315,63 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 }
             }
 
+        ]
+    },
+    {
+        path: '/admin',
+        name: "Admin",
+        component: () => import('@/views/admin/Index.vue'),
+        meta: {
+            role: ['admin'],
+            title: '管理员界面',
+        },
+        redirect: "/admin/data",
+        children: [
+            {
+                path: 'data',
+                name: 'AdminData',
+                component: () => import('@/views/admin/AdminDataList.vue'),
+                meta: {
+                    role: ['admin'],
+                    key: 'Admin'
+                }
+            },
+            {
+                path: 'senario',
+                name: 'AdminSenario',
+                component: () => import('@/views/admin/AdminSenario.vue'),
+                meta: {
+                    role: ['admin'],
+                    key: 'Admin'
+                }
+            },
+            {
+                path: "project",
+                name: 'AdminProject',
+                component: () => import('@/views/admin/AdminProject.vue'),
+                meta: {
+                    role: ['admin'],
+                    key: 'Admin'
+                }
+            },
+            {
+                path: 'user',
+                name: 'AdminUser',
+                component: () => import('@/views/admin/AdminUser.vue'),
+                meta: {
+                    role: ['admin'],
+                    key: 'Admin'
+                }
+            },
+            {
+                path: 'audit',
+                name: 'AdminAudit',
+                component: () => import('@/views/admin/AdminAudit.vue'),
+                meta: {
+                    role: ['admin'],
+                    key: 'Admin'
+                }
+            }
         ]
     },
     {
