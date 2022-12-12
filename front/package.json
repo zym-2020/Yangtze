@@ -18,6 +18,7 @@
     "cesium": "^1.92.0",
     "copy-webpack-plugin": "^6.0.3",
     "core-js": "^3.6.5",
+    "deck.gl": "^8.8.20",
     "echarts": "^5.3.2",
     "element-plus": "^2.1.4",
     "identicon.js": "^2.3.3",
