@@ -124,4 +124,15 @@ public class MultiSourceController {
         return multiSourceService.record(mmsi);
     }
 
+    /**
+    * @Description:作为临时接口，做出船的动态效果
+    * @Author: Yiming
+    * @Date: 2022/12/7
+    */
+    @CrossOrigin
+    @RequestMapping(value = "/getShipInfoByBoxAndTime/{top}/{right}/{bottom}/{left}/{startTime}/{endTime}", method = RequestMethod.GET)
+    public List<Map<String, Object>> getShipInfoByBoxAndTime(@PathVariable double top, @PathVariable double right, @PathVariable double bottom, @PathVariable double left, @PathVariable String startTime, @PathVariable String endTime) {
+        return multiSourceService.getShipInfoByBoxAndTime(top, right, bottom, left, startTime, endTime);
+    }
+
 }

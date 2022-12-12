@@ -5,6 +5,7 @@ import { store } from './store'
 import ElementPlus from 'element-plus'
 import * as Icons from '@element-plus/icons'
 import 'element-plus/dist/index.css'
+import locale from 'element-plus/lib/locale/lang/zh-cn'
 import '@/permission'
 import '@/assets/iconfont/iconfont.css'
 import '@/assets/iconfont/iconfont.js'
@@ -25,7 +26,7 @@ app.directive("drag", drag)
 app.directive("inputFocus", inputFocus)
 
 
-app.use(ElementPlus)
+app.use(ElementPlus, { locale })
 //app.use(Vuesax)
 app.use(store).use(router).mount('#app')
 

@@ -45,7 +45,7 @@
             <el-dropdown-menu :router="true">
               <el-dropdown-item command="1">个人空间</el-dropdown-item>
               <el-dropdown-item v-if="adminFlag" command="2"
-                >admin界面</el-dropdown-item
+                >管理员界面</el-dropdown-item
               >
 
               <el-dropdown-item command="3">上传记录</el-dropdown-item>
