@@ -24,6 +24,7 @@ public interface VisualService {
 
     void getPhoto(String fileId, HttpServletResponse response);
 
+
     JSONArray getCoordinates(String visualId);
 
     void getPngResource(String visualId, HttpServletResponse response);

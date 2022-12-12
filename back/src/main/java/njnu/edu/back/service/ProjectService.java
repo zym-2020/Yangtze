@@ -20,7 +20,9 @@ public interface ProjectService {
 
     Map<String, Object> getAll(String keyword, int page, int size);
 
-    Map<String, Object> getAllByEmail(String email, int page, int size);
+    Map<String, Object> getAllByEmail(String email, int page, int size, int status);
+
+    Map<String, Integer> getCount(String email);
 
     Map<String, Object> getProjectInfo(String projectId);
 

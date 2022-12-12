@@ -70,6 +70,9 @@ public class VisualController {
         visualService.getPhoto(fileId, response);
     }
 
+
+
+
     /**
     * @Description:地图png可视化，包括两部分，获取坐标、获取png资源
     * @Author: Yiming

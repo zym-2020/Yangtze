@@ -10,7 +10,6 @@
         <result column="avatar" property="avatar"/>
         <result column="occupation" property="occupation"/>
         <result column="department" property="department"/>
-        <result column="contact_email" property="contactEmail"/>
         <result column="role" property="role"/>
     </resultMap>
     <select id="getUserByEmail" resultMap="UserResultMap">
@@ -18,11 +17,11 @@
     </select>
 
     <insert id="addUser">
-        insert into users values (default, #{user.name}, #{user.email}, #{user.password}, #{user.avatar}, #{user.occupation}, #{user.department}, #{user.contactEmail}, #{user.role})
+        insert into users values (default, #{user.name}, #{user.email}, #{user.password}, #{user.avatar}, #{user.occupation}, #{user.department}, #{user.role})
     </insert>
 
     <select id="updateUserInfo" parameterType="njnu.edu.back.pojo.User" resultMap="UserResultMap">
-        update users set name = #{name}, contact_email = #{contactEmail}, occupation = #{occupation}, department = #{department}
+        update users set name = #{name}, occupation = #{occupation}, department = #{department}
                        <if test="avatar != ''">
                            , avatar=#{avatar}
                        </if>

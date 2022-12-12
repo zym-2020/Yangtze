@@ -82,7 +82,9 @@ public class DataListController {
         int size = jsonObject.getIntValue("size");
         int page = jsonObject.getIntValue("page");
         String keyword = jsonObject.getString("keyword");
-        return ResultUtils.success(dataListService.pageQueryByEmail(email, size, page, keyword));
+        String type = jsonObject.getString("type");
+        String property = jsonObject.getString("property");
+        return ResultUtils.success(dataListService.pageQueryByEmail(email, size, page, keyword, type, property));
     }
 
     @AuthCheck
@@ -91,7 +93,9 @@ public class DataListController {
         String id = jsonObject.getString("id");
         int size = jsonObject.getIntValue("size");
         int page = jsonObject.getIntValue("page");
-        return ResultUtils.success(dataListService.deleteAsMember(id, email, page, size));
+        String type = jsonObject.getString("type");
+        String property = jsonObject.getString("property");
+        return ResultUtils.success(dataListService.deleteAsMember(id, email, page, size, type, property));
     }
 
     @AuthCheck
@@ -138,13 +142,13 @@ public class DataListController {
     public JsonResult fuzzyQueryAdmin(@RequestBody JSONObject jsonObject) {
         int page = jsonObject.getIntValue("page");
         int size = jsonObject.getIntValue("size");
-        String keyword = jsonObject.getString("keyword");
+        String titleKeyword = jsonObject.getString("titleKeyword");
         String[] tags = jsonObject.getObject("tags", String[].class);
         String property = jsonObject.getString("property");
         Boolean flag = jsonObject.getBoolean("flag");
         String type = jsonObject.getString("type");
         int status = jsonObject.getIntValue("status");
-        return ResultUtils.success(dataListService.fuzzyQueryAdmin(page, size, keyword, tags, property, flag, type, status));
+        return ResultUtils.success(dataListService.fuzzyQueryAdmin(page, size, titleKeyword, tags, property, flag, type, status));
     }
 
     @AuthCheck

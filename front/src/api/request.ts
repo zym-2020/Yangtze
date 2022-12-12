@@ -29,6 +29,10 @@ export async function setUserInfo(formData: FormData) {
     return await patch(`/user/setUserInfo`, formData)
 }
 
+export async function getResourceCount() {
+    return await get(`/user/getResourceCount`)
+}
+
 //========================share_file相关接口=================================
 
 export async function offlineById(id: string) {
@@ -215,7 +219,7 @@ export async function updateDataList(formData: FormData) {
     return await patch(`/dataList/updateDataList`, formData)
 }
 
-export async function pageQueryByEmail(jsonData: { page: number, size: number, keyword: string }) {
+export async function pageQueryByEmail(jsonData: { page: number, size: number, keyword: string, type: string, property: string }) {
     return await post(`/dataList/pageQueryByEmail`, jsonData)
 }
 export async function clearQueryDataList(jsonData: { tags: string[], type: string, location: string, startDate: string, endDate: string }) {
@@ -380,8 +384,12 @@ export async function addProject(formData: FormData) {
     return await post(`/project/addProject`, formData)
 }
 
-export async function getAllByEmail(page: number, size: number) {
-    return await get(`/project/getAllByEmail/${page}/${size}`)
+export async function getAllByEmail(page: number, size: number, status: number) {
+    return await get(`/project/getAllByEmail/${page}/${size}/${status}`)
+}
+
+export async function getCount() {
+    return await get(`/project/getCount`)
 }
 
 export async function updateProjectInfo(formData: FormData) {

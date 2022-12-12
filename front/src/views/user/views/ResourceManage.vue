@@ -226,6 +226,7 @@ export default defineComponent({
     };
 
     onMounted(async () => {
+      console.log(1)
       skeletonFlag.value = true;
       const data = await fuzzyQueryAdmin({
         property: "update_time",

@@ -26,6 +26,12 @@
         select p.id as "id", project_name as "projectName", creator, create_time as "createTime", p.avatar as "avatar", layer_manage as "layerManage", basemap, is_public as "isPublic"
         from project p
         where creator = #{email}
+        <if test="status == 1">
+            and is_public = true
+        </if>
+        <if test="status == -1">
+            and is_public = false
+        </if>
         order by create_time asc
         limit #{size} offset #{start}
     </select>
@@ -33,6 +39,12 @@
     <select id="fuzzyCountByEmail" resultType="java.lang.Integer">
         select count(*) from project
         where creator = #{email}
+        <if test="status == 1">
+            and is_public = true
+        </if>
+        <if test="status == -1">
+            and is_public = false
+        </if>
     </select>
 
     <select id="fuzzyCount" resultType="java.lang.Integer">

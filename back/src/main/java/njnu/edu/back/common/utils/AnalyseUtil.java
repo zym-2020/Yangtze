@@ -216,43 +216,6 @@ public class AnalyseUtil {
         }
     }
 
-    public static List<Point> getPoints(String outputJson) {
-        File file = new File(outputJson);
-        if(!file.exists()) {
-            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
-        }
-        Reader reader = null;
-        try {
-            reader = new InputStreamReader(new FileInputStream(file), "Utf-8");
-            int ch = 0;
-            StringBuffer sb = new StringBuffer();
-            while ((ch = reader.read()) != -1) {
-                sb.append((char) ch);
-            }
-            reader.close();
-            String jsonStr = sb.toString();
-            JSONObject jsonObject = JSON.parseObject(jsonStr);
-            List<Point> points = new ArrayList<>();
-            points.add(new Point(jsonObject.getJSONArray("ul").getDouble(0), jsonObject.getJSONArray("ul").getDouble(1)));
-            points.add(new Point(jsonObject.getJSONArray("ur").getDouble(0), jsonObject.getJSONArray("ur").getDouble(1)));
-            points.add(new Point(jsonObject.getJSONArray("lr").getDouble(0), jsonObject.getJSONArray("lr").getDouble(1)));
-            points.add(new Point(jsonObject.getJSONArray("ll").getDouble(0), jsonObject.getJSONArray("ll").getDouble(1)));
-            return points;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
-        } finally {
-            try {
-                if(reader != null) {
-                    reader.close();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
-            }
-        }
-    }
-
     public static void copyFile(String filePath, String destination) {
         File file = new File(filePath);
         if(!file.exists()) {

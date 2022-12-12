@@ -24,7 +24,6 @@ public class User {
     String email;
     String password;
     String role;
-    String contactEmail = "";
     String avatar = "";
     String occupation = "";
     String department = "";

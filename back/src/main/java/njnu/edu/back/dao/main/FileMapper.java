@@ -1,7 +1,6 @@
 package njnu.edu.back.dao.main;
 
 import njnu.edu.back.pojo.File;
-import njnu.edu.back.pojo.dto.AddFileDTO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -29,7 +28,6 @@ public interface FileMapper {
 
     List<Map<String, Object>> findByFolderId(@Param("folderId")String folderId, @Param("email") String email);
 
-
     void batchDelete(@Param("list") List<String> list);
 
     void batchDeleteFolder(@Param("list") List<String> list);
@@ -46,7 +44,7 @@ public interface FileMapper {
 
     List<Map<String, Object>> findInfoListById(@Param("list") List<String> list);
 
-
+    int getCountByEmail(@Param("email") String email);
 
 
 

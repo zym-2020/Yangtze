@@ -179,12 +179,12 @@ public class DataListServiceImpl implements DataListService {
     }
 
     @Override
-    public Map<String, Object> fuzzyQueryAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag, String type, int status) {
-        if(!keyword.equals("")) {
-            keyword = "%" + keyword + "%";
+    public Map<String, Object> fuzzyQueryAdmin(int page, int size, String titleKeyword, String[] tags, String property, Boolean flag, String type, int status) {
+        if(!titleKeyword.equals("")) {
+            titleKeyword = "%" + titleKeyword + "%";
         }
-        int total = dataListMapper.countFuzzyQuery(keyword, tags, 2, type);
-        List<Map<String, Object>> list = dataListMapper.fuzzyQuery(size * page, size, keyword, tags, property, flag, status, type);
+        int total = dataListMapper.countFuzzyQuery(titleKeyword, tags, status, type);
+        List<Map<String, Object>> list = dataListMapper.fuzzyQuery(size * page, size, titleKeyword, tags, property, flag, status, type);
         Map<String, Object> result = new HashMap<>();
         result.put("total", total);
         result.put("list", list);
@@ -198,12 +198,12 @@ public class DataListServiceImpl implements DataListService {
     }
 
     @Override
-    public Map<String, Object> pageQueryByEmail(String email, int size, int page, String keyword) {
+    public Map<String, Object> pageQueryByEmail(String email, int size, int page, String keyword, String type, String property) {
         if(!keyword.equals("")) {
             keyword = "%" + keyword + "%";
         }
-        List<Map<String, Object>> list = dataListMapper.pageQueryByEmail(email, size, size * page, keyword);
-        int count = dataListMapper.countPageQueryByEmail(email, keyword);
+        List<Map<String, Object>> list = dataListMapper.pageQueryByEmail(email, size, size * page, keyword, type, property);
+        int count = dataListMapper.countPageQueryByEmail(email, keyword, type);
         Map<String, Object> map = new HashMap<>();
         map.put("list", list);
         map.put("total", count);
@@ -231,13 +231,13 @@ public class DataListServiceImpl implements DataListService {
     }
 
     @Override
-    public Map<String, Object> deleteAsMember(String id, String email, int page, int size) {
+    public Map<String, Object> deleteAsMember(String id, String email, int page, int size, String type, String property) {
         Map<String, Object> fileInfo = dataListMapper.getFileInfo(id);
         if(!fileInfo.get("creator").equals(email)) {
             throw new MyException(-99, "没有权限！");
         }
         dataListMapper.deleteById(id);
-        return pageQueryByEmail(email, size, page, "");
+        return pageQueryByEmail(email, size, page, "", type, property);
     }
 
     @Override

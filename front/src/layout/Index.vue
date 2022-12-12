@@ -9,12 +9,12 @@
           <component
             :is="Component"
             v-if="route.meta.keepAlive"
-            :key="route.path"
+            :key="route.meta.key"
           />
         </keep-alive>
         <component
           :is="Component"
-          :key="route.path"
+          :key="route.meta.key"
           v-if="!route.meta.keepAlive"
         />
       </router-view>

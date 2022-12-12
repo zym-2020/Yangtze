@@ -26,110 +26,111 @@
         />
       </div>
     </div>
-    <el-table
-      :data="tableData"
-      style="width: 100%"
-      height="calc(80vh - 23px)"
-      @cell-dblclick="dblclick"
-      highlight-current-row
-      class="table"
-    >
-      <el-table-column
-        prop="name"
-        label="名称"
-        sortable
-        :sort-method="sortNameMethod"
-        width="800"
+    <div v-if="!skeletonFlag" class="table">
+      <el-empty description="暂无数据" v-if="tableData.length === 0" />
+      <el-table
+        v-else
+        :data="tableData"
+        style="width: 100%"
+        @cell-dblclick="dblclick"
+        highlight-current-row
       >
-        <template #default="scope">
-          <div class="table-name">
-            <el-checkbox
-              v-model="scope.row.flag"
-              size="large"
-              @change="changeHandle(scope.row)"
-            />
-            <div style="display: flex; align-items: center">
-              <svg style="width: 20px; height: 20px" @click="open">
-                <use :xlink:href="getIcon(scope.row)"></use>
-              </svg>
-              <span style="margin-left: 10px">{{ getName(scope.row) }}</span>
+        <el-table-column
+          prop="name"
+          label="名称"
+          sortable
+          :sort-method="sortNameMethod"
+          width="700"
+        >
+          <template #default="scope">
+            <div class="table-name">
+              <el-checkbox
+                v-model="scope.row.flag"
+                size="large"
+                @change="changeHandle(scope.row)"
+              />
+              <div class="text">
+                <svg style="width: 20px; height: 20px; margin-top: 4px">
+                  <use :xlink:href="getIcon(scope.row)"></use>
+                </svg>
+                <div class="name" :title="getName(scope.row)">
+                  {{ getName(scope.row) }}
+                </div>
+              </div>
             </div>
-          </div>
-        </template>
-      </el-table-column>
+          </template>
+        </el-table-column>
 
-      <el-table-column prop="size" label="大小">
-        <template #default="scope">
-          <span>{{ getSize(scope.row) }}</span>
-        </template>
-      </el-table-column>
+        <el-table-column prop="size" label="大小">
+          <template #default="scope">
+            <span>{{ getSize(scope.row) }}</span>
+          </template>
+        </el-table-column>
 
-      <el-table-column align="right">
-        <template #header>
-          <el-button
-            size="small"
-            text
-            type="danger"
-            :disabled="selectList.length === 0"
-            @click="batDelete"
-            ><strong>批量删除</strong></el-button
-          >
-        </template>
-        <template #default="scope">
-          <el-tooltip effect="dark" content="预览" placement="top">
-            <span style="margin-right: 10px">
-              <el-button
-                size="small"
-                type="primary"
-                v-if="isVisual(scope.row)"
-                @click="viewClick(scope.row)"
-                ><el-icon><View /></el-icon
-              ></el-button>
-            </span>
-          </el-tooltip>
-
-          <el-tooltip effect="dark" content="绑定可视化数据" placement="top">
-            <span style="margin-right: 10px">
-              <el-button
-                size="small"
-                v-if="!isFolder(scope.row)"
-                @click="visualClick(scope.row)"
-                ><el-icon><Share /></el-icon
-              ></el-button>
-            </span>
-          </el-tooltip>
-
-          <el-tooltip effect="dark" content="下载" placement="top">
-            <span style="margin-right: 10px">
-              <el-button
-                size="small"
-                type="success"
-                v-if="!isFolder(scope.row)"
-                @click="downloadClick(scope.row)"
-                ><el-icon><Download /></el-icon
-              ></el-button>
-            </span>
-          </el-tooltip>
-
-          <el-tooltip effect="dark" content="下载" placement="top">
+        <el-table-column align="right" width="200" fixed="right">
+          <template #header>
             <el-button
               size="small"
+              text
               type="danger"
-              @click="deleteClick(scope.row)"
-              title="删除"
-              ><el-icon><Delete /></el-icon
-            ></el-button>
-          </el-tooltip>
-        </template>
-      </el-table-column>
-    </el-table>
+              :disabled="selectList.length === 0"
+              @click="batDelete"
+              ><strong>批量删除</strong></el-button
+            >
+          </template>
+          <template #default="scope">
+            <el-tooltip effect="dark" content="预览" placement="top">
+              <span style="margin-right: 10px">
+                <el-button
+                  size="small"
+                  type="primary"
+                  v-if="isVisual(scope.row)"
+                  @click="viewClick(scope.row)"
+                  ><el-icon><View /></el-icon
+                ></el-button>
+              </span>
+            </el-tooltip>
 
-    <el-dialog
-      v-model="dialogCreateFolder"
-      width="200px"
-      :show-close="false"
-      :modal="false"
-    >
+            <el-tooltip effect="dark" content="绑定可视化数据" placement="top">
+              <span style="margin-right: 10px">
+                <el-button
+                  size="small"
+                  v-if="!isFolder(scope.row)"
+                  @click="visualClick(scope.row)"
+                  ><el-icon><Share /></el-icon
+                ></el-button>
+              </span>
+            </el-tooltip>
+
+            <el-tooltip effect="dark" content="下载" placement="top">
+              <span style="margin-right: 10px">
+                <el-button
+                  size="small"
+                  type="success"
+                  v-if="!isFolder(scope.row)"
+                  @click="downloadClick(scope.row)"
+                  ><el-icon><Download /></el-icon
+                ></el-button>
+              </span>
+            </el-tooltip>
+
+            <el-tooltip effect="dark" content="删除" placement="top">
+              <el-button
+                size="small"
+                type="danger"
+                @click="deleteClick(scope.row)"
+                ><el-icon><Delete /></el-icon
+              ></el-button>
+            </el-tooltip>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+    <div v-else>
+      <el-skeleton :rows="5" animated />
+    </div>
+
+    <el-dialog v-model="dialogCreateFolder" width="200px" :show-close="false">
       <folder-dialog
         @createFolder="createFolder"
         v-if="dialogCreateFolder"
@@ -162,7 +163,7 @@ type File = {
 };
 import { defineComponent, onMounted, ref } from "vue";
 import { ElMessageBox } from "element-plus";
-import FolderDialog from "./FolderDialog.vue";
+import FolderDialog from "../components/FolderDialog.vue";
 import {
   findByFolderId,
   addFolder,
@@ -175,7 +176,7 @@ import { prefix } from "@/prefix";
 import { useStore } from "@/store";
 import { decrypt } from "@/utils/auth";
 import { uuid, getFileSize } from "@/utils/common";
-import DataPreview from "./DataPreview.vue";
+import DataPreview from "../components/DataPreview.vue";
 import router from "@/router";
 
 NProgress.configure({ showSpinner: false });
@@ -185,6 +186,7 @@ export default defineComponent({
     DataPreview,
   },
   setup() {
+    const skeletonFlag = ref(true);
     const store = useStore();
     const tableData = ref<(Folder | File)[]>([]);
     const path = ref<{ name: string; parentId: string; id: string }[]>([]);
@@ -494,6 +496,7 @@ export default defineComponent({
         console.log(tableList.data);
         transitionData(tableList.data);
       }
+      skeletonFlag.value = false;
     });
 
     return {
@@ -525,6 +528,7 @@ export default defineComponent({
       dataPreviewFlag,
       fileInfo,
       visualClick,
+      skeletonFlag,
     };
   },
 });
@@ -534,7 +538,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .resource-main {
   position: relative;
-  height: 100%;
+  height: 80vh;
   .table-head {
     height: 25px;
     display: flex;
@@ -564,12 +568,33 @@ export default defineComponent({
     }
   }
   .table {
-    cursor: pointer;
-    .table-name {
-      display: flex;
-      .el-checkbox {
-        margin-right: 5px;
-        height: 30px;
+    height: calc(100% - 50px);
+    .el-table {
+      height: 100%;
+      cursor: pointer;
+      .table-name {
+        display: flex;
+        .text {
+          display: flex;
+          line-height: 30px;
+
+          .name {
+            width: 620px;
+            margin-left: 10px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+        }
+
+        .el-checkbox {
+          margin-right: 5px;
+          height: 30px;
+        }
+      }
+
+      /deep/ .el-table__inner-wrapper::before {
+        width: 0;
       }
     }
   }

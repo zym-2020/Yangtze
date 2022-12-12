@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="njnu.edu.back.dao.ship.LocusMapper">
+    <select id="getShipByBox" resultType="java.util.Map">
+        select l.mmsi, l.jssj as "update_time", s.cjsj as "register_time", s.cbmc as "name", s.zwmc as "name_cn", s.cbhx as "direction", s.dqhs as "velocity", s.cd as "length", s.kd as "width", l.zbjd as "lon", l.zbwd as "lat" from
+        (
+            select * from
+                (select * from (select * from ${tableName} order by jssj desc) group by mmsi)
+            where zbjd &gt; #{left} and zbjd &lt; #{right} and zbwd &gt; #{bottom} and zbwd &lt; #{top}
+        ) l, ship s
+        where l.mmsi = s.mmsi
+    </select>
+
+    <select id="existTable" resultType="java.lang.Integer">
+        select count(*) from sqlite_master where name = #{tableName}
+    </select>
+
+    <select id="record" resultType="java.util.Map">
+        select * from ${tableName} where mmsi = #{mmsi}
+        <if test="time != ''">
+            and jssj &gt; #{time}
+        </if>
+        order by jssj desc
+    </select>
+</mapper>

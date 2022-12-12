@@ -15,7 +15,7 @@ export interface Actions {
     ['login']({ commit }: AugmentedActionContext, userInfo: { email: string, password: string }): void
     getUserInfo({ commit }: AugmentedActionContext): void
     logout({ commit }: AugmentedActionContext): void
-    updateUserInfo({ commit }: AugmentedActionContext, userInfo: { name: string, avatar: File, contactEmail: string, occupation: string, department: string }): void
+    updateUserInfo({ commit }: AugmentedActionContext, userInfo: { name: string, avatar: File, occupation: string, department: string }): void
 }
 
 export const userActions: ActionTree<UserState, RootState> & Actions = {
@@ -60,11 +60,10 @@ export const userActions: ActionTree<UserState, RootState> & Actions = {
         router.push({ path: '/login' })
     },
 
-    async updateUserInfo({ commit }, userInfo: { name: string, avatar: File, contactEmail: string, occupation: string, department: string }) {
+    async updateUserInfo({ commit }, userInfo: { name: string, avatar: File, occupation: string, department: string }) {
         const formData = new FormData()
         formData.append("avatar", userInfo.avatar)
         formData.append("name", userInfo.name)
-        formData.append("contactEmail", userInfo.contactEmail)
         formData.append("occupation", userInfo.occupation)
         formData.append("department", userInfo.department)
         const data = await setUserInfo(formData)

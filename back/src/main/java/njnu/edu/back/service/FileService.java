@@ -3,7 +3,6 @@ package njnu.edu.back.service;
 import cn.hutool.json.JSONObject;
 import com.alibaba.fastjson.JSONArray;
 import njnu.edu.back.pojo.File;
-import njnu.edu.back.pojo.dto.AddFileDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;

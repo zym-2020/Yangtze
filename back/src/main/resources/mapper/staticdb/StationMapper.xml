@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="njnu.edu.back.dao.staticdb.StationMapper">
+    <select id="getStationByBox" resultType="java.util.Map">
+        select * from stations where lon &gt; #{left} and lon &lt; #{right} and lat &gt; #{bottom} and lat &lt; #{top}
+    </select>
+
+    <select id="getAllId" resultType="java.lang.String">
+        select id from stations
+    </select>
+</mapper>

@@ -1,11 +1,10 @@
 <template>
   <div class="main">
-    <el-row :gutter="20">
-      <el-col :span="4">
+    <el-row>
+      <el-col :span="6">
         <div class="left">
           <div class="avatar">
             <el-avatar
-              :size="80"
               :src="
                 avatarUrl === ''
                   ? 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
@@ -15,73 +14,47 @@
             />
           </div>
           <div class="userInfo" v-if="!editFlag">
-            <div v-if="userInfo.id != ''">
-              <el-button type="primary" round @click="editFlag = true"
-                >编辑</el-button
+            <div v-if="skeletonFlag">
+              <el-skeleton :rows="5" animated />
+            </div>
+            <div v-else>
+              <el-button type="primary" @click="editClick"
+                >编辑个人信息</el-button
               >
-              <div
-                class="info"
-                v-if="
-                  userInfo.name != '' &&
-                  userInfo.name != undefined &&
-                  userInfo.name != null
-                "
-              >
-                <div>
+              <div class="info">
+                <div title="邮箱">
+                  <svg style="width: 20px; height: 20px">
+                    <use xlink:href="#icon-email"></use>
+                  </svg>
+                </div>
+                <div class="text email">
+                  <strong>{{ email }}</strong>
+                </div>
+              </div>
+              <div class="info" v-if="userInfo.name != ''">
+                <div title="用户名">
                   <svg style="width: 20px; height: 20px">
                     <use xlink:href="#icon-nickname"></use>
                   </svg>
                 </div>
                 <div class="text">{{ userInfo.name }}</div>
               </div>
-              <div
-                class="info"
-                v-if="
-                  userInfo.contactEmail != '' &&
-                  userInfo.contactEmail != undefined &&
-                  userInfo.contactEmail != null
-                "
-              >
-                <div>
-                  <svg style="width: 20px; height: 20px">
-                    <use xlink:href="#icon-email"></use>
-                  </svg>
-                </div>
-                <div class="text">{{ userInfo.contactEmail }}</div>
-              </div>
-              <div
-                class="info"
-                v-if="
-                  userInfo.occupation != '' &&
-                  userInfo.occupation != undefined &&
-                  userInfo.occupation != null
-                "
-              >
-                <div>
+              <div class="info" v-if="userInfo.occupation != ''">
+                <div title="职业">
                   <svg style="width: 20px; height: 20px">
                     <use xlink:href="#icon-zhiye"></use>
                   </svg>
                 </div>
                 <div class="text">{{ userInfo.occupation }}</div>
               </div>
-              <div
-                class="info"
-                v-if="
-                  userInfo.department != '' &&
-                  userInfo.department != undefined &&
-                  userInfo.department != null
-                "
-              >
-                <div>
+              <div class="info" v-if="userInfo.department != ''">
+                <div title="单位">
                   <svg style="width: 20px; height: 20px">
                     <use xlink:href="#icon-company"></use>
                   </svg>
                 </div>
                 <div class="text">{{ userInfo.department }}</div>
               </div>
-            </div>
-            <div v-else>
-              <el-skeleton :rows="5" animated />
             </div>
           </div>
           <div v-else class="userEdit">
@@ -92,20 +65,8 @@
                 </svg>
               </div>
               <el-input
-                v-model="userInfo.name"
+                v-model="editInfo.name"
                 placeholder="用户名"
-                size="small"
-              />
-            </div>
-            <div class="info">
-              <div class="icon">
-                <svg style="width: 20px; height: 20px; margin-top: 2px">
-                  <use xlink:href="#icon-email"></use>
-                </svg>
-              </div>
-              <el-input
-                v-model="userInfo.contactEmail"
-                placeholder="联系邮箱"
                 size="small"
               />
             </div>
@@ -116,7 +77,7 @@
                 </svg>
               </div>
               <el-input
-                v-model="userInfo.occupation"
+                v-model="editInfo.occupation"
                 placeholder="职业"
                 size="small"
               />
@@ -128,7 +89,7 @@
                 </svg>
               </div>
               <el-input
-                v-model="userInfo.department"
+                v-model="editInfo.department"
                 placeholder="单位"
                 size="small"
               />
@@ -150,82 +111,170 @@
               <el-button @click="editFlag = false" size="small">取消</el-button>
             </div>
           </div>
+          <div class="resource">我的资源</div>
+          <el-divider />
+          <div class="resource-count">
+            <div class="text">
+              <div class="count">{{ fileTotal }}</div>
+              <div class="classify">文件</div>
+            </div>
+            <div class="text">
+              <div class="count">{{ dataListTotal }}</div>
+              <div class="classify">数据条目</div>
+            </div>
+            <div class="text">
+              <div class="count">{{ projectTotal }}</div>
+              <div class="classify">工程</div>
+            </div>
+          </div>
         </div>
       </el-col>
-      <el-col :span="20">
+      <el-col :span="18">
         <div class="right">
-          <el-tabs v-model="activeName">
-            <el-tab-pane name="resource">
-              <template #label>
-                <strong>资源</strong>
-              </template>
-              <user-resource></user-resource>
-            </el-tab-pane>
-            <el-tab-pane name="project">
-              <template #label>
-                <strong>工程</strong>
-              </template>
-              <user-project />
-            </el-tab-pane>
-            <el-tab-pane name="share">
-              <template #label>
-                <strong>共享条目</strong>
-              </template>
-              <user-share-file></user-share-file>
-            </el-tab-pane>
-          </el-tabs>
+          <div class="head">
+            <div
+              :class="activeName === 'file' ? 'head-item active' : 'head-item'"
+              @click="headClick('file')"
+            >
+              文件
+            </div>
+            <div
+              :class="
+                activeName === 'dataList' ? 'head-item active' : 'head-item'
+              "
+              @click="headClick('dataList')"
+            >
+              数据条目
+            </div>
+            <div
+              :class="
+                activeName === 'project' ? 'head-item active' : 'head-item'
+              "
+              @click="headClick('project')"
+            >
+              工程
+            </div>
+          </div>
+          <router-view
+            v-slot="{ Component }"
+            v-if="route.meta.key === 'UserSpace'"
+          >
+            <keep-alive>
+              <component :is="Component" />
+            </keep-alive>
+          </router-view>
         </div>
       </el-col>
     </el-row>
   </div>
+  <page-copyright />
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, reactive, ref } from "vue";
-import UserResource from "./components/UserResource.vue";
-import UserProject from "./components/UserProject.vue";
+import { computed, defineComponent, onMounted, ref, watch } from "vue";
 import { useStore } from "@/store";
-import { getUserByEmail } from "@/api/request";
+import { getUserByEmail, getResourceCount } from "@/api/request";
 import AvatarUpload from "@/components/upload/AvatarUpload.vue";
-import UserShareFile from "./components/UserShareFile.vue";
 import { prefix } from "@/prefix";
+import PageCopyright from "@/components/page/PageCopyright.vue";
+import router from "@/router";
 export default defineComponent({
   components: {
-    UserResource,
-    UserProject,
     AvatarUpload,
-    UserShareFile,
+    PageCopyright,
   },
   setup() {
-    const activeName = ref("resource");
+    const skeletonFlag = ref(true);
+    const activeName = ref("file");
     const store = useStore();
     const editFlag = ref(false);
     const avatar = ref<File>();
+    const fileTotal = ref(0);
+    const dataListTotal = ref(0);
+    const projectTotal = ref(0);
+
+    const route = computed(() => {
+      return router.currentRoute.value;
+    });
     const avatarUrl = computed(() => {
       return store.state.user.avatar;
     });
-    const userInfo = reactive({
-      id: "",
+    const email = computed(() => {
+      return store.state.user.email;
+    });
+    const userInfo = ref<{
+      name: string;
+      occupation: string;
+      department: string;
+    }>({
       name: "",
-      contactEmail: "",
-      avatar: "",
       occupation: "",
       department: "",
     });
+
+    const editInfo = ref<{
+      name: string;
+      occupation: string;
+      department: string;
+    }>({
+      name: "",
+      occupation: "",
+      department: "",
+    });
+
+    watch(
+      () => router.currentRoute.value.name,
+      (newVal) => {
+        if (newVal === "UserSpaceFile") {
+          activeName.value = "file";
+        } else if (newVal === "UserSpaceDataList") {
+          activeName.value = "dataList";
+        } else {
+          activeName.value = "project";
+        }
+      }
+    );
+
     const getUserInfo = async () => {
+      if (router.currentRoute.value.name === "UserSpaceFile") {
+        activeName.value = "file";
+      } else if (router.currentRoute.value.name === "UserSpaceDataList") {
+        activeName.value = "dataList";
+      } else {
+        activeName.value = "project";
+      }
       const data = await getUserByEmail();
       if (data != null) {
-        userInfo.id = (data.data as any).id;
-        userInfo.name = (data.data as any).name;
-        userInfo.contactEmail = (data.data as any).contactEmail;
-        userInfo.avatar = (data.data as any).avatar;
-        userInfo.occupation = (data.data as any).occupation;
-        userInfo.department = (data.data as any).department;
+        userInfo.value.name = (data.data as any).name;
+        userInfo.value.occupation = (data.data as any).occupation;
+        userInfo.value.department = (data.data as any).department;
       }
+    };
+
+    const editClick = () => {
+      editInfo.value = Object.assign({}, userInfo.value);
+      editFlag.value = true;
     };
 
     const upload = (val: any) => {
       avatar.value = val;
+    };
+
+    const headClick = (param: string) => {
+      if (param === "file") {
+        router.push({
+          name: "UserSpaceFile",
+        });
+      } else if (param === "dataList") {
+        router.push({
+          name: "UserSpaceDataList",
+        });
+      } else {
+        router.push({
+          name: "UserSpaceProject",
+        });
+      }
+      activeName.value = param;
     };
 
     const commit = async () => {
@@ -236,19 +285,30 @@ export default defineComponent({
         avatarFile = avatar.value;
       }
       store.dispatch("updateUserInfo", {
-        name: userInfo.name,
-        contactEmail: userInfo.contactEmail,
-        occupation: userInfo.occupation,
-        department: userInfo.department,
+        name: editInfo.value.name,
+        occupation: editInfo.value.occupation,
+        department: editInfo.value.department,
         avatar: avatarFile as File,
       });
+      userInfo.value = Object.assign({}, editInfo.value);
       editFlag.value = false;
     };
 
     onMounted(async () => {
+      console.log("123");
+      skeletonFlag.value = true;
+      const data = await getResourceCount();
+      if (data != null && (data as any).code === 0) {
+        fileTotal.value = data.data.fileTotal;
+        dataListTotal.value = data.data.dataListTotal;
+        projectTotal.value = data.data.projectTotal;
+      }
       await getUserInfo();
+      skeletonFlag.value = false;
     });
+
     return {
+      route,
       activeName,
       userInfo,
       editFlag,
@@ -256,6 +316,14 @@ export default defineComponent({
       commit,
       avatarUrl,
       prefix,
+      skeletonFlag,
+      email,
+      editClick,
+      editInfo,
+      headClick,
+      fileTotal,
+      dataListTotal,
+      projectTotal,
     };
   },
 });
@@ -263,19 +331,36 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .main {
-  padding: 0 10%;
-  height: 100%;
+  padding: 0 16vw;
   .el-row {
-    height: 100%;
     .left {
-      .avatar {
-        text-align: center;
-      }
       margin-top: 50px;
+      .avatar {
+        position: relative;
+        display: block;
+        width: 100%;
+        &:after {
+          content: "";
+          display: block;
+          padding-bottom: 100%;
+        }
+        .el-avatar {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+        }
+      }
+
       .userInfo {
         cursor: pointer;
+
         .el-button {
           width: 100%;
+          height: 40px;
+          font-size: 22px;
+          font-weight: 600;
           margin-top: 10px;
         }
         .info {
@@ -284,9 +369,14 @@ export default defineComponent({
           margin-top: 10px;
           height: 20px;
           .text {
+            font-size: 16px;
             height: 20px;
             line-height: 20px;
             margin-left: 10px;
+            color: #00abff;
+          }
+          .email {
+            color: #565656;
           }
         }
       }
@@ -314,12 +404,55 @@ export default defineComponent({
         }
         .btn {
           text-align: center;
+          margin-top: 20px;
+        }
+      }
+
+      .resource {
+        margin-top: 50px;
+        font-size: 22px;
+        font-weight: 500;
+      }
+      .resource-count {
+        height: 100px;
+        width: 100%;
+        display: flex;
+        .text {
+          width: calc(100% / 3);
+          text-align: center;
+          .count {
+            color: #00abff;
+            font-size: 25px;
+          }
+          .classify {
+            margin-top: 15px;
+          }
         }
       }
     }
     .right {
+      padding-left: 20px;
       margin-top: 20px;
-      height: calc(100% - 20px);
+
+      .head {
+        height: 60px;
+        box-sizing: border-box;
+        border-bottom: solid 1px #dcdfe6;
+        display: flex;
+        margin-bottom: 20px;
+
+        .head-item {
+          width: 200px;
+          text-align: center;
+          line-height: 60px;
+          font-size: 18px;
+          cursor: pointer;
+        }
+        .active {
+          color: #00abff;
+          border-bottom: solid 2px #00abff;
+        }
+      }
     }
   }
 }

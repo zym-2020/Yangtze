@@ -7,7 +7,6 @@ import njnu.edu.back.common.result.JsonResult;
 import njnu.edu.back.common.result.ResultUtils;
 import njnu.edu.back.common.utils.ZipOperate;
 import njnu.edu.back.pojo.File;
-import njnu.edu.back.pojo.dto.AddFileDTO;
 import njnu.edu.back.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

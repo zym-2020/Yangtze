@@ -21,10 +21,10 @@ public interface UserService {
 
     Map<String, Object> getUserByEmail(String email);
 
-    Map<String, String> setUserInfo(String email, String name, String contactEmail, String occupation, String department, MultipartFile avatar);
-
-    String getAvatarURL(String email);
+    Map<String, String> setUserInfo(String email, String name, String occupation, String department, MultipartFile avatar);
 
     Map<String, Object> getUserInfo(String email);
+
+    Map<String, Integer> getResourceCount(String email);
 
 }

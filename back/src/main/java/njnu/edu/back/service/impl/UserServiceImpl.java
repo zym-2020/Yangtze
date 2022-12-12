@@ -5,6 +5,9 @@ import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.common.utils.Encrypt;
 import njnu.edu.back.common.utils.JwtTokenUtil;
 import njnu.edu.back.common.utils.LocalUploadUtil;
+import njnu.edu.back.dao.main.DataListMapper;
+import njnu.edu.back.dao.main.FileMapper;
+import njnu.edu.back.dao.main.ProjectMapper;
 import njnu.edu.back.dao.main.UserMapper;
 import njnu.edu.back.pojo.User;
 import njnu.edu.back.service.RedisService;
@@ -39,6 +42,15 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     RedisService redisService;
+
+    @Autowired
+    ProjectMapper projectMapper;
+
+    @Autowired
+    DataListMapper dataListMapper;
+
+    @Autowired
+    FileMapper fileMapper;
 
     @Override
     public String login(String email, String password) {
@@ -90,7 +102,6 @@ public class UserServiceImpl implements UserService {
         Map<String, Object> map = new HashMap<>();
         map.put("id", user.getId());
         map.put("avatar", user.getAvatar());
-        map.put("contactEmail", user.getContactEmail());
         map.put("department", user.getDepartment());
         map.put("email", user.getEmail());
         map.put("name", user.getName());
@@ -99,8 +110,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, String> setUserInfo(String email, String name, String contactEmail, String occupation, String department, MultipartFile avatar) {
-        User user = new User(null, name, email, null, null, contactEmail, "", occupation, department);
+    public Map<String, String> setUserInfo(String email, String name, String occupation, String department, MultipartFile avatar) {
+        User user = new User(null, name, email, null, null, "", occupation, department);
         Map<String, String> result = new HashMap<>();
         if(!avatar.isEmpty()) {
             String uuid = UUID.randomUUID().toString();
@@ -133,7 +144,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String getAvatarURL(String email) {
-        return userMapper.getAvatarURL(email);
+    public Map<String, Integer> getResourceCount(String email) {
+        int fileTotal = fileMapper.getCountByEmail(email);
+        int dataListTotal = dataListMapper.countPageQueryByEmail(email, "", "all");
+        int projectTotal = projectMapper.fuzzyCountByEmail(email, 0);
+        Map<String, Integer> map = new HashMap<>();
+        map.put("fileTotal", fileTotal);
+        map.put("dataListTotal", dataListTotal);
+        map.put("projectTotal", projectTotal);
+        return map;
     }
 }
