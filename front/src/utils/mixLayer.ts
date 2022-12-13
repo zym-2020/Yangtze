@@ -1,5 +1,6 @@
 import { IconLayer, PolygonLayer } from "@deck.gl/layers/typed";
 import { CompositeLayer, Layer, LayersList, CompositeLayerProps, UpdateParameters } from "@deck.gl/core/typed";
+// import { prefix } from '../../src/prefix';
 
 const ICON_MAPPING = {
     shipMarker: {x: 0, y: 0, width: 512, height: 512, mask: false}, 
@@ -10,7 +11,7 @@ const layerDefaultProps = {
     ...PolygonLayer.defaultProps, 
     billboard: false, 
     pickable: true, 
-    iconAtlas: 'http://172.21.212.10:8080/ship-park.png', // icon image url
+    iconAtlas: './ship-park.png', // icon image url
     iconMapping: ICON_MAPPING, 
     sizeUnits: 'pixels', 
     sizeScale: 1, 
@@ -44,7 +45,7 @@ class MixLayer extends CompositeLayer {
                     return d.qyfw.point;
                 },
                 pickable: true,
-                iconAtlas: 'http://172.21.212.10:8080/ship-park.png',
+                iconAtlas: './ship-park.png',
                 iconMapping: ICON_MAPPING,
                 getIcon: (d: any) => 'parkMarker', 
                 billboard: true, 

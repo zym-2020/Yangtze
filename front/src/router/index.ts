@@ -121,17 +121,17 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 meta: {
                     role: ['member', 'admin'],
                     keepAlive: true,
-                    title: '一张图',
+                    title: '实时监测',
                     key: 'ScenarioOne'
                 }
             },
             {
                 path: 'scenarioTwo',
                 name: 'ScenarioTwo',
-                component: () => import('@/views/scenario/TheMap.vue'),
+                component: () => import('@/views/scenario/flowMap.vue'),
                 meta: {
                     role: ['member', 'admin'],
-                    title: '一张图',
+                    title: '长江流场',
                     keepAlive: true,
                     key: 'ScenarioTwo'
                 }
@@ -142,7 +142,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 component: () => import('@/views/scenario/aisShip.vue'),
                 meta: {
                     role: ['member', 'admin'],
-                    title: '一张图',
+                    title: 'AIS',
                     keepAlive: true,
                     key: 'ScenarioThree'
                 }
@@ -153,7 +153,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 component: () => import('@/views/scenario/projectMap.vue'),
                 meta: {
                     role: ['member', 'admin'],
-                    title: '一张图',
+                    title: '工程方案',
                     keepAlive: true,
                     key: 'ScenarioFour'
                 }

@@ -63,15 +63,22 @@ class PopupHelper {
                 this.layerCardStyles[currentLayerID].value.zIndex = 5;
                 this._activeLayerId = currentLayerID;
             }
-            if(info.devicePixel) {
-                this.layerCardStyles[this._activeLayerId].value.left = 
-                    info.devicePixel[0] - 
-                    parseFloat(this.layerCardStyles[this._activeLayerId].value.width.split('px')[0]) / 2.0 
-                    + 12.0 + 'px';
-                this.layerCardStyles[this._activeLayerId].value.bottom = info.devicePixel[1] + 18 + 'px';
-            }
+            // if(info.pixel) {
+            //     this.layerCardStyles[this._activeLayerId].value.left = 
+            //         info.pixel[0] - 
+            //         parseFloat(this.layerCardStyles[this._activeLayerId].value.width.split('px')[0]) / 2.0 
+            //         + 15.0 + 'px';
+            //     this.layerCardStyles[this._activeLayerId].value.bottom = info.pixel[1] + 18 + 'px';
+            //     console.log(info);
+            // }
             if(info.coordinate) {
-                this._curGeoPos = [info.object.jdwz_84jd, info.object.jdwz_84wd];
+                this._curGeoPos = [info.coordinate[0], info.coordinate[1]];
+                const newPos = this._map.project(this._curGeoPos);
+                this.layerCardStyles[this._activeLayerId].value.left = 
+                    newPos.x - 
+                    parseFloat(this.layerCardStyles[this._activeLayerId].value.width.split('px')[0]) / 2.0 
+                    + 'px';
+                this.layerCardStyles[this._activeLayerId].value.bottom = (this._map.getCanvas().clientHeight-newPos.y) + 18 + 'px';
             }
             
         }
@@ -87,7 +94,7 @@ class PopupHelper {
             this.layerCardStyles[this._activeLayerId].value.left = 
                 newPos.x - 
                 parseFloat(this.layerCardStyles[this._activeLayerId].value.width.split('px')[0]) / 2.0 
-                + 12.0 + 'px';
+                + 'px';
             this.layerCardStyles[this._activeLayerId].value.bottom = (this._map.getCanvas().clientHeight-newPos.y) + 18 + 'px';
             this.layerCardStyles[this._activeLayerId].value.zIndex = 5;
            

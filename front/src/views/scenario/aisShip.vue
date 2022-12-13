@@ -100,6 +100,39 @@
       </el-col>
     </el-row>
   </div>
+  <div id="park-info" :style="parkInfoStyle">
+    <el-descriptions
+      direction="horizontal"
+      :column="2"
+      size="default"
+      border
+    >
+      <el-descriptions-item label="名称" label-align="center" align="center">{{parkInfo.name}}</el-descriptions-item>
+      <el-descriptions-item label="用途" label-align="center" align="center">{{parkInfo.usage}}</el-descriptions-item>
+      <el-descriptions-item label="管理单位" label-align="center" align="center">{{parkInfo.apartment}}</el-descriptions-item>
+      <el-descriptions-item label="水道名称" label-align="center" align="center">{{parkInfo.water}}</el-descriptions-item>
+    </el-descriptions>
+    <div class="down-arrow">
+      <div class="down-tri"></div>
+    </div>
+  </div>
+  <div id="anchor-info" :style="anchorInfoStyle">
+    <el-descriptions
+      direction="horizontal"
+      :column="2"
+      size="default"
+      border
+    >
+      <el-descriptions-item label="名称" label-align="center" align="center">{{anchorInfo.name}}</el-descriptions-item>
+      <el-descriptions-item label="用途" label-align="center" align="center">{{anchorInfo.usage}}</el-descriptions-item>
+      <el-descriptions-item label="管理单位" :span="2" label-align="center" align="center">{{anchorInfo.apartment}}</el-descriptions-item>
+      <el-descriptions-item label="水道名称" label-align="center" align="center">{{anchorInfo.water}}</el-descriptions-item>
+      <el-descriptions-item label="建成时间" label-align="center" align="center">{{anchorInfo.time}}</el-descriptions-item>
+    </el-descriptions>
+    <div class="down-arrow">
+      <div class="down-tri"></div>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -120,7 +153,7 @@ import { InfoStyle, PopupHelper, ViewState } from '../../utils/popupHelper';
 import { MixLayer } from '../../utils/mixLayer';
 // import {ScenegraphLayer} from '@deck.gl/mesh-layers/typed';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { prefix } from '../../../src/prefix'
+import { prefix } from '../../../src/prefix';
 // import Stats from 'three/examples/jsm/libs/stats.module';
 
 // let stats: Stats;
@@ -177,8 +210,26 @@ let buoyInfoStyle = ref<InfoStyle>({
   bottom: '-20vh'
 });
 
+let parkInfoStyle = ref<InfoStyle>({
+  zIndex: -1, 
+  left: '-20vw',
+  width: '26vw',
+  height: '8vw',
+  bottom: '-20vh'
+});
+
+let anchorInfoStyle = ref<InfoStyle>({
+  zIndex: 5, 
+  left: '-24vw',
+  width: '24vw',
+  height: '8vw',
+  bottom: '-24vw'
+});
+
 let infoCardStyles: {[key: string]: Ref<InfoStyle>} = {
   'buoy': buoyInfoStyle, 
+  'park': parkInfoStyle, 
+  'anchor': anchorInfoStyle
 };
 
 const cardActive = ref(false);
@@ -230,8 +281,6 @@ const LayerDropHandle = (val: string[]) => {
   console.log(val);
 }
 
-
-
 const shipInfo = ref({
   name: '', 
   speed: '10.2 km', 
@@ -251,6 +300,26 @@ const buoyInfo = ref({
   belong: '白茆沙水道', 
   url:  prefix + 'multiSource/img/1577929305273upload0.jpg'
 });
+
+const parkInfo = ref({
+  name: '如皋水上绿色综合服务区工程小型到港分流船舶待泊基地', 
+  apartment: '如皋富港服务区经营管理有限公司', 
+  water: '福姜沙北水道', 
+  usage: '待泊基地'
+});
+
+const anchorInfo = ref({
+  name: '镇江港海轮联检锚地', 
+  apartment: '镇江市港航事业发展中心', 
+  water: '口岸直水道', 
+  usage: '锚泊', 
+  time: '2016-05-17'
+});
+
+const layerPosAttrib = {
+  'buoy': ['jdwz_84jd', 'jdwz_84wd'], 
+  'park': ['zbjd', 'zbwd']
+}
 
 function HideInfo(){
   cardActive.value = false;
@@ -284,7 +353,7 @@ onMounted(async () => {
     accessToken: 'pk.eyJ1IjoieWNzb2t1IiwiYSI6ImNsMWVsdnpxNDBzcDgzYnA0MDJrcW1hOXQifQ.-5KUoc4jAJbAcBEWgbMGSA', 
     container: 'map', 
     interactive: false, 
-    style: 'mapbox://styles/mapbox/dark-v10', 
+    style: 'mapbox://styles/johnnyt/clblx2t3v000a14proaq4e9qv', 
     zoom: viewState.zoom, 
     center: [viewState.longitude, viewState.latitude], 
     pitch: viewState.pitch, 
@@ -325,7 +394,7 @@ onMounted(async () => {
   let d = map.unproject([0, mapHeight]);
 
   let downArrow = document.getElementById('down-arrow');
-  let buoyCardSize = [0.0, 0.0]
+  let buoyCardSize = [0.0, 0.0];
   if(downArrow) {
     buoyCardSize = [downArrow.clientWidth, downArrow.clientHeight];
     buoyInfoStyle.value["width"] = buoyCardSize[0] + 'px';
@@ -333,22 +402,13 @@ onMounted(async () => {
     // console.log(buoyCardSize);
   }
 
+  parkInfoStyle.value["width"] = parseFloat(parkInfoStyle.value["width"].split('vw')[0]) / 100.0 * deckMap.value.clientWidth + 'px';
+  parkInfoStyle.value["height"] = parseFloat(parkInfoStyle.value["height"].split('vw')[0]) / 100.0 * deckMap.value.clientWidth + 'px';
+  anchorInfoStyle.value["width"] = parseFloat(anchorInfoStyle.value["width"].split('vw')[0]) / 100.0 * deckMap.value.clientWidth + 'px';
+  anchorInfoStyle.value["height"] = parseFloat(anchorInfoStyle.value["height"].split('vw')[0]) / 100.0 * deckMap.value.clientWidth + 'px';
+
   let popupHelper = new PopupHelper(infoCardStyles, map);
   // console.log(infoCardStyles);
-
-  // const demLayer = new TileLayer({
-  //   data: prefix + 'visual/getRaster/3884904c-7fc6-4811-b3a1-588853da8942/{x}/{y}/{z}', 
-  //   tileSize: 256, 
-  //   renderSubLayers: props => {
-  //     let { bbox } = props.tile;
-  //     bbox = bbox as GeoBoundingBox;
-  //     return new BitmapLayer( props, {
-  //       data: null, 
-  //       image: props.data, 
-  //       bounds: [bbox.west, bbox.south, bbox.east, bbox.north]
-  //     });
-  //   }
-  // });
 
   const stTime = new Date('2022-12-07 00:00:00 GMT+8').getTime();
   const endTime = new Date('2022-12-07 14:30:00 GMT+8').getTime();
@@ -370,49 +430,23 @@ onMounted(async () => {
     ).then((res) => {
       return res.data;
     });
-    // console.log(parkMixData);
-
-    // const otherLayer = new PolygonLayer({
-    //   id:'other', 
-    //   data: prefix + "multiSource/getOtherInfoBox/" + 
-    //           b.lat + '/' + b.lng + '/' + d.lat + '/' + d.lng, 
-    //   onDataLoad: (val, ctx) => {
-    //     console.log(val);
-    //   }, 
-    //   getPolygon: d => {
-    //     const pgPts = d.qyfw.points;
-    //     let lng_ext = (pgPts[0][0] > pgPts[1][0])?[pgPts[1][0], pgPts[0][0]]:[pgPts[0][0], pgPts[1][0]];
-    //     let lat_ext = (pgPts[0][1] > pgPts[1][1])?[pgPts[1][1], pgPts[0][1]]:[pgPts[0][1], pgPts[1][1]];
-
-    //     return [
-    //       [lng_ext[0], lat_ext[1]], 
-    //       [lng_ext[0], lat_ext[0]], 
-    //       [lng_ext[1], lat_ext[0]], 
-    //       [lng_ext[1], lat_ext[1]], 
-    //       [lng_ext[0], lat_ext[1]], 
-    //     ];
-    //   }, 
-    //   getFillColor: [23, 233, 13, 20], 
-    //   getLineWidth: 8, 
-    //   pickable: true,
-    //   stroked: true,
-    //   filled: true,
-    //   visible: visibleControl["其他设施"] && zoom > 11
-    // });
 
     const anchorLayer = new PolygonLayer({
       id: 'anchor', 
       data: prefix + "multiSource/getAnchorInfoByBox/" + 
               b.lat + '/' + b.lng + '/' + d.lat + '/' + d.lng, 
-      // onDataLoad: (val, ctx) => {
-      //   console.log(val);
-      // }, 
+      onDataLoad: (val, ctx) => {
+        console.log(val);
+      }, 
       getPolygon: d => {
         const pgPts = d.qyfw.points;
         if(pgPts[pgPts.length-1] !== pgPts[0]) {
           pgPts.push(pgPts[0]);
         }
         return pgPts;
+      }, 
+      onClick: (info, event) => {
+        console.log(info);
       }, 
       getFillColor: [233, 13, 13, 120], 
       getLineWidth: 8, 
@@ -426,6 +460,12 @@ onMounted(async () => {
       id: "park", 
       data: parkMixData, 
       visible:  visibleControl['停泊区'] && zoom > 11, 
+      onClick: (info, event) => {
+        parkInfo.value.apartment = info.object.gldw;
+        parkInfo.value.name = info.object.mc;
+        parkInfo.value.water = info.object.sd_name;
+        parkInfo.value.usage = info.object.yt;
+      }
       // updateTriggers: {
       //   getSize: [zoom]
       // }
@@ -531,7 +571,12 @@ onMounted(async () => {
         }
         buoyInfo.value.shape = info.object.hbxz;
         buoyInfo.value.belong = info.object.sshd;
-        buoyInfo.value.url = prefix + 'multiSource/img/' + info.object.hbphoto;
+        if(info.object.hbphoto !== '') {
+          buoyInfo.value.url = prefix + 'multiSource/img/' + info.object.hbphoto;
+        }
+        else {
+          buoyInfo.value.url = './buoy-no.png';
+        }
         // console.log(buoyCardSize);
         // console.log(buoyInfoStyle);
       },
@@ -926,7 +971,7 @@ body {
   }
 
   .el-row#down-arrow {
-    width: 92%;
+    width: 100%;
     .el-col {
       display: flex;
       justify-content: center;
@@ -939,6 +984,111 @@ body {
       }
     }
     
+  }
+}
+
+#park-info {
+  position: absolute;
+  transform-style: preserve-3d;
+
+  .el-descriptions {
+    height: 100%;
+    .el-descriptions__body {
+      height: 100%;
+
+      .el-descriptions__table {
+        height: 100%;
+
+        .el-descriptions__label {
+          font-size: 0.75vw;
+          font-weight: 600;
+          color: rgb(0, 9, 39);
+          font-family: 'Microsoft YaHei';
+          background-color: rgba(200, 214, 240, 0.5);
+          border-color: rgb(159, 180, 218);
+          border-width: 1px;
+          // border-bottom-width: 0;
+        }
+        .el-descriptions__content {
+          border-width: 1px;
+          // border-top-width: 0;
+          border-color: rgb(159, 180, 218);
+          font-weight: 600;
+          font-size: 0.8vw;
+          transition: 0.3s ease-in-out;
+          &:hover, &:focus {
+            font-weight: 600;
+            font-size: 0.9vw;
+            color: rgb(96, 136, 211);
+          }
+        }
+
+        tr {
+          height: 25%;
+
+        }
+      }
+    }
+  }
+
+}
+
+#anchor-info {
+  position: absolute;
+  transform-style: preserve-3d;
+
+  .el-descriptions {
+    height: 100%;
+    .el-descriptions__body {
+      height: 100%;
+
+      .el-descriptions__table {
+        height: 100%;
+
+        .el-descriptions__label {
+          font-size: 0.75vw;
+          font-weight: 600;
+          color: rgb(0, 9, 39);
+          font-family: 'Microsoft YaHei';
+          background-color: rgba(200, 214, 240, 0.5);
+          border-color: rgb(159, 180, 218);
+          border-width: 1px;
+          // border-bottom-width: 0;
+        }
+        .el-descriptions__content {
+          border-width: 1px;
+          // border-top-width: 0;
+          border-color: rgb(159, 180, 218);
+          font-weight: 600;
+          font-size: 0.8vw;
+          transition: 0.3s ease-in-out;
+          &:hover, &:focus {
+            font-weight: 600;
+            font-size: 0.9vw;
+            color: rgb(96, 136, 211);
+          }
+        }
+
+        tr {
+          height: 25%;
+
+        }
+      }
+    }
+  }
+
+}
+
+.down-arrow {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  .down-tri {
+    width: 0px;
+    height: 0px;
+    border-top: 10px solid rgb(107, 176, 255);
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
   }
 }
 
