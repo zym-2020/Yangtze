@@ -7,12 +7,6 @@
           placeholder="数据检索"
           @keydown.enter="searchHandle"
         >
-          <template #prepend>
-            <el-select v-model="select" style="width: 115px">
-              <el-option label="条目名" value="name" />
-              <el-option label="标签" value="tag" />
-            </el-select>
-          </template>
         </el-input>
         <el-button :icon="Search" color="black" @click="searchHandle"
           >搜索</el-button
@@ -91,6 +85,7 @@
             <div class="list-item" v-if="fileList.length > 0">
               <div v-for="(item, index) in fileList" :key="index" class="card">
                 <data-card
+                  :keyword="titleKeyword"
                   :fileInfo="item"
                   @click="toDetail(index)"
                 ></data-card>
@@ -241,11 +236,9 @@ export default defineComponent({
     const skeletonFlag = ref(true);
     const hotSkeletonFlag = ref(true);
     const input = ref("");
-    const select = ref("name");
     const classValue = ref("所有");
 
     const titleKeyword = ref("");
-    const tagList = ref<string[]>([]);
 
     const fileList = ref<any[]>([]);
     const total = ref(0);
@@ -255,7 +248,6 @@ export default defineComponent({
       page: number,
       size: number,
       titleKeyword: string,
-      tags: string[],
       property: string,
       type: string
     ) => {
@@ -277,18 +269,11 @@ export default defineComponent({
     };
 
     const searchHandle = async () => {
-      if (select.value === "name") {
-        titleKeyword.value = input.value;
-        tagList.value = [];
-      } else {
-        tagList.value = input.value != "" ? [input.value] : [];
-        titleKeyword.value = "";
-      }
+      titleKeyword.value = input.value;
       await searchData(
         0,
         8,
         titleKeyword.value,
-        tagList.value,
         sortWord.value,
         classValue.value === "所有" ? "" : classValue.value
       );
@@ -301,13 +286,12 @@ export default defineComponent({
         0,
         8,
         "",
-        [],
         sortWord.value,
         classValue.value === "所有" ? "" : classValue.value
       );
       currentPage.value = 1;
       input.value = "";
-      (titleKeyword.value = ""), (tagList.value = []);
+      titleKeyword.value = "";
     };
 
     const sortHandle = async (val: string) => {
@@ -316,7 +300,6 @@ export default defineComponent({
         currentPage.value - 1,
         8,
         titleKeyword.value,
-        tagList.value,
         sortWord.value,
         classValue.value === "所有" ? "" : classValue.value
       );
@@ -327,15 +310,10 @@ export default defineComponent({
         val - 1,
         8,
         titleKeyword.value,
-        tagList.value,
         sortWord.value,
         classValue.value === "所有" ? "" : classValue.value
       );
-      if (titleKeyword.value === "") {
-        input.value = tagList.value[0];
-      } else {
-        input.value = titleKeyword.value;
-      }
+      input.value = titleKeyword.value;
     };
 
     const toMap = () => {
@@ -361,8 +339,10 @@ export default defineComponent({
       });
     };
 
+    
+
     onMounted(async () => {
-      await searchData(0, 8, "", [], "update_time", "");
+      await searchData(0, 8, "", "update_time", "");
       const data = await getHot(8);
       if (data != null && (data as any).code === 0) {
         hotDataList.value = data.data;
@@ -375,7 +355,6 @@ export default defineComponent({
       skeletonFlag,
       hotSkeletonFlag,
       input,
-      select,
       fileList,
       total,
       toDetail,
@@ -392,6 +371,7 @@ export default defineComponent({
       classifyHandle,
       sortHandle,
       toHotData,
+      titleKeyword
     };
   },
 });

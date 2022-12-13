@@ -29,10 +29,7 @@ public class DataList {
     Integer watch;
     String avatar;
     Integer status;
-    String thumbnail;
-
     String provider;
-    String time;
     String range;
     String type;
     String providerPhone;

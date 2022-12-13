@@ -1,12 +1,12 @@
 <template>
   <div class="upload-share">
-    <page-header :pageTitle="'修改共享条目'"></page-header>
     <div class="main">
       <div class="head">
         <strong>修改共享文件条目</strong>
       </div>
       <div class="des">
         请确保以下内容的<strong>真实性</strong>及<strong>完整性</strong>，以便管理员审核通过！审核工作预计在7个工作日内完成
+        <div>项目修改后需要管理员<strong>重新审核</strong>才能上线</div>
       </div>
       <el-divider />
       <el-form
@@ -55,13 +55,6 @@
             :pictureName="avatarName"
           ></avatar-upload>
         </el-form-item>
-
-        <el-form-item label="条目缩略图：">
-          <avatar-upload
-            @upload="uploadTh"
-            :pictureName="thumbName"
-          ></avatar-upload>
-        </el-form-item>
       </el-form>
       <el-divider />
       <el-form
@@ -103,22 +96,19 @@
             </el-option-group>
           </el-select>
         </el-form-item>
-        <el-form-item label="数据时间描述：">
-          <el-input v-model="form.time" />
-        </el-form-item>
-        <el-form-item label="时间详细描述：">
+        <el-form-item label="数据时间：">
           <el-date-picker
             v-model="form.timeStamp"
             type="date"
-            placeholder="Pick a day"
+            placeholder="选取时间"
             size="default"
             @change="say(form.timeStamp)"
           />
         </el-form-item>
-        <el-form-item label="数据范围描述：">
+        <el-form-item label="空间范围描述：">
           <el-input v-model="form.range" />
         </el-form-item>
-        <el-form-item label="数据条目定位：">
+        <el-form-item label="空间范围选取：">
           <div ref="container" class="container"></div>
         </el-form-item>
         <el-form-item label="数据绑定：">
@@ -130,7 +120,7 @@
             <el-radio :label="false">订单获取</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="数据详情：">
+        <el-form-item label="其他描述：">
           <div style="border: 1px solid #ccc">
             <Toolbar
               style="border-bottom: 1px solid #ccc"
@@ -154,6 +144,7 @@
         >更新</el-button
       >
     </div>
+    <page-copyright />
   </div>
 </template>
 
@@ -177,7 +168,6 @@ import {
 import "@wangeditor/editor/dist/css/style.css"; // 引入 css
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
 import { IDomEditor } from "@wangeditor/editor";
-import PageHeader from "@/components/page/PageHeader.vue";
 import DataBind from "./components/DataBind.vue";
 import type { FormInstance } from "element-plus";
 import AvatarUpload from "@/components/upload/AvatarUpload.vue";
@@ -187,14 +177,15 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { updateDataList, updateRelational } from "@/api/request";
 import router from "@/router";
 import { notice } from "@/utils/notice";
+import PageCopyright from "@/components/page/PageCopyright.vue";
 
 export default defineComponent({
   components: {
-    PageHeader,
     Editor,
     Toolbar,
     AvatarUpload,
     DataBind,
+    PageCopyright,
   },
   setup() {
     const defaultProps = {
@@ -211,13 +202,10 @@ export default defineComponent({
     };
 
     const avatar = ref<File>();
-    const thumbnail = ref<File>();
     const avatarName = ref<string>(
       (router.currentRoute.value.params.fileInfo as any).avatar
     );
-    const thumbName = ref<string>(
-      (router.currentRoute.value.params.fileInfo as any).thumbnail
-    );
+
     const fileList = ref<string[]>([]);
 
     let map: mapBoxGl.Map;
@@ -232,10 +220,6 @@ export default defineComponent({
 
     const upload = (val: any) => {
       avatar.value = val;
-    };
-
-    const uploadTh = (val: any) => {
-      thumbnail.value = val;
     };
 
     const changeData = (val: TableDataType[]) => {
@@ -264,7 +248,6 @@ export default defineComponent({
       await formEl1.validate(async (valid1, fields) => {
         await formEl2.validate(async (valid2) => {
           if (valid1 && valid2) {
-            console.log("1", avatar.value, thumbnail.value);
             const formData = new FormData();
             formData.append("jsonString", JSON.stringify(form));
             if (avatar.value != undefined) {
@@ -272,23 +255,15 @@ export default defineComponent({
             } else {
               formData.append("avatar", new Blob());
             }
-            if (thumbnail.value != undefined) {
-              formData.append("thumbnail", thumbnail.value);
-            } else {
-              formData.append("thumbnail", new Blob());
-            }
             const data = await updateDataList(formData);
-            const data1 = await updateRelational({
-              dataListId: form.id,
-              fileIdList: fileList.value,
-            });
-            if (
-              data != null &&
-              (data as any).code === 0 &&
-              data1 != null &&
-              (data1 as any).code === 0
-            ) {
-              notice("success", "成功", "更新成功！");
+            if (data != null && (data as any).code === 0) {
+              const data1 = await updateRelational({
+                dataListId: form.id,
+                fileIdList: fileList.value,
+              });
+              if (data1 != null && (data1 as any).code === 0) {
+                notice("success", "成功", "更新成功！");
+              }
             }
           }
         });
@@ -570,7 +545,6 @@ export default defineComponent({
       tags: (router.currentRoute.value.params.fileInfo as any).tags,
       location: (router.currentRoute.value.params.fileInfo as any).location,
       provider: (router.currentRoute.value.params.fileInfo as any).provider,
-      time: (router.currentRoute.value.params.fileInfo as any).time,
       range: (router.currentRoute.value.params.fileInfo as any).range,
       detail: (router.currentRoute.value.params.fileInfo as any).detail,
       type: (router.currentRoute.value.params.fileInfo as any).type,
@@ -716,8 +690,6 @@ export default defineComponent({
       metaRef,
       upload,
       say,
-      uploadTh,
-      thumbName,
       avatarName,
       changeData,
       tableData,
@@ -735,6 +707,9 @@ export default defineComponent({
       height: 50px;
       font-size: 20px;
       line-height: 50px;
+    }
+    .des {
+      line-height: 30px;
     }
 
     .el-form {

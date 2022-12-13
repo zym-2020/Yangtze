@@ -1,76 +1,93 @@
-<template>
-  <div class="scenario-card">
-    <div>
-      <div class="image">
-        <img :src="info.img" />
-      </div>
+<template >
+  <div id="box">
+    <div class="image">
+      <img :src="avatar" />
     </div>
-    <div class="text">
-      <div class="title">
-        <strong>{{ info.title }}</strong>
-      </div>
+    <div class="name">
+      {{ name }}
+    </div>
+    <div class="des">
+      {{ des }}
+    </div>
+    <div class="btn">
+      <el-button type="primary" size="large" @click="clickHandle"
+        >查看详情</el-button
+      >
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { computed, defineComponent } from "vue";
+  
+  <script lang="ts">
+import { defineComponent, computed } from "vue";
+import router from "@/router";
 export default defineComponent({
   props: {
-    cardInfo: {
-      type: Object,
-    },
+    dataInfo: Object,
   },
   setup(props) {
-    const info = computed(() => {
-      return props.cardInfo;
+    const name = computed(() => {
+      return (props.dataInfo as any).name;
     });
 
+    const des = computed(() => {
+      return (props.dataInfo as any).des;
+    });
+
+    const avatar = computed(() => {
+      return (props.dataInfo as any).avatar;
+    });
+
+    const clickHandle = () => {
+      router.push({
+        path: (props.dataInfo as any).path,
+      });
+    };
+
     return {
-      info,
+      des,
+      name,
+      avatar,
+      clickHandle,
     };
   },
 });
 </script>
 
+  
 <style lang="scss" scoped>
-@keyframes move {
-  0% {
-    transform: scale(1);
-  }
-
-  100% {
-    transform: scale(1.1);
-  }
-}
-.scenario-card {
-  height: 330px;
-  width: 550px;
-  background: #f4f4f5;
-  border-radius: 4px;
+div#box {
+  border-radius: 6px;
+  width: 100%;
+  // height: 650px;
+  // height: calc(100% - 40px);
+  height: 100%;
   padding: 20px;
-  cursor: pointer;
+  position: relative;
+
   .image {
-    width: 500px;
-    height: 300px;
-    // padding-top: 20px;
-    margin: 0 auto 10px;
-    overflow: hidden;
+    width: 100%;
+    height: 80%;
     img {
       width: 100%;
-      height: 300px;
+      height: 100%;
     }
   }
 
-  .text {
-    text-align: center;
+  .name {
+    font-size: 30px;
+    font-weight: 800;
+    margin-top: 20px;
+  }
+  .des {
     font-size: 20px;
+    line-height: 50px;
+    color: #8c8c8c;
+    font-weight: 500;
   }
-
-  &:hover {
-    img {
-      animation: move 0.3s linear forwards;
-    }
+  .btn {
+    position: absolute;
+    bottom: 30px;
+    right: 20px;
   }
 }
 </style>

@@ -26,19 +26,18 @@ public class DataListController {
     @Autowired
     DataListService dataListService;
 
-    @CrossOrigin
+
     @AuthCheck
     @RequestMapping(value = "/addDataList", method = RequestMethod.POST)
-    public JsonResult addDataList(@RequestParam MultipartFile avatar, @RequestParam MultipartFile thumbnail, @RequestParam String jsonString, @JwtTokenParser("email") String email) {
-        dataListService.addDataList(avatar, thumbnail, jsonString, email);
+    public JsonResult addDataList(@RequestParam MultipartFile avatar, @RequestParam String jsonString, @JwtTokenParser("email") String email) {
+        dataListService.addDataList(avatar, jsonString, email);
         return ResultUtils.success();
     }
 
     @AuthCheck
-    @CrossOrigin
     @RequestMapping(value = "/updateDataList", method = RequestMethod.PATCH)
-    public JsonResult updateDataList(@RequestParam MultipartFile avatar, @RequestParam MultipartFile thumbnail, @RequestParam String jsonString) {
-        dataListService.updateList(avatar, thumbnail, jsonString);
+    public JsonResult updateDataList(@RequestParam MultipartFile avatar, @RequestParam String jsonString) {
+        dataListService.updateList(avatar, jsonString);
         return ResultUtils.success();
     }
 
@@ -49,7 +48,6 @@ public class DataListController {
     }
 
     @AuthCheck
-    @CrossOrigin
     @RequestMapping(value = "/getFileInfoAndUserInfo/{id}", method = RequestMethod.GET)
     public JsonResult getFileInfoAndUserInfo(@PathVariable String id) {
         return ResultUtils.success(dataListService.getFileInfoAndUserInfo(id));
