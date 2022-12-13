@@ -236,6 +236,7 @@ export default defineComponent({
         typeValue.value === "all" ? "" : typeValue.value,
         parseInt(statusValue.value)
       );
+      currentPage.value = 1
     };
 
 

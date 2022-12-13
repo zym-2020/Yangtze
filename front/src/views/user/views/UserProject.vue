@@ -117,7 +117,6 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import { getAllByEmail, deleteProject, getCount } from "@/api/request";
-import ProjectCard from "@/components/cards/ProjectCard.vue";
 import CreateProject from "@/components/tools/CreateProject.vue";
 import { ElMessageBox } from "element-plus";
 import router from "@/router";
@@ -127,7 +126,7 @@ import { dateFormat } from "@/utils/common";
 import NProgress from "nprogress";
 
 export default defineComponent({
-  components: { ProjectCard, CreateProject },
+  components: { CreateProject },
   setup() {
     const skeletonFlag = ref(true);
     const title = ref("");

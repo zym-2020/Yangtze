@@ -176,7 +176,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 meta: {
                     role: ['member', 'admin'],
                     title: '分析中心',
-                    keepAlive: true,
+                    keepAlive: false,
                     key: 'AnalyzeList'
                 }
             },
@@ -277,6 +277,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
 
         ]
     },
+
     {
         path: '/admin',
         name: "Admin",

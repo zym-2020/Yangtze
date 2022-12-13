@@ -3,12 +3,12 @@
     <div class="head">
       <el-button-group>
         <el-button
-          :type="active === 'public' ? 'success' : 'primary'"
+          :type="active === 'public' ? 'success' : 'info'"
           @click="statusClick('public')"
           >公共</el-button
         >
         <el-button
-          :type="active === 'private' ? 'success' : 'primary'"
+          :type="active === 'private' ? 'success' : 'info'"
           @click="statusClick('private')"
           >私有</el-button
         >
@@ -104,6 +104,7 @@ export default defineComponent({
     const searchHandle = async () => {
       keyword.value = input.value;
       await getData(keyword.value, 0, 16, status.value);
+      currentPage.value = 1
     };
 
     const deleteHandle = async () => {

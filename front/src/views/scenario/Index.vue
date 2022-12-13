@@ -111,9 +111,9 @@ export default defineComponent({
         height: calc(100% - 30px);
       }
 
-      /deep/ .el-carousel__indicators {
-        opacity: 0;
-      }
+      // /deep/ .el-carousel__indicators {
+      //   opacity: 0;
+      // }
 
       .el-carousel__item {
         border-radius: 6px;

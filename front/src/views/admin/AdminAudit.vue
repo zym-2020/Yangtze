@@ -78,6 +78,7 @@ export default defineComponent({
     const searchHandle = async () => {
       keyword.value = input.value;
       await getData(currentPage.value - 1, keyword.value);
+      currentPage.value = 1
     };
 
     const handleCurrentChange = async (val: number) => {

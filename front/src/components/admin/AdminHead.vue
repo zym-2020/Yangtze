@@ -1,5 +1,7 @@
 <template>
-  <div class="admin-head">头部</div>
+  <div class="admin-head">
+    
+  </div>
 </template>
 
 <script lang="ts">

@@ -4,88 +4,88 @@
       <div class="bg"></div>
       <div class="input">
         <div class="name">分析中心</div>
-        <el-input v-model="search" placeholder="搜索项目..." size="large" />
-        <el-button type="primary">搜索</el-button>
         <div class="text">
           综合研究分析平台以数据和模型分析库及分析功能为驱动，以中心数据库为中心，结合本地数据库的数据，支撑应用层的各种分析操作
+        </div>
+        <div class="text">
+          您能在此浏览社区用户公开的分析工程，或前往工作空间创建自己的分析工程
+        </div>
+        <div>
+          <el-button @click="ClickHandle"
+            >前往工作空间<el-icon style="margin-left: 5px"><Right /></el-icon
+          ></el-button>
         </div>
       </div>
     </div>
 
+    <el-affix :offset="offset">
+      <div class="search">
+        <el-button type="primary" plain size="large" @click="searchClick"
+          >检索</el-button
+        >
+        <el-input
+          v-model="search"
+          placeholder="项目名 / 创建人"
+          size="large"
+          @keydown.enter="searchClick"
+        />
+      </div>
+    </el-affix>
+
     <el-skeleton :rows="5" animated v-if="skeletonFlag" />
     <div class="body" v-else>
       <el-empty description="暂无数据" v-if="projects.length === 0" />
-      <el-row v-else>
-        <el-col :span="4" v-for="(item, index) in projects" :key="index">
-          <div class="project">
-            <project-card
-              class="card"
-              :projectInfo="item"
-              :flag="true"
-              @click="toProject({ id: item.id, projectInfo: item })"
-            ></project-card>
-          </div>
+      <el-row v-else :gutter="20">
+        <el-col :span="6" v-for="(item, index) in projects" :key="index">
+          <project-card :info="item" :keyword="keyword"></project-card>
         </el-col>
       </el-row>
     </div>
     <div class="page">
       <el-pagination
-        :hide-on-single-page="true"
-        layout="prev, pager, next"
+        layout="total, prev, pager, next, jumper"
         :total="total"
         @current-change="currentChange"
         v-model:current-page="currentPage"
-        :page-size="12"
+        :page-size="16"
         :pager-count="5"
         :background="true"
       >
       </el-pagination>
     </div>
     <page-copyright />
-
-    <el-dialog
-      v-model="createFlag"
-      width="500px"
-      :show-close="false"
-      title="创建项目"
-    >
-      <create-project @createProject="createProject"></create-project>
-    </el-dialog>
     <el-backtop :right="100" :bottom="100" />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, nextTick, onActivated, onMounted, ref } from "vue";
 import { getAll } from "@/api/request";
-import ProjectCard from "@/components/cards/ProjectCard.vue";
-import router from "@/router";
-import CreateProject from "@/components/tools/CreateProject.vue";
-import PageHeader from "@/components/page/PageHeader.vue";
+import ProjectCard from "@/components/analyse/ProjectCard.vue";
 import PageCopyright from "@/components/page/PageCopyright.vue";
 import NProgress from "nprogress";
+import router from "@/router";
 
 NProgress.configure({ showSpinner: false });
 export default defineComponent({
   components: {
     ProjectCard,
-    CreateProject,
-    PageHeader,
     PageCopyright,
   },
   setup() {
     const projects = ref<any[]>([]);
     const search = ref("");
     const total = ref(0);
-    const createFlag = ref(false);
     const keyword = ref("");
     const currentPage = ref(1);
     const skeletonFlag = ref(true);
+    const offset = ref(0);
 
     onMounted(async () => {
+      computeOffset();
       skeletonFlag.value = true;
       const data = await getAll({
-        size: 12,
+        size: 16,
         page: 0,
         keyword: keyword.value,
       });
@@ -100,7 +100,7 @@ export default defineComponent({
       NProgress.start();
       keyword.value = search.value;
       const data = await getAll({
-        size: 12,
+        size: 16,
         page: 0,
         keyword: keyword.value,
       });
@@ -117,9 +117,8 @@ export default defineComponent({
 
     const currentChange = async (page: number) => {
       NProgress.start();
-      currentPage.value = page;
       const data = await getAll({
-        size: 12,
+        size: 16,
         page: page - 1,
         keyword: keyword.value,
       });
@@ -131,37 +130,35 @@ export default defineComponent({
       NProgress.done();
     };
 
-    const createProject = (val: string) => {
-      createFlag.value = false;
-      router.push({
-        name: "project",
-        params: {
-          id: val,
-        },
-      });
+    const computeOffset = () => {
+      let div = document.createElement("div");
+      div.style.height = "7vh";
+      div.style.maxHeight = "none";
+      div.style.boxSizing = "content-box";
+      document.body.appendChild(div);
+      let h = div.clientHeight;
+      document.body.removeChild(div);
+      console.log(h)
+      offset.value = h;
     };
 
-    const toProject = (project: { id: string; projectInfo: any }) => {
+    const ClickHandle = () => {
       router.push({
-        name: "project",
-        params: {
-          id: project.id,
-          projectInfo: JSON.stringify(project.projectInfo),
-        },
+        name: "UserSpaceDataList",
       });
     };
 
     return {
       projects,
       search,
-      createFlag,
-      toProject,
       total,
       currentChange,
-      createProject,
       searchClick,
       currentPage,
       skeletonFlag,
+      offset,
+      keyword,
+      ClickHandle,
     };
   },
 });
@@ -185,7 +182,7 @@ export default defineComponent({
       position: absolute;
       width: 40%;
       left: 30%;
-      top: 13%;
+      top: 15%;
       font-family: "Microsoft YaHei";
       .name {
         color: #ffc200;
@@ -193,42 +190,48 @@ export default defineComponent({
         font-size: 200px;
         text-align: center;
       }
-      .el-input {
-        height: 60px;
-        width: calc(100% - 150px);
-        margin-right: 10px;
-      }
+
       .el-button {
-        height: 60px;
-        width: 140px;
+        height: 50px;
+        font-size: 20px;
+        background: rgba($color: white, $alpha: 0.3);
+        margin-top: 10px;
+        color: white;
       }
       .text {
         margin-top: 20px;
-        color: white;
+        color: #dad5c4;
+        font-size: 23px;
+        line-height: 40px;
       }
     }
     .bg {
       height: 100%;
-      background: url("/resource/analyse3.png");
+      background: url("/resource/resource6.jfif");
       background-size: cover;
       animation: ibannerbg 60s linear infinite;
     }
   }
 
-  .body {
-    margin-top: 50px;
-    width: 100%;
-    .el-row {
-      /deep/ .el-col {
-        .project {
-          width: 100%;
-          .card {
-            margin: 0 auto;
-          }
-          margin-bottom: 30px;
-        }
-      }
+  .search {
+    height: 80px;
+    background: white;
+    position: relative;
+    padding: 0px 150px;
+    .el-input {
+      margin-top: 20px;
+      float: right;
+      width: 600px;
     }
+    .el-button {
+      margin-top: 20px;
+      float: right;
+      margin-left: 10px;
+    }
+  }
+
+  .body {
+    padding: 0 150px;
   }
 
   .page {

@@ -233,6 +233,7 @@ export default defineComponent({
     const searchHandle = async () => {
       keyword.value = input.value;
       await getData(0, 20, keyword.value);
+      currentPage.value = 1
     };
 
     onMounted(async () => {
