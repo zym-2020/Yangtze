@@ -25,11 +25,11 @@ public interface DataListService {
 
     void addWatchCount(String id);
 
-    Map<String, Object> fuzzyQuery(int page, int size, String keyword, String[] tags, String property, Boolean flag, String type);
+    Map<String, Object> fuzzyQuery(int page, int size, String keyword, String property, Boolean flag, String type);
 
-    Map<String, Object> fuzzyQueryAdmin(int page, int size, String titleKeyword, String[] tags, String property, Boolean flag, String type, int status);
+    Map<String, Object> fuzzyQueryAdmin(int page, int size, String titleKeyword, String property, Boolean flag, String type, int status);
 
-    Map<String, Object> deleteByAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag, String id, String type, int status);
+    Map<String, Object> deleteByAdmin(int page, int size, String keyword, String property, Boolean flag, String id, String type, int status);
 
     Map<String, Object> pageQueryByEmail(String email, int size, int page, String keyword, String type, String property);
 
@@ -47,5 +47,4 @@ public interface DataListService {
 
     Map<String, Object> getSimilarData(String type, String id, int size, int page);
 
-    Map<String, Object> clearQuery( String[] tags,String type,String location,String startDate,String endDate);
 }

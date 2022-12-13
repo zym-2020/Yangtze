@@ -263,47 +263,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                     key: 'updateShare'
                 }
             },
-            {
-                path: 'admin',
-                name: 'UserAdmin',
-                component: () => import('@/views/user/Admin.vue'),
-                meta: {
-                    role: ['admin'],
-                    title: '管理员空间',
-                    keepAlive: true
-                },
-                redirect: '/user/admin/resource',
-                children: [
-                    {
-                        path: 'resource',
-                        name: 'AdminResource',
-                        component: () => import('@/views/user/views/ResourceManage.vue'),
-                        meta: {
-                            role: ['member', 'admin'],
-                            key: 'UserAdmin',
-                        }
-                    },
-                    {
-                        path: 'project',
-                        name: 'AdminProject',
-                        component: () => import('@/views/user/views/ProjectManage.vue'),
-                        meta: {
-                            role: ['member', 'admin'],
-                            key: 'UserAdmin',
-                        }
-                    },
-                    {
-                        path: 'audit',
-                        name: 'AdminAudit',
-                        component: () => import('@/views/user/views/AuditManage.vue'),
-                        meta: {
-                            role: ['member', 'admin'],
-                            key: 'UserAdmin',
-                        }
-                    }
-                ]
 
-            },
             {
                 path: 'visualBind/:id',
                 name: 'VisualBind',

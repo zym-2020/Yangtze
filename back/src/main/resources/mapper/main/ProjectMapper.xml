@@ -10,7 +10,7 @@
         from project p, users u
         where u.email = p.creator
         <if test="keyword != ''">
-            and project_name like #{keyword}
+            and project_name like #{keyword} or u.name like #{keyword}
         </if>
         <if test="flag == 1">
             and is_public = true

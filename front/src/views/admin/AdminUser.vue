@@ -16,7 +16,9 @@
         >
         <el-input v-model="input" placeholder="请输入关键词" @keydown.enter="searchHandle"/>
       </div> 
+      <el-skeleton :rows="5" animated v-if="skeletonFlag"/>
       <el-table
+        v-else
         :data="userList"
         border
         @selection-change="handleSelectionChange"
@@ -122,6 +124,7 @@ export default defineComponent({
   components: { UserInfoCard, ResetPassword, AddUserCard },
   setup() {
     const userList = ref<any[]>([]);
+    const skeletonFlag = ref(true)
 
     const total = ref(0);
     const currentPage = ref(1);
@@ -234,6 +237,7 @@ export default defineComponent({
 
     onMounted(async () => {
       await getData(0, 20, keyword.value);
+      skeletonFlag.value = false
     });
 
     return {
@@ -256,6 +260,7 @@ export default defineComponent({
       addFlag,
       addUserHandle,
       searchHandle,
+      skeletonFlag
     };
   },
 });

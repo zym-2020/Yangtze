@@ -44,7 +44,7 @@ public interface ProjectService {
 
     void deleteProject(String projectId, String email, String role);
 
-    Map<String, Object> getAllByAdmin(String keyword, int page, int size, String role);
+    Map<String, Object> getAllByAdmin(String keyword, int page, int size, String role, int status);
 
     String copyProject(String projectId, String creator, String projectName, boolean isPublic, MultipartFile file, String email);
 }

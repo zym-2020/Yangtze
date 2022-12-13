@@ -204,15 +204,15 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Map<String, Object> getAllByAdmin(String keyword, int page, int size, String role) {
+    public Map<String, Object> getAllByAdmin(String keyword, int page, int size, String role, int status) {
         if(!role.equals("admin")) {
             throw new MyException(-99, "没有权限");
         }
         if(!keyword.equals("")) {
             keyword = "%" + keyword + "%";
         }
-        List<Map<String, Object>> list = projectMapper.fuzzyQuery(keyword, size, size * page, 0);
-        int total = projectMapper.fuzzyCount(keyword, 0);
+        List<Map<String, Object>> list = projectMapper.fuzzyQuery(keyword, size, size * page, status);
+        int total = projectMapper.fuzzyCount(keyword, status);
         Map<String, Object> result = new HashMap<>();
         result.put("list", list);
         result.put("total", total);

@@ -218,11 +218,11 @@ export async function deleteAsMember(jsonData: { id: string, size: number, page:
     return await del(`/dataList/deleteAsMember`, jsonData)
 }
 
-export async function deleteByAdmin(jsonData: { page: number, size: number, keyword: string, tags: string[], property: string, flag: boolean, id: string, type: string, status: number }) {
+export async function deleteByAdmin(jsonData: { page: number, size: number, keyword: string, property: string, flag: boolean, id: string, type: string, status: number }) {
     return await del(`/dataList/deleteByAdmin`, jsonData)
 }
 
-export async function fuzzyQueryDataList(jsonData: { page: number, size: number, titleKeyword: string, tags: string[], property: string, flag: boolean, type: string }) {
+export async function fuzzyQueryDataList(jsonData: { page: number, size: number, titleKeyword: string, property: string, flag: boolean, type: string }) {
     return await post(`/dataList/fuzzyQuery`, jsonData)
 }
 
@@ -230,7 +230,7 @@ export async function getFileInfoAndUserInfo(id: string) {
     return await get(`/dataList/getFileInfoAndUserInfo/${id}`)
 }
 
-export async function fuzzyQueryAdmin(jsonData: { page: number, size: number, titleKeyword: string, tags: string[], property: string, flag: boolean, type: string, status: number }) {
+export async function fuzzyQueryAdmin(jsonData: { page: number, size: number, titleKeyword: string, property: string, flag: boolean, type: string, status: number }) {
     return await post(`/dataList/fuzzyQueryAdmin`, jsonData)
 }
 
@@ -423,7 +423,7 @@ export async function deleteProject(projectId: string) {
     return await del(`/project/deleteProject/${projectId}`)
 }
 
-export async function getAllByAdmin(jsonData: { keyword: string, page: number, size: number }) {
+export async function getAllByAdmin(jsonData: { keyword: string, page: number, size: number, status: number }) {
     return await post(`/project/getAllByAdmin`, jsonData)
 }
 

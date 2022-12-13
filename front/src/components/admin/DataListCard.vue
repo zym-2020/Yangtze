@@ -8,18 +8,18 @@
         :title="'上次更新时间：' + getTime(info.updateTime)"
         >{{ getTime(info.updateTime) }}</el-tag
       >
-      <div class="creator" :title="info.userName">
-        {{ info.userName }}
+      <div class="creator" :title="'创建人：' + info.userName">
+        <span v-html="replaceHandle(info.userName)"></span>
       </div>
     </div>
-    <div class="name">{{ info.name }}</div>
+    <div class="name"><span v-html="replaceHandle(info.name)"></span></div>
     <div class="tags">
-      <el-tag v-for="(item, index) in info.tags" :key="index">{{
-        item
-      }}</el-tag>
+      <el-tag v-for="(item, index) in info.tags" :key="index"
+        ><span v-html="replaceHandle(item)"></span
+      ></el-tag>
     </div>
     <div class="des">
-      {{ info.description }}
+      <span v-html="replaceHandle(info.description)"></span>
     </div>
     <div class="btn">
       <el-icon style="margin-right: 5px; margin-top: 5px"><View /></el-icon>
@@ -28,23 +28,47 @@
         ><Download
       /></el-icon>
       <span>{{ info.download }}</span>
-      <el-button type="primary" text @click="clickHandle">查看详情</el-button>
+      <el-dropdown trigger="click" placement="top" @command="commandHandle">
+        <el-button type="primary" text>操作</el-button>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item v-if="info.status === -1" command="online"
+              ><el-icon><SuccessFilled /></el-icon>上线</el-dropdown-item
+            >
+            <el-dropdown-item v-if="info.status === 1" command="offline"
+              ><el-icon><WarningFilled /></el-icon>下线</el-dropdown-item
+            >
+            <el-dropdown-item command="delete"
+              ><el-icon><DeleteFilled /></el-icon>删除</el-dropdown-item
+            >
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+
+      <el-button type="primary" text @click="clickHandle" class="check"
+        >查看详情</el-button
+      >
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted } from "vue";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import { dateFormat, imgBase64 } from "@/utils/common";
 import { prefix } from "@/prefix";
+import router from "@/router";
 export default defineComponent({
   props: {
     info: {
       type: Object,
     },
+    keyword: {
+      type: String,
+    },
   },
-  setup(props) {
-    const info = computed(() => {
+  emits: ["operateHandle"],
+  setup(props, context) {
+    const info: any = computed(() => {
       return props.info;
     });
 
@@ -60,16 +84,36 @@ export default defineComponent({
       return dateFormat(time, "yyyy-MM-dd hh:mm");
     };
 
-    const clickHandle = () => {
-      
-    }
+    const replaceHandle = (currentStr: string) => {
+      const res = new RegExp("(" + props.keyword + ")", "g");
+      currentStr = currentStr.replace(
+        res,
+        "<span style='color:red;'>" + props.keyword + "</span>"
+      );
+      return currentStr;
+    };
 
+    const clickHandle = () => {
+      router.push({
+        name: "shareFile",
+        params: {
+          id: info.value.id,
+          fileInfo: JSON.stringify(info.value),
+        },
+      });
+    };
+
+    const commandHandle = (val: string) => {
+      context.emit("operateHandle", { type: val, id: info.value.id });
+    };
 
     return {
       info,
       getAvatar,
       getTime,
-      clickHandle
+      clickHandle,
+      commandHandle,
+      replaceHandle,
     };
   },
 });
@@ -164,7 +208,11 @@ export default defineComponent({
     position: relative;
     margin-top: 10px;
     color: #1890ff;
-    .el-button {
+    .check {
+      float: right;
+      margin-right: 5px;
+    }
+    .el-dropdown {
       float: right;
     }
   }

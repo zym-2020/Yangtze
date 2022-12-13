@@ -143,7 +143,7 @@ public class ProjectController {
     @AuthCheck
     @RequestMapping(value = "/getAllByAdmin", method = RequestMethod.POST)
     public JsonResult getAllByAdmin(@RequestBody JSONObject jsonObject, @JwtTokenParser("role") String role) {
-        return ResultUtils.success(projectService.getAllByAdmin(jsonObject.getString("keyword"), jsonObject.getIntValue("page"), jsonObject.getIntValue("size"), role));
+        return ResultUtils.success(projectService.getAllByAdmin(jsonObject.getString("keyword"), jsonObject.getIntValue("page"), jsonObject.getIntValue("size"), role, jsonObject.getIntValue("status")));
     }
 
 }

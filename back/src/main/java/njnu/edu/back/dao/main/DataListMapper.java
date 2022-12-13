@@ -28,9 +28,9 @@ public interface DataListMapper {
 
     void addDownloadCount(@Param("id") String id);
 
-    List<Map<String, Object>> fuzzyQuery(@Param("start") int start, @Param("size") int size, @Param("keyword") String keyword, @Param("tags") String[] tags, @Param("property") String property, @Param("flag") Boolean flag, @Param("status") int status, @Param("type") String type);
+    List<Map<String, Object>> fuzzyQuery(@Param("start") int start, @Param("size") int size, @Param("keyword") String keyword, @Param("property") String property, @Param("flag") Boolean flag, @Param("status") int status, @Param("type") String type);
 
-    int countFuzzyQuery(@Param("keyword") String keyword, @Param("tags") String[] tags, @Param("status") int status, @Param("type") String type);
+    int countFuzzyQuery(@Param("keyword") String keyword, @Param("status") int status, @Param("type") String type);
 
     void deleteById(@Param("id") String id);
 
@@ -39,8 +39,6 @@ public interface DataListMapper {
     int countPageQueryByEmail(@Param("email") String email, @Param("keyword") String keyword, @Param("type") String type);
 
     void updateStatusById(@Param("id") String id, @Param("status") int status);
-
-    List<Map<String, Object>> clearQuery( @Param("tags") String[] tags, @Param("status") int status, @Param("type") String type, @Param("startDate") String startDate, @Param("endDate") String endDate);
 
     List<Map<String, Object>> getSimilarData(@Param("type") String type, @Param("id") String id, @Param("size") int size, @Param("start") int start);
 

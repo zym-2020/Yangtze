@@ -165,13 +165,13 @@ public class DataListServiceImpl implements DataListService {
     }
 
     @Override
-    public Map<String, Object> fuzzyQuery(int page, int size, String keyword, String[] tags, String property, Boolean flag, String type) {
+    public Map<String, Object> fuzzyQuery(int page, int size, String keyword, String property, Boolean flag, String type) {
         if(!keyword.equals("")) {
             keyword = "%" + keyword + "%";
         }
-        int total = dataListMapper.countFuzzyQuery(keyword, tags, 1, type);
+        int total = dataListMapper.countFuzzyQuery(keyword, 1, type);
 
-        List<Map<String, Object>> list = dataListMapper.fuzzyQuery(size * page, size, keyword, tags, property, flag, 1, type);
+        List<Map<String, Object>> list = dataListMapper.fuzzyQuery(size * page, size, keyword, property, flag, 1, type);
         Map<String, Object> result = new HashMap<>();
         result.put("total", total);
         result.put("list", list);
@@ -179,12 +179,12 @@ public class DataListServiceImpl implements DataListService {
     }
 
     @Override
-    public Map<String, Object> fuzzyQueryAdmin(int page, int size, String titleKeyword, String[] tags, String property, Boolean flag, String type, int status) {
+    public Map<String, Object> fuzzyQueryAdmin(int page, int size, String titleKeyword, String property, Boolean flag, String type, int status) {
         if(!titleKeyword.equals("")) {
             titleKeyword = "%" + titleKeyword + "%";
         }
-        int total = dataListMapper.countFuzzyQuery(titleKeyword, tags, status, type);
-        List<Map<String, Object>> list = dataListMapper.fuzzyQuery(size * page, size, titleKeyword, tags, property, flag, status, type);
+        int total = dataListMapper.countFuzzyQuery(titleKeyword, status, type);
+        List<Map<String, Object>> list = dataListMapper.fuzzyQuery(size * page, size, titleKeyword, property, flag, status, type);
         Map<String, Object> result = new HashMap<>();
         result.put("total", total);
         result.put("list", list);
@@ -192,9 +192,9 @@ public class DataListServiceImpl implements DataListService {
     }
 
     @Override
-    public Map<String, Object> deleteByAdmin(int page, int size, String keyword, String[] tags, String property, Boolean flag, String id, String type, int status) {
+    public Map<String, Object> deleteByAdmin(int page, int size, String keyword, String property, Boolean flag, String id, String type, int status) {
         dataListMapper.deleteById(id);
-        return fuzzyQueryAdmin(page, size, keyword, tags, property, flag, type, status);
+        return fuzzyQueryAdmin(page, size, keyword, property, flag, type, status);
     }
 
     @Override
@@ -300,15 +300,6 @@ public class DataListServiceImpl implements DataListService {
         return dataRelationalMapper.findFilesByDataListId(dataListId);
     }
 
-    @Override
-    public Map<String, Object> clearQuery(  String[] tags,String type,String location,String startDate,String endDate) {
-        String[] arr=location.split(",");
-        List<Map<String, Object>> list = dataListMapper.clearQuery( tags, 1, type,startDate,endDate);
-        List<Map<String, Object>> list2= PolygonCheck.getCoorShp(arr,list);
-        Map<String, Object> result = new HashMap<>();
-        result.put("list", list2);
-        return result;
-    }
 
     @Override
     public Map<String, Object> getSimilarData(String type, String id, int size, int page) {

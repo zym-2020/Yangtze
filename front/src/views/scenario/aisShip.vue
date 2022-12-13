@@ -265,6 +265,9 @@ function BuildTimeFromStamp(timeStamp: number) {
 
 onMounted(async () => {
   console.log("Mounted...");
+  // document.addEventListener('click', (e) => {
+  //   console.log(e);
+  // })
   // let container = document.getElementById( 'stats' ) as HTMLElement; 
   // stats = new (Stats as any)();
   // container.appendChild( stats.dom );

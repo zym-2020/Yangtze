@@ -263,7 +263,6 @@ export default defineComponent({
         page: page,
         size: size,
         titleKeyword: titleKeyword,
-        tags: tags,
         property: property,
         flag: false,
         type: type,

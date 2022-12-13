@@ -61,13 +61,10 @@
                 and status = #{status}
             </if>
             <if test="keyword != ''">
-                and data_list.name like #{keyword}
+                and data_list.name like #{keyword} or data_list.description like #{keyword} or array_to_string(data_list.tags, ' ') like #{keyword} or users.name like #{keyword}
             </if>
             <if test="type != ''">
                 and data_list.type = #{type}
-            </if>
-            <if test="tags.length > 0">
-                and tags @> #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}::text[]
             </if>
             <if test="flag">
                 order by ${property} asc, data_list.id asc
@@ -80,7 +77,7 @@
     </select>
 
     <select id="countFuzzyQuery" resultType="java.lang.Integer">
-        select count(*) from data_list
+        select count(*) from data_list, users
         where
             <if test="status == 2">
                 (status = 1 or status = 0 or status = -1)
@@ -92,10 +89,7 @@
                 and type = #{type}
             </if>
             <if test="keyword != ''">
-                and name like #{keyword}
-            </if>
-            <if test="tags.length > 0">
-                and tags @> #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}::text[]
+                and data_list.name like #{keyword} or data_list.description like #{keyword} or array_to_string(data_list.tags, ' ') like #{keyword} or users.name like #{keyword}
             </if>
     </select>
 
@@ -157,25 +151,6 @@
         select count(*) from data_list where type = #{type}
     </select>
 
-    <select id="clearQuery" resultType="java.util.Map">
-        select data_list.id as "id", data_list.name as "name", location, description, tags, creator, create_time as "createTime", update_time as "updateTime", download, watch, data_list.avatar as "avatar", status,
-        provider, time, range, type, provider_phone as "providerPhone", provider_email as "providerEmail", provider_address as "providerAddress", get_online as "getOnline", detail, thumbnail, time_stamp as "timeStamp", users.avatar as "userAvatar", users.name as "userName"
-        from data_list, users
-        where
-        users.email = data_list.creator
-        <if test="status == -1 or status == 0 or status == 1">
-            and status = #{status}
-        </if>
-        <if test="type != ''">
-            and data_list.type = #{type}
-        </if>
-        <if test="tags.length > 0">
-            and tags @> #{tags, typeHandler = njnu.edu.back.common.utils.ArrayTypeHandler}::text[]
-        </if>
-        <if test="startDate !=null and startDate !='' and endDate !=null and endDate !=''">
-            AND data_list.time_stamp BETWEEN #{startDate}::date AND #{endDate}::date
-        </if>
-    </select>
 
     <select id="getHot" resultType="java.util.Map">
         select id, name as "dataListName" from data_list order by watch desc limit #{size} offset 0;

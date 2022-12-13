@@ -167,7 +167,6 @@ export default defineComponent({
       page: 0,
       size: 100,
       titleKeyword: "",
-      tags: [],
       property: "id",
       flag: false,
       type: "",

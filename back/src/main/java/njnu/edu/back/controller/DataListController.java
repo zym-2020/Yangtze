@@ -69,11 +69,10 @@ public class DataListController {
         int page = jsonObject.getIntValue("page");
         int size = jsonObject.getIntValue("size");
         String keyword = jsonObject.getString("titleKeyword");
-        String[] tags = jsonObject.getObject("tags", String[].class);
         String property = jsonObject.getString("property");
         Boolean flag = jsonObject.getBoolean("flag");
         String type = jsonObject.getString("type");
-        return ResultUtils.success(dataListService.fuzzyQuery(page, size, keyword, tags, property, flag, type));
+        return ResultUtils.success(dataListService.fuzzyQuery(page, size, keyword, property, flag, type));
     }
 
     @AuthCheck
@@ -143,12 +142,11 @@ public class DataListController {
         int page = jsonObject.getIntValue("page");
         int size = jsonObject.getIntValue("size");
         String titleKeyword = jsonObject.getString("titleKeyword");
-        String[] tags = jsonObject.getObject("tags", String[].class);
         String property = jsonObject.getString("property");
         Boolean flag = jsonObject.getBoolean("flag");
         String type = jsonObject.getString("type");
         int status = jsonObject.getIntValue("status");
-        return ResultUtils.success(dataListService.fuzzyQueryAdmin(page, size, titleKeyword, tags, property, flag, type, status));
+        return ResultUtils.success(dataListService.fuzzyQueryAdmin(page, size, titleKeyword, property, flag, type, status));
     }
 
     @AuthCheck
@@ -157,26 +155,15 @@ public class DataListController {
         int page = jsonObject.getIntValue("page");
         int size = jsonObject.getIntValue("size");
         String keyword = jsonObject.getString("keyword");
-        String[] tags = jsonObject.getObject("tags", String[].class);
         String property = jsonObject.getString("property");
         Boolean flag = jsonObject.getBoolean("flag");
         String id = jsonObject.getString("id");
         String type = jsonObject.getString("type");
         int status = jsonObject.getIntValue("status");
-        return ResultUtils.success(dataListService.deleteByAdmin(page, size, keyword, tags, property, flag, id, type, status));
+        return ResultUtils.success(dataListService.deleteByAdmin(page, size, keyword, property, flag, id, type, status));
     }
 
-    @AuthCheck
-    @CrossOrigin
-    @RequestMapping(value = "/clearQuery", method = RequestMethod.POST)
-    public JsonResult clearQuery(@RequestBody JSONObject jsonObject) {
-        String[] tags = jsonObject.getObject("tags", String[].class);
-        String type = jsonObject.getString("type");
-        String location = jsonObject.getString("location");
-        String startDate = jsonObject.getString("startDate");
-        String endDate = jsonObject.getString("endDate");
-        return ResultUtils.success(dataListService.clearQuery( tags, type,location,startDate,endDate));
-    }
+
 
     @AuthCheck
     @RequestMapping(value = "/getSimilarData/{type}/{id}/{size}/{page}", method = RequestMethod.GET)

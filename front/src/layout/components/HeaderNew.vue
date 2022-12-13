@@ -115,7 +115,7 @@ const userNav = (param: string) => {
   if (param === "1") {
     router.push({ path: "/user/space" });
   } else if (param === "2") {
-    router.push({ path: "/user/admin" });
+    router.push({ path: "/admin" });
   } else if (param === "5") {
     store.dispatch("logout", undefined);
   } else if (param === "3") {
