@@ -1,5 +1,6 @@
 import { IconLayer, PolygonLayer } from "@deck.gl/layers/typed";
 import { CompositeLayer, Layer, LayersList, CompositeLayerProps, UpdateParameters } from "@deck.gl/core/typed";
+// import { prefix } from '../../src/prefix';
 
 const ICON_MAPPING = {
     shipMarker: {x: 0, y: 0, width: 512, height: 512, mask: false}, 
