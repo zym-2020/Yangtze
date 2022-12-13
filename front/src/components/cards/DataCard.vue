@@ -4,7 +4,7 @@
       <div class="info">
         <div class="title">
           <div>
-            <strong>{{ name }}</strong>
+            <strong><span v-html="replaceHandle(name)"></span></strong>
           </div>
           <div class="hot">
             <el-tag type="danger" effect="dark" v-show="watchs >= 20">
@@ -13,7 +13,11 @@
           </div>
         </div>
         <div class="des">
-          {{ description }}
+          <span v-html="replaceHandle(description)"></span>
+        </div>
+        <div class="creator">
+          <span>创建者：</span>
+          <span v-html="replaceHandle(userName)"></span>
         </div>
         <div class="time">
           <strong>上次更新于：</strong>
@@ -50,6 +54,9 @@ export default defineComponent({
     fileInfo: {
       type: Object,
     },
+    keyword: {
+      type: String,
+    },
   },
   emits: ["toDetail"],
   setup(props, context) {
@@ -77,10 +84,7 @@ export default defineComponent({
     });
 
     const updateTime = computed(() => {
-      return dateFormat(
-        (props.fileInfo as any).updateTime,
-        "yyyy年MM月dd日hh时"
-      );
+      return dateFormat((props.fileInfo as any).updateTime, "yyyy-MM-dd hh:mm");
     });
     const watchs = computed(() => {
       return (props.fileInfo as any).watch;
@@ -92,10 +96,23 @@ export default defineComponent({
     const tagList = computed(() => {
       return (props.fileInfo as any).tags;
     });
+    const userName = computed(() => {
+      return (props.fileInfo as any).userName;
+    });
 
     const toDetail = () => {
       context.emit("toDetail");
     };
+
+    const replaceHandle = (currentStr: string) => {
+      const res = new RegExp("(" + props.keyword + ")", "g");
+      currentStr = currentStr.replace(
+        res,
+        "<span style='color:red;'>" + props.keyword + "</span>"
+      );
+      return currentStr;
+    };
+
     return {
       avatar,
       name,
@@ -105,6 +122,8 @@ export default defineComponent({
       download,
       tagList,
       toDetail,
+      replaceHandle,
+      userName,
     };
   },
 });
@@ -155,16 +174,21 @@ export default defineComponent({
       -webkit-line-clamp: 4;
       -webkit-box-orient: vertical;
     }
-    .time {
-      margin: 10px 0;
+    .creator {
       position: absolute;
-      bottom: 30px;
+      bottom: 70px;
+      left: 3px;
+      font-size: 14px;
+      color: #8c8c8c;
+    }
+    .time {
+      position: absolute;
+      bottom: 35px;
     }
     .watch-download {
       position: absolute;
-      margin: 10px 0;
       position: absolute;
-      bottom: 30px;
+      bottom: 35px;
       left: 275px;
     }
     .uploader {

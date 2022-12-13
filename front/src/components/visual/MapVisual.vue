@@ -1,9 +1,73 @@
 <template>
-  <div ref="container" class="container"></div>
+  <div class="map-visual">
+    <el-row
+      :gutter="20"
+      justify="center"
+      style="margin-bottom: 20px"
+      v-if="movePngArray.length > 0"
+    >
+      <el-col :span="8" style="text-align: center">
+        <el-card
+          class="video"
+          shadow="always"
+          style="margin-top: 30px; margin-bottom: 10px"
+          @click="changeRaster('left')"
+        >
+          <div class="body">
+            <div class="text" style="margin-left: 20px">
+              <strong>{{ movePngArray[leftIndex].name }}</strong>
+            </div>
+            <div class="icon icon-left">
+              <el-icon><ArrowLeftBold /></el-icon>
+            </div>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="8" style="text-align: center">
+        <el-card
+          shadow="always"
+          style="
+            margin-top: 10px;
+            margin-bottom: 10px;
+            background-color: lightgrey;
+          "
+        >
+          <div class="text">
+            <strong>{{ movePngArray[centerIndex].name }}</strong>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="8" style="text-align: center">
+        <el-card
+          class="video"
+          shadow="always"
+          style="margin-top: 30px; margin-bottom: 10px"
+          @click="changeRaster('right')"
+        >
+          <div class="body">
+            <div class="text">
+              <strong>{{ movePngArray[rightIndex].name }}</strong>
+            </div>
+            <div class="icon icon-right">
+              <el-icon><ArrowRightBold /></el-icon>
+            </div>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <div ref="container" class="container"></div>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeUnmount, onMounted, ref } from "vue";
+import {
+  computed,
+  defineComponent,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+} from "vue";
 import mapBoxGl, { AnySourceData } from "mapbox-gl";
 import { prefix } from "@/prefix";
 export default defineComponent({
@@ -24,7 +88,7 @@ export default defineComponent({
   setup(props) {
     const container = ref<HTMLElement>();
     let map: mapBoxGl.Map;
-    let timeout: any;
+
     const initMap = () => {
       map = new mapBoxGl.Map({
         container: container.value as HTMLElement,
@@ -66,50 +130,17 @@ export default defineComponent({
           });
         }
 
-        if (props.movePngArray != undefined) {
-          (
-            props.movePngArray as {
-              visualId: string;
-              coordinates: number[][];
-            }[]
-          ).forEach((item) => {
-            map.addSource(item.visualId, {
-              type: "image",
-              url: `${prefix}visual/getPngResource/${item.visualId}`,
-              coordinates: item.coordinates,
-            });
-            map.addLayer({
-              id: item.visualId,
-              type: "raster",
-              source: item.visualId,
-            });
+        if (movePngArray.value.length > 0) {
+          map.addSource(movePngArray.value[0].visualId, {
+            type: "image",
+            url: `${prefix}visual/getPngResource/${movePngArray.value[0].visualId}`,
+            coordinates: movePngArray.value[0].coordinates,
           });
-          let count = 0;
-          function handle() {
-            timeout = setTimeout(() => {
-              map.moveLayer(
-                (
-                  props.movePngArray as {
-                    visualId: string;
-                    coordinates: number[][];
-                  }[]
-                )[count].visualId
-              );
-              count =
-                (count + 1) %
-                (
-                  props.movePngArray as {
-                    visualId: string;
-                    coordinates: number[][];
-                  }[]
-                ).length;
-              console.log("handle");
-              handle();
-            }, 1500);
-          }
-          if (props.movePngArray.length != 0) {
-            handle();
-          }
+          map.addLayer({
+            id: movePngArray.value[0].visualId,
+            type: "raster",
+            source: movePngArray.value[0].visualId,
+          });
         }
 
         if (props.shpArray != undefined) {
@@ -136,24 +167,95 @@ export default defineComponent({
       });
     };
 
+    const movePngArray = computed<any[]>(() => {
+      return props.movePngArray as any[];
+    });
+
+    const centerIndex = ref(0);
+
+    const leftIndex = computed(() => {
+      return (
+        (centerIndex.value - 1 + (movePngArray.value as any[]).length) %
+        (movePngArray.value as any[]).length
+      );
+    });
+    const rightIndex = computed(() => {
+      return (centerIndex.value + 1) % (movePngArray.value as any[]).length;
+    });
+
+    const changeRaster = (handle: string) => {
+      const temp = centerIndex.value;
+      if (handle === "left") {
+        centerIndex.value =
+          (centerIndex.value - 1 + (movePngArray.value as string[]).length) %
+          (movePngArray.value as string[]).length;
+      } else {
+        centerIndex.value =
+          (centerIndex.value + 1) % (movePngArray.value as string[]).length;
+      }
+      map.addSource(movePngArray.value[centerIndex.value].visualId, {
+        type: "image",
+        url: `${prefix}visual/getPngResource/${
+          movePngArray.value[centerIndex.value].visualId
+        }`,
+        coordinates: movePngArray.value[centerIndex.value].coordinates,
+      });
+      map.addLayer({
+        id: movePngArray.value[centerIndex.value].visualId,
+        type: "raster",
+        source: movePngArray.value[centerIndex.value].visualId,
+      });
+      map.removeLayer(movePngArray.value[temp].visualId);
+      map.removeSource(movePngArray.value[temp].visualId);
+    };
+
     onMounted(() => {
       initMap();
     });
 
-    onBeforeUnmount(() => {
-      clearTimeout(timeout);
-    });
-
     return {
       container,
+      movePngArray,
+      changeRaster,
+      centerIndex,
+      leftIndex,
+      rightIndex,
     };
   },
 });
 </script>
 
 <style lang="scss" scoped>
-.container {
-  height: 100%;
-  width: 100%;
+.map-visual {
+  .el-card {
+    cursor: pointer;
+  }
+  .body {
+    width: 100%;
+    position: relative;
+    .icon {
+      position: absolute;
+      top: 2px;
+      height: 20px;
+      width: 20px;
+    }
+    .icon-right {
+      right: 0px;
+    }
+    .icon-left {
+      left: 0px;
+    }
+  }
+  .text {
+    width: calc(100% - 20px);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+  }
+  .container {
+    height: 500px;
+    width: 100%;
+  }
 }
 </style>

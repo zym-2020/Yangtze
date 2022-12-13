@@ -3,7 +3,7 @@
     <div class="head">
       <el-input v-model="search" placeholder="搜索" @keyup.enter="searchFile" />
       <el-button type="primary" plain @click="searchFile">搜索</el-button>
-      <el-button type="info" plain @click="toAdd">创建共享条目</el-button>
+      <el-button type="info" plain @click="toAdd">创建数据条目</el-button>
       <el-select v-model="typeValue" class="typeSelect" @change="typeChange">
         <el-option
           v-for="item in typeOptions"

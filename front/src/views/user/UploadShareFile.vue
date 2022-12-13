@@ -1,6 +1,5 @@
 <template>
   <div class="upload-share">
-    <page-header :pageTitle="'创建共享条目'"></page-header>
     <div class="main">
       <div class="head">
         <strong>创建新的共享文件条目</strong>
@@ -56,14 +55,6 @@
             ref="avatarUpload"
           ></avatar-upload>
         </el-form-item>
-
-        <el-form-item label="条目缩略图：">
-          <avatar-upload
-            @upload="uploadTh"
-            :pictureName="''"
-            ref="thumbUpload"
-          ></avatar-upload>
-        </el-form-item>
       </el-form>
       <el-divider />
       <el-form
@@ -105,22 +96,19 @@
             </el-option-group>
           </el-select>
         </el-form-item>
-        <el-form-item label="数据时间描述：">
-          <el-input v-model="form.time" />
-        </el-form-item>
-        <el-form-item label="时间详细描述：">
+        <el-form-item label="数据时间：">
           <el-date-picker
             v-model="form.timeStamp"
             type="date"
-            placeholder="Pick a day"
+            placeholder="选取时间"
             size="default"
           />
         </el-form-item>
-        <el-form-item label="数据范围描述：">
+        <el-form-item label="空间范围描述：">
           <el-input v-model="form.range" />
         </el-form-item>
 
-        <el-form-item label="数据条目定位：">
+        <el-form-item label="空间范围选取：">
           <div ref="container" class="container"></div>
         </el-form-item>
 
@@ -134,7 +122,7 @@
             <el-radio :label="false">订单获取</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="数据详情：">
+        <el-form-item label="其他描述：">
           <div style="border: 1px solid #ccc">
             <Toolbar
               style="border-bottom: 1px solid #ccc"
@@ -158,6 +146,7 @@
         >提交</el-button
       >
     </div>
+    <page-copyright />
   </div>
 </template>
 
@@ -169,7 +158,6 @@ type Form = {
   tags: string[];
   location: string[];
   provider: string;
-  time: string;
   range: string;
   detail: string;
   type: string;
@@ -190,26 +178,24 @@ import {
 import "@wangeditor/editor/dist/css/style.css"; // 引入 css
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
 import { IDomEditor } from "@wangeditor/editor";
-import PageHeader from "@/components/page/PageHeader.vue";
 
 import { addDataList, addRelational } from "@/api/request";
 import { notice } from "@/utils/notice";
 import type { FormInstance } from "element-plus";
 import AvatarUpload from "@/components/upload/AvatarUpload.vue";
 import DataBind from "./components/DataBind.vue";
-
+import PageCopyright from "@/components/page/PageCopyright.vue";
 import mapBoxGl, { AnySourceData } from "mapbox-gl";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { uuid } from "@/utils/common";
 export default defineComponent({
   components: {
-    PageHeader,
     Editor,
     Toolbar,
-
     AvatarUpload,
     DataBind,
+    PageCopyright,
   },
   setup() {
     const defaultProps = {
@@ -489,7 +475,6 @@ export default defineComponent({
       tags: [],
       location: [],
       provider: "",
-      time: "",
       range: "",
       detail: "",
       type: "",
@@ -500,9 +485,7 @@ export default defineComponent({
       timeStamp: "",
     });
     const avatar = ref<File>();
-    const thumbnail = ref<File>();
     const avatarUpload = ref();
-    const thumbUpload = ref();
 
     const editorRef = shallowRef<IDomEditor>();
     const toolbarConfig = {};
@@ -522,10 +505,6 @@ export default defineComponent({
 
     const upload = (val: any) => {
       avatar.value = val;
-    };
-
-    const uploadTh = (val: any) => {
-      thumbnail.value = val;
     };
 
     const changeData = (
@@ -552,18 +531,12 @@ export default defineComponent({
       await formEl1.validate(async (valid1, fields) => {
         await formEl2.validate(async (valid2) => {
           if (valid1 && valid2) {
-            console.log(form, avatar.value, thumbnail.value);
             const formData = new FormData();
             formData.append("jsonString", JSON.stringify(form));
             if (avatar.value != undefined) {
               formData.append("avatar", avatar.value);
             } else {
               formData.append("avatar", new Blob());
-            }
-            if (thumbnail.value != undefined) {
-              formData.append("thumbnail", thumbnail.value);
-            } else {
-              formData.append("thumbnail", new Blob());
             }
 
             const data = await addDataList(formData);
@@ -591,7 +564,6 @@ export default defineComponent({
       form.description = "";
       form.location = [] as string[];
       form.tags = [] as string[];
-      form.time = "";
       form.range = "";
       form.detail = "";
       form.provider = "";
@@ -600,8 +572,9 @@ export default defineComponent({
       form.providerEmail = "";
       form.providerAddress = "";
       form.getOnline = true;
-      (form.timeStamp = ""), avatarUpload.value.initPicture();
-      thumbUpload.value.initPicture();
+      form.timeStamp = "";
+      avatarUpload.value.initPicture();
+
       dataBind.value?.clearData();
     };
 
@@ -698,9 +671,7 @@ export default defineComponent({
       fileRef,
       metaRef,
       upload,
-      uploadTh,
       avatarUpload,
-      thumbUpload,
       changeData,
       dataBind,
     };

@@ -15,9 +15,9 @@ import java.util.Map;
  * @Description:
  */
 public interface DataListService {
-    void addDataList(MultipartFile avatar, MultipartFile thumbnail, String jsonString, String email);
+    void addDataList(MultipartFile avatar, String jsonString, String email);
 
-    void updateList(MultipartFile avatar, MultipartFile thumbnail, String jsonString);
+    void updateList(MultipartFile avatar, String jsonString);
 
     Map<String, Object> getFileInfo(String id);
 

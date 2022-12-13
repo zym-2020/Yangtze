@@ -64,20 +64,13 @@ public class DataListServiceImpl implements DataListService {
     DownloadHistoryMapper downloadHistoryMapper;
 
     @Override
-    public void addDataList(MultipartFile avatar, MultipartFile thumbnail, String jsonString, String email) {
+    public void addDataList(MultipartFile avatar, String jsonString, String email) {
         String avatarStr = "";
-        String thumbnailStr = "";
         if(!avatar.isEmpty()) {
             String uuid = UUID.randomUUID().toString();
             String suffix = avatar.getOriginalFilename().substring(avatar.getOriginalFilename().lastIndexOf(".") + 1);
             LocalUploadUtil.uploadAvatar(pictureAddress + uuid + "." + suffix, avatar);
             avatarStr = uuid + "." + suffix;
-        }
-        if(!thumbnail.isEmpty()) {
-            String uuid = UUID.randomUUID().toString();
-            String suffix = thumbnail.getOriginalFilename().substring(thumbnail.getOriginalFilename().lastIndexOf(".") + 1);
-            LocalUploadUtil.uploadAvatar(pictureAddress + uuid + "." + suffix, thumbnail);
-            thumbnailStr = uuid + "." +suffix;
         }
         JSONObject jsonObject = JSON.parseObject(jsonString);
         DataList dataList = new DataList();
@@ -89,11 +82,9 @@ public class DataListServiceImpl implements DataListService {
         dataList.setDownload(0);
         dataList.setWatch(0);
         dataList.setAvatar(avatarStr);
-        dataList.setThumbnail(thumbnailStr);
-        dataList.setStatus(1);
+        dataList.setStatus(0);
         dataList.setLocation(jsonObject.getObject("location", String[].class));
         dataList.setProvider(jsonObject.getString("provider"));
-        dataList.setTime(jsonObject.getString("time"));
         dataList.setRange(jsonObject.getString("range"));
         dataList.setType(jsonObject.getString("type"));
         dataList.setProviderAddress(jsonObject.getString("providerAddress"));
@@ -105,33 +96,24 @@ public class DataListServiceImpl implements DataListService {
     }
 
     @Override
-    public void updateList(MultipartFile avatar, MultipartFile thumbnail, String jsonString) {
+    public void updateList(MultipartFile avatar, String jsonString) {
         JSONObject jsonObject = JSON.parseObject(jsonString);
         Map<String, Object> map = dataListMapper.getFileInfo(jsonObject.getString("id"));
         String avatarStr = (String) map.get("avatar");
-        String thumbnailStr = (String) map.get("thumbnail");
         if(!avatar.isEmpty()) {
             String uuid = UUID.randomUUID().toString();
             String suffix = avatar.getOriginalFilename().substring(avatar.getOriginalFilename().lastIndexOf(".") + 1);
             LocalUploadUtil.uploadAvatar(pictureAddress + uuid + "." + suffix, avatar);
             avatarStr = uuid + "." + suffix;
         }
-        if(!thumbnail.isEmpty()) {
-            String uuid = UUID.randomUUID().toString();
-            String suffix = thumbnail.getOriginalFilename().substring(thumbnail.getOriginalFilename().lastIndexOf(".") + 1);
-            LocalUploadUtil.uploadAvatar(pictureAddress + uuid + "." + suffix, thumbnail);
-            thumbnailStr = uuid + "." +suffix;
-        }
-
         DataList dataList = new DataList();
         dataList.setName(jsonObject.getString("name"));
         dataList.setDescription(jsonObject.getString("description"));
         dataList.setTags(jsonObject.getObject("tags", String[].class));
         dataList.setAvatar(avatarStr);
-        dataList.setThumbnail(thumbnailStr);
         dataList.setProvider(jsonObject.getString("provider"));
         dataList.setLocation(jsonObject.getObject("location", String[].class));
-        dataList.setTime(jsonObject.getString("time"));
+        dataList.setStatus(0);
         dataList.setRange(jsonObject.getString("range"));
         dataList.setType(jsonObject.getString("type"));
         dataList.setProviderAddress(jsonObject.getString("providerAddress"));

@@ -51,7 +51,7 @@ export default defineComponent({
       return props.info;
     });
     const operateHandle = async (param: number) => {
-      const data = await updateStatusById(info.id, param);
+      const data = await updateStatusById(info.value.id, param);
       if (data != null && (data as any).code === 0) {
         notice("success", "成功", "审核成功");
         context.emit("auditHandle");

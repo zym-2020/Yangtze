@@ -25,9 +25,6 @@
           </div>
         </div>
         <div class="top-right">
-          <!-- <div class="img">
-            <images :src="avatar" />
-          </div> -->
           <img :src="avatar" />
           <el-row>
             <el-col :span="12"
@@ -197,7 +194,7 @@
           </div>
         </div>
         <div class="use">
-          <data-head :title="'数据使用说明'"></data-head>
+          <data-head :title="'其他描述'"></data-head>
           <div class="editor-content-view" v-html="fileInfo.detail"></div>
         </div>
       </div>
@@ -300,9 +297,9 @@ export default defineComponent({
     >([]);
     const pngArray = ref<{ visualId: string; coordinates: number[][] }[]>([]);
     const rasterTileArray = ref<string[]>([]);
-    const movePngArray = ref<{ visualId: string; coordinates: number[][] }[]>(
-      []
-    );
+    const movePngArray = ref<
+      { visualId: string; name: string; coordinates: number[][] }[]
+    >([]);
     const photoList = ref<string[]>([]);
     const tableNameList = ref<string[]>([]);
     const sandContentList = ref<string[]>([]);
@@ -395,7 +392,7 @@ export default defineComponent({
       let MapFlag = false;
       let photoFlag = false;
       let excelFlag = false;
-      visualSkeleton.value = false;
+      visualSkeleton.value = true;
       for (let i = 0; i < fileList.value.length; i++) {
         if (fileList.value[i].visualType != "") {
           if (
@@ -450,6 +447,7 @@ export default defineComponent({
             );
             if (coordinates != null && (coordinates as any).code === 0) {
               movePngArray.value.push({
+                name: fileList.value[i].fileName,
                 visualId: fileList.value[i].visualId,
                 coordinates: coordinates.data,
               });
@@ -638,7 +636,7 @@ export default defineComponent({
 
 .data-detail {
   width: 66vw;
-  margin: 0 auto;
+  margin: 0 auto 30px;
   display: flex;
 
   .left {
@@ -673,9 +671,6 @@ export default defineComponent({
       .photo,
       .excel {
         width: 100%;
-      }
-      .map {
-        height: 500px;
       }
     }
   }
@@ -725,5 +720,4 @@ export default defineComponent({
     }
   }
 }
-
 </style>
