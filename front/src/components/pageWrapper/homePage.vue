@@ -155,7 +155,7 @@ export default {
 </script>
 
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
+import { onActivated, onDeactivated, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -191,11 +191,25 @@ function wheel(e: any) {
   }
 }
 
-onMounted(() => {
-  window.onwheel = (e) => {
-    wheel(e);
-  };
+const handleWheel = (e: any) => {
+  wheel(e);
+};
+
+onDeactivated(() => {
+  window.removeEventListener("wheel", handleWheel);
 });
+
+onActivated(() => {
+  window.addEventListener("wheel", handleWheel);
+});
+
+// onMounted(() => {
+//   console.log(1);
+//   // window.onwheel = (e) => {
+//   //   wheel(e);
+//   // };
+//   window.addEventListener("wheel", handleWheel);
+// });
 </script>
 
 <style lang="scss" scoped>
@@ -478,5 +492,4 @@ ul.el-dropdown-menu {
     color: #f3f3f3;
   }
 }
-
 </style>

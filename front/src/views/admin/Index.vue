@@ -61,6 +61,7 @@ export default defineComponent({
     background: #f6f8f9;
     .el-scrollbar {
       height: calc(100% - 80px);
+      // height: 100%;
     }
   }
 }

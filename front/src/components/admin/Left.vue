@@ -1,5 +1,9 @@
 <template>
   <div class="left">
+    <div class="name">
+      <div class="logo"></div>
+      <div class="text">水文综合信息<br />管理与分析平台</div>
+    </div>
     <div class="title"><strong>管&nbsp;理&nbsp;员&nbsp;界&nbsp;面</strong></div>
     <div
       v-for="(item, index) in textList"
@@ -98,6 +102,25 @@ export default defineComponent({
   width: 250px;
   height: 100%;
   background: #21252b;
+  .name {
+    height: 60px;
+    padding: 20px 20px 0;
+    display: flex;
+    .logo {
+      width: 70px;
+      background-color: transparent;
+      background-image: url(../../assets/header/logo.png);
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+    .text {
+      color: white;
+      font-size: 18px;
+      margin-left: 5px;
+      line-height: 25px;
+    }
+  }
+
   .title {
     padding: 20px;
     color: white;

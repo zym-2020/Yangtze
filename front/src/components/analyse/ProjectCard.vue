@@ -90,6 +90,15 @@ export default defineComponent({
     width: 100%;
     height: 200px;
     overflow: hidden;
+    .el-avatar {
+      height: 100%;
+      width: 100%;
+      transition: all 500ms linear;
+      &:hover {
+        transition: all 500ms linear;
+        transform: scale(1.1);
+      }
+    }
     img {
       width: 100%;
       height: 100%;
@@ -108,6 +117,7 @@ export default defineComponent({
   }
   .creator {
     font-size: 14px;
+    color: #409eff;
   }
   .time {
     color: #979ca8;

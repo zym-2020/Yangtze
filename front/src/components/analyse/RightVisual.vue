@@ -10,10 +10,14 @@
 <script lang="ts">
 import { computed, defineComponent, nextTick, onMounted, ref } from "vue";
 import mapBoxGl, { AnySourceData } from "mapbox-gl";
-import { getCoordinates, getAnalyticGeoJson, updateBasemap } from "@/api/request";
+import {
+  getCoordinates,
+  getAnalyticGeoJson,
+  updateBasemap,
+} from "@/api/request";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import ChartVisual from "./ChartVisual.vue";
-import { prefix } from '@/prefix'
+import { prefix } from "@/prefix";
 import router from "@/router";
 export default defineComponent({
   components: { ChartVisual },
@@ -116,25 +120,11 @@ export default defineComponent({
       });
       map.on("load", async () => {
         await initLayers();
-        // map.addSource("png", {
-        //   type: "image",
-        //   url: "/flowTex1.png",
-        //   coordinates: [
-        //     [120.04433328184923, 32.09360568405092],
-        //     [121.95857869699789, 32.09360568405092],
-        //     [121.95857869699789, 31.168340998477692],
-        //     [120.04433328184923, 31.168340998477692],
-        //   ],
-        // });
-        // map.addLayer({
-        //   id: "png",
-        //   type: "raster",
-        //   source: "png",
-        // });
       });
     };
 
     const initLayers = async () => {
+      console.log("layers", props.layerList);
       for (let i = (props.layerList as any[]).length - 1; i >= 0; i--) {
         await addMapLayer((props.layerList as any[])[i]);
       }
@@ -193,9 +183,7 @@ export default defineComponent({
         ) {
           map.addSource(param.id, {
             type: "raster",
-            tiles: [
-              `${prefix}visual/getRaster/${param.visualId}/{x}/{y}/{z}`,
-            ],
+            tiles: [`${prefix}visual/getRaster/${param.visualId}/{x}/{y}/{z}`],
           });
           map.addLayer({
             id: param.id,
@@ -221,18 +209,18 @@ export default defineComponent({
             });
           }
         } else if (
-          param.visualType === "analyticGeoJsonLine" ||
-          param.visualType === "analyticGeoJsonPoint" ||
-          param.visualType === "analyticGeoJsonPolygon"
+          param.visualType === "geoJsonLine" ||
+          param.visualType === "geoJsonPoint" ||
+          param.visualType === "geoJsonPolygon"
         ) {
           let type: "fill" | "circle" | "line" = "line";
-          if (param.visualType === "analyticGeoJsonPoint") {
+          if (param.visualType === "geoJsonPoint") {
             type = "circle";
-          } else if (param.visualType === "analyticGeoJsonPolygon") {
+          } else if (param.visualType === "geoJsonPolygon") {
             type = "fill";
           }
           const geojson = await getAnalyticGeoJson(param.id);
-          console.log(geojson)
+          console.log(geojson);
           if (geojson != null && (geojson as any).code === 0) {
             map.addSource(param.id, {
               type: "geojson",

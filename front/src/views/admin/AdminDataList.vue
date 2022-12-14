@@ -50,7 +50,7 @@
           background
           v-model:current-page="currentPage"
           layout="total, prev, pager, next, jumper"
-          :page-size="8"
+          :page-size="16"
           :total="total"
           :pager-count="5"
           @current-change="handleCurrentChange"
@@ -169,7 +169,7 @@ export default defineComponent({
         sortValue.value,
         keyword.value,
         currentPage.value - 1,
-        8,
+        16,
         typeValue.value === "all" ? "" : typeValue.value,
         parseInt(statusValue.value)
       );
@@ -180,7 +180,7 @@ export default defineComponent({
         sortValue.value,
         keyword.value,
         param - 1,
-        8,
+        16,
         typeValue.value === "all" ? "" : typeValue.value,
         parseInt(statusValue.value)
       );
@@ -193,7 +193,7 @@ export default defineComponent({
           sortValue.value,
           keyword.value,
           currentPage.value - 1,
-          8,
+          16,
           typeValue.value === "all" ? "" : typeValue.value,
           parseInt(statusValue.value)
         );
@@ -204,7 +204,7 @@ export default defineComponent({
           sortValue.value,
           keyword.value,
           currentPage.value - 1,
-          8,
+          16,
           typeValue.value === "all" ? "" : typeValue.value,
           parseInt(statusValue.value)
         );
@@ -212,7 +212,7 @@ export default defineComponent({
       } else {
         const data = await deleteByAdmin({
           page: currentPage.value - 1,
-          size: 8,
+          size: 16,
           keyword: keyword.value,
           property: sortValue.value,
           flag: false,
@@ -232,7 +232,7 @@ export default defineComponent({
         sortValue.value,
         keyword.value,
         currentPage.value - 1,
-        8,
+        16,
         typeValue.value === "all" ? "" : typeValue.value,
         parseInt(statusValue.value)
       );
@@ -243,7 +243,7 @@ export default defineComponent({
 
     onMounted(async () => {
       skeletonFlag.value = true;
-      await getData("update_time", "", 0, 8, "", 1);
+      await getData("update_time", "", 0, 16, "", 1);
       skeletonFlag.value = false;
     });
 

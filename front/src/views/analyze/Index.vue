@@ -18,7 +18,7 @@
       </div>
     </div>
 
-    <el-affix :offset="offset">
+    <el-affix :offset="offset" v-if="affixFlag">
       <div class="search">
         <el-button type="primary" plain size="large" @click="searchClick"
           >检索</el-button
@@ -59,7 +59,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, nextTick, onActivated, onMounted, ref } from "vue";
+import {
+  defineComponent,
+  nextTick,
+  onActivated,
+  onDeactivated,
+  onMounted,
+  ref,
+} from "vue";
 import { getAll } from "@/api/request";
 import ProjectCard from "@/components/analyse/ProjectCard.vue";
 import PageCopyright from "@/components/page/PageCopyright.vue";
@@ -80,6 +87,15 @@ export default defineComponent({
     const currentPage = ref(1);
     const skeletonFlag = ref(true);
     const offset = ref(0);
+    const affixFlag = ref(true);
+
+    onActivated(() => {
+      affixFlag.value = true;
+    });
+
+    onDeactivated(() => {
+      affixFlag.value = false;
+    });
 
     onMounted(async () => {
       computeOffset();
@@ -138,13 +154,13 @@ export default defineComponent({
       document.body.appendChild(div);
       let h = div.clientHeight;
       document.body.removeChild(div);
-      console.log(h)
+      console.log(h);
       offset.value = h;
     };
 
     const ClickHandle = () => {
       router.push({
-        name: "UserSpaceDataList",
+        name: "UserSpaceProject",
       });
     };
 
@@ -159,6 +175,7 @@ export default defineComponent({
       offset,
       keyword,
       ClickHandle,
+      affixFlag,
     };
   },
 });

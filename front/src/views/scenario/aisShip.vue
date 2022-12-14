@@ -2,7 +2,7 @@
   <!-- <div id="stats"></div> -->
   <div id="map"></div>
   <canvas id="deck" ref="deckMap"></canvas>
-  <div id="layer-control" :class="{ active: controlActive}">
+  <div id="layer-control" :class="{ active: controlActive }">
     <el-row id="layer-panel">
       <el-col id="layers-drop" :span="19">
         <el-collapse v-model="activeList" @change="LayerDropHandle">
@@ -18,7 +18,7 @@
         </el-collapse>
       </el-col>
       <el-col id="control-toggle" :span="5">
-        <el-image 
+        <el-image
           id="toggle-image"
           :src="toggleURL"
           fit="scale-down"
@@ -27,48 +27,70 @@
       </el-col>
     </el-row>
   </div>
-  <div id="ship-info" :class="{active: cardActive}">
-    <el-card shadow="hover" >
+  <div id="ship-info" :class="{ active: cardActive }">
+    <el-card shadow="hover">
       <template #header>
         <div class="card-header">
-          <span class="ship-name">{{shipInfo.name}}</span>
-          <br>
+          <span class="ship-name">{{ shipInfo.name }}</span>
+          <br />
           <span class="ship-type">Cargo Ship</span>
-          <el-icon id="hide-icon" size="1.6vw" @click="HideInfo()"><DArrowLeft /></el-icon>
+          <el-icon id="hide-icon" size="1.6vw" @click="HideInfo()"
+            ><DArrowLeft
+          /></el-icon>
         </div>
       </template>
       <img
-          src="https://static.vesselfinder.net/images/cool-ship2@1.png"
-          class="ship-image"
-        />
-        <el-descriptions
-          direction="vertical"
-          :column="4"
-          size="large"
-          border
+        src="https://static.vesselfinder.net/images/cool-ship2@1.png"
+        class="ship-image"
+      />
+      <el-descriptions direction="vertical" :column="4" size="large" border>
+        <el-descriptions-item
+          label="速度"
+          label-align="center"
+          align="center"
+          >{{ shipInfo.speed }}</el-descriptions-item
         >
-          <el-descriptions-item label="速度" label-align="center" align="center">{{shipInfo.speed}}</el-descriptions-item>
-          <el-descriptions-item label="航向" label-align="center" align="center">{{shipInfo.rot}}</el-descriptions-item>
-          <el-descriptions-item label="MMSI" :span="2" label-align="center" align="center">
-            {{shipInfo.mmsi}}
-          </el-descriptions-item>
-          <!-- <el-descriptions-item label="吃水深度" :span="2" label-align="center" align="center">{{shipInfo.draught}}</el-descriptions-item> -->
-          <!-- <el-descriptions-item label="登记时间" :span="2" label-align="center" align="center">
+        <el-descriptions-item
+          label="航向"
+          label-align="center"
+          align="center"
+          >{{ shipInfo.rot }}</el-descriptions-item
+        >
+        <el-descriptions-item
+          label="MMSI"
+          :span="2"
+          label-align="center"
+          align="center"
+        >
+          {{ shipInfo.mmsi }}
+        </el-descriptions-item>
+        <!-- <el-descriptions-item label="吃水深度" :span="2" label-align="center" align="center">{{shipInfo.draught}}</el-descriptions-item> -->
+        <!-- <el-descriptions-item label="登记时间" :span="2" label-align="center" align="center">
             {{shipInfo.registerTime}}
           </el-descriptions-item> -->
-          <el-descriptions-item label="船长/宽" :span="1"  label-align="center" align="center">
-            {{shipInfo.size}}
-          </el-descriptions-item>
-          <el-descriptions-item label="更新时间" :span="3"  label-align="center" align="center">
-            {{shipInfo.updateTime}}
-          </el-descriptions-item>
-        </el-descriptions>
+        <el-descriptions-item
+          label="船长/宽"
+          :span="1"
+          label-align="center"
+          align="center"
+        >
+          {{ shipInfo.size }}
+        </el-descriptions-item>
+        <el-descriptions-item
+          label="更新时间"
+          :span="3"
+          label-align="center"
+          align="center"
+        >
+          {{ shipInfo.updateTime }}
+        </el-descriptions-item>
+      </el-descriptions>
     </el-card>
   </div>
   <div id="buoy-info" :style="buoyInfoStyle">
     <el-row :gutter="0" id="buoy-card">
       <el-col :span="8" :offset="0" id="buoy-img-box">
-        <el-image 
+        <el-image
           id="buoy-image"
           :src="buoyInfo.url"
           :preview-src-list="[buoyInfo.url]"
@@ -83,13 +105,31 @@
           size="default"
           border
         >
-          <el-descriptions-item label="名称" label-align="center" align="center">{{buoyInfo.name}}</el-descriptions-item>
-          <el-descriptions-item label="颜色" label-align="center" align="center">{{buoyInfo.color}}</el-descriptions-item>
-          <el-descriptions-item label="形状" label-align="center" align="center">
-            {{buoyInfo.shape}}
+          <el-descriptions-item
+            label="名称"
+            label-align="center"
+            align="center"
+            >{{ buoyInfo.name }}</el-descriptions-item
+          >
+          <el-descriptions-item
+            label="颜色"
+            label-align="center"
+            align="center"
+            >{{ buoyInfo.color }}</el-descriptions-item
+          >
+          <el-descriptions-item
+            label="形状"
+            label-align="center"
+            align="center"
+          >
+            {{ buoyInfo.shape }}
           </el-descriptions-item>
-          <el-descriptions-item label="所属航道" label-align="center" align="center">
-            {{buoyInfo.belong}}
+          <el-descriptions-item
+            label="所属航道"
+            label-align="center"
+            align="center"
+          >
+            {{ buoyInfo.belong }}
           </el-descriptions-item>
         </el-descriptions>
       </el-col>
@@ -101,33 +141,57 @@
     </el-row>
   </div>
   <div id="park-info" :style="parkInfoStyle">
-    <el-descriptions
-      direction="horizontal"
-      :column="2"
-      size="default"
-      border
-    >
-      <el-descriptions-item label="名称" label-align="center" align="center">{{parkInfo.name}}</el-descriptions-item>
-      <el-descriptions-item label="用途" label-align="center" align="center">{{parkInfo.usage}}</el-descriptions-item>
-      <el-descriptions-item label="管理单位" label-align="center" align="center">{{parkInfo.apartment}}</el-descriptions-item>
-      <el-descriptions-item label="水道名称" label-align="center" align="center">{{parkInfo.water}}</el-descriptions-item>
+    <el-descriptions direction="horizontal" :column="2" size="default" border>
+      <el-descriptions-item label="名称" label-align="center" align="center">{{
+        parkInfo.name
+      }}</el-descriptions-item>
+      <el-descriptions-item label="用途" label-align="center" align="center">{{
+        parkInfo.usage
+      }}</el-descriptions-item>
+      <el-descriptions-item
+        label="管理单位"
+        label-align="center"
+        align="center"
+        >{{ parkInfo.apartment }}</el-descriptions-item
+      >
+      <el-descriptions-item
+        label="水道名称"
+        label-align="center"
+        align="center"
+        >{{ parkInfo.water }}</el-descriptions-item
+      >
     </el-descriptions>
     <div class="down-arrow">
       <div class="down-tri"></div>
     </div>
   </div>
   <div id="anchor-info" :style="anchorInfoStyle">
-    <el-descriptions
-      direction="horizontal"
-      :column="2"
-      size="default"
-      border
-    >
-      <el-descriptions-item label="名称" label-align="center" align="center">{{anchorInfo.name}}</el-descriptions-item>
-      <el-descriptions-item label="用途" label-align="center" align="center">{{anchorInfo.usage}}</el-descriptions-item>
-      <el-descriptions-item label="管理单位" :span="2" label-align="center" align="center">{{anchorInfo.apartment}}</el-descriptions-item>
-      <el-descriptions-item label="水道名称" label-align="center" align="center">{{anchorInfo.water}}</el-descriptions-item>
-      <el-descriptions-item label="建成时间" label-align="center" align="center">{{anchorInfo.time}}</el-descriptions-item>
+    <el-descriptions direction="horizontal" :column="2" size="default" border>
+      <el-descriptions-item label="名称" label-align="center" align="center">{{
+        anchorInfo.name
+      }}</el-descriptions-item>
+      <el-descriptions-item label="用途" label-align="center" align="center">{{
+        anchorInfo.usage
+      }}</el-descriptions-item>
+      <el-descriptions-item
+        label="管理单位"
+        :span="2"
+        label-align="center"
+        align="center"
+        >{{ anchorInfo.apartment }}</el-descriptions-item
+      >
+      <el-descriptions-item
+        label="水道名称"
+        label-align="center"
+        align="center"
+        >{{ anchorInfo.water }}</el-descriptions-item
+      >
+      <el-descriptions-item
+        label="建成时间"
+        label-align="center"
+        align="center"
+        >{{ anchorInfo.time }}</el-descriptions-item
+      >
     </el-descriptions>
     <div class="down-arrow">
       <div class="down-tri"></div>
@@ -136,24 +200,24 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, Ref, ref } from 'vue';
+import { defineComponent, onActivated, onDeactivated, onMounted, Ref, ref } from "vue";
 
 export default defineComponent({
-  name: 'App',
+  name: "App",
 });
 </script>
 
 <script lang="ts" setup>
-import axios from 'axios';
-import mapboxgl from 'mapbox-gl';
-import { Deck } from '@deck.gl/core/typed';
-import { IconLayer, PolygonLayer } from '@deck.gl/layers/typed';
+import axios from "axios";
+import mapboxgl from "mapbox-gl";
+import { Deck } from "@deck.gl/core/typed";
+import { IconLayer, PolygonLayer } from "@deck.gl/layers/typed";
 // import { GeoBoundingBox, TileLayer } from '@deck.gl/geo-layers/typed';
-import { InfoStyle, PopupHelper, ViewState } from '../../utils/popupHelper';
-import { MixLayer } from '../../utils/mixLayer';
+import { InfoStyle, PopupHelper, ViewState } from "../../utils/popupHelper";
+import { MixLayer } from "../../utils/mixLayer";
 // import {ScenegraphLayer} from '@deck.gl/mesh-layers/typed';
-import 'mapbox-gl/dist/mapbox-gl.css';
-import { prefix } from '../../../src/prefix';
+import "mapbox-gl/dist/mapbox-gl.css";
+import { prefix } from "../../../src/prefix";
 // import Stats from 'three/examples/jsm/libs/stats.module';
 
 // let stats: Stats;
@@ -164,24 +228,24 @@ const deckMap = ref<HTMLCanvasElement | null>(null);
 
 // ship params type
 // type ShipParams = {
-//   pos: [number, number], 
-//   rot: number, 
+//   pos: [number, number],
+//   rot: number,
 //   scale: [number, number]
 // }
 
 // type ShipGeojson = {
 //   "geometry": {
-//     "coordinates": [number, number], 
+//     "coordinates": [number, number],
 //     "type": "Point"
-//   }, 
-//   "id": number, 
+//   },
+//   "id": number,
 //   "properties": {
-//     "direction": number, "length": number, 
-//     "mmsi": string, "name": string, 
-//     "name_cn": string, "register_time": string, 
-//     "title": string, "update_time": string, 
+//     "direction": number, "length": number,
+//     "mmsi": string, "name": string,
+//     "name_cn": string, "register_time": string,
+//     "title": string, "update_time": string,
 //     "velocity": number, "width": number
-//   }, 
+//   },
 //   "type": "Feature"
 // }
 
@@ -191,144 +255,143 @@ let viewState: ViewState = {
   longitude: 120.950697,
   zoom: 8,
   pitch: 0,
-  bearing: 0
+  bearing: 0,
 };
 
 let zoom = 8;
 
 // ship icon mapping param
 const ICON_MAPPING = {
-  shipMarker: {x: 0, y: 0, width: 512, height: 512},  
-  parkMarker: {x: 0, y: 0, width: 256, height: 256, mask: false}, 
+  shipMarker: { x: 0, y: 0, width: 512, height: 512 },
+  parkMarker: { x: 0, y: 0, width: 256, height: 256, mask: false },
 };
 
 let buoyInfoStyle = ref<InfoStyle>({
-  zIndex: -1, 
-  left: '-20vw',
-  width: '24vw',
-  height: '11vw',
-  bottom: '-20vh'
+  zIndex: -1,
+  left: "-20vw",
+  width: "24vw",
+  height: "11vw",
+  bottom: "-20vh",
 });
 
 let parkInfoStyle = ref<InfoStyle>({
-  zIndex: -1, 
-  left: '-20vw',
-  width: '26vw',
-  height: '8vw',
-  bottom: '-20vh'
+  zIndex: -1,
+  left: "-20vw",
+  width: "26vw",
+  height: "8vw",
+  bottom: "-20vh",
 });
 
 let anchorInfoStyle = ref<InfoStyle>({
-  zIndex: 5, 
-  left: '-24vw',
-  width: '24vw',
-  height: '8vw',
-  bottom: '-24vw'
+  zIndex: 5,
+  left: "-24vw",
+  width: "24vw",
+  height: "8vw",
+  bottom: "-24vw",
 });
 
-let infoCardStyles: {[key: string]: Ref<InfoStyle>} = {
-  'buoy': buoyInfoStyle, 
-  'park': parkInfoStyle, 
-  'anchor': anchorInfoStyle
+let infoCardStyles: { [key: string]: Ref<InfoStyle> } = {
+  buoy: buoyInfoStyle,
+  park: parkInfoStyle,
+  anchor: anchorInfoStyle,
 };
 
 const cardActive = ref(false);
 const controlActive = ref(false);
 
-let toggleURLList = [
-  './layer.png', 
-  './angle-double-left.png'
-];
+let toggleURLList = ["./layer.png", "./angle-double-left.png"];
 let toggleUrlIndex = 0;
 let toggleURL = ref(toggleURLList[toggleUrlIndex]);
 let ToggleControl = () => {
   toggleUrlIndex = 1 - toggleUrlIndex;
   toggleURL.value = toggleURLList[toggleUrlIndex];
   controlActive.value = !controlActive.value;
-}
+};
 
 // let lastLayerList = ["AIS船舶", "航标", "停泊区", "锚地", "其他设施"];
 
 const showLayerList = ref([
-  "AIS船舶", "航标", "停泊区", "锚地", // "其他设施"
+  "AIS船舶",
+  "航标",
+  "停泊区",
+  "锚地", // "其他设施"
 ]);
 
 // const layerId: {[key: string]: string} = {
 //   '航标': 'buoy'
 // }
 
-const visibleControl: {[key: string]: boolean} = {
-  'AIS船舶': true, 
-  '航标': true, 
-  '停泊区': true, 
-  '锚地': true, 
+const visibleControl: { [key: string]: boolean } = {
+  AIS船舶: true,
+  航标: true,
+  停泊区: true,
+  锚地: true,
   // "其他设施": true
 };
 
 const ToggleLayer = () => {
-  for(let key in visibleControl) {
-    if(showLayerList.value.includes(key)) {
+  for (let key in visibleControl) {
+    if (showLayerList.value.includes(key)) {
       visibleControl[key] = true;
-    }
-    else {
+    } else {
       visibleControl[key] = false;
     }
   }
-}
+};
 
-const activeList = ref(['layers']);
+const activeList = ref(["layers"]);
 const LayerDropHandle = (val: string[]) => {
   console.log(val);
-}
+};
 
 const shipInfo = ref({
-  name: '', 
-  speed: '10.2 km', 
-  rot: '27.1°', 
-  draught: '5.1 m', 
-  status: '正在行驶中', 
-  mmsi: '-', 
-  size: '-', 
-  updateTime: '-', 
-  registerTime: '-'
+  name: "",
+  speed: "10.2 km",
+  rot: "27.1°",
+  draught: "5.1 m",
+  status: "正在行驶中",
+  mmsi: "-",
+  size: "-",
+  updateTime: "-",
+  registerTime: "-",
 });
 
 const buoyInfo = ref({
-  name: '#5黑浮', 
-  color: '黑色', 
-  shape: '柱形', 
-  belong: '白茆沙水道', 
-  url:  prefix + 'multiSource/img/1577929305273upload0.jpg'
+  name: "#5黑浮",
+  color: "黑色",
+  shape: "柱形",
+  belong: "白茆沙水道",
+  url: prefix + "multiSource/img/1577929305273upload0.jpg",
 });
 
 const parkInfo = ref({
-  name: '如皋水上绿色综合服务区工程小型到港分流船舶待泊基地', 
-  apartment: '如皋富港服务区经营管理有限公司', 
-  water: '福姜沙北水道', 
-  usage: '待泊基地'
+  name: "如皋水上绿色综合服务区工程小型到港分流船舶待泊基地",
+  apartment: "如皋富港服务区经营管理有限公司",
+  water: "福姜沙北水道",
+  usage: "待泊基地",
 });
 
 const anchorInfo = ref({
-  name: '镇江港海轮联检锚地', 
-  apartment: '镇江市港航事业发展中心', 
-  water: '口岸直水道', 
-  usage: '锚泊', 
-  time: '2016-05-17'
+  name: "镇江港海轮联检锚地",
+  apartment: "镇江市港航事业发展中心",
+  water: "口岸直水道",
+  usage: "锚泊",
+  time: "2016-05-17",
 });
 
 const layerPosAttrib = {
-  'buoy': ['jdwz_84jd', 'jdwz_84wd'], 
-  'park': ['zbjd', 'zbwd']
-}
+  buoy: ["jdwz_84jd", "jdwz_84wd"],
+  park: ["zbjd", "zbwd"],
+};
 
-function HideInfo(){
+function HideInfo() {
   cardActive.value = false;
 }
 
 function BuildTimeFromStamp(timeStamp: number) {
   const time = new Date(timeStamp);
   // console.log(time.toTimeString());
-  const hourAndMin = time.toTimeString().split(' ')[0];
+  const hourAndMin = time.toTimeString().split(" ")[0];
   return hourAndMin;
 }
 
@@ -337,7 +400,7 @@ onMounted(async () => {
   // document.addEventListener('click', (e) => {
   //   console.log(e);
   // })
-  // let container = document.getElementById( 'stats' ) as HTMLElement; 
+  // let container = document.getElementById( 'stats' ) as HTMLElement;
   // stats = new (Stats as any)();
   // container.appendChild( stats.dom );
 
@@ -350,43 +413,46 @@ onMounted(async () => {
   // });
   // console.log(shipGeoData);
 
-
   // init mapbpox base map as a background
   const map = new mapboxgl.Map({
-    accessToken: 'pk.eyJ1IjoieWNzb2t1IiwiYSI6ImNsMWVsdnpxNDBzcDgzYnA0MDJrcW1hOXQifQ.-5KUoc4jAJbAcBEWgbMGSA', 
-    container: 'map', 
-    interactive: false, 
-    style: 'mapbox://styles/johnnyt/clblx2t3v000a14proaq4e9qv', 
-    zoom: viewState.zoom, 
-    center: [viewState.longitude, viewState.latitude], 
-    pitch: viewState.pitch, 
-    bearing: viewState.bearing
+    accessToken:
+      "pk.eyJ1IjoieWNzb2t1IiwiYSI6ImNsMWVsdnpxNDBzcDgzYnA0MDJrcW1hOXQifQ.-5KUoc4jAJbAcBEWgbMGSA",
+    container: "map",
+    interactive: false,
+    style: "mapbox://styles/johnnyt/clblx2t3v000a14proaq4e9qv",
+    zoom: viewState.zoom,
+    center: [viewState.longitude, viewState.latitude],
+    pitch: viewState.pitch,
+    bearing: viewState.bearing,
   });
 
-  map.on('load', () => {
-    map.addSource('bg', {
-      type: 'raster', 
-      tiles: [prefix + 'visual/getRaster/3884904c-7fc6-4811-b3a1-588853da8942/{x}/{y}/{z}']
+  map.on("load", () => {
+    map.addSource("bg", {
+      type: "raster",
+      tiles: [
+        prefix +
+          "visual/getRaster/3884904c-7fc6-4811-b3a1-588853da8942/{x}/{y}/{z}",
+      ],
     });
     map.addLayer({
-      id: 'bg', 
-      type: 'raster', 
-      source: 'bg', 
+      id: "bg",
+      type: "raster",
+      source: "bg",
       paint: {
-        'raster-opacity': 0.75, 
-        'raster-contrast': -0.4, 
-        'raster-hue-rotate': 50, 
-        'raster-saturation': -0.2
-      }
+        "raster-opacity": 0.75,
+        "raster-contrast": -0.4,
+        "raster-hue-rotate": 50,
+        "raster-saturation": -0.2,
+      },
     });
   });
 
   // cancel right-click context-menu showing up
   (deckMap.value as HTMLCanvasElement).oncontextmenu = (e) => {
     e.preventDefault();
-  }
+  };
 
-  if(deckMap.value == null) {
+  if (deckMap.value == null) {
     return;
   }
 
@@ -396,167 +462,220 @@ onMounted(async () => {
   let b = map.unproject([mapWidth, 0]);
   let d = map.unproject([0, mapHeight]);
 
-  let downArrow = document.getElementById('down-arrow');
+  let downArrow = document.getElementById("down-arrow");
   let buoyCardSize = [0.0, 0.0];
-  if(downArrow) {
+  if (downArrow) {
     buoyCardSize = [downArrow.clientWidth, downArrow.clientHeight];
-    buoyInfoStyle.value["width"] = buoyCardSize[0] + 'px';
-    buoyInfoStyle.value["height"] = parseFloat(buoyInfoStyle.value["height"].split('vw')[0]) / 100.0 * deckMap.value.clientWidth + 'px';
+    buoyInfoStyle.value["width"] = buoyCardSize[0] + "px";
+    buoyInfoStyle.value["height"] =
+      (parseFloat(buoyInfoStyle.value["height"].split("vw")[0]) / 100.0) *
+        deckMap.value.clientWidth +
+      "px";
     // console.log(buoyCardSize);
   }
 
-  parkInfoStyle.value["width"] = parseFloat(parkInfoStyle.value["width"].split('vw')[0]) / 100.0 * deckMap.value.clientWidth + 'px';
-  parkInfoStyle.value["height"] = parseFloat(parkInfoStyle.value["height"].split('vw')[0]) / 100.0 * deckMap.value.clientWidth + 'px';
-  anchorInfoStyle.value["width"] = parseFloat(anchorInfoStyle.value["width"].split('vw')[0]) / 100.0 * deckMap.value.clientWidth + 'px';
-  anchorInfoStyle.value["height"] = parseFloat(anchorInfoStyle.value["height"].split('vw')[0]) / 100.0 * deckMap.value.clientWidth + 'px';
+  parkInfoStyle.value["width"] =
+    (parseFloat(parkInfoStyle.value["width"].split("vw")[0]) / 100.0) *
+      deckMap.value.clientWidth +
+    "px";
+  parkInfoStyle.value["height"] =
+    (parseFloat(parkInfoStyle.value["height"].split("vw")[0]) / 100.0) *
+      deckMap.value.clientWidth +
+    "px";
+  anchorInfoStyle.value["width"] =
+    (parseFloat(anchorInfoStyle.value["width"].split("vw")[0]) / 100.0) *
+      deckMap.value.clientWidth +
+    "px";
+  anchorInfoStyle.value["height"] =
+    (parseFloat(anchorInfoStyle.value["height"].split("vw")[0]) / 100.0) *
+      deckMap.value.clientWidth +
+    "px";
 
   let popupHelper = new PopupHelper(infoCardStyles, map);
   // console.log(infoCardStyles);
 
-  const stTime = new Date('2022-12-07 00:00:00 GMT+8').getTime();
-  const endTime = new Date('2022-12-07 14:30:00 GMT+8').getTime();
+  const stTime = new Date("2022-12-07 00:00:00 GMT+8").getTime();
+  const endTime = new Date("2022-12-07 14:30:00 GMT+8").getTime();
   // console.log(new Date(stTime).toTimeString());
   const timePeriod = endTime - stTime;
   const timeInterval = 30 * 60 * 1000;
   const changeTime = timePeriod / timeInterval;
-  const shipTimeInterval = ['00:00', '00:20'];
+  const shipTimeInterval = ["00:00", "00:20"];
   let curTime = 0;
 
   let vis = true;
 
   const renderLayer = async () => {
-
-    let parkMixData = await axios.get(
-      prefix + 'multiSource/getParkInfoByBox/'
-      + b.lat + '/' + b.lng + '/' + d.lat + '/' + d.lng,
-      {responseType: 'json'}
-    ).then((res) => {
-      return res.data;
-    });
+    let parkMixData = await axios
+      .get(
+        prefix +
+          "multiSource/getParkInfoByBox/" +
+          b.lat +
+          "/" +
+          b.lng +
+          "/" +
+          d.lat +
+          "/" +
+          d.lng,
+        { responseType: "json" }
+      )
+      .then((res) => {
+        return res.data;
+      });
 
     const anchorLayer = new PolygonLayer({
-      id: 'anchor', 
-      data: prefix + "multiSource/getAnchorInfoByBox/" + 
-              b.lat + '/' + b.lng + '/' + d.lat + '/' + d.lng, 
+      id: "anchor",
+      data:
+        prefix +
+        "multiSource/getAnchorInfoByBox/" +
+        b.lat +
+        "/" +
+        b.lng +
+        "/" +
+        d.lat +
+        "/" +
+        d.lng,
       onDataLoad: (val, ctx) => {
         console.log(val);
-      }, 
-      getPolygon: d => {
+      },
+      getPolygon: (d) => {
         const pgPts = d.qyfw.points;
-        if(pgPts[pgPts.length-1] !== pgPts[0]) {
+        if (pgPts[pgPts.length - 1] !== pgPts[0]) {
           pgPts.push(pgPts[0]);
         }
         return pgPts;
-      }, 
+      },
       onClick: (info, event) => {
         console.log(info);
-      }, 
-      getFillColor: [233, 13, 13, 120], 
-      getLineWidth: 8, 
+      },
+      getFillColor: [233, 13, 13, 120],
+      getLineWidth: 8,
       pickable: true,
       stroked: true,
       filled: true,
-      visible: visibleControl['锚地'] && zoom > 11
+      visible: visibleControl["锚地"] && zoom > 11,
     });
 
     const parkLayer = new MixLayer({
-      id: "park", 
-      data: parkMixData, 
-      visible:  visibleControl['停泊区'] && zoom > 11, 
+      id: "park",
+      data: parkMixData,
+      visible: visibleControl["停泊区"] && zoom > 11,
       onClick: (info, event) => {
         parkInfo.value.apartment = info.object.gldw;
         parkInfo.value.name = info.object.mc;
         parkInfo.value.water = info.object.sd_name;
         parkInfo.value.usage = info.object.yt;
-      }
+      },
       // updateTriggers: {
       //   getSize: [zoom]
       // }
     });
 
     const shipLayer = new IconLayer({
-      id: 'ship', 
-      // data: shipJSONData, 
-      // data: shipGeoData, 
-      data: prefix + "multiSource/getShipInfoByBoxAndTime/" + 
-              b.lat + '/' + b.lng + '/' + d.lat + '/' + d.lng + '/' +
-              shipTimeInterval[0] + '/' + shipTimeInterval[1], 
+      id: "ship",
+      // data: shipJSONData,
+      // data: shipGeoData,
+      data:
+        prefix +
+        "multiSource/getShipInfoByBoxAndTime/" +
+        b.lat +
+        "/" +
+        b.lng +
+        "/" +
+        d.lat +
+        "/" +
+        d.lng +
+        "/" +
+        shipTimeInterval[0] +
+        "/" +
+        shipTimeInterval[1],
       // onDataLoad: (val, ctx) => {
       //   console.log(val);
-      // }, 
-      pickable: true, 
-      iconAtlas: './ship-from-above-cut.png', // icon image url
+      // },
+      pickable: true,
+      iconAtlas: "./ship-from-above-cut.png", // icon image url
       iconMapping: ICON_MAPPING,
-      getIcon: d => 'shipMarker',  
-      getPosition: d => [d["lon"], d["lat"]], // deck.gl call back function for retrieve ship positions from [data]
-      sizeScale: 1, 
+      getIcon: (d) => "shipMarker",
+      getPosition: (d) => [d["lon"], d["lat"]], // deck.gl call back function for retrieve ship positions from [data]
+      sizeScale: 1,
       getSize: (d) => {
-        if(zoom < 10) {
-          if(d["length"] < 200) return 0;
+        if (zoom < 10) {
+          if (d["length"] < 200) return 0;
           return zoom * 2.0;
         }
-        if(zoom < 12) {
-          if(d["length"] < 120) return 0;
-          return Math.log2(d["length"]) * zoom / 2.2;
+        if (zoom < 12) {
+          if (d["length"] < 120) return 0;
+          return (Math.log2(d["length"]) * zoom) / 2.2;
         }
-        if(zoom < 13) {
-          if(d["length"] < 60) return 0;
-          if(d["length"] == 0) 
-            return zoom * 3.6;
-          return Math.log2(d["length"]) * zoom / 1.8;
+        if (zoom < 13) {
+          if (d["length"] < 60) return 0;
+          if (d["length"] == 0) return zoom * 3.6;
+          return (Math.log2(d["length"]) * zoom) / 1.8;
         }
-        if(d["length"] == 0) 
-            return zoom * 48;
+        if (d["length"] == 0) return zoom * 48;
         return Math.log10(d["length"]) * zoom * 48;
-      }, 
-      sizeUnits: 'pixels', 
-      billboard: false, 
-      visible: visibleControl['AIS船舶'], 
+      },
+      sizeUnits: "pixels",
+      billboard: false,
+      visible: visibleControl["AIS船舶"],
       onClick: (info, event) => {
         // console.log('Clicked:', info, event);
         cardActive.value = true;
-        shipInfo.value.rot = info.object["direction"] + '°';
-        shipInfo.value.size = parseFloat(info.object["length"]).toFixed(1) + ' / ' + parseFloat(info.object["width"]).toFixed(1) + ' m';
-        shipInfo.value.mmsi = ((info.object["mmsi"]) == '')?'-':info.object["mmsi"];
+        shipInfo.value.rot = info.object["direction"] + "°";
+        shipInfo.value.size =
+          parseFloat(info.object["length"]).toFixed(1) +
+          " / " +
+          parseFloat(info.object["width"]).toFixed(1) +
+          " m";
+        shipInfo.value.mmsi =
+          info.object["mmsi"] == "" ? "-" : info.object["mmsi"];
         shipInfo.value.name = info.object["name"];
-        shipInfo.value.speed = info.object["velocity"] + 'km/h';
+        shipInfo.value.speed = info.object["velocity"] + "km/h";
         shipInfo.value.updateTime = info.object["update_time"];
         shipInfo.value.registerTime = info.object["register_time"];
       },
-      getAngle: d => d["direction"], // make it rotate
+      getAngle: (d) => d["direction"], // make it rotate
       sizeMaxPixels: 100,
       // updateTriggers: {
-      //   getSize: [zoom], 
+      //   getSize: [zoom],
       // }
     });
     let layerList = [];
     const buoyLayer = new IconLayer({
-      id: 'buoy', 
-      // data: shipJSONData, 
-      data: prefix + "multiSource/getBuoyByBox/" + 
-            b.lat + '/' + b.lng + '/' + d.lat + '/' + d.lng, 
+      id: "buoy",
+      // data: shipJSONData,
+      data:
+        prefix +
+        "multiSource/getBuoyByBox/" +
+        b.lat +
+        "/" +
+        b.lng +
+        "/" +
+        d.lat +
+        "/" +
+        d.lng,
       // onDataLoad: (val, ctx) => {
       //   console.log(val);
-      // }, 
-      pickable: true, 
-      getIcon: d => ({
-        url: prefix + 'multiSource/img/' + d.hbtlpz, 
-        width: 50, 
-        height: 50
+      // },
+      pickable: true,
+      getIcon: (d) => ({
+        url: prefix + "multiSource/img/" + d.hbtlpz,
+        width: 50,
+        height: 50,
       }), // static marker, return only a strrin
       // getPosition: d => d.pos, // deck.gl call back function for retrieve ship positions from [data]
-      getPosition: (d) =>{
+      getPosition: (d) => {
         return [d.jdwz_84jd, d.jdwz_84wd];
-      },  // deck.gl call back function for retrieve ship positions from [data]
-      sizeScale: 1, 
-      visible: visibleControl['航标'] && zoom > 12, 
+      }, // deck.gl call back function for retrieve ship positions from [data]
+      sizeScale: 1,
+      visible: visibleControl["航标"] && zoom > 12,
       getSize: () => {
-        if(zoom < 13) {
+        if (zoom < 13) {
           return zoom * 2.4;
         }
         return zoom * 4;
-      }, 
-      sizeUnits: 'pixels', 
+      },
+      sizeUnits: "pixels",
       sizeMaxPixels: 100,
       onClick: (info, event) => {
         // console.log('Clicked:', info, event);
@@ -566,41 +685,38 @@ onMounted(async () => {
         //   buoyInfoStyle.value.bottom = info.devicePixel[1] + 12 + 'px';
         // }
         buoyInfo.value.name = info.object.hbmc;
-        if(info.object.bsys[info.object.bsys.length-1] !== '色') {
-          buoyInfo.value.color = info.object.bsys + '色';
-        }
-        else {
+        if (info.object.bsys[info.object.bsys.length - 1] !== "色") {
+          buoyInfo.value.color = info.object.bsys + "色";
+        } else {
           buoyInfo.value.color = info.object.bsys;
         }
         buoyInfo.value.shape = info.object.hbxz;
         buoyInfo.value.belong = info.object.sshd;
-        if(info.object.hbphoto !== '') {
-          buoyInfo.value.url = prefix + 'multiSource/img/' + info.object.hbphoto;
-        }
-        else {
-          buoyInfo.value.url = './buoy-no.png';
+        if (info.object.hbphoto !== "") {
+          buoyInfo.value.url =
+            prefix + "multiSource/img/" + info.object.hbphoto;
+        } else {
+          buoyInfo.value.url = "./buoy-no.png";
         }
         // console.log(buoyCardSize);
         // console.log(buoyInfoStyle);
       },
       updateTriggers: {
-        getSize: [zoom]
-      }
+        getSize: [zoom],
+      },
     });
     // layerList.push(otherLayer);
     layerList.push(parkLayer);
     layerList.push(anchorLayer);
     layerList.push(buoyLayer);
     layerList.push(shipLayer);
-    
+
     // set new deck props
-    deck.setProps(
-      {
-        layers: layerList,  // [gltfLayer],  // add this layer
-        // getTooltip: ({object}) => object && (object.pos[0].toString()+', '+ object.pos[1].toString()), // set interactive callback function
-      }
-    );
-  }
+    deck.setProps({
+      layers: layerList, // [gltfLayer],  // add this layer
+      // getTooltip: ({object}) => object && (object.pos[0].toString()+', '+ object.pos[1].toString()), // set interactive callback function
+    });
+  };
 
   let isHovering = false;
 
@@ -612,38 +728,41 @@ onMounted(async () => {
     curTime = (curTime + 1) % changeTime;
     // console.log(shipTimeInterval);
     renderLayer();
-  }
+  };
   // setInterval(UpdateShipTime, 2000);
-
 
   // init deck ~
   const deck = new Deck({
-    canvas: 'deck', // decl requires a full-screen canvas
-    width: "100%", 
-    height: "100%", 
-    initialViewState: viewState, 
-    controller: true, 
-    onHover: ({object}) => (isHovering = Boolean(object)), 
-    getCursor: ({isDragging}) => (isDragging ? 'grabbing' : (isHovering ? 'pointer' : 'grab')),
+    canvas: "deck", // decl requires a full-screen canvas
+    width: "100%",
+    height: "100%",
+    initialViewState: viewState,
+    controller: true,
+    onHover: ({ object }) => (isHovering = Boolean(object)),
+    getCursor: ({ isDragging }) =>
+      isDragging ? "grabbing" : isHovering ? "pointer" : "grab",
     onClick: (info, event) => {
       // console.log('click', info, event);
       popupHelper.handleClick(info, event);
       // vis = false;
-    }, 
-    onViewStateChange: ( {viewState} ) => {
+    },
+    onViewStateChange: ({ viewState }) => {
       map.jumpTo({
-        center: [viewState.longitude, viewState.latitude], 
-        zoom: viewState.zoom, 
-        bearing: viewState.bearing, 
-        pitch: viewState.pitch
+        center: [viewState.longitude, viewState.latitude],
+        zoom: viewState.zoom,
+        bearing: viewState.bearing,
+        pitch: viewState.pitch,
       });
       // if(deck != null) {
       //   console.log(deck.getViewports())
       // }
-      if(deckMap.value !== null) {
+      if (deckMap.value !== null) {
         let a = map.unproject([0, 0]);
         b = map.unproject([deckMap.value.clientWidth, 0]);
-        let c = map.unproject([deckMap.value.clientWidth, deckMap.value.clientHeight]);
+        let c = map.unproject([
+          deckMap.value.clientWidth,
+          deckMap.value.clientHeight,
+        ]);
         d = map.unproject([0, deckMap.value.clientHeight]);
         let lat_min = Math.min(a.lat, b.lat, c.lat, d.lat);
         let lat_max = Math.max(a.lat, b.lat, c.lat, d.lat);
@@ -654,18 +773,28 @@ onMounted(async () => {
         b.lat = lat_max;
         d.lng = lng_min;
         d.lat = lat_min;
-        // console.log(b, d);  
+        // console.log(b, d);
       }
       popupHelper.handleViewChange(viewState as ViewState);
       zoom = viewState.zoom;
       // console.log(zoom);
       renderLayer();
       // iconLayer.updateState({props: {}});
-    }, 
+    },
     onLoad: () => {
       setInterval(UpdateShipTime, 2000);
-    }
+    },
   });
+
+  onDeactivated(() => {
+    console.log(1)
+    document.body.style.overflow = "visible";
+  });
+
+  onActivated(() => {
+    document.body.style.overflow = "hidden";
+  })
+
 
 
   // setInterval(() => {
@@ -680,12 +809,10 @@ onMounted(async () => {
   //   getPosition: d => d.pos,
   //   getOrientation: d => [0, d.rot, 90],
   //   sizeScale: 0.1,
-  //   sizeUnits: 'meters', 
+  //   sizeUnits: 'meters',
   //   _lighting: 'pbr'
   // });
 });
-
-
 </script>
 
 <style lang="scss">
@@ -756,7 +883,6 @@ body {
               border-width: 0px;
               transition: 0.3s ease-in-out;
 
-
               &.el-collapse-item__header {
                 font-size: 1vw;
                 font-weight: 600;
@@ -799,8 +925,6 @@ body {
       }
     }
   }
-
-  
 }
 
 #ship-info {
@@ -826,7 +950,8 @@ body {
       background-color: rgb(159, 180, 218);
     }
 
-    &:focus, &:hover {
+    &:focus,
+    &:hover {
       box-shadow: 0 0 8px rgb(88, 88, 88);
     }
 
@@ -847,9 +972,10 @@ body {
         position: absolute;
         right: 1vw;
         top: 2.8vh;
-        transition: 0.4s ease-in-out ;
+        transition: 0.4s ease-in-out;
 
-        &:hover, &:focus {
+        &:hover,
+        &:focus {
           cursor: pointer;
           transform: translateX(-0.3vw);
         }
@@ -870,7 +996,7 @@ body {
           font-size: 0.9vw;
           font-weight: 600;
           color: rgb(0, 9, 39);
-          font-family: 'Microsoft YaHei';
+          font-family: "Microsoft YaHei";
           background-color: rgba(200, 214, 240, 0.5);
           border-color: rgb(159, 180, 218);
           border-width: 2px;
@@ -882,7 +1008,8 @@ body {
           border-color: rgb(159, 180, 218);
           font-size: 0.8vw;
           transition: 0.3s ease-in-out;
-          &:hover, &:focus {
+          &:hover,
+          &:focus {
             font-weight: 600;
             font-size: 0.9vw;
             color: rgb(96, 136, 211);
@@ -920,7 +1047,7 @@ body {
 
     .el-col {
       height: 100%;
-      
+
       &#buoy-text {
         .el-descriptions {
           height: 100%;
@@ -935,7 +1062,7 @@ body {
                 font-size: 0.75vw;
                 font-weight: 600;
                 color: rgb(0, 9, 39);
-                font-family: 'Microsoft YaHei';
+                font-family: "Microsoft YaHei";
                 background-color: rgba(200, 214, 240, 0.5);
                 border-color: rgb(159, 180, 218);
                 border-width: 1px;
@@ -948,7 +1075,8 @@ body {
                 font-weight: 600;
                 font-size: 0.8vw;
                 transition: 0.3s ease-in-out;
-                &:hover, &:focus {
+                &:hover,
+                &:focus {
                   font-weight: 600;
                   font-size: 0.9vw;
                   color: rgb(96, 136, 211);
@@ -957,12 +1085,9 @@ body {
 
               tr {
                 height: 25%;
-
               }
             }
           }
-
-          
         }
       }
 
@@ -986,7 +1111,6 @@ body {
         border-right: 10px solid transparent;
       }
     }
-    
   }
 }
 
@@ -1006,7 +1130,7 @@ body {
           font-size: 0.75vw;
           font-weight: 600;
           color: rgb(0, 9, 39);
-          font-family: 'Microsoft YaHei';
+          font-family: "Microsoft YaHei";
           background-color: rgba(200, 214, 240, 0.5);
           border-color: rgb(159, 180, 218);
           border-width: 1px;
@@ -1019,7 +1143,8 @@ body {
           font-weight: 600;
           font-size: 0.8vw;
           transition: 0.3s ease-in-out;
-          &:hover, &:focus {
+          &:hover,
+          &:focus {
             font-weight: 600;
             font-size: 0.9vw;
             color: rgb(96, 136, 211);
@@ -1028,12 +1153,10 @@ body {
 
         tr {
           height: 25%;
-
         }
       }
     }
   }
-
 }
 
 #anchor-info {
@@ -1052,7 +1175,7 @@ body {
           font-size: 0.75vw;
           font-weight: 600;
           color: rgb(0, 9, 39);
-          font-family: 'Microsoft YaHei';
+          font-family: "Microsoft YaHei";
           background-color: rgba(200, 214, 240, 0.5);
           border-color: rgb(159, 180, 218);
           border-width: 1px;
@@ -1065,7 +1188,8 @@ body {
           font-weight: 600;
           font-size: 0.8vw;
           transition: 0.3s ease-in-out;
-          &:hover, &:focus {
+          &:hover,
+          &:focus {
             font-weight: 600;
             font-size: 0.9vw;
             color: rgb(96, 136, 211);
@@ -1074,12 +1198,10 @@ body {
 
         tr {
           height: 25%;
-
         }
       }
     }
   }
-
 }
 
 .down-arrow {
@@ -1094,5 +1216,4 @@ body {
     border-right: 10px solid transparent;
   }
 }
-
 </style>

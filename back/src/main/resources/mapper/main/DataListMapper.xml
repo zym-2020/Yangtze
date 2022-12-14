@@ -59,7 +59,7 @@
                 and status = #{status}
             </if>
             <if test="keyword != ''">
-                and data_list.name like #{keyword} or data_list.description like #{keyword} or array_to_string(data_list.tags, ' ') like #{keyword} or users.name like #{keyword}
+                and (data_list.name like #{keyword} or data_list.description like #{keyword} or array_to_string(data_list.tags, ' ') like #{keyword} or users.name like #{keyword})
             </if>
             <if test="type != ''">
                 and data_list.type = #{type}
@@ -76,18 +76,15 @@
 
     <select id="countFuzzyQuery" resultType="java.lang.Integer">
         select count(*) from data_list, users
-        where
-            <if test="status == 2">
-                (status = 1 or status = 0 or status = -1)
-            </if>
-            <if test="status != 2">
-                status = #{status}
+        where data_list.creator = users.email
+            <if test="status == -1 or status == 0 or status == 1">
+                and status = #{status}
             </if>
             <if test="type != ''">
                 and type = #{type}
             </if>
             <if test="keyword != ''">
-                and data_list.name like #{keyword} or data_list.description like #{keyword} or array_to_string(data_list.tags, ' ') like #{keyword} or users.name like #{keyword}
+                and (data_list.name like #{keyword} or data_list.description like #{keyword} or array_to_string(data_list.tags, ' ') like #{keyword} or users.name like #{keyword})
             </if>
     </select>
 

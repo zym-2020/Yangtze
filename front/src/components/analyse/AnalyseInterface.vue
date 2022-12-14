@@ -45,7 +45,7 @@
           :value="item.id"
         />
       </el-select>
-      <div class="deep">
+      <div class="deep" v-if="analyseType === 'volume'">
         <span><strong>最大深度：</strong></span>
         <el-input-number
           v-model="deep"

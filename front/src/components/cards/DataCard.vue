@@ -31,7 +31,7 @@
         </div>
         <div class="tag">
           <div class="tag-png" v-for="(item, index) in tagList" :key="index">
-            {{ item }}
+            <span v-html="replaceHandle(item)"></span>
           </div>
         </div>
       </div>

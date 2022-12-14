@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="analyse-dialog">
     <el-row :gutter="10" v-show="flag">
       <el-col :span="4" v-for="(item, index) in list" :key="index">
         <div class="card" @click="cardClick(item.value)">
@@ -7,7 +7,8 @@
             <img :src="item.src" />
           </div>
           <div class="text">
-            <strong>{{ item.name }}</strong>
+            <el-tag effect="dark" >{{ item.name }}</el-tag>
+            <!-- <strong>{{ item.name }}</strong> -->
           </div>
         </div>
       </el-col>
@@ -50,11 +51,11 @@ export default defineComponent({
         src: "/analyse/断面冲淤.png",
         value: "sectionFlush",
       },
-    //   {
-    //     name: "高程 —— 面积对比",
-    //     src: "https://pic3.zhimg.com/v2-96d58dc7ea889b98102cbad4c53bb91e_720w.jpg?source=172ae18b",
-    //     value: "sectionArea",
-    //   },
+      //   {
+      //     name: "高程 —— 面积对比",
+      //     src: "https://pic3.zhimg.com/v2-96d58dc7ea889b98102cbad4c53bb91e_720w.jpg?source=172ae18b",
+      //     value: "sectionArea",
+      //   },
       {
         name: "区域冲淤",
         src: "/analyse/区域冲淤.png",
@@ -132,28 +133,34 @@ export default defineComponent({
     transform: scale(1.1);
   }
 }
-.card {
-  margin-top: 5px;
-  &:hover {
-    cursor: pointer;
-    img {
-      animation: move 0.3s linear forwards;
+.analyse-dialog {
+  padding: 20px;
+  .card {
+    position: relative;
+    margin-bottom: 10px;
+    &:hover {
+      cursor: pointer;
+      img {
+        animation: move 0.3s linear forwards;
+      }
     }
-  }
-  .picture {
-    width: 150px;
-    height: 150px;
-    overflow: hidden;
-    border-radius: 8px;
-    img {
-      width: 100%;
-      height: 100%;
+    .picture {
+      width: 150px;
+      height: 150px;
+      overflow: hidden;
+      border-radius: 8px;
+      img {
+        width: 100%;
+        height: 100%;
+      }
     }
-  }
 
-  .text {
-    text-align: center;
-    height: 30px;
+    .text {
+      text-align: center;
+      position: absolute;
+      top: 10px;
+      right: 5px;
+    }
   }
 }
 </style>

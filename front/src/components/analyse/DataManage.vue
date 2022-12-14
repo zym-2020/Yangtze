@@ -119,7 +119,7 @@ import {
 import { decrypt } from "@/utils/auth";
 import { useStore } from "@/store";
 import { notice } from "@/utils/notice";
-import { prefix } from '@/prefix'
+import { prefix } from "@/prefix";
 export default defineComponent({
   emits: ["operateLayer"],
   setup(_, context) {
@@ -227,20 +227,41 @@ export default defineComponent({
           }
         }
         if (flag1) {
-          treeData.value.splice(treeData.value.length - 1, 0, {
-            id: item.dataListId,
-            label: item.dataListName,
-            flag: true,
-            children: [],
-          });
-          treeData.value[treeData.value.length - 2].children.push({
-            id: item.fileId,
-            label: item.fileName,
-            flag: false,
-            children: [],
-            visualType: item.visualType,
-            visualId: item.visualId,
-          });
+          if (
+            treeData.value.length > 0 &&
+            treeData.value[treeData.value.length - 1].id === ""
+          ) {
+            treeData.value.splice(treeData.value.length - 1, 0, {
+              id: item.dataListId,
+              label: item.dataListName,
+              flag: true,
+              children: [],
+            });
+            treeData.value[treeData.value.length - 2].children.push({
+              id: item.fileId,
+              label: item.fileName,
+              flag: false,
+              children: [],
+              visualType: item.visualType,
+              visualId: item.visualId,
+            });
+          } else {
+            treeData.value.push({
+              id: item.dataListId,
+              label: item.dataListName,
+              flag: true,
+              children: [],
+            });
+            treeData.value[treeData.value.length - 1].children.push({
+              id: item.fileId,
+              label: item.fileName,
+              flag: false,
+              children: [],
+              visualType: item.visualType,
+              visualId: item.visualId,
+            });
+          }
+
           jsonData.list.push({
             fileId: item.fileId,
             dataListId: item.dataListId,
@@ -561,7 +582,8 @@ export default defineComponent({
           const data = await getUrl(selectedData.value?.id as string);
           if (data != null && (data as any).code === 0) {
             window.location.href =
-              prefix + "analyticDataSet/downloadAnalyticData/" +
+              prefix +
+              "analyticDataSet/downloadAnalyticData/" +
               store.state.user.id +
               "/" +
               decrypt(data.data, store.state.user.id);

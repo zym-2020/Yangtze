@@ -4,7 +4,7 @@
       <el-avatar shape="square" fit="cover" v-if="info.avatar === ''">{{
         info.projectName
       }}</el-avatar>
-      
+
       <img :src="prefix + 'visual/getAvatar/' + info.avatar" v-else />
     </div>
     <div class="text">
@@ -205,6 +205,15 @@ export default defineComponent({
     height: 220px;
     width: 100%;
     overflow: hidden;
+    .el-avatar {
+      height: 100%;
+      width: 100%;
+      transition: all 500ms linear;
+      &:hover {
+        transition: all 500ms linear;
+        transform: scale(1.1);
+      }
+    }
 
     img {
       height: 100%;

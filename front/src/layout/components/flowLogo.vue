@@ -1,18 +1,15 @@
 <template>
-    <div class="logo" @click="toHome">
-        <h1 class="logo-text">NHRI</h1>
-        <h1 class="logo-text">NHRI</h1>
-    </div>
+  <div class="logo" @click="toHome">
+    <h1 class="logo-text">NHRI</h1>
+    <h1 class="logo-text">NHRI</h1>
+  </div>
 </template>
 
 <script>
-export default {
-
-}
+export default {};
 </script>
 
 <style lang="scss" scoped>
-
 .logo {
   font-family: "Lato", "Verdana", sans-serif;
   -webkit-font-smoothing: antialiased;

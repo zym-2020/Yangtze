@@ -538,6 +538,7 @@ export default defineComponent({
       }
       .special-data {
         margin-top: 30px;
+        margin-bottom: 30px;
         border: solid 1px #d6d6d6;
         box-sizing: border-box;
         cursor: pointer;

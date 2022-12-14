@@ -132,7 +132,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 meta: {
                     role: ['member', 'admin'],
                     title: '长江流场',
-                    keepAlive: true,
+                    keepAlive: false,
                     key: 'ScenarioTwo'
                 }
             },
@@ -176,7 +176,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                 meta: {
                     role: ['member', 'admin'],
                     title: '分析中心',
-                    keepAlive: false,
+                    keepAlive: true,
                     key: 'AnalyzeList'
                 }
             },
