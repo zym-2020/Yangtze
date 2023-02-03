@@ -322,6 +322,10 @@ export async function getVolume(fileId: string) {
     return await get(`/visual/getVolume/${fileId}`)
 }
 
+export async function uploadParts(uid: string, number: number, formData: FormData) {
+    return await post(`/visual/uploadParts/${uid}/${number}`, formData)
+}
+
 //========================folder相关接口=================================
 export async function addFolder(jsonData: { folderName: string, parentId: string }) {
     return await post(`/folder/addFolder`, jsonData)

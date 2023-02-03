@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
+import njnu.edu.back.common.utils.LocalUploadUtil;
 import njnu.edu.back.common.utils.TileUtil;
 import njnu.edu.back.dao.main.AnalyticDataSetMapper;
 import njnu.edu.back.dao.main.FileMapper;
@@ -17,15 +18,13 @@ import njnu.edu.back.service.VisualService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -49,6 +48,9 @@ public class VisualServiceImpl implements VisualService {
     @Value("${mapAddress}")
     String mapAddress;
 
+    @Value("${tempAddress}")
+    String tempAddress;
+
     @Autowired
     VisualFileMapper visualFileMapper;
 
@@ -62,7 +64,6 @@ public class VisualServiceImpl implements VisualService {
     AnalyticDataSetMapper analyticDataSetMapper;
 
 
-
     @Override
     public void getAvatar(String fileName, HttpServletResponse response) {
         InputStream in = null;
@@ -72,7 +73,7 @@ public class VisualServiceImpl implements VisualService {
             sos = response.getOutputStream();
             byte[] bytes = new byte[1024];
             int len;
-            while((len = in.read(bytes)) > -1) {
+            while ((len = in.read(bytes)) > -1) {
                 sos.write(bytes, 0, len);
             }
             sos.flush();
@@ -83,7 +84,7 @@ public class VisualServiceImpl implements VisualService {
             throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
         } finally {
             try {
-                if(in != null) {
+                if (in != null) {
                     in.close();
                 }
                 if (sos != null) {
@@ -107,14 +108,14 @@ public class VisualServiceImpl implements VisualService {
             response.setContentType("image/png");
             sos = response.getOutputStream();
             File file = new File(path);
-            if(!file.exists()) {
+            if (!file.exists()) {
                 in = new FileInputStream(visualAddress + "blank.png");
             } else {
                 in = new FileInputStream(path);
             }
             byte[] bytes = new byte[1024];
             int len;
-            while((len = in.read(bytes)) > -1) {
+            while ((len = in.read(bytes)) > -1) {
                 sos.write(bytes, 0, len);
             }
             sos.flush();
@@ -124,7 +125,7 @@ public class VisualServiceImpl implements VisualService {
 //            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
         } finally {
             try {
-                if(in != null) {
+                if (in != null) {
                     in.close();
                 }
                 if (sos != null) {
@@ -142,7 +143,7 @@ public class VisualServiceImpl implements VisualService {
         TileBox tileBox = TileUtil.tile2boundingBox(x, y, z, (String) map.get("content"));
         tileBox.setVisualId(visualId);
         byte[] bytes;
-        if(map.get("type").equals("pointVectorTile") || map.get("type").equals("lineVectorTile") || map.get("type").equals("polygonVectorTile")) {
+        if (map.get("type").equals("pointVectorTile") || map.get("type").equals("lineVectorTile") || map.get("type").equals("polygonVectorTile")) {
             bytes = (byte[]) vectorTileMapper.getVictorTile(tileBox);
         } else {
             bytes = (byte[]) vectorTileMapper.getVictorTile3D(tileBox);
@@ -156,7 +157,7 @@ public class VisualServiceImpl implements VisualService {
 
         } finally {
             try {
-                if(sos != null) {
+                if (sos != null) {
                     sos.close();
                 }
             } catch (Exception e) {
@@ -175,7 +176,7 @@ public class VisualServiceImpl implements VisualService {
             sos = response.getOutputStream();
             byte[] bytes = new byte[1024];
             int len;
-            while((len = in.read(bytes)) > -1) {
+            while ((len = in.read(bytes)) > -1) {
                 sos.write(bytes, 0, len);
             }
             sos.flush();
@@ -186,7 +187,7 @@ public class VisualServiceImpl implements VisualService {
             throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
         } finally {
             try {
-                if(in != null) {
+                if (in != null) {
                     in.close();
                 }
                 if (sos != null) {
@@ -221,7 +222,7 @@ public class VisualServiceImpl implements VisualService {
             response.setContentType("image/png");
             byte[] bytes = new byte[1024];
             int len;
-            while((len = in.read(bytes)) > -1) {
+            while ((len = in.read(bytes)) > -1) {
                 sos.write(bytes, 0, len);
             }
             sos.flush();
@@ -296,7 +297,7 @@ public class VisualServiceImpl implements VisualService {
     @Override
     public JSONObject getAnalyticGeoJson(String fileId) {
         Map<String, Object> map = analyticDataSetMapper.getInfoById(fileId);
-        String path = basePath + map.get("creator") + "/project/" +map.get("projectId") + "/" + map.get("address");
+        String path = basePath + map.get("creator") + "/project/" + map.get("projectId") + "/" + map.get("address");
         return readJson(path);
     }
 
@@ -306,7 +307,7 @@ public class VisualServiceImpl implements VisualService {
         String address = (String) section.get("address");
         String path = basePath + section.get("creator") + "/project/" + section.get("projectId") + "/" + address;
         File file = new File(path);
-        if(!file.exists()) {
+        if (!file.exists()) {
             throw new MyException(ResultEnum.NO_OBJECT);
         }
         BufferedReader br = null;
@@ -315,8 +316,8 @@ public class VisualServiceImpl implements VisualService {
             br = new BufferedReader(new FileReader(path));
 
             String value = "";
-            while((value = br.readLine()) != null) {
-                if(!value.equals("-3.4028235e+38")) {
+            while ((value = br.readLine()) != null) {
+                if (!value.equals("-3.4028235e+38")) {
                     list.add(Double.valueOf(value));
                 }
             }
@@ -326,7 +327,7 @@ public class VisualServiceImpl implements VisualService {
             throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
         } finally {
             try {
-                if(br != null) {
+                if (br != null) {
                     br.close();
                 }
             } catch (Exception e) {
@@ -346,21 +347,21 @@ public class VisualServiceImpl implements VisualService {
         String path = basePath + section.get("creator") + "/project/" + section.get("projectId") + "/" + address;
         File file = new File(path);
         List<List<Double>> result = new ArrayList<>();
-        if(!file.exists()) {
+        if (!file.exists()) {
             throw new MyException(ResultEnum.NO_OBJECT);
         }
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(path));
             int number = Integer.parseInt(br.readLine());
-            for(int i = 0; i < number; i++) {
+            for (int i = 0; i < number; i++) {
                 List<Double> list = new ArrayList<>();
                 String value = "";
-                while((value = br.readLine()) != null) {
-                    if(value.equals("")) {
+                while ((value = br.readLine()) != null) {
+                    if (value.equals("")) {
                         break;
                     }
-                    if(!value.equals("-3.4028235e+38")) {
+                    if (!value.equals("-3.4028235e+38")) {
                         list.add(Double.valueOf(value));
                     } else {
                         list.add(0.0);
@@ -383,7 +384,7 @@ public class VisualServiceImpl implements VisualService {
         String path = basePath + sectionFlush.get("creator") + "/project/" + sectionFlush.get("projectId") + "/" + address;
         File file = new File(path);
         Map<String, Object> result = new HashMap<>();
-        if(!file.exists()) {
+        if (!file.exists()) {
             throw new MyException(ResultEnum.NO_OBJECT);
         }
         BufferedReader br = null;
@@ -391,14 +392,14 @@ public class VisualServiceImpl implements VisualService {
             br = new BufferedReader(new FileReader(path));
 
             List<List<Double>> list = new ArrayList<>();
-            for(int i = 0; i < 3; i++) {
+            for (int i = 0; i < 3; i++) {
                 List<Double> temp = new ArrayList<>();
                 String value = "";
-                while((value = br.readLine()) != null) {
-                    if(value.equals("")) {
+                while ((value = br.readLine()) != null) {
+                    if (value.equals("")) {
                         break;
                     }
-                    if(!value.equals("-3.4028235e+38")) {
+                    if (!value.equals("-3.4028235e+38")) {
                         temp.add(Double.valueOf(value));
                     } else {
                         temp.add(0.0);
@@ -446,7 +447,7 @@ public class VisualServiceImpl implements VisualService {
     public void scenario(String type, int x, int y, int z, HttpServletResponse response) {
         TileBox tileBox;
         byte[] bytes;
-        if(type.equals("tide")) {
+        if (type.equals("tide")) {
             tileBox = TileUtil.tile2boundingBox(x, y, z, "tide_station");
             tileBox.setVisualId("tide");
             bytes = (byte[]) vectorTileMapper.getVictorTile(tileBox);
@@ -474,11 +475,11 @@ public class VisualServiceImpl implements VisualService {
     @Override
     public void addSameNameVisualFile(String type, String address) {
         File file = new File(address);
-        if(!file.exists()) {
+        if (!file.exists()) {
             throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
         }
         File[] files = file.listFiles();
-        for(File f : files) {
+        for (File f : files) {
             String path = f.getAbsolutePath();
             String fileName = f.getName().substring(0, f.getName().lastIndexOf(".")) + ".xlsx";
             Map<String, Object> map = fileMapper.findByFileName(fileName);
@@ -493,14 +494,87 @@ public class VisualServiceImpl implements VisualService {
         }
     }
 
+    @Override
+    public void uploadParts(String uid, String number, MultipartFile file) {
+        File folder = new File(tempAddress + uid);
+        if (number.equals("0")) {
+            folder.mkdirs();
+        }
+        if (!folder.exists()) {
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
+        InputStream ins = null;
+        FileOutputStream outs = null;
+        try {
+            ins = file.getInputStream();
+            outs = new FileOutputStream(tempAddress + uid + "/" + number);
+            int len;
+            byte[] bytes = new byte[1024];
+            while ((len = ins.read(bytes)) != -1) {
+                outs.write(bytes, 0, len);
+            }
+            outs.close();
+            ins.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        } finally {
+            try {
+                if (outs != null) {
+                    outs.close();
+                }
+                if (ins != null) {
+                    ins.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+            }
+        }
+    }
+
+    @Override
+    public String mergeParts(String uid, Integer total, String type, String name) {
+        File folder = new File(tempAddress + uid);
+        if (!folder.exists()) {
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        } else {
+            if (folder.list().length != total) {
+                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+            }
+        }
+        if (type.equals("png") || type.equals("movePng")) {
+            String suffix = name.substring(name.lastIndexOf("."));
+            String fileName = UUID.randomUUID() + suffix;
+            String to = visualAddress + "png/" + fileName;
+            LocalUploadUtil.merge(tempAddress + uid, to, total);
+            return fileName;
+        } else if (type.equals("rasterTile")) {
+            return null;
+        } else if (type.equals("polygonVectorTile3D") || type.equals("pointVectorTile3D") || type.equals("lineVectorTile3D") || type.equals("polygonVectorTile") || type.equals("pointVectorTile") || type.equals("lineVectorTile")) {
+            return null;
+        } else {
+            String suffix = name.substring(name.lastIndexOf("."));
+            String fileName = UUID.randomUUID() + suffix;
+            String to;
+            if (type.equals("flowSand_Z")) {
+                to = visualAddress + "flowSand/" + fileName;
+            } else {
+                to = visualAddress + type + "/" + fileName;
+            }
+            LocalUploadUtil.merge(tempAddress + uid, to, total);
+            return fileName;
+        }
+    }
+
     /**
-    * @Description:对于读取json数据的可视化方法，调用此方法
-    * @Author: Yiming
-    * @Date: 2022/9/6
-    */
+     * @Description:对于读取json数据的可视化方法，调用此方法
+     * @Author: Yiming
+     * @Date: 2022/9/6
+     */
     private JSONObject readJson(String path) {
         File file = new File(path);
-        if(!file.exists()) {
+        if (!file.exists()) {
             throw new MyException(ResultEnum.NO_OBJECT);
         }
         BufferedReader br = null;
@@ -508,7 +582,7 @@ public class VisualServiceImpl implements VisualService {
             br = new BufferedReader(new FileReader(path));
             String jsonString = "";
             String line = "";
-            while((line = br.readLine()) != null) {
+            while ((line = br.readLine()) != null) {
                 jsonString += line;
             }
             br.close();
@@ -519,7 +593,7 @@ public class VisualServiceImpl implements VisualService {
             throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
         } finally {
             try {
-                if(br != null) {
+                if (br != null) {
                     br.close();
                 }
             } catch (Exception e) {

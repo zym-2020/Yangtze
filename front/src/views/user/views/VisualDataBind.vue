@@ -1,20 +1,12 @@
 <template>
   <div class="visual-bind">
-    <page-header :pageTitle="'数据可视化绑定'">
-      <template #other>
-        <div class="file-info">
-          <el-icon><Document /></el-icon>
-          <span>CJ.tif</span>
-        </div>
-      </template>
-    </page-header>
     <div class="visual-bind-body">
       <div class="title">数据<span>可视化绑定</span>说明</div>
       <div class="detail">
         数据可视化主要旨在借助于图形化手段，清晰有效地传达数据信息，本平台目前支持16种特定地理，水文数据可视化（矢量数据、栅格数据、浓度场、含沙量......），需要用户上传符号要求的相应的可视化衍生数据
       </div>
       <div>
-        <el-row>
+        <!-- <el-row>
           <el-col :span="8">
             <div class="select-type">
               <div class="head">
@@ -67,11 +59,6 @@
                   <div class="el-upload__text">
                     拖拽或者 <em>点击上传文件</em>
                   </div>
-                  <!-- <template #tip>
-                    <div class="el-upload__tip">
-                      jpg/png files with a size less than 500kb
-                    </div>
-                  </template> -->
                 </el-upload>
               </div>
             </div>
@@ -94,7 +81,7 @@
               </div>
             </div>
           </el-col>
-        </el-row>
+        </el-row> -->
       </div>
     </div>
   </div>
@@ -103,9 +90,8 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 // import { UploadFilled } from "@element-plus/icons-vue";
-import PageHeader from "@/components/page/PageHeader.vue";
 export default defineComponent({
-  components: { PageHeader },
+
   setup() {
     const typeValue = ref("");
     const options = [
@@ -200,12 +186,12 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .visual-bind {
-  height: 100%;
+  padding-top: 30px;
+  height: calc(100% - 30px);
   .visual-bind-body {
     font-family: "Gilroy";
     font-style: normal;
     .title {
-      margin-top: 30px;
       height: 51px;
       text-align: center;
 

@@ -782,7 +782,7 @@ onMounted(async () => {
       // iconLayer.updateState({props: {}});
     },
     onLoad: () => {
-      setInterval(UpdateShipTime, 2000);
+      setInterval(UpdateShipTime, 5000);
     },
   });
 

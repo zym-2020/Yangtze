@@ -141,6 +141,10 @@
     <el-dialog v-model="dataPreviewFlag" width="950px">
       <data-preview :fileInfo="fileInfo" v-if="dataPreviewFlag"></data-preview>
     </el-dialog>
+
+    <el-dialog v-model="visualBindFlag" width="600px">
+      <visual-data-bind v-if="visualBindFlag"></visual-data-bind>
+    </el-dialog>
   </div>
 </template>
 
@@ -164,6 +168,7 @@ type File = {
 import { defineComponent, onMounted, ref } from "vue";
 import { ElMessageBox } from "element-plus";
 import FolderDialog from "../components/FolderDialog.vue";
+import VisualDataBind from "../components/VisualDataBind.vue";
 import {
   findByFolderId,
   addFolder,
@@ -184,6 +189,7 @@ export default defineComponent({
   components: {
     FolderDialog,
     DataPreview,
+    VisualDataBind,
   },
   setup() {
     const skeletonFlag = ref(true);
@@ -199,6 +205,7 @@ export default defineComponent({
     const isShowFile = ref(true);
 
     const dataPreviewFlag = ref(false);
+    const visualBindFlag = ref(false);
     const fileInfo = ref<any>();
 
     const getIcon = (item: Folder | File) => {
@@ -402,13 +409,18 @@ export default defineComponent({
       dataPreviewFlag.value = true;
     };
 
+    // const visualClick = (param: any) => {
+    //   router.push({
+    //     name: "VisualBind",
+    //     params: {
+    //       id: param.id,
+    //     },
+    //   });
+    // };
+
     const visualClick = (param: any) => {
-      router.push({
-        name: "VisualBind",
-        params: {
-          id: param.id,
-        },
-      });
+      console.log(param);
+      visualBindFlag.value = true;
     };
 
     const flushed = async () => {
@@ -529,6 +541,7 @@ export default defineComponent({
       fileInfo,
       visualClick,
       skeletonFlag,
+      visualBindFlag,
     };
   },
 });

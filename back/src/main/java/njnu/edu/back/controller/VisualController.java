@@ -7,6 +7,7 @@ import njnu.edu.back.pojo.VisualFile;
 import njnu.edu.back.service.VisualService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
@@ -247,4 +248,26 @@ public class VisualController {
         visualService.addSameNameVisualFile(jsonObject.getString("type"), jsonObject.getString("address"));
         return ResultUtils.success();
     }
+
+
+    /**
+    * @Description:可视化衍生数据上传——分片上传
+    * @Author: Yiming
+    * @Date: 2023/1/13
+    */
+    @RequestMapping(value = "/uploadParts/{uid}/{number}", method = RequestMethod.POST)
+    public JsonResult uploadParts(@PathVariable String uid, @PathVariable String number, @RequestParam MultipartFile file) {
+        visualService.uploadParts(uid, number, file);
+        return ResultUtils.success();
+    }
+    /**
+    * @Description: 可视化衍生数据上传——分片合并
+    * @Author: Yiming
+    * @Date: 2023/1/13
+    */
+    @RequestMapping(value = "/mergeParts/{uid}/{total}/{type}/{name}", method = RequestMethod.POST)
+    public JsonResult mergeParts(@PathVariable String uid, @PathVariable Integer total, @PathVariable String type, @PathVariable String name) {
+        return ResultUtils.success(visualService.mergeParts(uid, total, type, name));
+    }
+
 }

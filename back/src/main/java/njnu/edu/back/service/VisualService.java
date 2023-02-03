@@ -3,6 +3,7 @@ package njnu.edu.back.service;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import njnu.edu.back.pojo.VisualFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -62,4 +63,8 @@ public interface VisualService {
     void addVisualFile(VisualFile visualFile);
 
     void addSameNameVisualFile(String type, String address);
+
+    void uploadParts(String uid, String number, MultipartFile file);
+
+    String mergeParts(String uid, Integer total, String type, String name);
 }
