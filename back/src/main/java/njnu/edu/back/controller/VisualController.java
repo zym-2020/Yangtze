@@ -206,11 +206,6 @@ public class VisualController {
     }
 
 
-    @CrossOrigin
-    @RequestMapping(value = "/scenario/{type}/{x}/{y}/{z}", method = RequestMethod.GET)
-    public void scenario(@PathVariable String type, @PathVariable int x, @PathVariable int y, @PathVariable int z, HttpServletResponse response) {
-        visualService.scenario(type, x, y, z, response);
-    }
 
 
 
@@ -225,29 +220,6 @@ public class VisualController {
 
 
 
-
-    /**
-    * @Description:方便离线插入数据
-    * @Author: Yiming
-    * @Date: 2022/8/24
-    */
-
-    @RequestMapping(value = "/addVisualFile", method = RequestMethod.POST)
-    public JsonResult addVisualFile(@RequestBody VisualFile visualFile) {
-        visualService.addVisualFile(visualFile);
-        return ResultUtils.success();
-    }
-
-    /**
-    * @Description:方便插入可视化json与excel同名的数据数据
-    * @Author: Yiming
-    * @Date: 2022/9/6
-    */
-    @RequestMapping(value = "/addSameNameVisualFile", method = RequestMethod.POST)
-    public JsonResult addRateDirection(@RequestBody JSONObject jsonObject) {
-        visualService.addSameNameVisualFile(jsonObject.getString("type"), jsonObject.getString("address"));
-        return ResultUtils.success();
-    }
 
 
     /**

@@ -143,7 +143,11 @@
     </el-dialog>
 
     <el-dialog v-model="visualBindFlag" width="600px">
-      <visual-data-bind v-if="visualBindFlag"></visual-data-bind>
+      <visual-data-bind
+        v-if="visualBindFlag"
+        :fileInfo="fileInfo"
+        @updateVisualFile="updateVisualFile"
+      ></visual-data-bind>
     </el-dialog>
   </div>
 </template>
@@ -182,7 +186,6 @@ import { useStore } from "@/store";
 import { decrypt } from "@/utils/auth";
 import { uuid, getFileSize } from "@/utils/common";
 import DataPreview from "../components/DataPreview.vue";
-import router from "@/router";
 
 NProgress.configure({ showSpinner: false });
 export default defineComponent({
@@ -409,18 +412,23 @@ export default defineComponent({
       dataPreviewFlag.value = true;
     };
 
-    // const visualClick = (param: any) => {
-    //   router.push({
-    //     name: "VisualBind",
-    //     params: {
-    //       id: param.id,
-    //     },
-    //   });
-    // };
-
     const visualClick = (param: any) => {
-      console.log(param);
+      fileInfo.value = param;
       visualBindFlag.value = true;
+    };
+
+    const updateVisualFile = (val: {
+      visualId: string;
+      visualType: string;
+    }) => {
+      for (let i = 0; i < tableData.value.length; i++) {
+        if (tableData.value[i].id === fileInfo.value.id) {
+          (tableData.value[i] as File).visualType = val.visualType;
+          (tableData.value[i] as File).visualId = val.visualId;
+          break;
+        }
+      }
+      visualBindFlag.value = false;
     };
 
     const flushed = async () => {
@@ -542,6 +550,7 @@ export default defineComponent({
       visualClick,
       skeletonFlag,
       visualBindFlag,
+      updateVisualFile,
     };
   },
 });

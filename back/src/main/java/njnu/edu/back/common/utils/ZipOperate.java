@@ -56,7 +56,18 @@ public class ZipOperate {
 
     }
 
-
+    public static void unpack(String destination, String to) {
+        File file = new File(destination);
+        if (!file.exists()) {
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
+        ZipFile zipFile = new ZipFile(destination);
+        try {
+            zipFile.extractAll(to);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 
 }

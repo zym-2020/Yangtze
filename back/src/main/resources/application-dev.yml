@@ -77,7 +77,7 @@ pictureAddress:
 visualAddress:
   E:\yangtze\other\visual\
 tempAddress:
-  E:\yangtze\other\temp\
+  E:/yangtze/other/temp/
 basePath:
   E:\yangtze\user\
 analyseAddress:
@@ -88,3 +88,7 @@ mapAddress:
 
 meteorologyAddress:
   E:\codes\PycharmProjects\connect_sqlite\meteorology.json
+
+
+pgpath:
+  D:/App/postgresql/bin/

@@ -20,6 +20,12 @@ spring:
     osm:
       jdbc-url: jdbc:sqlite:/home/zym/osm/2020-10-planet-14.mbtiles
       driver-class-name: org.sqlite.JDBC
+    staticdb:
+      jdbc-url: jdbc:sqlite:/home/zym/multiSource/static_database.db
+      driver-class-name: org.sqlite.JDBC
+    ship:
+      jdbc-url: jdbc:sqlite:/home/zym/multiSource/ais.db
+      driver-class-name: org.sqlite.JDBC
     #配置druid连接池
     druid:
       initial-size: 5 #连接池初始化大小
@@ -59,7 +65,8 @@ spring:
 #  mapper-locations: classpath:mapper/*.xml
 
 
-
+pythondir:
+  /home/zym/python/
 
 
 pictureAddress:
@@ -74,3 +81,6 @@ analyseAddress:
   /home/zym/yangtze/other/analyse/
 mapAddress:
   /home/zym/yangtze/other/map/
+
+meteorologyAddress:
+  /home/zym/multiSource/meteorology.json

@@ -24,6 +24,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
+import java.sql.Timestamp;
 import java.util.*;
 
 /**
@@ -443,56 +444,9 @@ public class VisualServiceImpl implements VisualService {
         return readJson(path);
     }
 
-    @Override
-    public void scenario(String type, int x, int y, int z, HttpServletResponse response) {
-        TileBox tileBox;
-        byte[] bytes;
-        if (type.equals("tide")) {
-            tileBox = TileUtil.tile2boundingBox(x, y, z, "tide_station");
-            tileBox.setVisualId("tide");
-            bytes = (byte[]) vectorTileMapper.getVictorTile(tileBox);
-        } else {
-            bytes = new byte[1024];
-        }
-        ServletOutputStream sos;
-        try {
-            response.setContentType("application/octet-stream");
-            sos = response.getOutputStream();
-            sos.write(bytes);
-            sos.flush();
-            sos.close();
-        } catch (Exception e) {
-            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
-        }
 
-    }
 
-    @Override
-    public void addVisualFile(VisualFile visualFile) {
-        visualFileMapper.addVisualFile(visualFile);
-    }
 
-    @Override
-    public void addSameNameVisualFile(String type, String address) {
-        File file = new File(address);
-        if (!file.exists()) {
-            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
-        }
-        File[] files = file.listFiles();
-        for (File f : files) {
-            String path = f.getAbsolutePath();
-            String fileName = f.getName().substring(0, f.getName().lastIndexOf(".")) + ".xlsx";
-            Map<String, Object> map = fileMapper.findByFileName(fileName);
-            if (map != null) {
-                Map<String, Object> visualMap = visualFileMapper.addVisualFile(new VisualFile(null, f.getName(), type, path.substring(visualAddress.length())));
-                String visualId = visualMap.get("id").toString();
-                fileMapper.updateVisualId(map.get("id").toString(), visualId);
-            } else {
-                System.out.println(fileName);
-            }
-//            System.out.println(path.substring(visualAddress.length()));
-        }
-    }
 
     @Override
     public void uploadParts(String uid, String number, MultipartFile file) {
@@ -550,9 +504,19 @@ public class VisualServiceImpl implements VisualService {
             LocalUploadUtil.merge(tempAddress + uid, to, total);
             return fileName;
         } else if (type.equals("rasterTile")) {
-            return null;
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            long number = timestamp.getTime();
+            String suffix = name.substring(name.lastIndexOf("."));
+            String to = tempAddress + "rasterTile" + number + suffix;
+            LocalUploadUtil.merge(tempAddress + uid, to, total);
+            return "rasterTile" + number + suffix;
         } else if (type.equals("polygonVectorTile3D") || type.equals("pointVectorTile3D") || type.equals("lineVectorTile3D") || type.equals("polygonVectorTile") || type.equals("pointVectorTile") || type.equals("lineVectorTile")) {
-            return null;
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            long number = timestamp.getTime();
+            String suffix = name.substring(name.lastIndexOf("."));
+            String to = tempAddress + "shp" + number + suffix;
+            LocalUploadUtil.merge(tempAddress + uid, to, total);
+            return "shp" + number + ".shp";
         } else {
             String suffix = name.substring(name.lastIndexOf("."));
             String fileName = UUID.randomUUID() + suffix;

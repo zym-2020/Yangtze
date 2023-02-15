@@ -49,52 +49,52 @@ public class TimedTask {
         }
     }
 
-    @Scheduled(cron = "0 30 6,8,12,20 * * ?")
-    public void executeWeather() throws ParseException {
-        System.out.println("haha");
-        List<String> ids = stationMapper.getAllId();
-        Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-        SimpleDateFormat ymd = new SimpleDateFormat("yyyyMMdd");
-        date = sdf.parse(sdf.format(date));
-        String times;
-        String oldTimes;
-        if (date.after(sdf.parse("20:00"))) {
-            times = ymd.format(new Date()) + "2000";
-            oldTimes = ymd.format(new Date()) + "1200";
-        } else if (date.after(sdf.parse("12:00"))) {
-            times = ymd.format(new Date()) + "1200";
-            oldTimes = ymd.format(new Date()) + "0800";
-        } else if (date.after(sdf.parse("08:00"))) {
-            times = ymd.format(new Date()) + "0800";
-            oldTimes = ymd.format(new Date()) + "0600";
-        } else {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(new Date());
-            times = ymd.format(calendar.getTime()) + "0600";
-            calendar.add(Calendar.DATE, -1);
-            oldTimes = ymd.format(calendar.getTime()) + "2000";
-        }
-        JSONArray jsonArray = (JSONArray) redisService.get(oldTimes);
-        JSONArray result = new JSONArray();
-        String station = "";
-        for (int i = 0; i < ids.size(); i++) {
-            if (i % 20 == 0) {
-                station = station + ids.get(i);
-            } else {
-                station = station + "," + ids.get(i);
-            }
-            if ((i + 1) % 20 == 0) {
-                JSONObject jsonObject = weatherHttpOperate(times, station);
-                if (jsonObject != null && jsonObject.getIntValue("returnCode") == 0) {
-                    result.addAll(jsonObject.getJSONArray("DS").getJSONObject(0).getJSONArray("data"));
-                    station = "";
-                } else {
-                    redisService.set(times, jsonArray, 60*25l);
-                    return;
-                }
-            }
-        }
-        redisService.set(times, result, 60*23l);
-    }
+//    @Scheduled(cron = "0 30 6,8,12,20 * * ?")
+//    public void executeWeather() throws ParseException {
+//        System.out.println("haha");
+//        List<String> ids = stationMapper.getAllId();
+//        Date date = new Date();
+//        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+//        SimpleDateFormat ymd = new SimpleDateFormat("yyyyMMdd");
+//        date = sdf.parse(sdf.format(date));
+//        String times;
+//        String oldTimes;
+//        if (date.after(sdf.parse("20:00"))) {
+//            times = ymd.format(new Date()) + "2000";
+//            oldTimes = ymd.format(new Date()) + "1200";
+//        } else if (date.after(sdf.parse("12:00"))) {
+//            times = ymd.format(new Date()) + "1200";
+//            oldTimes = ymd.format(new Date()) + "0800";
+//        } else if (date.after(sdf.parse("08:00"))) {
+//            times = ymd.format(new Date()) + "0800";
+//            oldTimes = ymd.format(new Date()) + "0600";
+//        } else {
+//            Calendar calendar = Calendar.getInstance();
+//            calendar.setTime(new Date());
+//            times = ymd.format(calendar.getTime()) + "0600";
+//            calendar.add(Calendar.DATE, -1);
+//            oldTimes = ymd.format(calendar.getTime()) + "2000";
+//        }
+//        JSONArray jsonArray = (JSONArray) redisService.get(oldTimes);
+//        JSONArray result = new JSONArray();
+//        String station = "";
+//        for (int i = 0; i < ids.size(); i++) {
+//            if (i % 20 == 0) {
+//                station = station + ids.get(i);
+//            } else {
+//                station = station + "," + ids.get(i);
+//            }
+//            if ((i + 1) % 20 == 0) {
+//                JSONObject jsonObject = weatherHttpOperate(times, station);
+//                if (jsonObject != null && jsonObject.getIntValue("returnCode") == 0) {
+//                    result.addAll(jsonObject.getJSONArray("DS").getJSONObject(0).getJSONArray("data"));
+//                    station = "";
+//                } else {
+//                    redisService.set(times, jsonArray, 60*25l);
+//                    return;
+//                }
+//            }
+//        }
+//        redisService.set(times, result, 60*23l);
+//    }
 }

@@ -1,17 +1,17 @@
 package njnu.edu.back.service.impl;
 
+import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import com.alibaba.fastjson.JSON;
 import lombok.SneakyThrows;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
-import njnu.edu.back.common.utils.CommonUtils;
-import njnu.edu.back.common.utils.Encrypt;
-import njnu.edu.back.common.utils.LocalUploadUtil;
-import njnu.edu.back.common.utils.ZipOperate;
+import njnu.edu.back.common.utils.*;
 import njnu.edu.back.dao.main.*;
 import njnu.edu.back.pojo.DownloadHistory;
 import njnu.edu.back.pojo.File;
 import njnu.edu.back.pojo.UploadRecord;
+import njnu.edu.back.pojo.VisualFile;
 import njnu.edu.back.service.FileService;
 import njnu.edu.back.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +45,15 @@ public class FileServiceImpl implements FileService {
 
     @Value("${encrypt.key}")
     String key;
+
+    @Value("${tempAddress}")
+    String tempAddress;
+
+    @Value("${pgpath}")
+    String pgPath;
+
+    @Value("${visualAddress}")
+    String visualAddress;
 
     @Autowired
     RedisService redisService;
@@ -287,34 +296,76 @@ public class FileServiceImpl implements FileService {
     }
 
 
-
     @Override
-    public void importData(String folderPath, String email, String time, String visualType, String visualId) {
-        java.io.File file = new java.io.File(folderPath);
-        if(!file.exists()) {
-            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
-        }
-        java.io.File[] files = file.listFiles();
-        for(java.io.File f : files) {
-            Map<String, Object> map = fileMapper.findByFileName(f.getName());
-            if(map == null) {
-                String path = f.getAbsolutePath();
-                String address = path.substring(basePath.length());
-                fileMapper.addFile(new File(null, f.getName(), address, CommonUtils.getFileSize(f.length()), email, visualType, visualId, ""));
+    public String bindVisualData(JSONObject jsonObject) {
+        String fileId = jsonObject.getStr("id");
+        String fileName = jsonObject.getStr("fileName");
+        String type = jsonObject.getStr("type");
+        JSONArray jsonArray = jsonObject.getJSONArray("coordinates");
+        String srid = jsonObject.getStr("srid");
+        String content = "";
+        if (type.equals("png") || type.equals("movePng")) {
+            JSONObject json = new JSONObject();
+            json.append("address", "png/" + fileName);
+            json.append("coordinates", jsonArray);
+            content = JSON.toJSONString(json);
+        } else if (type.equals("rateDirection") || type.equals("sandContent") || type.equals("salinity") || type.equals("suspension") || type.equals("flowSand_Z") || type.equals("tide")) {
+            if (type.equals("flowSand_Z")) {
+                content = "flowSand/" + fileName;
+            } else {
+                content = type + "/" + fileName;
             }
+        } else if (type.equals("rasterTile")) {
+            String folderName = fileName.substring(0, fileName.lastIndexOf("."));
+            content = "rasterTile/" + folderName + "/tiles";
+            ZipOperate.unpack(tempAddress + fileName, visualAddress + "rasterTile/" + folderName + "/tiles");
+            fileName = folderName;
+        } else if (type.equals("pointVectorTile") || type.equals("pointVectorTile3D") || type.equals("lineVectorTile") || type.equals("lineVectorTile3D") || type.equals("polygonVectorTile") || type.equals("polygonVectorTile3D")) {
+            content = fileName.substring(0, fileName.lastIndexOf("."));
+            ZipOperate.unpack(tempAddress + content + ".zip", tempAddress + content);
+            String shpName = "";
+            java.io.File folder = new java.io.File(tempAddress + content);
+            String files[] = folder.list();
+            for (String name : files) {
+                String suffix = name.substring(name.lastIndexOf("."));
+                if (suffix.equals(".shp")) {
+                    shpName = name;
+                    break;
+                }
+            }
+            if (shpName.equals("")) {
+                throw new MyException(-99, "文件内容错误");
+            }
+            List<String> commands = new ArrayList<>();
+            String command = "D: & cd " + pgPath + " & shp2pgsql -s " + srid + " -d " + tempAddress + content + "/" + shpName + " " + content + " | psql -h localhost -U postgres -d shp_dataset";
+            commands.add("cmd");
+            commands.add("/c");
+            commands.add(command);
+            try {
+                Process process = ProcessUtil.cmdShp2Pgsql(commands);
+                ProcessUtil.readProcessOutput(process.getInputStream(), System.out);
+                int state = process.exitValue();
+                LocalUploadUtil.deleteFolder(tempAddress + content);
+                LocalUploadUtil.deleteFolder(tempAddress + content + ".zip");
+                if (state != 0) {
+                    throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+            }
+        } else if (type.equals("photo")) {
+            fileMapper.updateVisualIdAndType(fileId, "", "photo");
+            return "";
+        } else {
+            throw new MyException(ResultEnum.QUERY_TYPE_ERROR);
         }
+        VisualFile visualFile = new VisualFile(null, fileName, type, content);
+        Map<String, Object> map = visualFileMapper.addVisualFile(visualFile);
+        fileMapper.updateVisualIdAndType(fileId, map.get("id").toString(), type);
+        return map.get("id").toString();
     }
 
-    @Override
-    public void importGrid() {
-        List<Map<String, Object>> maps = fileMapper.findListByVisualType("movePng");
-        for(Map<String, Object> map : maps) {
-            String fileName = ((String) map.get("file_name")).substring(0, 15) + "-" + ((String) map.get("address")).charAt(53) + ".png";
-//            System.out.println(fileName);
-            Map<String, Object> visualMap = visualFileMapper.findByFileName(fileName);
-            fileMapper.updateVisualId(map.get("id").toString(), visualMap.get("id").toString());
-        }
-    }
 
     @Override
     public List<String> check(String path) {

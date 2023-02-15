@@ -103,22 +103,12 @@ public class FileController {
     }
 
 
-    /**
-     * @Description:方便录入数据的接口
-     * @Author: Yiming
-     * @Date: 2022/8/23
-     */
-    @RequestMapping(value = "/importData", method = RequestMethod.POST)
-    public JsonResult importData(@RequestBody JSONObject jsonObject) {
-        fileService.importData(jsonObject.getStr("path"), jsonObject.getStr("email"), jsonObject.getStr("time"), jsonObject.getStr("visualType"), jsonObject.getStr("visualId"));
-        return ResultUtils.success();
+    @RequestMapping(value = "/bindVisualData", method = RequestMethod.POST)
+    public JsonResult bindVisualData(@RequestBody JSONObject jsonObject) {
+        return ResultUtils.success(fileService.bindVisualData(jsonObject));
     }
 
-    @RequestMapping(value = "/importGrid", method = RequestMethod.POST)
-    public JsonResult importGrid() {
-        fileService.importGrid();
-        return ResultUtils.success();
-    }
+
 
     /**
     * @Description:检查文件完整性

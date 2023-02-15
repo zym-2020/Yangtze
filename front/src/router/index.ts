@@ -262,19 +262,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
                     title: '更新条目',
                     key: 'updateShare'
                 }
-            },
-
-            {
-                path: 'visualBind/:id',
-                name: 'VisualBind',
-                component: () => import('@/views/user/views/VisualDataBind.vue'),
-                meta: {
-                    role: ['member', 'admin'],
-                    title: '数据可视化绑定',
-                    key: 'VisualBind'
-                }
             }
-
         ]
     },
 

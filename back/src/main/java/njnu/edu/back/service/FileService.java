@@ -37,10 +37,10 @@ public interface FileService {
 
     void downloadLocalFile(String userId, String id, HttpServletResponse response);
 
+    String bindVisualData(JSONObject jsonObject);
 
-    void importData(String folderPath, String email, String time, String visualType, String visualId);
 
-    void importGrid();
+
 
     List<String> check(String path);
 }

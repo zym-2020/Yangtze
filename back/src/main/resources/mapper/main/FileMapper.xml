@@ -59,8 +59,8 @@
         select * from files where visual_type = #{type};
     </select>
 
-    <update id="updateVisualId">
-        update files set visual_id = #{visualId} where id::text = #{id}
+    <update id="updateVisualIdAndType">
+        update files set visual_id = #{visualId}, visual_type = #{type} where id::text = #{id}
     </update>
 
     <select id="findByAddress" resultType="java.util.Map">
