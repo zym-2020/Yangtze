@@ -2,7 +2,7 @@
   <div class="left">
     <div class="name">
       <div class="logo"></div>
-      <div class="text">水文综合信息<br />管理与分析平台</div>
+      <!-- <div class="text">水文综合信息<br />管理与分析平台</div> -->
     </div>
     <div class="title"><strong>管&nbsp;理&nbsp;员&nbsp;界&nbsp;面</strong></div>
     <div
@@ -112,6 +112,7 @@ export default defineComponent({
       background-image: url(../../assets/header/logo.png);
       background-size: contain;
       background-repeat: no-repeat;
+      margin: 0 auto;
     }
     .text {
       color: white;

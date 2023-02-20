@@ -17,7 +17,7 @@
             v-for="item in group.value"
             :key="item"
             :label="item"
-            :value="item"
+            :value="item == '特色数据' ? 'special' : item"
           />
         </el-option-group>
       </el-select>
@@ -41,7 +41,12 @@
     <div v-else>
       <el-row :gutter="20" v-if="dataList.length > 0">
         <el-col :span="6" v-for="(item, index) in dataList" :key="index">
-          <data-list-card :info="item" @operateHandle="operateHandle" :keyword="keyword"/>
+          <data-list-card
+            :info="item"
+            @operateHandle="operateHandle"
+            :keyword="keyword"
+            :specialList="specialList"
+          />
         </el-col>
       </el-row>
       <el-empty description="暂无数据" v-else />
@@ -64,9 +69,12 @@
 import { defineComponent, onMounted, ref } from "vue";
 import DataListCard from "@/components/admin/DataListCard.vue";
 import {
+  getAllSpecialData,
   fuzzyQueryAdmin,
   updateStatusById,
   deleteByAdmin,
+  addSpecialRecord,
+  delSpecialRecord,
 } from "@/api/request";
 import NProgress from "nprogress";
 import { notice } from "@/utils/notice";
@@ -113,6 +121,10 @@ export default defineComponent({
         label: "遥感影像",
         value: ["遥感影像"],
       },
+      {
+        label: "特色数据",
+        value: ["特色数据"],
+      },
     ];
     const sortList = [
       {
@@ -138,6 +150,8 @@ export default defineComponent({
     const statusValue = ref("1");
     const input = ref("");
     const keyword = ref("");
+
+    const specialList = ref<string[]>([]);
 
     const getData = async (
       property: string,
@@ -209,6 +223,30 @@ export default defineComponent({
           parseInt(statusValue.value)
         );
         notice("success", "成功", "下线成功");
+      } else if (val.type === "addSpecial") {
+        const data = await addSpecialRecord(val.id);
+        if (data != null && (data as any).code === 0) {
+          specialList.value.push(val.id);
+        }
+      } else if (val.type === "delSpecial") {
+        const data = await delSpecialRecord(val.id);
+        if (data != null && (data as any).code === 0) {
+          for (let i = 0; i < specialList.value.length; i++) {
+            if (specialList.value[i] === val.id) {
+              specialList.value.splice(i, 1);
+              await getData(
+                sortValue.value,
+                keyword.value,
+                currentPage.value - 1,
+                16,
+                typeValue.value === "all" ? "" : typeValue.value,
+                parseInt(statusValue.value)
+              );
+              notice("success", "成功", "移除成功");
+              return;
+            }
+          }
+        }
       } else {
         const data = await deleteByAdmin({
           page: currentPage.value - 1,
@@ -236,14 +274,16 @@ export default defineComponent({
         typeValue.value === "all" ? "" : typeValue.value,
         parseInt(statusValue.value)
       );
-      currentPage.value = 1
+      currentPage.value = 1;
     };
-
-
 
     onMounted(async () => {
       skeletonFlag.value = true;
       await getData("update_time", "", 0, 16, "", 1);
+      const data = await getAllSpecialData();
+      if (data != null && (data as any).code === 0) {
+        specialList.value = data.data;
+      }
       skeletonFlag.value = false;
     });
 
@@ -262,7 +302,8 @@ export default defineComponent({
       input,
       ChangeHandle,
       searchHandle,
-      keyword
+      keyword,
+      specialList,
     };
   },
 });

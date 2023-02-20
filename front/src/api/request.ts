@@ -368,6 +368,11 @@ export async function getHot(size: number) {
   return await get(`/dataList/getHot/${size}`);
 }
 
+export async function getDownloadURLDataList(id: string) {
+  return await get(`/dataList/getDownloadURL/${id}`);
+}
+
+
 //============================Visual相关接口====================================
 //获取用户头像，项目头像，缩略图等
 export async function getAvatar(filename: string) {
@@ -605,4 +610,22 @@ export async function getAllByAdmin(jsonData: {
 
 export async function copyProject(formData: FormData) {
   return await post(`/project/copyProject`, formData);
+}
+
+
+// specialData相关接口
+export async function addSpecialRecord(id: string) {
+  return await post(`/special/addSpecialRecord/${id}`)
+}
+
+export async function delSpecialRecord(id: string) {
+  return await del(`/special/delSpecialRecord/${id}`)
+}
+
+export async function getAllSpecialData() {
+  return await get(`/special/getAllSpecialData`)
+}
+
+export async function getIdAndDataListName(size: number, start: number) {
+  return await get(`/special/getIdAndDataListName/${size}/${start}`)
 }

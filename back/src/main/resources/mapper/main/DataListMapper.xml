@@ -50,10 +50,11 @@
     </update>
 
     <select id="fuzzyQuery" resultType="java.util.Map">
-        select data_list.id as "id", data_list.name as "name", location, description, tags, creator, create_time as "createTime", update_time as "updateTime", download, watch, data_list.avatar as "avatar", status, time_stamp as "timeStamp",
-               provider, range, type, provider_phone as "providerPhone", provider_email as "providerEmail", provider_address as "providerAddress", get_online as "getOnline", detail, users.avatar as "userAvatar", users.name as "userName"
-        from data_list, users
-        where
+        <if test="type != 'special'">
+            select data_list.id as "id", data_list.name as "name", location, description, tags, creator, create_time as "createTime", update_time as "updateTime", download, watch, data_list.avatar as "avatar", status, time_stamp as "timeStamp",
+            provider, range, type, provider_phone as "providerPhone", provider_email as "providerEmail", provider_address as "providerAddress", get_online as "getOnline", detail, users.avatar as "userAvatar", users.name as "userName"
+            from data_list, users
+            where
             users.email = data_list.creator
             <if test="status == -1 or status == 0 or status == 1">
                 and status = #{status}
@@ -72,6 +73,28 @@
                 order by ${property} desc, data_list.id desc
                 limit #{size} offset #{start};
             </if>
+        </if>
+        <if test="type == 'special'">
+            select temp_list.id as "id", temp_list.name as "name", location, description, tags, creator, create_time as "createTime", update_time as "updateTime", download, watch, temp_list.avatar as "avatar", status, time_stamp as "timeStamp",
+            provider, range, type, provider_phone as "providerPhone", provider_email as "providerEmail", provider_address as "providerAddress", get_online as "getOnline", detail, users.avatar as "userAvatar", users.name as "userName"
+            from (select * from data_list where id::text in (select * from special_data)) as temp_list, users
+            where
+            users.email = temp_list.creator
+            <if test="status == -1 or status == 0 or status == 1">
+                and status = #{status}
+            </if>
+            <if test="keyword != ''">
+                and (temp_list.name like #{keyword} or temp_list.description like #{keyword} or array_to_string(temp_list.tags, ' ') like #{keyword} or users.name like #{keyword})
+            </if>
+            <if test="flag">
+                order by ${property} asc, temp_list.id asc
+                limit #{size} offset #{start};
+            </if>
+            <if test="!flag">
+                order by ${property} desc, temp_list.id desc
+                limit #{size} offset #{start};
+            </if>
+        </if>
     </select>
 
     <select id="countFuzzyQuery" resultType="java.lang.Integer">

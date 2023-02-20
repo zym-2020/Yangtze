@@ -157,6 +157,9 @@
                   共
                   <strong style="color: #ff8c00">{{ fileList.length }}</strong>
                   个文件
+                  <el-button type="success" link circle @click="downloadAll">
+                    <strong>下载所有</strong>
+                  </el-button>
                 </div>
               </div>
             </div>
@@ -252,6 +255,7 @@ import { dateFormat, imgBase64 } from "@/utils/common";
 import { decrypt } from "@/utils/auth";
 import { useStore } from "@/store";
 import {
+  getDownloadURLDataList,
   pageQueryDownloadHistory,
   getCoordinates,
   findFiles,
@@ -355,6 +359,19 @@ export default defineComponent({
         } else {
           notice("error", "错误", (data as any).msg);
         }
+      }
+    };
+
+    // 下载所有
+    const downloadAll = async () => {
+      const data = await getDownloadURLDataList(fileInfo.value?.id);
+      if (data != null && (data as any).code === 0) {
+        window.location.href =
+          prefix +
+          "dataList/downloadAll/" +
+          store.state.user.id +
+          "/" +
+          decrypt(data.data, store.state.user.id);
       }
     };
 
@@ -551,6 +568,7 @@ export default defineComponent({
       currentPageSimilar,
       pageChangeSimilar,
       similarClick,
+      downloadAll
     };
   },
 });

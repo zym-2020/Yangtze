@@ -66,28 +66,28 @@ spring:
 
 
 pythondir:
-  D:\zhuomian\水科院\python\
+  D:/zhuomian/水科院/python/
 
 
 
 
 
 pictureAddress:
-  E:\yangtze\other\picture\
+  E:/yangtze/other/picture/
 visualAddress:
-  E:\yangtze\other\visual\
+  E:/yangtze/other/visual/
 tempAddress:
   E:/yangtze/other/temp/
 basePath:
-  E:\yangtze\user\
+  E:/yangtze/user/
 analyseAddress:
-  E:\yangtze\other\analyse\
+  E:/yangtze/other/analyse/
 mapAddress:
-  E:\yangtze\other\map\
+  E:/yangtze/other/map/
 
 
 meteorologyAddress:
-  E:\codes\PycharmProjects\connect_sqlite\meteorology.json
+  E:/codes/PycharmProjects/connect_sqlite/meteorology.json
 
 
 pgpath:

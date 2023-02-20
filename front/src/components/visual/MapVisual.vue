@@ -92,7 +92,41 @@ export default defineComponent({
     const initMap = () => {
       map = new mapBoxGl.Map({
         container: container.value as HTMLElement,
-        style: "mapbox://styles/16651699376/ckmpu8kuk0h8r17msqpz351vf",
+        // 这是osm的style
+        // style: "mapbox://styles/16651699376/ckmpu8kuk0h8r17msqpz351vf",
+
+        // 下方是天地图的style
+        style: {
+          version: 8,
+          sources: {
+            tdtVec: {
+              type: "raster",
+              tiles: [
+                "http://t0.tianditu.com/vec_w/wmts?tk=35a94ab5985969d0b93229c30db6abd6&SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=vec&STYLE=default&TILEMATRIXSET=w&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=tiles",
+              ],
+              tileSize: 256,
+            },
+            txt: {
+              type: "raster",
+              tiles: [
+                "http://t0.tianditu.com/cva_w/wmts?tk=35a94ab5985969d0b93229c30db6abd6&SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=cva&STYLE=default&TILEMATRIXSET=w&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=tiles",
+              ],
+              tileSize: 256,
+            },
+          },
+          layers: [
+            {
+              id: "tdtVec",
+              type: "raster",
+              source: "tdtVec",
+            },
+            {
+              id: "txt",
+              type: "raster",
+              source: "txt",
+            },
+          ],
+        },
         center: [121.18, 31.723],
         zoom: 8,
         accessToken:

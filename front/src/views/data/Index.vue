@@ -132,23 +132,35 @@
         </div>
         <div class="special-data">
           <div class="title"><strong>特色数据</strong></div>
-          <ul class="content" v-for="(item, index) in specialList" :key="index">
-            <li class="text">{{ item.dataListName }}</li>
-          </ul>
-          <div class="change">
-            <div>
-              <svg
-                style="
-                  width: 16px;
-                  height: 16px;
-                  margin-top: 3px;
-                  margin-right: 5px;
-                "
-              >
-                <use xlink:href="#icon-reload"></use>
-              </svg>
+          <el-skeleton :rows="5" animated v-if="skeletonFlag" />
+          <div v-else v-loading="specialLoading">
+            <div v-if="specialList.length === 0">
+              <el-empty description="暂无数据" />
             </div>
-            <div>换一批</div>
+            <div v-else>
+              <ul
+                class="content"
+                v-for="(item, index) in specialList"
+                :key="index"
+              >
+                <li class="text">{{ item.dataListName }}</li>
+              </ul>
+              <div class="change">
+                <div>
+                  <svg
+                    style="
+                      width: 16px;
+                      height: 16px;
+                      margin-top: 3px;
+                      margin-right: 5px;
+                    "
+                  >
+                    <use xlink:href="#icon-reload"></use>
+                  </svg>
+                </div>
+                <div><el-button type="primary" link @click="changeSpecialData">换一批</el-button></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -161,7 +173,11 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref, reactive } from "vue";
 import DataCard from "@/components/cards/DataCard.vue";
-import { fuzzyQueryDataList, getHot } from "@/api/request";
+import {
+  fuzzyQueryDataList,
+  getHot,
+  getIdAndDataListName,
+} from "@/api/request";
 import router from "@/router";
 import NProgress from "nprogress";
 import { Search } from "@element-plus/icons-vue";
@@ -175,6 +191,7 @@ export default defineComponent({
   },
 
   setup() {
+    let specialStart = 0
     const classList = [
       {
         label: "地形数据",
@@ -214,24 +231,7 @@ export default defineComponent({
     ];
 
     const hotDataList = ref<{ dataListName: string; id: string }[]>([]);
-    const specialList = ref<{ dataListName: string; id: string }[]>([
-      {
-        dataListName: "浓度场",
-        id: "123",
-      },
-      {
-        dataListName: "浓度场",
-        id: "123",
-      },
-      {
-        dataListName: "浓度场",
-        id: "123",
-      },
-      {
-        dataListName: "浓度场",
-        id: "123",
-      },
-    ]);
+    const specialList = ref<{ dataListName: string; id: string }[]>([]);
     const sortWord = ref("update_time");
     const skeletonFlag = ref(true);
     const hotSkeletonFlag = ref(true);
@@ -243,6 +243,8 @@ export default defineComponent({
     const fileList = ref<any[]>([]);
     const total = ref(0);
     const currentPage = ref(1);
+
+    const specialLoading = ref(false)
 
     const searchData = async (
       page: number,
@@ -339,13 +341,38 @@ export default defineComponent({
       });
     };
 
-    
+    const changeSpecialData = async () => {
+      specialLoading.value = true
+      const specialData = await getIdAndDataListName(4, specialStart);
+      specialLoading.value = false
+      if (specialData != null && (specialData as any).code === 0) {
+        specialList.value = []
+        specialData.data.forEach((item: { name: string; id: string }) => {
+          specialList.value.push({
+            dataListName: item.name,
+            id: item.id,
+          });
+        });
+        specialStart += 4
+      }
+    }
 
     onMounted(async () => {
       await searchData(0, 8, "", "update_time", "");
       const data = await getHot(8);
       if (data != null && (data as any).code === 0) {
         hotDataList.value = data.data;
+      }
+      const specialData = await getIdAndDataListName(4, specialStart);
+      if (specialData != null && (specialData as any).code === 0) {
+        specialList.value = []
+        specialData.data.forEach((item: { name: string; id: string }) => {
+          specialList.value.push({
+            dataListName: item.name,
+            id: item.id,
+          });
+        });
+        specialStart += 4
       }
       skeletonFlag.value = false;
       hotSkeletonFlag.value = false;
@@ -371,7 +398,9 @@ export default defineComponent({
       classifyHandle,
       sortHandle,
       toHotData,
-      titleKeyword
+      titleKeyword,
+      changeSpecialData,
+      specialLoading
     };
   },
 });

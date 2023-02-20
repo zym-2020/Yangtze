@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="njnu.edu.back.dao.main.SpecialDataMapper">
+    <insert id="addRecord">
+        insert into special_data values(#{id})
+    </insert>
+
+    <delete id="delRecord">
+        delete from special_data where id = #{id}
+    </delete>
+
+    <select id="getAllSpecialData" resultType="java.lang.String">
+        select * from special_data
+    </select>
+
+    <select id="getIdAndDataListName" resultType="java.util.Map">
+        select id, name from data_list where id::text in (
+            select * from special_data
+        )
+    </select>
+</mapper>

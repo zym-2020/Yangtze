@@ -60,6 +60,9 @@ public class DataListServiceImpl implements DataListService {
     @Value("${tempAddress}")
     String tempAddress;
 
+    @Value("${basePath}")
+    String basePath;
+
     @Autowired
     DownloadHistoryMapper downloadHistoryMapper;
 
@@ -240,6 +243,10 @@ public class DataListServiceImpl implements DataListService {
             id = tempId;
         }
         List<Map<String, Object>> list = dataRelationalMapper.findFilesByDataListId(id);
+        for (Map<String, Object> map : list) {
+            String oldString = (String) map.get("address");
+            map.replace("address", oldString, basePath + oldString);
+        }
         String destination = tempAddress + id + ".zip";
         ZipOperate.compressFile(destination, list);
         InputStream in = null;

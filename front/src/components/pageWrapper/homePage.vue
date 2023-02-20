@@ -8,7 +8,9 @@
   >
     <el-carousel-item id="front-page">
       <div id="earth-part"></div>
-      <div id="title">南京水利科学研究院<br />水文综合信息管理与分析平台</div>
+      <div id="title">
+        交通运输行业野外科学观测研究基地<br />深水航道水沙环境与工程安全平台
+      </div>
       <div id="outline">
         基于南科院在长江黄金水道长期的科研与业务积累，本平台针对丰富的河道历史地形资料、水文测验数据以及物理模型和数值分析模型等建立统一数据标准并进行管理与共享。
         在数据基础上进一步结合地理信息系统，本平台提供包括水文分析、河床演变分析等一系列综合时空分析功能，也是集成了实时监控、数学模型、物理模型的一体化辅助实验平台。
@@ -71,10 +73,10 @@
             </el-button>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item> 河床演变 </el-dropdown-item>
+                <!-- <el-dropdown-item> 河床演变 </el-dropdown-item>
                 <el-dropdown-item>水文分析</el-dropdown-item>
-                <el-dropdown-item>物模与数模</el-dropdown-item>
-                <el-dropdown-item divided>进入分析中心</el-dropdown-item>
+                <el-dropdown-item>物模与数模</el-dropdown-item> -->
+                <el-dropdown-item>进入分析中心</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -248,7 +250,7 @@ onActivated(() => {
 
     div#title {
       position: absolute;
-      width: 48vw;
+      // width: 48vw;
       height: 20vh;
       top: 10vh;
       right: 8vw;

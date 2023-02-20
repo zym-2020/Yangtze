@@ -11,8 +11,13 @@
       <div class="creator" :title="'创建人：' + info.userName">
         <span v-html="replaceHandle(info.userName)"></span>
       </div>
+      <el-tag class="special" effect="dark" type="danger" v-if="specialFlag"
+        >特色数据</el-tag
+      >
     </div>
-    <div class="name"><span v-html="replaceHandle(info.name)"></span></div>
+    <div class="name">
+      <span v-html="replaceHandle(info.name)"></span>
+    </div>
     <div class="tags">
       <el-tag v-for="(item, index) in info.tags" :key="index"
         ><span v-html="replaceHandle(item)"></span
@@ -37,6 +42,12 @@
             >
             <el-dropdown-item v-if="info.status === 1" command="offline"
               ><el-icon><WarningFilled /></el-icon>下线</el-dropdown-item
+            >
+            <el-dropdown-item v-if="!specialFlag" command="addSpecial"
+              ><el-icon><StarFilled /></el-icon>标记为特色数据</el-dropdown-item
+            >
+            <el-dropdown-item v-if="specialFlag" command="delSpecial"
+              ><el-icon><Star /></el-icon>取消特色数据</el-dropdown-item
             >
             <el-dropdown-item command="delete"
               ><el-icon><DeleteFilled /></el-icon>删除</el-dropdown-item
@@ -65,11 +76,25 @@ export default defineComponent({
     keyword: {
       type: String,
     },
+    specialList: {
+      type: Array,
+    },
   },
   emits: ["operateHandle"],
   setup(props, context) {
     const info: any = computed(() => {
       return props.info;
+    });
+
+    const specialFlag = computed(() => {
+      if (props.specialList != undefined) {
+        for (let i = 0; i < props.specialList.length; i++) {
+          if (props.specialList[i] == props.info?.id) {
+            return true;
+          }
+        }
+      }
+      return false;
     });
 
     const getAvatar = (avatar: string, name: string) => {
@@ -114,6 +139,7 @@ export default defineComponent({
       clickHandle,
       commandHandle,
       replaceHandle,
+      specialFlag,
     };
   },
 });
@@ -168,6 +194,11 @@ export default defineComponent({
       border-radius: 4px;
       text-align: center;
       font-weight: 300;
+    }
+    .special {
+      position: absolute;
+      right: 10px;
+      top: 70px;
     }
   }
 

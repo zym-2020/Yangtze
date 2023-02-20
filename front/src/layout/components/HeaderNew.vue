@@ -4,8 +4,8 @@
       <el-col :span="1">
         <div class="grid-content" />
       </el-col>
-      <el-col :span="3">
-        <div class="grid-content name">水文综合信息<br />管理与分析平台</div>
+      <el-col :span="6">
+        <div class="grid-content name">交通运输行业野外科学观测研究基地<br />深水航道水沙环境与工程安全平台</div>
       </el-col>
       <el-col :span="2" :offset="1">
         <div class="grid-content index" @click="nav('home')">首页</div>
@@ -24,7 +24,7 @@
       <el-col :span="2">
         <div class="grid-content help">帮助</div>
       </el-col>
-      <el-col :span="2" :offset="7">
+      <el-col :span="2" :offset="4">
         <el-dropdown trigger="hover" @command="userNav" v-if="logined">
           <el-button
             type="primary"
@@ -236,7 +236,7 @@ div.header-main {
       &.name {
         font-weight: 500;
         text-align: left;
-        font-size: 3vh;
+        font-size: 2vh;
         line-height: 3vh;
         padding-left: 2vh;
         color: aliceblue;
