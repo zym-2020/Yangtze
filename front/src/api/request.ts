@@ -665,3 +665,29 @@ export async function getShipInfoByBoxAndTime(
     true
   );
 }
+
+export async function getAnchorInfoByBox(
+  top: number,
+  right: number,
+  bottom: number,
+  left: number
+) {
+  return await get(
+    `/multiSource/getAnchorInfoByBox/${top}/${right}/${bottom}/${left}`
+  );
+}
+
+export async function getParkInfoByBox(
+  top: number,
+  right: number,
+  bottom: number,
+  left: number
+) {
+  return await get(
+    `/multiSource/getParkInfoByBox/${top}/${right}/${bottom}/${left}`
+  );
+}
+
+export async function getBridgeInfo() {
+  return await get(`/multiSource/getBridgeInfo`);
+}

@@ -179,4 +179,17 @@ export default defineComponent({
     }
   }
 }
+
+.down-arrow {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  .down-tri {
+    width: 0px;
+    height: 0px;
+    border-top: 10px solid rgb(107, 176, 255);
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+  }
+}
 </style>

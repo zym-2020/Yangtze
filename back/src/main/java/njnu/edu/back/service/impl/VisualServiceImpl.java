@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
+import njnu.edu.back.common.utils.FileUtil;
 import njnu.edu.back.common.utils.LocalUploadUtil;
 import njnu.edu.back.common.utils.TileUtil;
 import njnu.edu.back.dao.main.AnalyticDataSetMapper;
@@ -278,55 +279,55 @@ public class VisualServiceImpl implements VisualService {
     public JSONObject getTide(String visualId) {
         Map<String, Object> map = visualFileMapper.findById(visualId);
         String path = visualAddress + map.get("content");
-        return readJson(path);
+        return FileUtil.readJson(path);
     }
 
     @Override
     public JSONObject getRateDirection(String visualId) {
         Map<String, Object> map = visualFileMapper.findById(visualId);
         String path = visualAddress + map.get("content");
-        return readJson(path);
+        return FileUtil.readJson(path);
     }
 
     @Override
     public JSONObject getSandContent(String visualId) {
         Map<String, Object> map = visualFileMapper.findById(visualId);
         String path = visualAddress + map.get("content");
-        return readJson(path);
+        return FileUtil.readJson(path);
     }
 
     @Override
     public JSONObject getFlowSand_Z(String visualId) {
         Map<String, Object> map = visualFileMapper.findById(visualId);
         String path = visualAddress + map.get("content");
-        return readJson(path);
+        return FileUtil.readJson(path);
     }
 
     @Override
     public JSONObject getSalinity(String visualId) {
         Map<String, Object> map = visualFileMapper.findById(visualId);
         String path = visualAddress + map.get("content");
-        return readJson(path);
+        return FileUtil.readJson(path);
     }
 
     @Override
     public JSONObject getSuspension(String visualId) {
         Map<String, Object> map = visualFileMapper.findById(visualId);
         String path = visualAddress + map.get("content");
-        return readJson(path);
+        return FileUtil.readJson(path);
     }
 
     @Override
     public JSONObject getGeoJson(String fileId) {
         String path = visualAddress + "geoJson/" + fileId + ".json";
-        return readJson(path);
+        return FileUtil.readJson(path);
     }
 
     @Override
     public JSONObject getAnalyticGeoJson(String fileId) {
         Map<String, Object> map = analyticDataSetMapper.getInfoById(fileId);
         String path = basePath + map.get("creator") + "/project/" + map.get("projectId") + "/" + map.get("address");
-        return readJson(path);
+        return FileUtil.readJson(path);
     }
 
     @Override
@@ -455,20 +456,20 @@ public class VisualServiceImpl implements VisualService {
         String address = visualMap.get("content").toString();
         String path = visualAddress + address;
 
-        return readJson(path);
+        return FileUtil.readJson(path);
     }
 
     @Override
     public JSONObject getTianDiTu() {
 //        String jsonString = "{\"version\":8,\"sources\":{\"tdtVec\":{\"type\":\"raster\",\"tiles\":[\"http://t0.tianditu.com/vec_w/wmts?tk=35a94ab5985969d0b93229c30db6abd6&SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=vec&STYLE=default&TILEMATRIXSET=w&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=tiles\"],\"tileSize\":256},\"txt\":{\"type\":\"raster\",\"tiles\":[\"http://t0.tianditu.com/cva_w/wmts?tk=35a94ab5985969d0b93229c30db6abd6&SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=cva&STYLE=default&TILEMATRIXSET=w&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=tiles\"],\"tileSize\":256}},\"layers\":[{\"id\":\"tdtVec\",\"type\":\"raster\",\"source\":\"tdtVec\"},{\"id\":\"txt\",\"type\":\"raster\",\"source\":\"txt\"}]}";
         String path = mapAddress + "tianditu.json";
-        return readJson(path);
+        return FileUtil.readJson(path);
     }
 
     @Override
     public JSONObject getTianDiTuImage() {
         String path = mapAddress + "tianditu-image.json";
-        return readJson(path);
+        return FileUtil.readJson(path);
     }
 
 
@@ -558,39 +559,4 @@ public class VisualServiceImpl implements VisualService {
         }
     }
 
-    /**
-     * @Description:对于读取json数据的可视化方法，调用此方法
-     * @Author: Yiming
-     * @Date: 2022/9/6
-     */
-    private JSONObject readJson(String path) {
-        File file = new File(path);
-        if (!file.exists()) {
-            throw new MyException(ResultEnum.NO_OBJECT);
-        }
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new FileReader(path));
-            String jsonString = "";
-            String line = "";
-            while ((line = br.readLine()) != null) {
-                jsonString += line;
-            }
-            br.close();
-            JSONObject jsonObject = JSON.parseObject(jsonString);
-            return jsonObject;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
-        } finally {
-            try {
-                if (br != null) {
-                    br.close();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
-            }
-        }
-    }
 }

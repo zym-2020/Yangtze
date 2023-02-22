@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
+import njnu.edu.back.common.utils.FileUtil;
 import njnu.edu.back.dao.ship.LocusMapper;
 import njnu.edu.back.dao.staticdb.*;
 import njnu.edu.back.service.MultiSourceService;
@@ -67,6 +68,9 @@ public class MultiSourceServiceImpl implements MultiSourceService {
 
     @Autowired
     RedisService redisService;
+
+    @Value("${resourcePath}")
+    String resourcePath;
 
     @Override
     public List<Map<String, Object>> getBuoyByBox(double top, double right, double bottom, double left) {
@@ -442,5 +446,10 @@ public class MultiSourceServiceImpl implements MultiSourceService {
         startTime = "2022-12-07 " + startTime;
         endTime = "2022-12-07 " + endTime;
         return locusMapper.getShipInfoByBoxAndTime(tableName, top, right, bottom, left, startTime, endTime);
+    }
+
+    @Override
+    public JSONArray getBridgeInfo() {
+        return FileUtil.readJsonArray(resourcePath + "bridge.json");
     }
 }

@@ -86,6 +86,8 @@ mapAddress:
   E:/yangtze/other/map/
 
 
+resourcePath:
+  E:/yangtze/resource/
 meteorologyAddress:
   E:/codes/PycharmProjects/connect_sqlite/meteorology.json
 

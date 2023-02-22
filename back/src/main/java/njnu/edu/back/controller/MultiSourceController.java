@@ -135,4 +135,15 @@ public class MultiSourceController {
         return multiSourceService.getShipInfoByBoxAndTime(top, right, bottom, left, startTime, endTime);
     }
 
+
+    /**
+    * @Description:桥梁信息
+    * @Author: Yiming
+    * @Date: 2023/2/22
+    */
+    @RequestMapping(value = "/getBridgeInfo", method = RequestMethod.GET)
+    public JsonResult getBridgeInfo() {
+        return ResultUtils.success(multiSourceService.getBridgeInfo());
+    }
+
 }

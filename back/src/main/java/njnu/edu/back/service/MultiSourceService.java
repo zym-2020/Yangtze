@@ -40,4 +40,6 @@ public interface MultiSourceService {
     List<Map<String, Object>> record(String mmsi);
 
     List<Map<String, Object>> getShipInfoByBoxAndTime(double top, double right, double bottom, double left, String startTime, String endTime);
+
+    JSONArray getBridgeInfo();
 }

@@ -10,6 +10,7 @@
                 <el-checkbox label="航标" />
                 <el-checkbox label="停泊区" />
                 <el-checkbox label="锚地" />
+                <el-checkbox label="桥梁" />
                 <!-- <el-checkbox label="其他设施" /> -->
               </el-checkbox-group>
             </el-collapse-item>
@@ -24,6 +25,12 @@
     <ship-info :shipInfo="shipInfo" ref="shipWindow" />
     <div ref="buoyWindow" class="buoyWindow">
       <buoy-info :buoyInfo="buoyInfo" />
+    </div>
+    <div ref="anchorWindow" class="anchorWindow">
+      <anchor-info :anchorInfo="anchorInfo" />
+    </div>
+    <div ref="parkWindow" class="parkWindow">
+      <park-info :parkInfo="parkInfo" />
     </div>
   </div>
 </template>
@@ -43,20 +50,29 @@ import VectorSource from "ol/source/Vector";
 import XYZ from "ol/source/XYZ";
 import { prefix } from "@/prefix";
 import { defaults as defaultControls } from "ol/control";
-import { Point } from "ol/geom";
-import { getBuoyByBox, getShipInfoByBoxAndTime } from "@/api/request";
-import { Style, Icon } from "ol/style";
-import { Ship, Buoy } from "@/type";
+import { Point, Polygon } from "ol/geom";
+import {
+  getBuoyByBox,
+  getShipInfoByBoxAndTime,
+  getAnchorInfoByBox,
+  getParkInfoByBox,
+  getBridgeInfo,
+} from "@/api/request";
+import { Style, Icon, Fill, Stroke } from "ol/style";
+import { Ship, Buoy, Anchor, Park, Bridge } from "@/type";
 import Overlay from "ol/Overlay.js";
-
 import ShipInfo from "@/components/scenePart/ShipInfo.vue";
 import BuoyInfo from "@/components/scenePart/BuoyInfo.vue";
+import AnchorInfo from "@/components/scenePart/AnchorInfo.vue";
+import ParkInfo from "@/components/scenePart/ParkInfo.vue";
 
 export default defineComponent({
-  components: { ShipInfo, BuoyInfo },
+  components: { ShipInfo, BuoyInfo, AnchorInfo, ParkInfo },
   setup() {
     let map: Map;
     let overlay: Overlay;
+    let anchorOverlay: Overlay;
+    let parkOverlay: Overlay;
     const CJresolutions = [
       0.023794610058302794, 0.0095178440233211186, 0.0047589220116605593,
       0.0023794610058302797, 0.0011897305029151398, 0.00059486525145756991,
@@ -73,6 +89,9 @@ export default defineComponent({
     const shipWindow = ref<HTMLElement>();
 
     const buoyWindow = ref<HTMLElement>();
+    const anchorWindow = ref<HTMLElement>();
+    const parkWindow = ref<HTMLElement>();
+
     const controlActive = ref(false);
     const activeList = ref(["layers"]);
     const showLayerList = ref([
@@ -80,6 +99,7 @@ export default defineComponent({
       "AIS船舶",
       "停泊区",
       "锚地", // "其他设施"
+      "桥梁",
     ]);
     const shipInfo = ref<Ship>({
       direction: 0,
@@ -114,6 +134,8 @@ export default defineComponent({
       ypy: "",
       zxaqjl: "",
     });
+    const anchorInfo = ref<Anchor>();
+    const parkInfo = ref<Park>();
     let toggleURLList = ["./layer.png", "./angle-double-left.png"];
     let toggleUrlIndex = 0;
     let toggleURL = ref(toggleURLList[toggleUrlIndex]);
@@ -143,6 +165,30 @@ export default defineComponent({
           },
         },
       });
+      anchorOverlay = new Overlay({
+        element: anchorWindow.value,
+        offset: [
+          document.body.clientWidth * -0.12,
+          document.body.clientWidth * -0.08 - 20,
+        ],
+        autoPan: {
+          animation: {
+            duration: 250,
+          },
+        },
+      });
+      parkOverlay = new Overlay({
+        element: parkWindow.value,
+        offset: [
+          document.body.clientWidth * -0.12,
+          document.body.clientWidth * -0.08 - 20,
+        ],
+        autoPan: {
+          animation: {
+            duration: 250,
+          },
+        },
+      });
 
       map = new Map({
         target: container.value,
@@ -154,7 +200,7 @@ export default defineComponent({
           minZoom: 5,
           multiWorld: true,
         }),
-        overlays: [overlay],
+        overlays: [overlay, anchorOverlay, parkOverlay],
         layers: [
           new TileLayer({
             visible: true,
@@ -170,6 +216,7 @@ export default defineComponent({
               projection: "EPSG:4326",
             }),
           }),
+          //海图图层
           new TileLayer({
             source: new XYZ({
               url: prefix + "visual/seaChart/{x}/{y}/{z}",
@@ -181,11 +228,31 @@ export default defineComponent({
               projection: "EPSG:4326",
             }),
           }),
+          //   锚地图层（3）
           new VectorLayer({
             source: new VectorSource({
               features: [],
             }),
           }),
+          //   停泊区图层（4）
+          new VectorLayer({
+            source: new VectorSource({
+              features: [],
+            }),
+          }),
+          //   桥梁图层(5)
+          new VectorLayer({
+            source: new VectorSource({
+              features: [],
+            }),
+          }),
+          //   浮标图层（6）
+          new VectorLayer({
+            source: new VectorSource({
+              features: [],
+            }),
+          }),
+          //   AIS船舶图层（7）
           new VectorLayer({
             source: new VectorSource({
               features: [],
@@ -202,6 +269,8 @@ export default defineComponent({
       map.on("moveend", async () => {
         updateBuoy();
         updateShip();
+        updateAnchor();
+        updatePart();
       });
 
       map.on("singleclick", (e) => {
@@ -224,6 +293,8 @@ export default defineComponent({
         );
         if (!click) {
           overlay.setPosition(undefined);
+          anchorOverlay.setPosition(undefined);
+          parkOverlay.setPosition(undefined);
         }
       });
 
@@ -271,13 +342,13 @@ export default defineComponent({
           features.push(f);
         });
 
-        map.getAllLayers()[3].setSource(
+        map.getAllLayers()[6].setSource(
           new VectorSource({
             features: features,
           })
         );
       } else {
-        map.getAllLayers()[3].setSource(
+        map.getAllLayers()[6].setSource(
           new VectorSource({
             features: [],
           })
@@ -345,12 +416,93 @@ export default defineComponent({
               features.push(f);
             }
           });
-          map.getAllLayers()[4].setSource(
+          map.getAllLayers()[7].setSource(
             new VectorSource({
               features: features,
             })
           );
         }
+      } else {
+        map.getAllLayers()[7].setSource(
+          new VectorSource({
+            features: [],
+          })
+        );
+      }
+    };
+
+    const updateAnchor = async () => {
+      if ((map.getView().getZoom() as number) > 12) {
+        const coor = map.getView().calculateExtent(map.getSize());
+        const data = await getAnchorInfoByBox(
+          coor[3],
+          coor[2],
+          coor[1],
+          coor[0]
+        );
+        const features: Feature[] = [];
+        (data as any).forEach((item: Anchor) => {
+          const f = new Feature({
+            geometry: new Polygon(polygonUtil(item.qyfw.points)),
+          });
+          f.setStyle(
+            new Style({
+              fill: new Fill({
+                color: [233, 13, 13, 0.4],
+              }),
+            })
+          );
+          f.setProperties({
+            info: item,
+          });
+          f.setId(item["id"]);
+          features.push(f);
+        });
+
+        map.getAllLayers()[3].setSource(
+          new VectorSource({
+            features: features,
+          })
+        );
+      } else {
+        map.getAllLayers()[3].setSource(
+          new VectorSource({
+            features: [],
+          })
+        );
+      }
+    };
+
+    const updatePart = async () => {
+      if ((map.getView().getZoom() as number) > 12) {
+        const coor = map.getView().calculateExtent(map.getSize());
+        const data = await getParkInfoByBox(coor[3], coor[2], coor[1], coor[0]);
+        const features: Feature[] = [];
+        (data as any).forEach((item: Park) => {
+          if (item.qyfw.type === "polygon" && item.qyfw.points) {
+            const f = new Feature({
+              geometry: new Polygon(polygonUtil(item.qyfw.points)),
+            });
+            f.setStyle(
+              new Style({
+                fill: new Fill({
+                  color: [0, 0, 0],
+                }),
+              })
+            );
+            f.setProperties({
+              info: item,
+            });
+            f.setId(item["id"]);
+            features.push(f);
+          }
+        });
+
+        map.getAllLayers()[4].setSource(
+          new VectorSource({
+            features: features,
+          })
+        );
       } else {
         map.getAllLayers()[4].setSource(
           new VectorSource({
@@ -358,6 +510,62 @@ export default defineComponent({
           })
         );
       }
+    };
+
+    const updateBridge = async () => {
+      const data = await getBridgeInfo();
+
+      if (data != null && (data as any).code === 0) {
+        const features: Feature[] = [];
+        console.log(data.data);
+        data.data.forEach((item: Bridge) => {
+          const f = new Feature({
+            geometry: new Polygon(item.polygon.coordinates),
+          });
+          f.setStyle(
+            new Style({
+              fill: new Fill({
+                color: [78,14,199, 0.7],
+              }),
+              stroke: new Stroke({
+                width: 5
+              })
+            })
+          );
+          f.setProperties({
+            info: item,
+          });
+          features.push(f);
+        });
+
+        map.getAllLayers()[5].setSource(
+          new VectorSource({
+            features: features,
+          })
+        );
+      }
+    };
+
+    const polygonUtil = (arr: number[][]) => {
+      const result = [];
+      if (arr.length === 2) {
+        const left = arr[0][0];
+        const right = arr[1][0];
+        const top = arr[1][1];
+        const bottom = arr[0][1];
+        arr.splice(1, 0, [right, bottom]);
+        arr.push([left, top]);
+        arr.push(arr[0]);
+      } else {
+        if (
+          arr[0][0] != arr[arr.length - 1][0] ||
+          arr[0][1] != arr[arr.length - 1][1]
+        ) {
+          arr.push(arr[0]);
+        }
+      }
+      result.push(arr);
+      return result;
     };
 
     const setTime = () => {
@@ -373,10 +581,11 @@ export default defineComponent({
     const LayerDropHandle = () => {};
     const ToggleLayer = (val: string[]) => {
       const oj: { [key: string]: boolean } = {
+        锚地: false,
+        停泊区: false,
+        桥梁: false,
         航标: false,
         AIS船舶: false,
-        // 停泊区: false,
-        // 锚地: false,
       };
       val.forEach((item) => {
         if (oj[item] != undefined) {
@@ -399,18 +608,26 @@ export default defineComponent({
       controlActive.value = !controlActive.value;
     };
 
-    const showInfo = (info: Buoy | Ship) => {
+    const showInfo = (info: Buoy | Ship | Anchor | Park) => {
       if ("mmsi" in info) {
         shipInfo.value = info;
         (shipWindow.value as any).extend();
       } else if ("zxaqjl" in info) {
         buoyInfo.value = info;
         overlay.setPosition([info.jdwz_84jd, info.jdwz_84wd]);
+      } else if ("mdmc" in info) {
+        anchorInfo.value = info;
+        anchorOverlay.setPosition([info.zbjd, info.zbwd]);
+      } else if ("mc" in info) {
+        parkInfo.value = info;
+        parkOverlay.setPosition([info.zbjd, info.zbwd]);
       }
     };
 
-    onMounted(() => {
+    onMounted(async () => {
       init();
+      await updateBridge();
+      console.log(map.getAllLayers()[5].getSource()?.getProperties());
     });
 
     onDeactivated(() => {
@@ -433,7 +650,11 @@ export default defineComponent({
       shipInfo,
       shipWindow,
       buoyWindow,
+      anchorWindow,
+      parkWindow,
       buoyInfo,
+      anchorInfo,
+      parkInfo,
     };
   },
 });
