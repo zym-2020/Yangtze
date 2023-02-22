@@ -44,9 +44,21 @@ public class VisualController {
 
     @CrossOrigin
     @RequestMapping(value = "/getRaster/{visualId}/{x}/{y}/{z}", method = RequestMethod.GET)
-    public void getAvatar(@PathVariable String visualId, @PathVariable int x, @PathVariable int y, @PathVariable int z, HttpServletResponse response) {
+    public void getRaster(@PathVariable String visualId, @PathVariable int x, @PathVariable int y, @PathVariable int z, HttpServletResponse response) {
         visualService.getRaster(visualId, x, y, z, response);
     }
+
+    /**
+    * @Description:海图栅格可视化
+    * @Author: Yiming
+    * @Date: 2023/2/20
+    */
+    @CrossOrigin
+    @RequestMapping(value = "/seaChart/{x}/{y}/{z}", method = RequestMethod.GET)
+    public void seaChart(@PathVariable String x, @PathVariable String y, @PathVariable String z, HttpServletResponse response) {
+        visualService.seaChart(x, y, z, response);
+    }
+
 
     /**
     * @Description:pg入库的矢量文件可视化

@@ -21,6 +21,8 @@ public interface VisualService {
 
     void getRaster(String visualId, int x, int y, int z, HttpServletResponse response);
 
+    void seaChart(String x, String y, String z, HttpServletResponse response);
+
     void getVectorTiles(String visualId, int x, int y, int z, HttpServletResponse response);
 
     void getPhoto(String fileId, HttpServletResponse response);

@@ -372,7 +372,6 @@ export async function getDownloadURLDataList(id: string) {
   return await get(`/dataList/getDownloadURL/${id}`);
 }
 
-
 //============================Visual相关接口====================================
 //获取用户头像，项目头像，缩略图等
 export async function getAvatar(filename: string) {
@@ -612,20 +611,57 @@ export async function copyProject(formData: FormData) {
   return await post(`/project/copyProject`, formData);
 }
 
-
 // specialData相关接口
 export async function addSpecialRecord(id: string) {
-  return await post(`/special/addSpecialRecord/${id}`)
+  return await post(`/special/addSpecialRecord/${id}`);
 }
 
 export async function delSpecialRecord(id: string) {
-  return await del(`/special/delSpecialRecord/${id}`)
+  return await del(`/special/delSpecialRecord/${id}`);
 }
 
 export async function getAllSpecialData() {
-  return await get(`/special/getAllSpecialData`)
+  return await get(`/special/getAllSpecialData`);
 }
 
 export async function getIdAndDataListName(size: number, start: number) {
-  return await get(`/special/getIdAndDataListName/${size}/${start}`)
+  return await get(`/special/getIdAndDataListName/${size}/${start}`);
+}
+
+// 多源数据相关接口
+export async function getBuoyByBox(
+  top: number,
+  right: number,
+  bottom: number,
+  left: number
+) {
+  return await get(
+    `/multiSource/getBuoyByBox/${top}/${right}/${bottom}/${left}`
+  );
+}
+
+export async function getShipInfoByBox(
+  top: number,
+  right: number,
+  bottom: number,
+  left: number
+) {
+  return await get(
+    `/multiSource/getShipInfoByBox/${top}/${right}/${bottom}/${left}`
+  );
+}
+
+export async function getShipInfoByBoxAndTime(
+  top: number,
+  right: number,
+  bottom: number,
+  left: number,
+  startTime: string,
+  endTime: string
+) {
+  return await get(
+    `/multiSource/getShipInfoByBoxAndTime/${top}/${right}/${bottom}/${left}/${startTime}/${endTime}`,
+    undefined,
+    true
+  );
 }

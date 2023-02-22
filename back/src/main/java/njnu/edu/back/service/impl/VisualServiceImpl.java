@@ -139,6 +139,33 @@ public class VisualServiceImpl implements VisualService {
     }
 
     @Override
+    public void seaChart(String x, String y, String z, HttpServletResponse response) {
+        String path = visualAddress + "rasterTile/shipSpiderRes/depth_" + z + "/map/" + y + "_" + x + "_map.png";
+        InputStream in = null;
+        ServletOutputStream sos = null;
+        try {
+            response.setContentType("image/png");
+            sos = response.getOutputStream();
+            File file = new File(path);
+            if (!file.exists()) {
+                in = new FileInputStream(visualAddress + "blank.png");
+            } else {
+                in = new FileInputStream(path);
+            }
+            byte[] bytes = new byte[1024];
+            int len;
+            while ((len = in.read(bytes)) > -1) {
+                sos.write(bytes, 0, len);
+            }
+            sos.flush();
+            sos.close();
+            in.close();
+        } catch (Exception e) {
+//            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
+    }
+
+    @Override
     public void getVectorTiles(String visualId, int x, int y, int z, HttpServletResponse response) {
         Map<String, Object> map = visualFileMapper.findById(visualId);
         TileBox tileBox = TileUtil.tile2boundingBox(x, y, z, (String) map.get("content"));
