@@ -5,12 +5,16 @@
         <el-image
           id="buoy-image"
           :src="
-            buoyInfo.hbphoto == ''
+            buoyInfo == undefined
+              ? ''
+              : buoyInfo.hbphoto == ''
               ? '/nophoto.png'
               : prefix + 'multiSource/img/' + buoyInfo.hbphoto
           "
           :preview-src-list="[
-            buoyInfo.hbphoto == ''
+            buoyInfo == undefined
+              ? ''
+              : buoyInfo.hbphoto == ''
               ? '/nophoto.png'
               : prefix + 'multiSource/img/' + buoyInfo.hbphoto,
           ]"
@@ -29,27 +33,31 @@
             label="名称"
             label-align="center"
             align="center"
-            >{{ buoyInfo.hbmc }}</el-descriptions-item
+            >{{
+              buoyInfo == undefined ? "" : buoyInfo.hbmc
+            }}</el-descriptions-item
           >
           <el-descriptions-item
             label="颜色"
             label-align="center"
             align="center"
-            >{{ buoyInfo.bsys }}</el-descriptions-item
+            >{{
+              buoyInfo == undefined ? "" : buoyInfo.bsys
+            }}</el-descriptions-item
           >
           <el-descriptions-item
             label="形状"
             label-align="center"
             align="center"
           >
-            {{ buoyInfo.hbxz }}
+            {{ buoyInfo == undefined ? "" : buoyInfo.hbxz }}
           </el-descriptions-item>
           <el-descriptions-item
             label="所属航道"
             label-align="center"
             align="center"
           >
-            {{ buoyInfo.sshd }}
+            {{ buoyInfo == undefined ? "" : buoyInfo.sshd }}
           </el-descriptions-item>
         </el-descriptions>
       </el-col>

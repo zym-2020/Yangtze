@@ -1,9 +1,10 @@
 <template>
   <div class="waterway">
+    <head-notice :content="meteorologyList" />
     <div id="layer-control" :class="{ active: controlActive }">
       <el-row id="layer-panel">
         <el-col id="layers-drop" :span="19">
-          <el-collapse v-model="activeList" @change="LayerDropHandle">
+          <el-collapse v-model="activeList">
             <el-collapse-item title="数据图层" name="layers">
               <el-checkbox-group v-model="showLayerList" @change="ToggleLayer">
                 <el-checkbox label="AIS船舶" />
@@ -11,6 +12,7 @@
                 <el-checkbox label="停泊区" />
                 <el-checkbox label="锚地" />
                 <el-checkbox label="桥梁" />
+                <el-checkbox label="气象预警" />
                 <!-- <el-checkbox label="其他设施" /> -->
               </el-checkbox-group>
             </el-collapse-item>
@@ -23,6 +25,7 @@
     </div>
     <div class="container" ref="container"></div>
     <ship-info :shipInfo="shipInfo" ref="shipWindow" />
+    <bridge-info :bridgeInfo="bridgeInfo" ref="bridgeWindow" />
     <div ref="buoyWindow" class="buoyWindow">
       <buoy-info :buoyInfo="buoyInfo" />
     </div>
@@ -31,6 +34,9 @@
     </div>
     <div ref="parkWindow" class="parkWindow">
       <park-info :parkInfo="parkInfo" />
+    </div>
+    <div ref="meteorologyWindow" class="MeteorologyInfo">
+      <meteorology-info :meteorologyInfo="meteorologyInfo" />
     </div>
   </div>
 </template>
@@ -57,22 +63,35 @@ import {
   getAnchorInfoByBox,
   getParkInfoByBox,
   getBridgeInfo,
+  getMeteorology,
 } from "@/api/request";
 import { Style, Icon, Fill, Stroke } from "ol/style";
-import { Ship, Buoy, Anchor, Park, Bridge } from "@/type";
+import { Ship, Buoy, Anchor, Park, Bridge, Meteorology } from "@/type";
 import Overlay from "ol/Overlay.js";
 import ShipInfo from "@/components/scenePart/ShipInfo.vue";
 import BuoyInfo from "@/components/scenePart/BuoyInfo.vue";
 import AnchorInfo from "@/components/scenePart/AnchorInfo.vue";
 import ParkInfo from "@/components/scenePart/ParkInfo.vue";
+import BridgeInfo from "@/components/scenePart/BridgeInfo.vue";
+import MeteorologyInfo from "@/components/scenePart/MeteorologyInfo.vue";
+import HeadNotice from "@/components/scenePart/HeadNotice.vue";
 
 export default defineComponent({
-  components: { ShipInfo, BuoyInfo, AnchorInfo, ParkInfo },
+  components: {
+    ShipInfo,
+    BuoyInfo,
+    AnchorInfo,
+    ParkInfo,
+    BridgeInfo,
+    MeteorologyInfo,
+    HeadNotice,
+  },
   setup() {
     let map: Map;
     let overlay: Overlay;
     let anchorOverlay: Overlay;
     let parkOverlay: Overlay;
+    let meteorologyOverlay: Overlay;
     const CJresolutions = [
       0.023794610058302794, 0.0095178440233211186, 0.0047589220116605593,
       0.0023794610058302797, 0.0011897305029151398, 0.00059486525145756991,
@@ -87,10 +106,11 @@ export default defineComponent({
 
     const container = ref<HTMLElement>();
     const shipWindow = ref<HTMLElement>();
-
+    const bridgeWindow = ref<HTMLElement>();
     const buoyWindow = ref<HTMLElement>();
     const anchorWindow = ref<HTMLElement>();
     const parkWindow = ref<HTMLElement>();
+    const meteorologyWindow = ref<HTMLElement>();
 
     const controlActive = ref(false);
     const activeList = ref(["layers"]);
@@ -100,42 +120,16 @@ export default defineComponent({
       "停泊区",
       "锚地", // "其他设施"
       "桥梁",
+      "气象预警",
     ]);
-    const shipInfo = ref<Ship>({
-      direction: 0,
-      lat: 0,
-      length: "",
-      lon: 0,
-      mmsi: "",
-      name: "",
-      name_cn: "",
-      register_time: "",
-      update_time: "",
-      velocity: 0,
-      width: "",
-    });
-    const buoyInfo = ref<Buoy>({
-      bsys: "",
-      dbbz: "",
-      dbxz: "",
-      dbys: "",
-      dzxx: "",
-      hbmc: "",
-      hbphoto: "",
-      hbtlpz: "",
-      hbxz: "",
-      hdyyjl: "",
-      id: "",
-      jdwz_84jd: 0,
-      jdwz_84wd: 0,
-      sbzt: "",
-      sshd: "",
-      xpy: "",
-      ypy: "",
-      zxaqjl: "",
-    });
+    const shipInfo = ref<Ship>();
+    const buoyInfo = ref<Buoy>();
     const anchorInfo = ref<Anchor>();
     const parkInfo = ref<Park>();
+    const bridgeInfo = ref<Bridge>();
+    const meteorologyInfo = ref<Meteorology>();
+
+    const meteorologyList = ref<Meteorology[]>([]);
     let toggleURLList = ["./layer.png", "./angle-double-left.png"];
     let toggleUrlIndex = 0;
     let toggleURL = ref(toggleURLList[toggleUrlIndex]);
@@ -189,6 +183,15 @@ export default defineComponent({
           },
         },
       });
+      meteorologyOverlay = new Overlay({
+        element: meteorologyWindow.value,
+        offset: [-200, -240],
+        autoPan: {
+          animation: {
+            duration: 250,
+          },
+        },
+      });
 
       map = new Map({
         target: container.value,
@@ -200,11 +203,12 @@ export default defineComponent({
           minZoom: 5,
           multiWorld: true,
         }),
-        overlays: [overlay, anchorOverlay, parkOverlay],
+        overlays: [overlay, anchorOverlay, parkOverlay, meteorologyOverlay],
         layers: [
           new TileLayer({
             visible: true,
             source: new XYZ({
+              // url: "http://t0.tianditu.com/DataServer?T=ter_c&x={x}&y={y}&l={z}&tk=2e23e92f7c9790018ab06498f1f55c1e",
               url: "http://t0.tianditu.com/DataServer?T=vec_c&x={x}&y={y}&l={z}&tk=35a94ab5985969d0b93229c30db6abd6",
               projection: "EPSG:4326",
             }),
@@ -219,7 +223,7 @@ export default defineComponent({
           //海图图层
           new TileLayer({
             source: new XYZ({
-              url: prefix + "visual/seaChart/{x}/{y}/{z}",
+              url: prefix + "multiSource/seaChart/map/{x}/{y}/{z}",
               tileGrid: new TileGrid({
                 resolutions: CJresolutions,
                 origin: [-400, 400],
@@ -228,31 +232,49 @@ export default defineComponent({
               projection: "EPSG:4326",
             }),
           }),
-          //   锚地图层（3）
+          //   海图标注图层
+          new TileLayer({
+            source: new XYZ({
+              url: prefix + "multiSource/seaChart/mark/{x}/{y}/{z}",
+              tileGrid: new TileGrid({
+                resolutions: CJresolutions,
+                origin: [-400, 400],
+                tileSize: 256,
+              }),
+              projection: "EPSG:4326",
+            }),
+          }),
+          //   锚地图层（4）
           new VectorLayer({
             source: new VectorSource({
               features: [],
             }),
           }),
-          //   停泊区图层（4）
+          //   停泊区图层（5）
           new VectorLayer({
             source: new VectorSource({
               features: [],
             }),
           }),
-          //   桥梁图层(5)
+          //   桥梁图层(6)
           new VectorLayer({
             source: new VectorSource({
               features: [],
             }),
           }),
-          //   浮标图层（6）
+          //   浮标图层（7）
           new VectorLayer({
             source: new VectorSource({
               features: [],
             }),
           }),
-          //   AIS船舶图层（7）
+          //   AIS船舶图层（8）
+          new VectorLayer({
+            source: new VectorSource({
+              features: [],
+            }),
+          }),
+          //   气象预警（9）
           new VectorLayer({
             source: new VectorSource({
               features: [],
@@ -295,6 +317,7 @@ export default defineComponent({
           overlay.setPosition(undefined);
           anchorOverlay.setPosition(undefined);
           parkOverlay.setPosition(undefined);
+          meteorologyOverlay.setPosition(undefined);
         }
       });
 
@@ -342,13 +365,13 @@ export default defineComponent({
           features.push(f);
         });
 
-        map.getAllLayers()[6].setSource(
+        map.getAllLayers()[7].setSource(
           new VectorSource({
             features: features,
           })
         );
       } else {
-        map.getAllLayers()[6].setSource(
+        map.getAllLayers()[7].setSource(
           new VectorSource({
             features: [],
           })
@@ -416,14 +439,14 @@ export default defineComponent({
               features.push(f);
             }
           });
-          map.getAllLayers()[7].setSource(
+          map.getAllLayers()[8].setSource(
             new VectorSource({
               features: features,
             })
           );
         }
       } else {
-        map.getAllLayers()[7].setSource(
+        map.getAllLayers()[8].setSource(
           new VectorSource({
             features: [],
           })
@@ -459,13 +482,13 @@ export default defineComponent({
           features.push(f);
         });
 
-        map.getAllLayers()[3].setSource(
+        map.getAllLayers()[4].setSource(
           new VectorSource({
             features: features,
           })
         );
       } else {
-        map.getAllLayers()[3].setSource(
+        map.getAllLayers()[4].setSource(
           new VectorSource({
             features: [],
           })
@@ -517,7 +540,6 @@ export default defineComponent({
 
       if (data != null && (data as any).code === 0) {
         const features: Feature[] = [];
-        console.log(data.data);
         data.data.forEach((item: Bridge) => {
           const f = new Feature({
             geometry: new Polygon(item.polygon.coordinates),
@@ -525,11 +547,11 @@ export default defineComponent({
           f.setStyle(
             new Style({
               fill: new Fill({
-                color: [78,14,199, 0.7],
+                color: [78, 14, 199, 0.7],
               }),
               stroke: new Stroke({
-                width: 5
-              })
+                width: 5,
+              }),
             })
           );
           f.setProperties({
@@ -538,11 +560,43 @@ export default defineComponent({
           features.push(f);
         });
 
-        map.getAllLayers()[5].setSource(
+        map.getAllLayers()[6].setSource(
           new VectorSource({
             features: features,
           })
         );
+      }
+    };
+
+    const updateMeteorology = async () => {
+      const data = await getMeteorology();
+      if (data != null && (data as any).code === 0) {
+        meteorologyList.value = data.data;
+        const features: Feature[] = [];
+        data.data.forEach((item: Meteorology) => {
+          const f = new Feature({
+            geometry: new Point([item.longitude, item.latitude]),
+          });
+          f.setStyle(
+            new Style({
+              image: new Icon({
+                src:
+                  prefix +
+                  "multiSource/getMeteorologyPng/" +
+                  item.type +
+                  ".png",
+                width: 40,
+                height: 30,
+              }),
+            })
+          );
+          f.setProperties({ info: item });
+          features.push(f);
+        });
+
+        map
+          .getAllLayers()[9]
+          .setSource(new VectorSource({ features: features }));
       }
     };
 
@@ -578,7 +632,6 @@ export default defineComponent({
       }, 3000);
     };
 
-    const LayerDropHandle = () => {};
     const ToggleLayer = (val: string[]) => {
       const oj: { [key: string]: boolean } = {
         锚地: false,
@@ -586,13 +639,14 @@ export default defineComponent({
         桥梁: false,
         航标: false,
         AIS船舶: false,
+        气象预警: false,
       };
       val.forEach((item) => {
         if (oj[item] != undefined) {
           oj[item] = true;
         }
       });
-      let temp = 3;
+      let temp = 4;
       for (let key in oj) {
         if (oj[key]) {
           map.getAllLayers()[temp].setVisible(true);
@@ -608,7 +662,7 @@ export default defineComponent({
       controlActive.value = !controlActive.value;
     };
 
-    const showInfo = (info: Buoy | Ship | Anchor | Park) => {
+    const showInfo = (info: Buoy | Ship | Anchor | Park | Meteorology) => {
       if ("mmsi" in info) {
         shipInfo.value = info;
         (shipWindow.value as any).extend();
@@ -621,13 +675,19 @@ export default defineComponent({
       } else if ("mc" in info) {
         parkInfo.value = info;
         parkOverlay.setPosition([info.zbjd, info.zbwd]);
+      } else if ("polygon" in info) {
+        bridgeInfo.value = info;
+        (bridgeWindow.value as any).popupClick();
+      } else if ("effective" in info) {
+        meteorologyInfo.value = info;
+        meteorologyOverlay.setPosition([info.longitude, info.latitude]);
       }
     };
 
-    onMounted(async () => {
+    onMounted(() => {
       init();
-      await updateBridge();
-      console.log(map.getAllLayers()[5].getSource()?.getProperties());
+      updateBridge();
+      updateMeteorology();
     });
 
     onDeactivated(() => {
@@ -641,7 +701,6 @@ export default defineComponent({
     return {
       container,
       controlActive,
-      LayerDropHandle,
       ToggleLayer,
       activeList,
       showLayerList,
@@ -652,9 +711,14 @@ export default defineComponent({
       buoyWindow,
       anchorWindow,
       parkWindow,
+      bridgeWindow,
+      meteorologyWindow,
       buoyInfo,
       anchorInfo,
       parkInfo,
+      bridgeInfo,
+      meteorologyInfo,
+      meteorologyList,
     };
   },
 });
@@ -665,6 +729,11 @@ export default defineComponent({
 .waterway {
   height: 100%;
   position: relative;
+  overflow: hidden;
+  .head-notice {
+    position: absolute;
+    top: 0;
+  }
   #layer-control {
     position: absolute;
     width: 15vw;

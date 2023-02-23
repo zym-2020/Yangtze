@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.common.utils.FileUtil;
+import njnu.edu.back.common.utils.InternetUtil;
 import njnu.edu.back.dao.ship.LocusMapper;
 import njnu.edu.back.dao.staticdb.*;
 import njnu.edu.back.service.MultiSourceService;
@@ -21,9 +22,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.*;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -71,6 +70,9 @@ public class MultiSourceServiceImpl implements MultiSourceService {
 
     @Value("${resourcePath}")
     String resourcePath;
+
+    @Value("${visualAddress}")
+    String visualAddress;
 
     @Override
     public List<Map<String, Object>> getBuoyByBox(double top, double right, double bottom, double left) {
@@ -229,78 +231,66 @@ public class MultiSourceServiceImpl implements MultiSourceService {
     }
 
     @Override
-    public JSONArray getMeteorologyBox(double top, double right, double bottom, double left) {
-        boolean flag = false;
-        try {
-            SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm");
-            Date date1 = sdf1.parse(sdf1.format(new Date()));
-            Date date2 = sdf1.parse("09:04");
-            Calendar cal1 = Calendar.getInstance();
-            Calendar cal2 = Calendar.getInstance();
-            cal1.setTime(date1);
-            cal2.setTime(date2);
-            if (cal1.after(cal2)) {
-                flag = true;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
-        }
-        String key;
-        if (flag) {
-            Date date = new Date();
-            SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd");
-            key = "meteorology-" + sdf.format(date);
-        } else {
-            Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.DATE, -1); //得到前一天
-            Date date = calendar.getTime();
-            SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd");
-            key = "meteorology-" + sdf.format(date);
-        }
-
-        JSONArray jsonArray = (JSONArray) redisService.get(key);
-        if (jsonArray == null) {
-            File file = new File(meteorologyAddress);
-            if(!file.exists()) {
-                throw new MyException(ResultEnum.NO_OBJECT);
-            }
-            BufferedReader br = null;
-            try {
-                br = new BufferedReader(new FileReader(meteorologyAddress));
-                String jsonString = "";
-                String line = "";
-                while((line = br.readLine()) != null) {
-                    jsonString += line;
-                }
-                br.close();
-                jsonArray = JSON.parseArray(jsonString);
-                redisService.set(key, jsonArray, 60*25l);
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
-            } finally {
+    public JSONArray getMeteorology() {
+        String path = resourcePath + "meteorology/meteorology.json";
+        JSONArray jsonArray = FileUtil.readJsonArray(path);
+        List<CompletableFuture> list = new ArrayList<>();
+        JSONArray result = new JSONArray();
+        for (int i = 0; i < jsonArray.size(); i++) {
+            int code = jsonArray.getJSONObject(i).getIntValue("region");
+            CompletableFuture future = CompletableFuture.supplyAsync(() -> {
+                Map<String, String> map = new HashMap<>();
+                map.put("adcode", String.valueOf(code));
                 try {
-                    if(br != null) {
-                        br.close();
+                    String str = InternetUtil.doGet("https://weather.cma.cn/api/map/alarm", map, "utf-8");
+                    JSONArray temp = JSON.parseObject(str).getJSONArray("data");
+                    for (int j = 0; j < temp.size(); j++) {
+                        File f = new File(resourcePath + "meteorology/png/" + temp.getJSONObject(j).getString("type") + ".png");
+                        if (!f.exists()) {
+                            String url = "http://data.cma.cn/dataGis/static/ultra/img/gis/disasterWarning/" + temp.getJSONObject(j).getString("type") + ".png";
+                            String pngPath = resourcePath + "meteorology/png/" + temp.getJSONObject(j).getString("type") + ".png";
+                            InternetUtil.downloadMeteorologyPng(url, pngPath);
+                        }
+                        result.add(temp.getJSONObject(j));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
                 }
-            }
+                return null;
+            });
+            list.add(future);
         }
+        CompletableFuture all = CompletableFuture.allOf(list.toArray(new CompletableFuture[list.size()]));
+        try {
+            all.get();
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
+        return result;
+    }
 
-        for (int i = 0; i < jsonArray.size(); i++) {
-            JSONObject jsonObject = jsonArray.getJSONObject(i);
-            double lon = jsonObject.getDouble("longitude");
-            double lat = jsonObject.getDouble("latitude");
-            if (lon > right || lon < left || lat > top || lat < bottom) {
-                jsonArray.remove(i);
-                i--;
-            }
+    @Override
+    public void getMeteorologyPng(String fileName, HttpServletResponse response) {
+        String path = resourcePath + "meteorology/png/" + fileName;
+        File file = new File(path);
+        if (!file.exists()) {
+            throw new MyException(ResultEnum.NO_OBJECT);
         }
-        return jsonArray;
+        try {
+            InputStream inputStream = new FileInputStream(path);
+            ServletOutputStream outputStream = response.getOutputStream();
+            byte[] bytes = new byte[1024];
+            int len;
+            while((len = inputStream.read(bytes)) != -1) {
+                outputStream.write(bytes, 0, len);
+            }
+            outputStream.flush();
+            outputStream.close();
+            inputStream.close();
+        } catch (Exception e) {
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
     }
 
     @Override
@@ -451,5 +441,39 @@ public class MultiSourceServiceImpl implements MultiSourceService {
     @Override
     public JSONArray getBridgeInfo() {
         return FileUtil.readJsonArray(resourcePath + "bridge.json");
+    }
+
+    @Override
+    public void seaChart(String type, String x, String y, String z, HttpServletResponse response) {
+        String path;
+        if (type.equals("map")) {
+            path = resourcePath + "shipSpiderRes/depth_" + z + "/map/" + y + "_" + x + "_map.png";
+        } else if(type.equals("mark")) {
+            path = resourcePath + "shipSpiderRes/depth_" + z + "/mark/" + y + "_" + x + "_mark.png";
+        } else {
+            throw new MyException(-99, "type参数错误");
+        }
+        InputStream in = null;
+        ServletOutputStream sos = null;
+        try {
+            response.setContentType("image/png");
+            sos = response.getOutputStream();
+            File file = new File(path);
+            if (!file.exists()) {
+                in = new FileInputStream(visualAddress + "blank.png");
+            } else {
+                in = new FileInputStream(path);
+            }
+            byte[] bytes = new byte[1024];
+            int len;
+            while ((len = in.read(bytes)) > -1) {
+                sos.write(bytes, 0, len);
+            }
+            sos.flush();
+            sos.close();
+            in.close();
+        } catch (Exception e) {
+//            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
     }
 }

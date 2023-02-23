@@ -51,7 +51,7 @@ export default defineComponent({
         avatar: "./flow.png",
       },
       {
-        path: "/scenario/scenarioThree",
+        path: "/scenario/waterway",
         name: "AIS一张图",
         des: "展示长江区域航道现况",
         avatar: "./ship.png",

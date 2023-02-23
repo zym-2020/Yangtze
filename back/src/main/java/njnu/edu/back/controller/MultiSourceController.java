@@ -82,11 +82,22 @@ public class MultiSourceController {
         return multiSourceService.getOtherInfoBox(top, right, bottom, left);
     }
 
-    @CrossOrigin
-    @RequestMapping(value = "/getMeteorologyBox/{top}/{right}/{bottom}/{left}", method = RequestMethod.GET)
-    public JSONArray getMeteorologyBox(@PathVariable double top, @PathVariable double right, @PathVariable double bottom, @PathVariable double left) {
-        return multiSourceService.getMeteorologyBox(top, right, bottom, left);
+    @RequestMapping(value = "/getMeteorology", method = RequestMethod.GET)
+    public JsonResult getMeteorology() {
+        return ResultUtils.success(multiSourceService.getMeteorology());
     }
+
+    /**
+    * @Description:获取meteorology图片
+    * @Author: Yiming
+    * @Date: 2023/2/23
+    */
+    @CrossOrigin
+    @RequestMapping(value = "/getMeteorologyPng/{fileName}", method = RequestMethod.GET)
+    public void getMeteorologyPng(@PathVariable String fileName, HttpServletResponse response) {
+        multiSourceService.getMeteorologyPng(fileName, response);
+    }
+
 
     @CrossOrigin
     @RequestMapping(value = "/getStationBox/{top}/{right}/{bottom}/{left}", method = RequestMethod.GET)
@@ -145,5 +156,17 @@ public class MultiSourceController {
     public JsonResult getBridgeInfo() {
         return ResultUtils.success(multiSourceService.getBridgeInfo());
     }
+
+    /**
+     * @Description:海图栅格可视化
+     * @Author: Yiming
+     * @Date: 2023/2/20
+     */
+    @CrossOrigin
+    @RequestMapping(value = "/seaChart/{type}/{x}/{y}/{z}", method = RequestMethod.GET)
+    public void seaChart(@PathVariable String type, @PathVariable String x, @PathVariable String y, @PathVariable String z, HttpServletResponse response) {
+        multiSourceService.seaChart(type, x, y, z, response);
+    }
+
 
 }

@@ -84,3 +84,15 @@ export type Park = {
 export type Bridge = {
   [key: string]: string;
 } & { polygon: { coordinates: number[][][]; type: string } };
+
+
+export type Meteorology = {
+  description: string;
+  effective: string;
+  headline: string;
+  id: string;
+  longitude: number;
+  latitude: number;
+  title: string;
+  type: string;
+}

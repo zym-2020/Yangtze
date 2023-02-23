@@ -691,3 +691,7 @@ export async function getParkInfoByBox(
 export async function getBridgeInfo() {
   return await get(`/multiSource/getBridgeInfo`);
 }
+
+export async function getMeteorology() {
+  return await get(`/multiSource/getMeteorology`);
+}

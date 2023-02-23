@@ -3,7 +3,9 @@
     <el-card shadow="hover">
       <template #header>
         <div class="card-header">
-          <span class="ship-name">{{ shipInfo.name }}</span>
+          <span class="ship-name">{{
+            shipInfo == undefined ? "" : shipInfo.name
+          }}</span>
           <br />
           <span class="ship-type">Cargo Ship</span>
           <el-icon id="hide-icon" size="1.6vw" @click="HideInfo()"
@@ -20,13 +22,17 @@
           label="速度"
           label-align="center"
           align="center"
-          >{{ shipInfo.velocity + "km/h" }}</el-descriptions-item
+          >{{
+            shipInfo == undefined ? "" : shipInfo.velocity + "km/h"
+          }}</el-descriptions-item
         >
         <el-descriptions-item
           label="航向"
           label-align="center"
           align="center"
-          >{{ shipInfo.direction + "°" }}</el-descriptions-item
+          >{{
+            shipInfo == undefined ? "" : shipInfo.direction + "°"
+          }}</el-descriptions-item
         >
         <el-descriptions-item
           label="MMSI"
@@ -34,12 +40,8 @@
           label-align="center"
           align="center"
         >
-          {{ shipInfo.mmsi }}
+          {{ shipInfo == undefined ? "" : shipInfo.mmsi }}
         </el-descriptions-item>
-        <!-- <el-descriptions-item label="吃水深度" :span="2" label-align="center" align="center">{{shipInfo.draught}}</el-descriptions-item> -->
-        <!-- <el-descriptions-item label="登记时间" :span="2" label-align="center" align="center">
-            {{shipInfo.registerTime}}
-          </el-descriptions-item> -->
         <el-descriptions-item
           label="船长/宽"
           :span="1"
@@ -47,9 +49,11 @@
           align="center"
         >
           {{
-            parseFloat(shipInfo.length).toFixed(1) +
-            " / " +
-            parseFloat(shipInfo.width).toFixed(1)
+            shipInfo == undefined
+              ? ""
+              : parseFloat(shipInfo.length).toFixed(1) +
+                " / " +
+                parseFloat(shipInfo.width).toFixed(1)
           }}
         </el-descriptions-item>
         <el-descriptions-item
@@ -58,7 +62,7 @@
           label-align="center"
           align="center"
         >
-          {{ shipInfo.update_time }}
+          {{ shipInfo == undefined ? "" : shipInfo.update_time }}
         </el-descriptions-item>
       </el-descriptions>
     </el-card>
@@ -67,7 +71,6 @@
 
 <script lang="ts">
 import { computed, defineComponent, ref } from "vue";
-import { Ship } from "@/type";
 export default defineComponent({
   props: {
     shipInfo: {
