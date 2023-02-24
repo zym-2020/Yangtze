@@ -85,7 +85,6 @@ export type Bridge = {
   [key: string]: string;
 } & { polygon: { coordinates: number[][][]; type: string } };
 
-
 export type Meteorology = {
   description: string;
   effective: string;
@@ -95,4 +94,25 @@ export type Meteorology = {
   latitude: number;
   title: string;
   type: string;
-}
+};
+
+export type Station = {
+  name: string;
+  name_en: string;
+  keys: string[];
+  keys_cn: string[];
+  lon: number;
+  lat: number;
+  type: string;
+};
+
+export type WaterLevelChartType = {
+  timeList: string[];
+  yAxis: { name: string; type: string }[];
+  series: {
+    data: number[];
+    type: string;
+    smooth: boolean;
+    yAxisIndex: number;
+  }[];
+};

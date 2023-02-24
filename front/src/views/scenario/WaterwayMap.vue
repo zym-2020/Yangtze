@@ -13,6 +13,7 @@
                 <el-checkbox label="锚地" />
                 <el-checkbox label="桥梁" />
                 <el-checkbox label="气象预警" />
+                <el-checkbox label="水位站点" />
                 <!-- <el-checkbox label="其他设施" /> -->
               </el-checkbox-group>
             </el-collapse-item>
@@ -23,6 +24,7 @@
         </el-col>
       </el-row>
     </div>
+
     <div class="container" ref="container"></div>
     <ship-info :shipInfo="shipInfo" ref="shipWindow" />
     <bridge-info :bridgeInfo="bridgeInfo" ref="bridgeWindow" />
@@ -38,6 +40,9 @@
     <div ref="meteorologyWindow" class="MeteorologyInfo">
       <meteorology-info :meteorologyInfo="meteorologyInfo" />
     </div>
+    <el-dialog v-model="stationDialog" :width="900" :show-close="false">
+      <station-info :stationInfo="stationInfo" v-if="stationDialog"/>
+    </el-dialog>
   </div>
 </template>
 
@@ -64,9 +69,10 @@ import {
   getParkInfoByBox,
   getBridgeInfo,
   getMeteorology,
+  getStationByBox,
 } from "@/api/request";
 import { Style, Icon, Fill, Stroke } from "ol/style";
-import { Ship, Buoy, Anchor, Park, Bridge, Meteorology } from "@/type";
+import { Ship, Buoy, Anchor, Park, Bridge, Meteorology, Station } from "@/type";
 import Overlay from "ol/Overlay.js";
 import ShipInfo from "@/components/scenePart/ShipInfo.vue";
 import BuoyInfo from "@/components/scenePart/BuoyInfo.vue";
@@ -75,6 +81,7 @@ import ParkInfo from "@/components/scenePart/ParkInfo.vue";
 import BridgeInfo from "@/components/scenePart/BridgeInfo.vue";
 import MeteorologyInfo from "@/components/scenePart/MeteorologyInfo.vue";
 import HeadNotice from "@/components/scenePart/HeadNotice.vue";
+import StationInfo from "@/components/scenePart/StationInfo.vue";
 
 export default defineComponent({
   components: {
@@ -85,6 +92,7 @@ export default defineComponent({
     BridgeInfo,
     MeteorologyInfo,
     HeadNotice,
+    StationInfo,
   },
   setup() {
     let map: Map;
@@ -112,6 +120,8 @@ export default defineComponent({
     const parkWindow = ref<HTMLElement>();
     const meteorologyWindow = ref<HTMLElement>();
 
+    const stationDialog = ref(false);
+
     const controlActive = ref(false);
     const activeList = ref(["layers"]);
     const showLayerList = ref([
@@ -121,6 +131,7 @@ export default defineComponent({
       "锚地", // "其他设施"
       "桥梁",
       "气象预警",
+      "水位站点",
     ]);
     const shipInfo = ref<Ship>();
     const buoyInfo = ref<Buoy>();
@@ -128,6 +139,7 @@ export default defineComponent({
     const parkInfo = ref<Park>();
     const bridgeInfo = ref<Bridge>();
     const meteorologyInfo = ref<Meteorology>();
+    const stationInfo = ref<Station>();
 
     const meteorologyList = ref<Meteorology[]>([]);
     let toggleURLList = ["./layer.png", "./angle-double-left.png"];
@@ -280,6 +292,12 @@ export default defineComponent({
               features: [],
             }),
           }),
+          //水位站图层（10）
+          new VectorLayer({
+            source: new VectorSource({
+              features: [],
+            }),
+          }),
         ],
         controls: defaultControls({
           zoom: false,
@@ -293,6 +311,7 @@ export default defineComponent({
         updateShip();
         updateAnchor();
         updatePart();
+        updateStation();
       });
 
       map.on("singleclick", (e) => {
@@ -600,6 +619,45 @@ export default defineComponent({
       }
     };
 
+    const updateStation = async () => {
+      if ((map.getView().getZoom() as number) > 11) {
+        const coor = map.getView().calculateExtent(map.getSize());
+        const data = await getStationByBox(coor[3], coor[2], coor[1], coor[0]);
+        const features: Feature[] = [];
+        (data.data as any).forEach((item: Station) => {
+          const f = new Feature({
+            geometry: new Point([item["lon"], item["lat"]]),
+          });
+          f.setStyle(
+            new Style({
+              image: new Icon({
+                src: "/水文站 (1).png",
+                width: 30,
+                height: 30,
+              }),
+            })
+          );
+          f.setProperties({
+            info: item,
+          });
+          f.setId(item["name_en"]);
+          features.push(f);
+        });
+
+        map.getAllLayers()[10].setSource(
+          new VectorSource({
+            features: features,
+          })
+        );
+      } else {
+        map.getAllLayers()[10].setSource(
+          new VectorSource({
+            features: [],
+          })
+        );
+      }
+    };
+
     const polygonUtil = (arr: number[][]) => {
       const result = [];
       if (arr.length === 2) {
@@ -640,6 +698,7 @@ export default defineComponent({
         航标: false,
         AIS船舶: false,
         气象预警: false,
+        水位站点: false,
       };
       val.forEach((item) => {
         if (oj[item] != undefined) {
@@ -662,7 +721,9 @@ export default defineComponent({
       controlActive.value = !controlActive.value;
     };
 
-    const showInfo = (info: Buoy | Ship | Anchor | Park | Meteorology) => {
+    const showInfo = (
+      info: Buoy | Ship | Anchor | Park | Meteorology | Station
+    ) => {
       if ("mmsi" in info) {
         shipInfo.value = info;
         (shipWindow.value as any).extend();
@@ -681,6 +742,9 @@ export default defineComponent({
       } else if ("effective" in info) {
         meteorologyInfo.value = info;
         meteorologyOverlay.setPosition([info.longitude, info.latitude]);
+      } else if ("keys_cn" in info) {
+        stationInfo.value = info;
+        stationDialog.value = true;
       }
     };
 
@@ -718,7 +782,9 @@ export default defineComponent({
       parkInfo,
       bridgeInfo,
       meteorologyInfo,
+      stationInfo,
       meteorologyList,
+      stationDialog,
     };
   },
 });
@@ -825,6 +891,14 @@ export default defineComponent({
   }
   .container {
     height: 100%;
+  }
+}
+/deep/.el-dialog {
+  .el-dialog__header {
+    padding: 0px;
+  }
+  .el-dialog__body {
+    padding: 0;
   }
 }
 </style>

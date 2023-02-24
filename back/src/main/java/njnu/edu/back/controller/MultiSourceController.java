@@ -99,19 +99,6 @@ public class MultiSourceController {
     }
 
 
-    @CrossOrigin
-    @RequestMapping(value = "/getStationBox/{top}/{right}/{bottom}/{left}", method = RequestMethod.GET)
-    public List<Map<String, Object>> getStationBox(@PathVariable double top, @PathVariable double right, @PathVariable double bottom, @PathVariable double left) {
-        return multiSourceService.getStationBox(top, right, bottom, left);
-    }
-
-    @CrossOrigin
-    @RequestMapping(value = "/getWeatherInfoById/{id}", method = RequestMethod.GET)
-    public JsonResult getWeatherInfoById(@PathVariable String id) {
-        return ResultUtils.success(multiSourceService.getWeatherInfoById(id));
-    }
-
-
     /**
     * @Description:获取区域船只信息
     * @Author: Yiming
@@ -168,5 +155,14 @@ public class MultiSourceController {
         multiSourceService.seaChart(type, x, y, z, response);
     }
 
+    @RequestMapping(value = "/getStationByBox/{top}/{right}/{bottom}/{left}", method = RequestMethod.GET)
+    public JsonResult getStationByBox(@PathVariable Double top, @PathVariable Double right, @PathVariable Double bottom, @PathVariable Double left) {
+        return ResultUtils.success(multiSourceService.getStationByBox(top, right, bottom, left));
+    }
+
+    @RequestMapping(value = "/getWaterLevelByStationAndTime/{type}/{station}/{startTime}/{endTime}", method = RequestMethod.GET)
+    public JsonResult getWaterLevelByStationAndTime(@PathVariable String type, @PathVariable String station, @PathVariable String startTime, @PathVariable String endTime) {
+        return ResultUtils.success(multiSourceService.getWaterLevelByStationAndTime(type, station, startTime, endTime));
+    }
 
 }

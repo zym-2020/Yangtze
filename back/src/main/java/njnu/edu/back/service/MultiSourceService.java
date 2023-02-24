@@ -31,10 +31,6 @@ public interface MultiSourceService {
 
     void getMeteorologyPng(String fileName, HttpServletResponse response);
 
-    List<Map<String, Object>> getStationBox(double top, double right, double bottom, double left);
-
-    List<JSONObject> getWeatherInfoById(String id);
-
     List<Map<String, Object>> getShipInfoByBox(double top, double right, double bottom, double left);
 
     Map<String, Object> getShipInfoByMMSI(String mmsi);
@@ -46,4 +42,8 @@ public interface MultiSourceService {
     JSONArray getBridgeInfo();
 
     void seaChart(String type, String x, String y, String z, HttpServletResponse response);
+
+    JSONArray getStationByBox(Double top, Double right, Double bottom, Double left);
+
+    JSONArray getWaterLevelByStationAndTime(String type, String station, String startTime, String endTime);
 }

@@ -8,14 +8,14 @@
             buoyInfo == undefined
               ? ''
               : buoyInfo.hbphoto == ''
-              ? '/nophoto.png'
+              ? '/buoy-no.png'
               : prefix + 'multiSource/img/' + buoyInfo.hbphoto
           "
           :preview-src-list="[
             buoyInfo == undefined
               ? ''
               : buoyInfo.hbphoto == ''
-              ? '/nophoto.png'
+              ? '/buoy-no.png'
               : prefix + 'multiSource/img/' + buoyInfo.hbphoto,
           ]"
           :initial-index="0"

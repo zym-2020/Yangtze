@@ -27,6 +27,8 @@ import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,6 +42,9 @@ public class MultiSourceServiceImpl implements MultiSourceService {
 
     @Value("${meteorologyAddress}")
     String meteorologyAddress;
+
+    @Value("${waterLevelAddress}")
+    String waterLevelAddress;
 
     @Autowired
     BuoyMapper buoyMapper;
@@ -294,100 +299,6 @@ public class MultiSourceServiceImpl implements MultiSourceService {
     }
 
     @Override
-    public List<Map<String, Object>> getStationBox(double top, double right, double bottom, double left) {
-        List<Map<String, Object>> result = stationMapper.getStationByBox(top, right, bottom, left);
-        try {
-            Date date = new Date();
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-            SimpleDateFormat ymd = new SimpleDateFormat("yyyyMMdd");
-            date = sdf.parse(sdf.format(date));
-            String times;
-            String oldTimes;
-            if (date.after(sdf.parse("20:30"))) {
-                times = ymd.format(new Date()) + "2000";
-                oldTimes = ymd.format(new Date()) + "1200";
-            } else if (date.after(sdf.parse("12:30"))) {
-                times = ymd.format(new Date()) + "1200";
-                oldTimes = ymd.format(new Date()) + "0800";
-            } else if (date.after(sdf.parse("08:30"))) {
-                times = ymd.format(new Date()) + "0800";
-                oldTimes = ymd.format(new Date()) + "0600";
-            } else {
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(new Date());
-                times = ymd.format(calendar.getTime()) + "0600";
-                calendar.add(Calendar.DATE, -1);
-                oldTimes = ymd.format(calendar.getTime()) + "2000";
-            }
-            JSONArray jsonArray = (JSONArray) redisService.get(times);
-            if (jsonArray == null || jsonArray.size() == 0) {
-                jsonArray = (JSONArray) redisService.get(oldTimes);
-            }
-            if (jsonArray == null || jsonArray.size() == 0) {
-                throw new MyException(-99, "远程接口错误");
-            } else {
-                for (int i = 0; i < result.size(); i++) {
-                    for (int j = 0; j < jsonArray.size(); j++) {
-                        if (result.get(i).get("id").equals(jsonArray.getJSONObject(j).get("STATION")) && jsonArray.getJSONObject(j).get("TIME_STEP").equals("000")) {
-                            result.get(i).put("info", jsonArray.getJSONObject(j));
-                        }
-                    }
-                }
-            }
-            return result;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
-        }
-    }
-
-    @Override
-    public List<JSONObject> getWeatherInfoById(String id) {
-        try {
-            List<JSONObject> list = new ArrayList<>();
-            Date date = new Date();
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-            SimpleDateFormat ymd = new SimpleDateFormat("yyyyMMdd");
-            date = sdf.parse(sdf.format(date));
-            String times;
-            String oldTimes;
-            if (date.after(sdf.parse("20:30"))) {
-                times = ymd.format(new Date()) + "2000";
-                oldTimes = ymd.format(new Date()) + "1200";
-            } else if (date.after(sdf.parse("12:30"))) {
-                times = ymd.format(new Date()) + "1200";
-                oldTimes = ymd.format(new Date()) + "0800";
-            } else if (date.after(sdf.parse("08:30"))) {
-                times = ymd.format(new Date()) + "0800";
-                oldTimes = ymd.format(new Date()) + "0600";
-            } else {
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(new Date());
-                times = ymd.format(calendar.getTime()) + "0600";
-                calendar.add(Calendar.DATE, -1);
-                oldTimes = ymd.format(calendar.getTime()) + "2000";
-            }
-            JSONArray jsonArray = (JSONArray) redisService.get(times);
-            if (jsonArray == null || jsonArray.size() == 0) {
-                jsonArray = (JSONArray) redisService.get(oldTimes);
-            }
-            if (jsonArray == null || jsonArray.size() == 0) {
-                throw new MyException(-99, "远程接口错误");
-            } else {
-                for (int i = 0; i < jsonArray.size(); i++) {
-                    if (jsonArray.getJSONObject(i).getString("STATION").equals(id)) {
-                        list.add(jsonArray.getJSONObject(i));
-                    }
-                }
-            }
-            return list;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
-        }
-    }
-
-    @Override
     public List<Map<String, Object>> getShipInfoByBox(double top, double right, double bottom, double left) {
 //        Date date = new Date();
 //        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
@@ -474,6 +385,47 @@ public class MultiSourceServiceImpl implements MultiSourceService {
             in.close();
         } catch (Exception e) {
 //            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
+    }
+
+    @Override
+    public JSONArray getStationByBox(Double top, Double right, Double bottom, Double left) {
+        JSONArray result = new JSONArray();
+        JSONArray jsonArray = FileUtil.readJsonArray(resourcePath + "station_name.json");
+        for (int i = 0; i < jsonArray.size(); i++) {
+            if(jsonArray.getJSONObject(i).getDouble("lon") > left && jsonArray.getJSONObject(i).getDouble("lon") < right && jsonArray.getJSONObject(i).getDouble("lat") > bottom && jsonArray.getJSONObject(i).getDouble("lat") < top) {
+                result.add(jsonArray.getJSONObject(i));
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public JSONArray getWaterLevelByStationAndTime(String type, String station, String startTime, String endTime) {
+        String prefix;
+        if (type.equals("yangtze")) {
+            prefix = "YangtzeDownstream";
+        } else if (type.equals("hubei")) {
+            prefix = "hubei";
+        } else if (type.equals("anhui")) {
+            prefix = "anhui";
+        } else if (type.equals("jiangsu")) {
+            prefix = "jiangsu";
+        } else if (type.equals("zhejiang")) {
+            prefix = "zhejiang";
+        } else {
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
+
+        try {
+            String url = waterLevelAddress + "/" + prefix + "/getInfoByStationAndTime/" + station + "/" + startTime + "/" + endTime;
+            url = InternetUtil.encodeSpaceChinese(url, "UTF-8");
+
+            String res = InternetUtil.doGet(url, new HashMap<>(), "utf-8");
+            return JSON.parseObject(res).getJSONArray("data");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.REMOTE_SERVICE_ERROR);
         }
     }
 }

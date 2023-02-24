@@ -95,6 +95,16 @@ export const asyncRouters: Array<RouteRecordRaw> = [
           key: "ShareFile",
         },
       },
+      {
+        path: "waterLevel",
+        name: "WaterLevel",
+        component: () => import("@/views/data/WaterLevel.vue"),
+        meta: {
+          role: ["member", "admin"],
+          title: "实时水情",
+          key: "WaterLevel",
+        },
+      },
     ],
   },
   {
@@ -206,6 +216,7 @@ export const asyncRouters: Array<RouteRecordRaw> = [
       },
     ],
   },
+
   {
     path: "/user",
     name: "User",

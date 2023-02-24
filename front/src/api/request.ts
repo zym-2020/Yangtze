@@ -695,3 +695,25 @@ export async function getBridgeInfo() {
 export async function getMeteorology() {
   return await get(`/multiSource/getMeteorology`);
 }
+
+export async function getStationByBox(
+  top: number,
+  right: number,
+  bottom: number,
+  left: number
+) {
+  return await get(
+    `/multiSource/getStationByBox/${top}/${right}/${bottom}/${left}`
+  );
+}
+
+export async function getWaterLevelByStationAndTime(
+  type: string,
+  station: string,
+  startTime: string,
+  endTime: string
+) {
+  return await get(
+    `/multiSource/getWaterLevelByStationAndTime/${type}/${station}/${startTime}/${endTime}`
+  );
+}

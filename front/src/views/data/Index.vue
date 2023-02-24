@@ -143,7 +143,9 @@
                 v-for="(item, index) in specialList"
                 :key="index"
               >
-                <li class="text">{{ item.dataListName }}</li>
+                <li class="text" @click="toSpecial(item.id)">
+                  {{ item.dataListName }}
+                </li>
               </ul>
               <div class="change">
                 <div>
@@ -158,9 +160,22 @@
                     <use xlink:href="#icon-reload"></use>
                   </svg>
                 </div>
-                <div><el-button type="primary" link @click="changeSpecialData">换一批</el-button></div>
+                <div>
+                  <el-button type="primary" link @click="changeSpecialData"
+                    >换一批</el-button
+                  >
+                </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        <div class="real-time">
+          <div class="title"><strong>实时数据</strong></div>
+          <div class="content">
+            <ul>
+              <li class="text" @click="toNav('WaterLevel')">实时水情</li>
+            </ul>
           </div>
         </div>
       </div>
@@ -191,7 +206,7 @@ export default defineComponent({
   },
 
   setup() {
-    let specialStart = 0
+    let specialStart = 0;
     const classList = [
       {
         label: "地形数据",
@@ -244,7 +259,7 @@ export default defineComponent({
     const total = ref(0);
     const currentPage = ref(1);
 
-    const specialLoading = ref(false)
+    const specialLoading = ref(false);
 
     const searchData = async (
       page: number,
@@ -341,21 +356,36 @@ export default defineComponent({
       });
     };
 
+    const toSpecial = (val: string) => {
+      router.push({
+        name: "shareFile",
+        params: {
+          id: val,
+        },
+      });
+    };
+
+    const toNav = (val: string) => {
+      router.push({
+        name: val,
+      });
+    };
+
     const changeSpecialData = async () => {
-      specialLoading.value = true
+      specialLoading.value = true;
       const specialData = await getIdAndDataListName(4, specialStart);
-      specialLoading.value = false
+      specialLoading.value = false;
       if (specialData != null && (specialData as any).code === 0) {
-        specialList.value = []
+        specialList.value = [];
         specialData.data.forEach((item: { name: string; id: string }) => {
           specialList.value.push({
             dataListName: item.name,
             id: item.id,
           });
         });
-        specialStart += 4
+        specialStart += 4;
       }
-    }
+    };
 
     onMounted(async () => {
       await searchData(0, 8, "", "update_time", "");
@@ -365,14 +395,14 @@ export default defineComponent({
       }
       const specialData = await getIdAndDataListName(4, specialStart);
       if (specialData != null && (specialData as any).code === 0) {
-        specialList.value = []
+        specialList.value = [];
         specialData.data.forEach((item: { name: string; id: string }) => {
           specialList.value.push({
             dataListName: item.name,
             id: item.id,
           });
         });
-        specialStart += 4
+        specialStart += 4;
       }
       skeletonFlag.value = false;
       hotSkeletonFlag.value = false;
@@ -392,6 +422,7 @@ export default defineComponent({
       classList,
       hotDataList,
       specialList,
+      toSpecial,
       Search,
       searchHandle,
       classValue,
@@ -400,7 +431,8 @@ export default defineComponent({
       toHotData,
       titleKeyword,
       changeSpecialData,
-      specialLoading
+      specialLoading,
+      toNav,
     };
   },
 });
@@ -581,6 +613,16 @@ export default defineComponent({
           margin-left: calc(100% - 90px);
           display: flex;
         }
+      }
+    }
+    .real-time {
+      margin-bottom: 30px;
+      border: solid 1px #d6d6d6;
+      box-sizing: border-box;
+      cursor: pointer;
+      .text:hover {
+        text-decoration: underline;
+        color: #409eff;
       }
     }
   }

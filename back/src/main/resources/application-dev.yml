@@ -94,3 +94,7 @@ meteorologyAddress:
 
 pgpath:
   D:/App/postgresql/bin/
+
+#水情服务地址
+waterLevelAddress:
+  http://172.21.212.116:9999

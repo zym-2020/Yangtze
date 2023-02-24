@@ -20,10 +20,14 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created with IntelliJ IDEA.
@@ -140,5 +144,25 @@ public class InternetUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+    * @Description:对url中的中文和空格进行编码
+    * @Author: Yiming
+    * @Date: 2023/2/24
+    */
+
+    public static String encodeSpaceChinese(String str, String charset) throws UnsupportedEncodingException {
+        //匹配中文和空格的正则表达式
+        String zhPattern = "[\u4e00-\u9fa5 ]+";
+        Pattern p = Pattern.compile(zhPattern);
+        Matcher m = p.matcher(str);
+        StringBuffer b = new StringBuffer();
+        while (m.find())
+        {
+            m.appendReplacement(b, URLEncoder.encode(m.group(0), charset));
+        }
+        m.appendTail(b);
+        return b.toString().replaceAll("\\+", "%20");
     }
 }
