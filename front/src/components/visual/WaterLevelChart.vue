@@ -22,9 +22,46 @@ export default defineComponent({
     const init = () => {
       if (props.info) {
         option = {
+          title: {
+            padding: [10, 0, 0, 160],
+            text: props.info.text,
+            textStyle: {
+              fontFamily: "Microsoft YaHei",
+            },
+          },
+          tooltip: {
+            trigger: "axis",
+            axisPointer: {
+              type: "cross",
+            },
+          },
+          legend: {
+            data: props.info.legend,
+            top: 10,
+          },
+          grid: {
+            top: 50,
+            right: 50 * (props.info.series.length - 1),
+          },
+
+          dataZoom: [
+            {
+              xAxisIndex: [0],
+              filterMode: "filter",
+              start: 50,
+              end: 100,
+            },
+          ],
           xAxis: {
+            name: "时间",
             type: "category",
             data: props.info.timeList,
+
+            nameTextStyle: {
+              width: 20,
+              overflow: "none",
+              textBorderType: "solid",
+            },
           },
           yAxis: props.info.yAxis,
           series: props.info.series,

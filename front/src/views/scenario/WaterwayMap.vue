@@ -40,7 +40,7 @@
     <div ref="meteorologyWindow" class="MeteorologyInfo">
       <meteorology-info :meteorologyInfo="meteorologyInfo" />
     </div>
-    <el-dialog v-model="stationDialog" :width="900" :show-close="false">
+    <el-dialog v-model="stationDialog" :width="1250" :show-close="false">
       <station-info :stationInfo="stationInfo" v-if="stationDialog"/>
     </el-dialog>
   </div>

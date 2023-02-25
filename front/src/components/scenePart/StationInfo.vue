@@ -8,6 +8,22 @@
         <el-skeleton :rows="5" animated v-if="skeletonFlag" />
         <water-level-chart :info="info" v-else />
       </div>
+      <div class="table">
+        <el-table :data="tableData" border style="width: 100%" height="380">
+          <el-table-column label="时间" width="110" align="center">
+            <template #default="scope">
+              <span>{{ scope.row.time.substring(5, 16) }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            align="center"
+            :prop="item"
+            :label="keys_cn[index]"
+            v-for="(item, index) in keys"
+            :key="index"
+          />
+        </el-table>
+      </div>
     </div>
   </div>
 </template>
@@ -18,7 +34,7 @@ import WaterLevelChart from "@/components/visual/WaterLevelChart.vue";
 import { WaterLevelChartType } from "@/type";
 import { getWaterLevelByStationAndTime } from "@/api/request";
 import { dateFormat } from "@/utils/common";
-import { Station } from "@/type";
+import { Station, WaterLevel } from "@/type";
 export default defineComponent({
   components: { WaterLevelChart },
   props: {
@@ -27,9 +43,19 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const colors = ["#5470C6", "#91CC75", "#EE6666", "#E5DB4B"];
     const skeletonFlag = ref(true);
+    const tableData = ref<WaterLevel[]>([]);
     const stationInfo = computed(() => {
       return props.stationInfo;
+    });
+    const keys = computed(() => {
+      const res = props.stationInfo?.keys;
+      return res;
+    });
+    const keys_cn = computed(() => {
+      const res = props.stationInfo?.keys_cn;
+      return res;
     });
 
     const startDate = new Date();
@@ -40,6 +66,7 @@ export default defineComponent({
       timeList: [],
       yAxis: [],
       series: [],
+      legend: [],
     });
     const startTime = ref(
       dateFormat(startDate.toString(), "yyyy-MM-dd hh") + ":00:00"
@@ -52,16 +79,49 @@ export default defineComponent({
       if (props.stationInfo) {
         const station = props.stationInfo.name;
         const type = props.stationInfo.type;
+        let start = 50;
         (props.stationInfo as Station).keys_cn.forEach((key, index) => {
-          info.value.yAxis.push({
-            name: key,
-            type: "value",
-          });
+          if (index >= 2) {
+            info.value.yAxis.push({
+              alignTicks: true,
+              axisLine: {
+                show: true,
+                lineStyle: {
+                  color: colors[index],
+                },
+              },
+
+              type: "value",
+              offset: start,
+            });
+            start += 50;
+          } else {
+            info.value.yAxis.push({
+              alignTicks: true,
+              type: "value",
+              axisLine: {
+                show: true,
+                lineStyle: {
+                  color: colors[index],
+                },
+              },
+            });
+          }
+          info.value.legend.push(key);
           info.value.series.push({
+            name: key,
             data: [],
             type: "line",
             smooth: true,
             yAxisIndex: index,
+            itemStyle: {
+              normal: {
+                color: colors[index],
+                lineStyle: {
+                  color: colors[index],
+                },
+              },
+            },
           });
         });
         const data = await getWaterLevelByStationAndTime(
@@ -71,14 +131,14 @@ export default defineComponent({
           endTime.value
         );
         if (data != null && (data as any).code === 0) {
+          tableData.value = data.data;
           (data.data as any).forEach((item: any) => {
-            info.value.timeList.push(item.time);
+            info.value.timeList.push(item.time.substring(10, 16));
             (props.stationInfo as Station).keys.forEach((key, index) => {
               info.value.series[index].data.push(item[key]);
             });
           });
         }
-        console.log(info.value);
       }
     };
 
@@ -92,6 +152,9 @@ export default defineComponent({
       stationInfo,
       info,
       skeletonFlag,
+      tableData,
+      keys,
+      keys_cn,
     };
   },
 });
@@ -113,7 +176,11 @@ export default defineComponent({
     display: flex;
     .chart-main {
       height: 400px;
-      width: 600px;
+      width: 700px;
+    }
+    .table {
+      padding: 10px;
+      width: 530px;
     }
   }
 }

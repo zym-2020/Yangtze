@@ -108,11 +108,51 @@ export type Station = {
 
 export type WaterLevelChartType = {
   timeList: string[];
-  yAxis: { name: string; type: string }[];
+  legend: string[];
+  yAxis: {
+    alignTicks: boolean;
+    type: string;
+    offset?: number;
+    axisLine: {
+      show: boolean;
+      lineStyle: {
+        color: string;
+      };
+    };
+  }[];
   series: {
+    name: string;
     data: number[];
     type: string;
     smooth: boolean;
     yAxisIndex: number;
+    itemStyle: {
+      normal: {
+        color: string; //改变折线点的颜色
+        lineStyle: {
+          color: string; //改变折线颜色
+        };
+      };
+    };
   }[];
 };
+
+export type WaterLevel =
+  | {
+      time: string;
+      waterLevel: number;
+      flow: number;
+    }
+  | {
+      upstreamWaterLevel: number;
+      downstreamWaterLevel: number;
+      flow: number;
+      time: string;
+    }
+  | {
+      rainfall: number;
+      waterLevel: number;
+      input: number;
+      output: number;
+      time: string;
+    };
