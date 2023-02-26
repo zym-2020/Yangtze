@@ -1,6 +1,22 @@
 <template>
   <div class="waterway">
     <head-notice :content="meteorologyList" />
+    <div class="search">
+      <el-input v-model="inputValue">
+        <template #prepend>
+          <el-select v-model="selectValue" style="width: 115px">
+            <el-option label="Restaurant" value="1" />
+            <el-option label="Order No." value="2" />
+            <el-option label="Tel" value="3" />
+          </el-select>
+        </template>
+        <template #append>
+          <el-button
+            ><el-icon><Search /></el-icon
+          ></el-button>
+        </template>
+      </el-input>
+    </div>
     <div id="layer-control" :class="{ active: controlActive }">
       <el-row id="layer-panel">
         <el-col id="layers-drop" :span="19">
@@ -41,7 +57,7 @@
       <meteorology-info :meteorologyInfo="meteorologyInfo" />
     </div>
     <el-dialog v-model="stationDialog" :width="1250" :show-close="false">
-      <station-info :stationInfo="stationInfo" v-if="stationDialog"/>
+      <station-info :stationInfo="stationInfo" v-if="stationDialog" />
     </el-dialog>
   </div>
 </template>
@@ -111,6 +127,9 @@ export default defineComponent({
     const timeArr: string[] = [];
     let count = 0;
     let t: any;
+
+    const inputValue = ref("");
+    const selectValue = ref("");
 
     const container = ref<HTMLElement>();
     const shipWindow = ref<HTMLElement>();
@@ -763,6 +782,8 @@ export default defineComponent({
     });
 
     return {
+      inputValue,
+      selectValue,
       container,
       controlActive,
       ToggleLayer,
@@ -799,6 +820,12 @@ export default defineComponent({
   .head-notice {
     position: absolute;
     top: 0;
+  }
+  .search {
+    position: absolute;
+    top: 80px;
+    right: 100px;
+    z-index: 99;
   }
   #layer-control {
     position: absolute;

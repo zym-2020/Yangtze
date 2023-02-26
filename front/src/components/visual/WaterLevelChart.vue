@@ -69,6 +69,11 @@ export default defineComponent({
       }
     };
 
+    const refreshData = async () => {
+      init();
+      myChart.setOption(option);
+    };
+
     onMounted(() => {
       init();
       myChart = echarts.init(chart.value as HTMLElement);
@@ -77,6 +82,7 @@ export default defineComponent({
 
     return {
       chart,
+      refreshData,
     };
   },
 });

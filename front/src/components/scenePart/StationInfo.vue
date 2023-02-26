@@ -3,10 +3,10 @@
     <div class="name">
       <strong>{{ stationInfo.name }}</strong>
     </div>
-    <div class="content">
+    <div class="content" v-loading="loadingFlag">
       <div class="chart-main">
         <el-skeleton :rows="5" animated v-if="skeletonFlag" />
-        <water-level-chart :info="info" v-else />
+        <water-level-chart :info="info" v-else ref="waterLevelChart" />
       </div>
       <div class="table">
         <el-table :data="tableData" border style="width: 100%" height="380">
@@ -23,6 +23,20 @@
             :key="index"
           />
         </el-table>
+      </div>
+    </div>
+    <div class="date-picker">
+      <div>
+        <el-date-picker
+          v-model="timeValue"
+          type="datetimerange"
+          range-separator="至"
+          format="YYYY-MM-DD HH 时"
+          :disabled-date="disabledHandle"
+        />
+      </div>
+      <div>
+        <el-button type="primary" plain @click="btnClick">查询</el-button>
       </div>
     </div>
   </div>
@@ -49,6 +63,9 @@ export default defineComponent({
     const stationInfo = computed(() => {
       return props.stationInfo;
     });
+
+    const waterLevelChart = ref();
+    const loadingFlag = ref(false);
     const keys = computed(() => {
       const res = props.stationInfo?.keys;
       return res;
@@ -62,21 +79,37 @@ export default defineComponent({
     const endDate = new Date();
     startDate.setTime(endDate.getTime() - 24 * 3600000);
 
+    const timeValue = ref<[Date, Date]>([
+      new Date(dateFormat(startDate.toString(), "yyyy-MM-dd hh") + ":00:00"),
+      new Date(dateFormat(endDate.toString(), "yyyy-MM-dd hh") + ":00:00"),
+    ]);
+
     const info = ref<WaterLevelChartType>({
       timeList: [],
       yAxis: [],
       series: [],
       legend: [],
     });
-    const startTime = ref(
-      dateFormat(startDate.toString(), "yyyy-MM-dd hh") + ":00:00"
-    );
-    const endTime = ref(
-      dateFormat(endDate.toString(), "yyyy-MM-dd hh") + ":00:00"
-    );
+
+    const disabledHandle = (val: any) => {
+      const temp = new Date();
+      if (
+        val > endDate ||
+        val < temp.setTime(endDate.getTime() - 24 * 30 * 3600000)
+      ) {
+        return true;
+      }
+      return false;
+    };
 
     const dataHandle = async () => {
       if (props.stationInfo) {
+        info.value = {
+          timeList: [],
+          yAxis: [],
+          series: [],
+          legend: [],
+        };
         const station = props.stationInfo.name;
         const type = props.stationInfo.type;
         let start = 50;
@@ -127,8 +160,8 @@ export default defineComponent({
         const data = await getWaterLevelByStationAndTime(
           type,
           station,
-          startTime.value,
-          endTime.value
+          dateFormat(timeValue.value[0].toString(), "yyyy-MM-dd hh") + ":00:00",
+          dateFormat(timeValue.value[1].toString(), "yyyy-MM-dd hh") + ":00:00"
         );
         if (data != null && (data as any).code === 0) {
           tableData.value = data.data;
@@ -140,6 +173,13 @@ export default defineComponent({
           });
         }
       }
+    };
+
+    const btnClick = async () => {
+      loadingFlag.value = true;
+      await dataHandle();
+      waterLevelChart.value.refreshData();
+      loadingFlag.value = false;
     };
 
     onMounted(async () => {
@@ -155,6 +195,11 @@ export default defineComponent({
       tableData,
       keys,
       keys_cn,
+      timeValue,
+      disabledHandle,
+      loadingFlag,
+      btnClick,
+      waterLevelChart,
     };
   },
 });
@@ -172,7 +217,7 @@ export default defineComponent({
     font-size: 20px;
   }
   .content {
-    height: 500px;
+    height: 400px;
     display: flex;
     .chart-main {
       height: 400px;
@@ -181,6 +226,18 @@ export default defineComponent({
     .table {
       padding: 10px;
       width: 530px;
+    }
+  }
+  .date-picker {
+    margin-top: 20px;
+    margin-left: 70px;
+    height: 60px;
+    display: flex;
+    /deep/ .el-date-editor {
+      width: 300px;
+    }
+    .el-button {
+      margin-left: 40px;
     }
   }
 }
