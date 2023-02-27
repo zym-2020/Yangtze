@@ -32,4 +32,5 @@
         ) l, ship s
         where l.mmsi = s.mmsi
     </select>
+
 </mapper>

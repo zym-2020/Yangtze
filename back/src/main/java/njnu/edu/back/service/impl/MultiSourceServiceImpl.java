@@ -8,6 +8,7 @@ import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.common.utils.FileUtil;
 import njnu.edu.back.common.utils.InternetUtil;
 import njnu.edu.back.dao.ship.LocusMapper;
+import njnu.edu.back.dao.ship.ShipMapper;
 import njnu.edu.back.dao.staticdb.*;
 import njnu.edu.back.service.MultiSourceService;
 import njnu.edu.back.service.RedisService;
@@ -45,6 +46,9 @@ public class MultiSourceServiceImpl implements MultiSourceService {
 
     @Value("${waterLevelAddress}")
     String waterLevelAddress;
+
+    @Autowired
+    ShipMapper shipMapper;
 
     @Autowired
     BuoyMapper buoyMapper;
@@ -427,5 +431,45 @@ public class MultiSourceServiceImpl implements MultiSourceService {
             e.printStackTrace();
             throw new MyException(ResultEnum.REMOTE_SERVICE_ERROR);
         }
+    }
+
+    @Override
+    public Map<String, Object> pageList(String type, int page, int size, String keyword) {
+        Map<String, Object> map = new HashMap<>();
+        if (!keyword.equals("all")) {
+            keyword = "%" + keyword + "%";
+        }
+        if (type.equals("ship")) {
+            map.put("total", shipMapper.count(keyword));
+            map.put("list", shipMapper.pageQuery(size, size * page, keyword));
+        } else if (type.equals("buoy")) {
+            map.put("total", buoyMapper.count(keyword));
+            map.put("list", buoyMapper.pageQuery(size, size * page, keyword));
+        } else if (type.equals("park")) {
+            map.put("total", parkMapper.count(keyword));
+            map.put("list", parkMapper.pageQuery(size, size * page, keyword));
+        } else if (type.equals("anchor")) {
+            map.put("total", anchorMapper.count(keyword));
+            map.put("list", anchorMapper.pageQuery(size, size * page, keyword));
+        } else if (type.equals("bridge")) {
+            JSONArray jsonArray = FileUtil.readJsonArray(resourcePath + "bridge.json");
+            List<JSONObject> list = new ArrayList<>();
+            for (int i = size * page, count = 0; i < jsonArray.size() && count < size; i++, count++) {
+                list.add(jsonArray.getJSONObject(i));
+            }
+            map.put("total", jsonArray.size());
+            map.put("list", list);
+        } else if (type.equals("station")) {
+            JSONArray jsonArray = FileUtil.readJsonArray(resourcePath + "station_name.json");
+            List<JSONObject> list = new ArrayList<>();
+            for (int i = size * page, count = 0; i < jsonArray.size() && count < size; i++, count++) {
+                list.add(jsonArray.getJSONObject(i));
+            }
+            map.put("total", jsonArray.size());
+            map.put("list", list);
+        } else {
+            throw new MyException(ResultEnum.NO_OBJECT);
+        }
+        return map;
     }
 }

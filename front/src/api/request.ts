@@ -717,3 +717,17 @@ export async function getWaterLevelByStationAndTime(
     `/multiSource/getWaterLevelByStationAndTime/${type}/${station}/${startTime}/${endTime}`
   );
 }
+
+export async function pageList(
+  type: string,
+  page: number,
+  size: number,
+  keyword: string
+) {
+  return await get(`/multiSource/pageList`, {
+    type: type,
+    page: page,
+    size: size,
+    keyword: keyword,
+  });
+}

@@ -46,4 +46,6 @@ public interface MultiSourceService {
     JSONArray getStationByBox(Double top, Double right, Double bottom, Double left);
 
     JSONArray getWaterLevelByStationAndTime(String type, String station, String startTime, String endTime);
+
+    Map<String, Object> pageList(String type, int page, int size, String keyword);
 }

@@ -16,4 +16,8 @@ import java.util.Map;
 @Repository
 public interface BuoyMapper {
     List<Map<String, Object>> getBuoyByBox(@Param("top") double top, @Param("right") double right, @Param("bottom") double bottom, @Param("left") double left);
+
+    List<Map<String, Object>> pageQuery(@Param("size") int size, @Param("start") int start, @Param("keyword") String keyword);
+
+    int count(@Param("keyword") String keyword);
 }

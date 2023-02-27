@@ -4,4 +4,19 @@
     <select id="getAllInfo" resultType="java.util.Map">
         select * from park
     </select>
+
+    <select id="pageQuery" resultType="java.util.Map">
+        select * from (select * from park where json_extract(qyfw, '$.type') != 'point')
+        <if test="keyword != 'all'">
+            where mc like #{keyword} or yt like #{keyword}
+        </if>
+        limit #{size} offset #{start}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from (select * from park where json_extract(qyfw, '$.type') != 'point')
+        <if test="keyword != 'all'">
+            where mc like #{keyword} or yt like #{keyword}
+        </if>
+    </select>
 </mapper>

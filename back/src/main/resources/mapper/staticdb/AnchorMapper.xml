@@ -4,4 +4,19 @@
     <select id="getAllInfo" resultType="java.util.Map">
         select * from anchor
     </select>
+
+    <select id="pageQuery" resultType="java.util.Map">
+        select * from anchor
+        <if test="keyword != 'all'">
+            where mdmc like #{keyword} or yt like #{keyword}
+        </if>
+        limit #{size} offset #{start}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from anchor
+        <if test="keyword != 'all'">
+            where mdmc like #{keyword} or yt like #{keyword}
+        </if>
+    </select>
 </mapper>

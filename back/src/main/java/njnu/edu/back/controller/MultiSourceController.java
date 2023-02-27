@@ -165,4 +165,14 @@ public class MultiSourceController {
         return ResultUtils.success(multiSourceService.getWaterLevelByStationAndTime(type, station, startTime, endTime));
     }
 
+    /**
+    * @Description:查询各类图层的list
+    * @Author: Yiming
+    * @Date: 2023/2/27
+    */
+    @RequestMapping(value = "/pageList", method = RequestMethod.GET)
+    public JsonResult pageList(@RequestParam String type, @RequestParam int page, @RequestParam int size, @RequestParam String keyword) {
+        return ResultUtils.success(multiSourceService.pageList(type, page, size, keyword));
+    }
+
 }

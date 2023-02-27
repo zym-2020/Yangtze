@@ -4,4 +4,19 @@
     <select id="getBuoyByBox" resultType="java.util.Map">
         select * from buoy where jdwz_84jd &gt; #{left} and jdwz_84jd &lt; #{right} and jdwz_84wd &gt; #{bottom} and jdwz_84wd &lt; #{top}
     </select>
+
+    <select id="pageQuery" resultType="java.util.Map">
+        select * from buoy
+        <if test="keyword != 'all'">
+            where hbmc like #{keyword} or sshd like #{keyword}
+        </if>
+        limit #{size} offset #{start}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from buoy
+        <if test="keyword != 'all'">
+            where hbmc like #{keyword} or sshd like #{keyword}
+        </if>
+    </select>
 </mapper>

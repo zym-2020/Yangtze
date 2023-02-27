@@ -2,20 +2,7 @@
   <div class="waterway">
     <head-notice :content="meteorologyList" />
     <div class="search">
-      <el-input v-model="inputValue">
-        <template #prepend>
-          <el-select v-model="selectValue" style="width: 115px">
-            <el-option label="Restaurant" value="1" />
-            <el-option label="Order No." value="2" />
-            <el-option label="Tel" value="3" />
-          </el-select>
-        </template>
-        <template #append>
-          <el-button
-            ><el-icon><Search /></el-icon
-          ></el-button>
-        </template>
-      </el-input>
+      <search @returnPoint="returnPoint" />
     </div>
     <div id="layer-control" :class="{ active: controlActive }">
       <el-row id="layer-panel">
@@ -98,6 +85,7 @@ import BridgeInfo from "@/components/scenePart/BridgeInfo.vue";
 import MeteorologyInfo from "@/components/scenePart/MeteorologyInfo.vue";
 import HeadNotice from "@/components/scenePart/HeadNotice.vue";
 import StationInfo from "@/components/scenePart/StationInfo.vue";
+import Search from "@/components/scenePart/Search.vue";
 
 export default defineComponent({
   components: {
@@ -109,6 +97,7 @@ export default defineComponent({
     MeteorologyInfo,
     HeadNotice,
     StationInfo,
+    Search,
   },
   setup() {
     let map: Map;
@@ -127,9 +116,6 @@ export default defineComponent({
     const timeArr: string[] = [];
     let count = 0;
     let t: any;
-
-    const inputValue = ref("");
-    const selectValue = ref("");
 
     const container = ref<HTMLElement>();
     const shipWindow = ref<HTMLElement>();
@@ -381,7 +367,7 @@ export default defineComponent({
     };
 
     const updateBuoy = async () => {
-      if ((map.getView().getZoom() as number) > 12) {
+      if ((map.getView().getZoom() as number) >= 12) {
         const coor = map.getView().calculateExtent(map.getSize());
         const data = await getBuoyByBox(coor[3], coor[2], coor[1], coor[0]);
         const features: Feature[] = [];
@@ -442,7 +428,7 @@ export default defineComponent({
           return 0;
         }
       }
-      if ((map.getView().getZoom() as number) > 12) {
+      if ((map.getView().getZoom() as number) >= 12) {
         const coor = map.getView().calculateExtent(map.getSize());
         const data = await getShipInfoByBoxAndTime(
           coor[3],
@@ -493,7 +479,7 @@ export default defineComponent({
     };
 
     const updateAnchor = async () => {
-      if ((map.getView().getZoom() as number) > 12) {
+      if ((map.getView().getZoom() as number) >= 12) {
         const coor = map.getView().calculateExtent(map.getSize());
         const data = await getAnchorInfoByBox(
           coor[3],
@@ -535,7 +521,7 @@ export default defineComponent({
     };
 
     const updatePart = async () => {
-      if ((map.getView().getZoom() as number) > 12) {
+      if ((map.getView().getZoom() as number) >= 12) {
         const coor = map.getView().calculateExtent(map.getSize());
         const data = await getParkInfoByBox(coor[3], coor[2], coor[1], coor[0]);
         const features: Feature[] = [];
@@ -559,13 +545,13 @@ export default defineComponent({
           }
         });
 
-        map.getAllLayers()[4].setSource(
+        map.getAllLayers()[5].setSource(
           new VectorSource({
             features: features,
           })
         );
       } else {
-        map.getAllLayers()[4].setSource(
+        map.getAllLayers()[5].setSource(
           new VectorSource({
             features: [],
           })
@@ -639,7 +625,7 @@ export default defineComponent({
     };
 
     const updateStation = async () => {
-      if ((map.getView().getZoom() as number) > 11) {
+      if ((map.getView().getZoom() as number) >= 11) {
         const coor = map.getView().calculateExtent(map.getSize());
         const data = await getStationByBox(coor[3], coor[2], coor[1], coor[0]);
         const features: Feature[] = [];
@@ -701,7 +687,7 @@ export default defineComponent({
 
     const setTime = () => {
       t = setTimeout(async () => {
-        if ((map.getView().getZoom() as number) > 12) {
+        if ((map.getView().getZoom() as number) >= 12) {
           await updateShip();
           count = (count + 1) % timeArr.length;
         }
@@ -756,7 +742,7 @@ export default defineComponent({
         parkInfo.value = info;
         parkOverlay.setPosition([info.zbjd, info.zbwd]);
       } else if ("polygon" in info) {
-        bridgeInfo.value = info;
+        bridgeInfo.value = info as any as Bridge;
         (bridgeWindow.value as any).popupClick();
       } else if ("effective" in info) {
         meteorologyInfo.value = info;
@@ -764,6 +750,20 @@ export default defineComponent({
       } else if ("keys_cn" in info) {
         stationInfo.value = info;
         stationDialog.value = true;
+      }
+    };
+
+    const returnPoint = (val: { point: number[]; info: any }) => {
+      console.log(val.point);
+      map.getView().animate({
+        // 只设置需要的属性即可
+        center: val.point, // 中心点
+        zoom: 15, // 缩放级别
+        rotation: undefined, // 缩放完成view视图旋转弧度
+        duration: 1000, // 缩放持续时间，默认不需要设置
+      });
+      if (!("name_en" in val.info)) {
+        showInfo(val.info);
       }
     };
 
@@ -782,8 +782,6 @@ export default defineComponent({
     });
 
     return {
-      inputValue,
-      selectValue,
       container,
       controlActive,
       ToggleLayer,
@@ -806,6 +804,7 @@ export default defineComponent({
       stationInfo,
       meteorologyList,
       stationDialog,
+      returnPoint,
     };
   },
 });

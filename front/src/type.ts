@@ -156,3 +156,14 @@ export type WaterLevel =
       output: number;
       time: string;
     };
+
+export type SearchTable =
+  | {
+      mmsi: string;
+      name: string;
+    }
+  | { sshd: string; hbmc: string }
+  | { mc: string; yt: string }
+  | { mdmc: string; yt: string }
+  | { 桥梁属性: string; 桥梁名称: string }
+  | { name: string };

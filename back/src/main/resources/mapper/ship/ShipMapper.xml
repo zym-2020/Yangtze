@@ -4,4 +4,19 @@
     <select id="getShipInfoByMMSI" resultType="java.util.Map">
         select * from ship where mmsi = #{mmsi}
     </select>
+
+    <select id="pageQuery" resultType="java.util.Map">
+        select * from ship
+        <if test="keyword != 'all'">
+            where mmsi like #{keyword} or cbmc like #{keyword}
+        </if>
+        limit #{size} offset #{start}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from ship
+        <if test="keyword != 'all'">
+            where mmsi like #{keyword} or cbmc like #{keyword}
+        </if>
+    </select>
 </mapper>
