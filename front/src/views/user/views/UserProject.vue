@@ -117,7 +117,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import { getAllByEmail, deleteProject, getCount } from "@/api/request";
-import CreateProject from "@/components/tools/CreateProject.vue";
+import CreateProject from "@/components/analyse/CreateProject.vue";
 import { ElMessageBox } from "element-plus";
 import router from "@/router";
 import { notice } from "@/utils/notice";

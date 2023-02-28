@@ -31,21 +31,21 @@ public interface AnalyticDataSetService {
 
     Map<String, Object> checkState(String key);
 
-    String addSection(String projectId, String sectionId, String demId, String email);
+    String addSection(String projectId, String sectionId, String demId, String email, String fileName);
 
-    String addSectionCompare(String projectId, String sectionId, String email, List<String> demList);
+    String addSectionCompare(String projectId, String sectionId, String email, List<String> demList, String fileName);
 
-    String addSectionFlush(String projectId, String sectionId, String benchmarkId, String referId, String email);
+    String addSectionFlush(String projectId, String sectionId, String benchmarkId, String referId, String email, String fileName);
 
-    String addRegionFlush(String projectId, String regionId, String benchmarkId, String referId, String email);
+    String addRegionFlush(String projectId, String regionId, String benchmarkId, String referId, String email, String fileName);
 
     String computeVolume(double deep, String projectId, String regionId, String demId, String email);
 
-    Map<String, Object> addElevationFlush(String projectId, String benchmarkId, String referId, String email);
+    Map<String, Object> addElevationFlush(String projectId, String benchmarkId, String referId, String email, String fileName);
 
-    Map<String, Object> addFlushContour(String projectId, String benchmarkId, String referId, String email);
+    Map<String, Object> addFlushContour(String projectId, String benchmarkId, String referId, String email, String fileName);
 
-    Map<String, Object> addSlope(String projectId, String demId, String email);
+    Map<String, Object> addSlope(String projectId, String demId, String email, String fileName);
 
     void rename(String id, String name);
 

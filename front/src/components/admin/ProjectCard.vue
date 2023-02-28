@@ -69,7 +69,7 @@ import { dateFormat } from "@/utils/common";
 import { prefix } from "@/prefix";
 import { ElMessageBox } from "element-plus";
 import { deleteProject } from "@/api/request";
-import CreateProject from "@/components/tools/CreateProject.vue";
+import CreateProject from "@/components/analyse/CreateProject.vue";
 import router from "@/router";
 export default defineComponent({
   components: { CreateProject },

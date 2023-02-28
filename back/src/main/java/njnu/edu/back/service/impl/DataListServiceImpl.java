@@ -6,7 +6,6 @@ import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.common.utils.Encrypt;
 import njnu.edu.back.common.utils.LocalUploadUtil;
-import njnu.edu.back.common.utils.PolygonCheck;
 import njnu.edu.back.common.utils.ZipOperate;
 import njnu.edu.back.dao.main.DataListMapper;
 import njnu.edu.back.dao.main.DataRelationalMapper;

@@ -28,7 +28,7 @@
         :disabled="flag"
         ><svg style="width: 16px; margin-right: 10px">
           <use xlink:href="#icon-shujuyanjiu"></use></svg
-        >分析</el-button
+        >河床分析</el-button
       >
     </div>
 
@@ -81,7 +81,7 @@
       <add-data-dialog @returnData="returnData" v-if="dialogAddData" />
     </el-dialog>
 
-    <el-dialog v-model="dialogAnalyse" width="1000px" title="分析算法">
+    <el-dialog v-model="dialogAnalyse" width="700px" title="河床分析">
       <analyse-dialog @analyse="analyse" v-if="dialogAnalyse" />
     </el-dialog>
 
@@ -127,7 +127,7 @@ import BasemapDialog from "./BasemapDialog.vue";
 import TextDraw from "./TextDraw.vue";
 import { MoreFilled } from "@element-plus/icons-vue";
 import { updatePublicState } from "@/api/request";
-import CreateProject from "@/components/tools/CreateProject.vue";
+import CreateProject from "@/components/analyse/CreateProject.vue";
 export default defineComponent({
   components: {
     AddDataDialog,

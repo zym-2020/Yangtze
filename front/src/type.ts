@@ -167,3 +167,33 @@ export type SearchTable =
   | { mdmc: string; yt: string }
   | { 桥梁属性: string; 桥梁名称: string }
   | { name: string };
+
+export type Section = {
+  id: string;
+  name: string;
+};
+export type AnalyticDataset = {
+  id: string;
+  fileName: string;
+  visualId: string;
+  visualType: string;
+};
+export type AnalyticParameter = {
+  fileId: string;
+  fileName: string;
+  dataListId: string;
+  dataListName: string;
+  visualId: string;
+  visualType: string;
+};
+export type TreeData = {
+  label: string;
+  flag: boolean;
+  children: TreeData[];
+  id: string;
+  checkFlag?: boolean;
+  visualId?: string;
+  visualType?: string;
+  parentId?: string;
+  parentName?: string;
+};

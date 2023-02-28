@@ -161,7 +161,7 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
     }
 
     @Override
-    public String addSection(String projectId, String sectionId, String demId, String email) {
+    public String addSection(String projectId, String sectionId, String demId, String email, String fileName) {
         Map<String, Object> section = analyticDataSetMapper.getInfoById(sectionId);
         String address = (String) section.get("address");
         Map<String, Object> file = fileMapper.findInfoById(demId);
@@ -181,7 +181,7 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
                 Process process = AnalyseUtil.saveSectionValue(tempPath, demPath, jsonArray, resultPath);
                 int code = process.waitFor();
                 if(code == 0) {
-                    analyticDataSetMapper.addDraw(result, section.get("fileName") + "_" + file.get("fileName"), resultUUID + ".txt", email, "section", "", projectId);
+                    analyticDataSetMapper.addDraw(result, fileName, resultUUID + ".txt", email, "section", "", projectId);
                     redisService.set(result, 1, 60l);
                 } else {
                     redisService.set(result, -1, 60l);
@@ -192,7 +192,7 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
     }
 
     @Override
-    public String addSectionCompare(String projectId, String sectionId, String email, List<String> demList) {
+    public String addSectionCompare(String projectId, String sectionId, String email, List<String> demList, String fileName) {
         Map<String, Object> section = analyticDataSetMapper.getInfoById(sectionId);
         String address = (String) section.get("address");
         List<Map<String, Object>> files = fileMapper.findInfoListById(demList);
@@ -212,7 +212,6 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
             @Override
             @SneakyThrows
             public void run() {
-                String fileName = "断面比较_" + section.get("fileName");
                 Process process = AnalyseUtil.savaSectionContrast(tempPath, rasterPathList, jsonArray, resultPath);
                 int code = process.waitFor();
                 if(code == 0) {
@@ -227,7 +226,7 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
     }
 
     @Override
-    public String addSectionFlush(String projectId, String sectionId, String benchmarkId, String referId, String email) {
+    public String addSectionFlush(String projectId, String sectionId, String benchmarkId, String referId, String email, String fileName) {
         Map<String, Object> section = analyticDataSetMapper.getInfoById(sectionId);
         String sectionPath = basePath + email + "/project/" + projectId + "/" + section.get("address");
         String address = analyticParameterMapper.findAddressByBenchmarkIdAndReferId(benchmarkId, referId, "flush");
@@ -249,7 +248,7 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
                 Process process = AnalyseUtil.sectionFlush(tempPath, benchmarkPath, referPath, analyseAddress + address, jsonArray, resultPath);
                 int code = process.waitFor();
                 if(code == 0) {
-                    analyticDataSetMapper.addDraw(result, section.get("fileName") + "_断面冲淤", resultUUID + ".txt", email, "sectionFlush", "", projectId);
+                    analyticDataSetMapper.addDraw(result, fileName, resultUUID + ".txt", email, "sectionFlush", "", projectId);
                     redisService.set(result, 1, 60l);
                 } else {
                     redisService.set(result, -1, 60l);
@@ -260,7 +259,7 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
     }
 
     @Override
-    public String addRegionFlush(String projectId, String regionId, String benchmarkId, String referId, String email) {
+    public String addRegionFlush(String projectId, String regionId, String benchmarkId, String referId, String email, String fileName) {
         Map<String, Object> region = analyticDataSetMapper.getInfoById(regionId);
         String regionPath = basePath + email + "/project/" + projectId + "/" + region.get("address");
         String address = analyticParameterMapper.findAddressByBenchmarkIdAndReferId(benchmarkId, referId, "flush");
@@ -282,7 +281,7 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
                 if(code == 0) {
                     String content = getPngContent("png/" + resultUUID + ".png", coordinatePath);
                     Map<String, Object> map = visualFileMapper.addVisualFile(new VisualFile(null, resultUUID + ".png", "png", content));
-                    analyticDataSetMapper.addDraw(result, region.get("fileName") + "_区域冲淤", resultUUID + ".tif", email, "regionFlush", map.get("id").toString(), projectId);
+                    analyticDataSetMapper.addDraw(result, fileName, resultUUID + ".tif", email, "regionFlush", map.get("id").toString(), projectId);
                     redisService.set(result, 1, 60l);
                 } else {
                     redisService.set(result, -1, 60l);
@@ -358,11 +357,10 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
     }
 
     @Override
-    public Map<String, Object> addElevationFlush(String projectId, String benchmarkId, String referId, String email) {
+    public Map<String, Object> addElevationFlush(String projectId, String benchmarkId, String referId, String email, String fileName) {
         Map<String, Object> map = analyticParameterMapper.findByBenchmarkIdAndReferId(benchmarkId, referId, "flush");
         String id = map.get("id").toString();
         String content = map.get("content").toString();
-        String fileName = map.get("address").toString();
         String result = analyticDataSetMapper.addDraw("", fileName, id, email, "elevationFlush", content, projectId);
         Map<String, Object> m = new HashMap<>();
         m.put("id", result);
@@ -372,11 +370,10 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
     }
 
     @Override
-    public Map<String, Object> addFlushContour(String projectId, String benchmarkId, String referId, String email) {
+    public Map<String, Object> addFlushContour(String projectId, String benchmarkId, String referId, String email, String fileName) {
         Map<String, Object> map = analyticParameterMapper.findByBenchmarkIdAndReferId(benchmarkId, referId, "flushContour");
         String id = map.get("id").toString();
         String content = map.get("content").toString();
-        String fileName = map.get("address").toString();
         String result = analyticDataSetMapper.addDraw("", fileName, id, email, "flushContour", content, projectId);
         Map<String, Object> m = new HashMap<>();
         m.put("id", result);
@@ -386,11 +383,10 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
     }
 
     @Override
-    public Map<String, Object> addSlope(String projectId, String demId, String email) {
+    public Map<String, Object> addSlope(String projectId, String demId, String email, String fileName) {
         Map<String, Object> map = analyticParameterMapper.findSlope(demId);
         String id = map.get("id").toString();
         String content = map.get("content").toString();
-        String fileName = map.get("address").toString();
         String result = analyticDataSetMapper.addDraw("", fileName, id, email, "slope", content, projectId);
         Map<String, Object> m = new HashMap<>();
         m.put("id", result);

@@ -1,14 +1,13 @@
 <template>
   <div class="analyse-dialog">
     <el-row :gutter="10" v-show="flag">
-      <el-col :span="4" v-for="(item, index) in list" :key="index">
+      <el-col :span="6" v-for="(item, index) in list" :key="index">
         <div class="card" @click="cardClick(item.value)">
           <div class="picture">
             <img :src="item.src" />
           </div>
           <div class="text">
-            <el-tag effect="dark" >{{ item.name }}</el-tag>
-            <!-- <strong>{{ item.name }}</strong> -->
+            <el-tag effect="dark">{{ item.name }}</el-tag>
           </div>
         </div>
       </el-col>
@@ -51,11 +50,6 @@ export default defineComponent({
         src: "/analyse/断面冲淤.png",
         value: "sectionFlush",
       },
-      //   {
-      //     name: "高程 —— 面积对比",
-      //     src: "https://pic3.zhimg.com/v2-96d58dc7ea889b98102cbad4c53bb91e_720w.jpg?source=172ae18b",
-      //     value: "sectionArea",
-      //   },
       {
         name: "区域冲淤",
         src: "/analyse/区域冲淤.png",
@@ -73,7 +67,7 @@ export default defineComponent({
       },
       {
         name: "河道容积计算",
-        src: "https://pic3.zhimg.com/v2-96d58dc7ea889b98102cbad4c53bb91e_720w.jpg?source=172ae18b",
+        src: "/analyse/河道容积.png",
         value: "volume",
       },
       {
@@ -81,16 +75,16 @@ export default defineComponent({
         src: "/analyse/河床坡度提取.png",
         value: "slope",
       },
-      {
-        name: "深泓线演变",
-        src: "https://pic3.zhimg.com/v2-96d58dc7ea889b98102cbad4c53bb91e_720w.jpg?source=172ae18b",
-        value: "horizon",
-      },
-      {
-        name: "边界演变",
-        src: "https://pic3.zhimg.com/v2-96d58dc7ea889b98102cbad4c53bb91e_720w.jpg?source=172ae18b",
-        value: "boundary",
-      },
+      // {
+      //   name: "深泓线演变",
+      //   src: "https://pic3.zhimg.com/v2-96d58dc7ea889b98102cbad4c53bb91e_720w.jpg?source=172ae18b",
+      //   value: "horizon",
+      // },
+      // {
+      //   name: "边界演变",
+      //   src: "https://pic3.zhimg.com/v2-96d58dc7ea889b98102cbad4c53bb91e_720w.jpg?source=172ae18b",
+      //   value: "boundary",
+      // },
     ];
 
     const cardClick = (value: string) => {
@@ -134,6 +128,7 @@ export default defineComponent({
   }
 }
 .analyse-dialog {
+  background: #f0f0f0;
   padding: 20px;
   .card {
     position: relative;
@@ -159,7 +154,7 @@ export default defineComponent({
       text-align: center;
       position: absolute;
       top: 10px;
-      right: 5px;
+      right: 10px;
     }
   }
 }

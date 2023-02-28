@@ -176,6 +176,11 @@
           </div>
         </div>
       </div>
+
+      <div class="file-name">
+        <div>输出文件名:</div>
+        <el-input v-model="inputValue" />
+      </div>
       <div class="btn">
         <el-button type="primary" plain @click="btnClick">确定</el-button>
       </div>
@@ -184,40 +189,11 @@
 </template>
 
 <script lang="ts">
-type Section = {
-  id: string;
-  name: string;
-};
-type AnalyticDataset = {
-  id: string;
-  fileName: string;
-  visualId: string;
-  visualType: string;
-};
-type AnalyticParameter = {
-  fileId: string;
-  fileName: string;
-  dataListId: string;
-  dataListName: string;
-  visualId: string;
-  visualType: string;
-};
-type TreeData = {
-  label: string;
-  flag: boolean;
-  children: TreeData[];
-  id: string;
-  checkFlag?: boolean;
-  visualId?: string;
-  visualType?: string;
-  parentId?: string;
-  parentName?: string;
-};
 import { computed, defineComponent, nextTick, onMounted, ref } from "vue";
 import { ArrowLeft } from "@element-plus/icons-vue";
 import { findByType } from "@/api/request";
-import router from "@/router";
 import { notice } from "@/utils/notice";
+import { Section, AnalyticDataset, AnalyticParameter, TreeData } from "@/type";
 export default defineComponent({
   props: {
     analyseType: {
@@ -248,6 +224,8 @@ export default defineComponent({
         return "冲淤等深线";
       } else if (props.analyseType === "slope") {
         return "河床坡度提取";
+      } else if (props.analyseType === "volume") {
+        return "河道容积计算";
       }
     });
     const placeholder = computed(() => {
@@ -288,6 +266,8 @@ export default defineComponent({
     const referDem = ref<AnalyticParameter>();
 
     const deep = ref(5);
+
+    const inputValue = ref("");
 
     const backClick = () => {
       context.emit("back");
@@ -391,17 +371,26 @@ export default defineComponent({
 
     const btnClick = () => {
       if (props.analyseType === "section") {
-        if (sectionValue.value != "" && sectionDem.value != undefined) {
+        if (
+          sectionValue.value != "" &&
+          sectionDem.value != undefined &&
+          inputValue.value != ""
+        ) {
           context.emit("returnParameter", {
             section: sectionValue.value,
             dem: sectionDem.value,
+            fileName: inputValue.value,
           });
         } else {
-          notice(
-            "warning",
-            "警告",
-            (sectionValue.value === "" ? "断面" : "DEM") + "不得为空"
-          );
+          let target = "";
+          if (sectionValue.value === "") {
+            target = "断面";
+          } else if (sectionDem.value === undefined) {
+            target = "DEM";
+          } else {
+            target = "输出文件名";
+          }
+          notice("warning", "警告", target + "不得为空");
         }
       } else if (props.analyseType === "volume") {
         if (sectionValue.value != "" && sectionDem.value != undefined) {
@@ -418,17 +407,26 @@ export default defineComponent({
           );
         }
       } else if (props.analyseType === "sectionCompare") {
-        if (sectionValue.value != "" && sectionDemList.value.length >= 2) {
+        if (
+          sectionValue.value != "" &&
+          sectionDemList.value.length >= 2 &&
+          inputValue.value != ""
+        ) {
           context.emit("returnParameter", {
             section: sectionValue.value,
             demList: sectionDemList.value,
+            fileName: inputValue.value,
           });
         } else {
-          notice(
-            "warning",
-            "警告",
-            sectionValue.value === "" ? "不得为空" : "至少选择两个DEM数据"
-          );
+          let target = "";
+          if (sectionValue.value === "") {
+            target = "断面不得为空";
+          } else if (inputValue.value === "") {
+            target = "输出文件名不得为空";
+          } else {
+            target = "至少选择两个DEM数据";
+          }
+          notice("warning", "警告", target);
         }
       } else if (
         props.analyseType === "sectionFlush" ||
@@ -437,7 +435,8 @@ export default defineComponent({
         if (
           sectionValue.value != "" &&
           benchmarkDem.value != undefined &&
-          referDem.value != undefined
+          referDem.value != undefined &&
+          inputValue.value != ""
         ) {
           if (referDem.value.fileId === benchmarkDem.value.fileId) {
             notice("warning", "警告", "基准DEM数据不能与参考DEM数据相同");
@@ -446,6 +445,7 @@ export default defineComponent({
               section: sectionValue.value,
               benchmarkDem: benchmarkDem.value,
               referDem: referDem.value,
+              fileName: inputValue.value,
             });
           }
         } else if (sectionValue.value === "") {
@@ -454,6 +454,8 @@ export default defineComponent({
           } else if (props.analyseType === "regionFlush") {
             notice("warning", "警告", "请选择区域");
           }
+        } else if (inputValue.value == "") {
+          notice("warning", "警告", "输出文件名不得为空");
         } else if (benchmarkDem.value === undefined) {
           notice("warning", "警告", "基准DEM数据不得为空");
         } else {
@@ -463,28 +465,43 @@ export default defineComponent({
         props.analyseType === "elevationFlush" ||
         props.analyseType === "flushContour"
       ) {
-        if (benchmarkDem.value != undefined && referDem.value != undefined) {
+        if (
+          benchmarkDem.value != undefined &&
+          referDem.value != undefined &&
+          inputValue.value != ""
+        ) {
           if (referDem.value.fileId === benchmarkDem.value.fileId) {
             notice("warning", "警告", "基准DEM数据不能与参考DEM数据相同");
           } else {
             context.emit("returnParameter", {
               benchmarkDem: benchmarkDem.value,
               referDem: referDem.value,
+              fileName: inputValue.value,
             });
           }
+        } else {
+          let target = "";
+          if (benchmarkDem.value === undefined) {
+            target = "基准DEM数据不得为空";
+          } else if (referDem.value === undefined) {
+            target = "参考DEM数据不得为空";
+          } else {
+            target = "输出文件名不得为空";
+          }
+          notice("warning", "警告", target);
+        }
+      } else if (props.analyseType === "slope") {
+        if (sectionDem.value != undefined && inputValue.value != "") {
+          context.emit("returnParameter", {
+            dem: sectionDem.value,
+            fileName: inputValue.value,
+          });
         } else {
           notice(
             "warning",
             "警告",
-            (benchmarkDem.value === undefined ? "基准DEM" : "参考DEM") +
-              "数据不得为空"
+            inputValue.value == "" ? "输出文件名不得为空" : "请选择dem数据"
           );
-        }
-      } else if (props.analyseType === "slope") {
-        if (sectionDem.value != undefined) {
-          context.emit("returnParameter", sectionDem.value);
-        } else {
-          notice("warning", "警告", "请选择dem数据");
         }
       }
     };
@@ -571,7 +588,6 @@ export default defineComponent({
     onMounted(async () => {
       skeletonFlag.value = true;
       await getParame(props.analyseType as string);
-
       skeletonFlag.value = false;
     });
 
@@ -592,6 +608,7 @@ export default defineComponent({
       placeholder,
       selectFlag,
       deep,
+      inputValue,
     };
   },
 });
@@ -643,6 +660,9 @@ export default defineComponent({
     .left {
       margin-right: 10px;
     }
+  }
+  .file-name {
+    margin-top: 10px;
   }
   .btn {
     text-align: center;

@@ -1,10 +1,7 @@
 <template>
   <div class="data-manage">
     <div class="data-manage-body">
-      <div class="input">
-        <!-- <strong style="margin-left: 30px">test</strong> -->
-        <!-- <el-input v-model="serach" :suffix-icon="Search" /> -->
-      </div>
+      <div class="input" />
       <div class="content">
         <div class="scroll">
           <el-scrollbar>
@@ -17,11 +14,19 @@
               <template #default="{ data }">
                 <div class="custom">
                   <div class="icon">
-                    <el-icon v-if="data.flag"><FolderOpened /></el-icon>
+                    <el-icon
+                      v-if="data.flag"
+                      :color="data.label == '分析结果集' ? '#43c9b0' : ''"
+                      ><FolderOpened
+                    /></el-icon>
                     <el-icon v-else><Document /></el-icon>
                   </div>
                   <div class="text">
-                    <strong v-if="data.flag">{{ data.label }}</strong>
+                    <strong
+                      v-if="data.flag"
+                      :style="data.label == '分析结果集' ? 'color:#43c9b0' : ''"
+                      >{{ data.label }}</strong
+                    >
                     <span v-else>{{ data.label }}</span>
                   </div>
                 </div>
@@ -139,47 +144,6 @@ export default defineComponent({
     const dialogRename = ref(false);
     const input = ref("");
 
-    const sectionName = computed(() => {
-      if (treeData.value[treeData.value.length - 1].id != "") {
-        return "断面形态0";
-      } else {
-        let max: number = -1;
-        treeData.value[treeData.value.length - 1].children.forEach((item) => {
-          if (
-            item.label.substring(0, 4) === "断面形态" &&
-            parseInt(item.label.substring(4)) != NaN
-          ) {
-            const number = parseInt(item.label.substring(4));
-            if (number > max) {
-              max = number;
-            }
-          }
-        });
-        return "断面形态" + (max + 1);
-      }
-    });
-
-    const regionName = computed(() => {
-      if (treeData.value[treeData.value.length - 1].id != "") {
-        return "区域形态0";
-      } else {
-        let max: number = -1;
-        treeData.value[treeData.value.length - 1].children.forEach((item) => {
-          console.log(item.label.substring(0, 5));
-          if (
-            item.label.substring(0, 4) === "区域形态" &&
-            parseInt(item.label.substring(4)) != NaN
-          ) {
-            const number = parseInt(item.label.substring(4));
-            if (number > max) {
-              max = number;
-            }
-          }
-        });
-        return "区域形态" + (max + 1);
-      }
-    });
-
     const addData = async (
       param: {
         fileId: string;
@@ -273,14 +237,11 @@ export default defineComponent({
       }
     };
 
-    const addDrawData = async (param: { geoJson: any; visualType: string }) => {
-      const fileName = JSON.parse(
-        JSON.stringify(
-          param.visualType === "geoJsonLine"
-            ? sectionName.value
-            : regionName.value
-        )
-      );
+    const addDrawData = async (param: {
+      geoJson: any;
+      visualType: string;
+      fileName: string;
+    }) => {
       const jsonData: {
         projectId: string;
         geoJson: any;
@@ -289,15 +250,18 @@ export default defineComponent({
       } = {
         projectId: router.currentRoute.value.params.id as string,
         geoJson: param.geoJson,
-        fileName: fileName,
+        fileName: param.fileName,
         visualType: param.visualType,
       };
       const data = await addDraw(jsonData);
       if (data != null && (data as any).code === 0) {
-        if (treeData.value[treeData.value.length - 1].id === "") {
+        if (
+          treeData.value.length != 0 &&
+          treeData.value[treeData.value.length - 1].id === ""
+        ) {
           treeData.value[treeData.value.length - 1].children.push({
             id: data.data,
-            label: fileName,
+            label: param.fileName,
             flag: false,
             children: [],
             visualType: param.visualType,
@@ -306,13 +270,13 @@ export default defineComponent({
         } else {
           treeData.value.push({
             id: "",
-            label: "分析数据集",
+            label: "分析结果集",
             flag: true,
             children: [],
           });
           treeData.value[treeData.value.length - 1].children.push({
             id: data.data,
-            label: fileName,
+            label: param.fileName,
             flag: false,
             children: [],
             visualType: param.visualType,
@@ -321,7 +285,7 @@ export default defineComponent({
         }
         return {
           id: data.data,
-          name: fileName,
+          name: param.fileName,
           visualType: param.visualType,
           visualId: "",
         };
@@ -340,11 +304,12 @@ export default defineComponent({
           },
           type: "add",
         });
-        const data = await addSection(
-          router.currentRoute.value.params.id as string,
-          param.value.section as string,
-          param.value.dem.fileId
-        );
+        const data = await addSection({
+          projectId: router.currentRoute.value.params.id as string,
+          sectionId: param.value.section as string,
+          demId: param.value.dem.fileId,
+          fileName: param.value.fileName,
+        });
         if (data != null && (data as any).code === 0) {
           await checkStateHandle(data.data, "断面形态");
         }
@@ -363,11 +328,12 @@ export default defineComponent({
             type: "add",
           });
         });
-        const data = await addSectionCompare(
-          router.currentRoute.value.params.id as string,
-          param.value.section as string,
-          demList
-        );
+        const data = await addSectionCompare({
+          projectId: router.currentRoute.value.params.id as string,
+          sectionId: param.value.section as string,
+          fileName: param.value.fileName,
+          demList: demList,
+        });
         if (data != null && (data as any).code === 0) {
           await checkStateHandle(data.data, "断面比较");
         }
@@ -398,31 +364,34 @@ export default defineComponent({
           type: "add",
         });
         if (param.type === "sectionFlush") {
-          const data = await addSectionFlush(
-            router.currentRoute.value.params.id as string,
-            param.value.section,
-            param.value.benchmarkDem.fileId,
-            param.value.referDem.fileId
-          );
+          const data = await addSectionFlush({
+            projectId: router.currentRoute.value.params.id as string,
+            sectionId: param.value.section,
+            benchmarkId: param.value.benchmarkDem.fileId,
+            referId: param.value.referDem.fileId,
+            fileName: param.value.fileName,
+          });
           if (data != null && (data as any).code === 0) {
             await checkStateHandle(data.data, "断面冲淤");
           }
         } else if (param.type === "regionFlush") {
-          const data = await addRegionFlush(
-            router.currentRoute.value.params.id as string,
-            param.value.section,
-            param.value.benchmarkDem.fileId,
-            param.value.referDem.fileId
-          );
+          const data = await addRegionFlush({
+            projectId: router.currentRoute.value.params.id as string,
+            regionId: param.value.section,
+            benchmarkId: param.value.benchmarkDem.fileId,
+            referId: param.value.referDem.fileId,
+            fileName: param.value.fileName,
+          });
           if (data != null && (data as any).code === 0) {
             await checkStateHandle(data.data, "区域冲淤");
           }
         } else if (param.type === "elevationFlush") {
-          const data = await addElevationFlush(
-            router.currentRoute.value.params.id as string,
-            param.value.benchmarkDem.fileId,
-            param.value.referDem.fileId
-          );
+          const data = await addElevationFlush({
+            projectId: router.currentRoute.value.params.id as string,
+            benchmarkId: param.value.benchmarkDem.fileId,
+            referId: param.value.referDem.fileId,
+            fileName: param.value.fileName,
+          });
           if (data != null && (data as any).code === 0) {
             console.log(data);
             treeData.value[treeData.value.length - 1].children.push({
@@ -436,11 +405,12 @@ export default defineComponent({
             notice("success", "成功", "特定高程冲淤计算成功！");
           }
         } else {
-          const data = await addFlushContour(
-            router.currentRoute.value.params.id as string,
-            param.value.benchmarkDem.fileId,
-            param.value.referDem.fileId
-          );
+          const data = await addFlushContour({
+            projectId: router.currentRoute.value.params.id as string,
+            benchmarkId: param.value.benchmarkDem.fileId,
+            referId: param.value.referDem.fileId,
+            fileName: param.value.fileName,
+          });
           if (data != null && (data as any).code === 0) {
             console.log(data);
             treeData.value[treeData.value.length - 1].children.push({
@@ -455,11 +425,13 @@ export default defineComponent({
           }
         }
       } else if (param.type === "slope") {
-        console.log(param.value.fileId);
-        const data = await addSlope(
-          router.currentRoute.value.params.id as string,
-          param.value.fileId as string
-        );
+        console.log(param.value);
+        const data = await addSlope({
+          projectId: router.currentRoute.value.params.id as string,
+          demId: param.value.dem.fileId as string,
+          fileName: param.value.fileName,
+        });
+        
         if (data != null && (data as any).code === 0) {
           console.log(data);
           treeData.value[treeData.value.length - 1].children.push({
@@ -502,7 +474,7 @@ export default defineComponent({
         if (treeData.value[treeData.value.length - 1].id != "") {
           treeData.value.push({
             id: "",
-            label: "分析数据集",
+            label: "分析结果集",
             children: [],
             flag: true,
           });
@@ -730,7 +702,7 @@ export default defineComponent({
         if (analyticData.data.length > 0) {
           treeData.value.push({
             id: "",
-            label: "分析数据集",
+            label: "分析结果集",
             flag: true,
             children: [],
           });

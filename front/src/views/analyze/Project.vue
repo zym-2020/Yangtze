@@ -158,7 +158,11 @@ export default defineComponent({
       rightMap.value.operateDraw(val);
     };
 
-    const drawHandle = async (val: { geoJson: any; visualType: string }) => {
+    const drawHandle = async (val: {
+      geoJson: any;
+      visualType: string;
+      fileName: string;
+    }) => {
       const param = await dataManage.value.addDrawData(val);
       layerManage.value.addLayer(param);
       rightMap.value.addMapLayer(param);

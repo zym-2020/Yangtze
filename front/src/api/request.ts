@@ -114,71 +114,68 @@ export async function delAnalyticData(id: string) {
   return await del(`/analyticDataSet/delAnalyticData/${id}`);
 }
 
-export async function addSection(
-  projectId: string,
-  sectionId: string,
-  demId: string
-) {
-  return await post(
-    `/analyticDataSet/addSection/${projectId}/${sectionId}/${demId}`
-  );
+export async function addSection(jsonData: {
+  projectId: string;
+  sectionId: string;
+  demId: string;
+  fileName: string;
+}) {
+  return await post(`/analyticDataSet/addSection`, jsonData);
 }
 
-export async function addSectionCompare(
-  projectId: string,
-  sectionId: string,
-  demList: string[]
-) {
-  return await post(
-    `/analyticDataSet/addSectionCompare/${projectId}/${sectionId}`,
-    demList
-  );
+export async function addSectionCompare(jsonData: {
+  projectId: string;
+  sectionId: string;
+  demList: string[];
+  fileName: string;
+}) {
+  return await post(`/analyticDataSet/addSectionCompare`, jsonData);
 }
 
-export async function addSectionFlush(
-  projectId: string,
-  sectionId: string,
-  benchmarkId: string,
-  referId: string
-) {
-  return await post(
-    `/analyticDataSet/addSectionFlush/${projectId}/${sectionId}/${benchmarkId}/${referId}`
-  );
+export async function addSectionFlush(jsonData: {
+  projectId: string;
+  sectionId: string;
+  benchmarkId: string;
+  referId: string;
+  fileName: string;
+}) {
+  return await post(`/analyticDataSet/addSectionFlush`, jsonData);
 }
 
-export async function addRegionFlush(
-  projectId: string,
-  regionId: string,
-  benchmarkId: string,
-  referId: string
-) {
-  return await post(
-    `/analyticDataSet/addRegionFlush/${projectId}/${regionId}/${benchmarkId}/${referId}`
-  );
+export async function addRegionFlush(jsonData: {
+  projectId: string;
+  regionId: string;
+  benchmarkId: string;
+  referId: string;
+  fileName: string;
+}) {
+  return await post(`/analyticDataSet/addRegionFlush`, jsonData);
 }
 
-export async function addElevationFlush(
-  projectId: string,
-  benchmarkId: string,
-  referId: string
-) {
-  return await post(
-    `/analyticDataSet/addElevationFlush/${projectId}/${benchmarkId}/${referId}`
-  );
+export async function addElevationFlush(jsonData: {
+  projectId: string;
+  benchmarkId: string;
+  referId: string;
+  fileName: string;
+}) {
+  return await post(`/analyticDataSet/addElevationFlush`, jsonData);
 }
 
-export async function addFlushContour(
-  projectId: string,
-  benchmarkId: string,
-  referId: string
-) {
-  return await post(
-    `/analyticDataSet/addFlushContour/${projectId}/${benchmarkId}/${referId}`
-  );
+export async function addFlushContour(jsonData: {
+  projectId: string;
+  benchmarkId: string;
+  referId: string;
+  fileName: string;
+}) {
+  return await post(`/analyticDataSet/addFlushContour`, jsonData);
 }
 
-export async function addSlope(projectId: string, demId: string) {
-  return await post(`/analyticDataSet/addSlope/${projectId}/${demId}`);
+export async function addSlope(jsonData: {
+  projectId: string;
+  demId: string;
+  fileName: string;
+}) {
+  return await post(`/analyticDataSet/addSlope`, jsonData);
 }
 
 export async function computeVolume(

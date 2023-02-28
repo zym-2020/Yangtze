@@ -34,7 +34,7 @@ public class AnalyticDataSetController {
 
     @AuthCheck
     @RequestMapping(value = "/addDraw", method = RequestMethod.POST)
-    public JsonResult addSection(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
+    public JsonResult addDraw(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
         return ResultUtils.success(analyticDataSetService.addDraw(jsonObject, email));
     }
 
@@ -52,27 +52,45 @@ public class AnalyticDataSetController {
     }
 
     @AuthCheck
-    @RequestMapping(value = "/addSection/{projectId}/{sectionId}/{demId}", method = RequestMethod.POST)
-    public JsonResult addSection(@PathVariable String projectId, @PathVariable String sectionId, @PathVariable String demId, @JwtTokenParser("email") String email) {
-        return ResultUtils.success(analyticDataSetService.addSection(projectId, sectionId, demId, email));
+    @RequestMapping(value = "/addSection", method = RequestMethod.POST)
+    public JsonResult addSection(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
+        String projectId = jsonObject.getString("projectId");
+        String sectionId = jsonObject.getString("sectionId");
+        String demId = jsonObject.getString("demId");
+        String fileName = jsonObject.getString("fileName");
+        return ResultUtils.success(analyticDataSetService.addSection(projectId, sectionId, demId, email, fileName));
     }
 
     @AuthCheck
-    @RequestMapping(value = "/addSectionCompare/{projectId}/{sectionId}", method = RequestMethod.POST)
-    public JsonResult addSectionCompare(@PathVariable String projectId, @PathVariable String sectionId, @JwtTokenParser("email") String email, @RequestBody List<String> demList) {
-        return ResultUtils.success(analyticDataSetService.addSectionCompare(projectId, sectionId, email, demList));
+    @RequestMapping(value = "/addSectionCompare", method = RequestMethod.POST)
+    public JsonResult addSectionCompare(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
+        String projectId = jsonObject.getString("projectId");
+        String sectionId = jsonObject.getString("sectionId");
+        String fileName = jsonObject.getString("fileName");
+        List<String> demList = jsonObject.getObject("demList", List.class);
+        return ResultUtils.success(analyticDataSetService.addSectionCompare(projectId, sectionId, email, demList, fileName));
     }
 
     @AuthCheck
-    @RequestMapping(value = "/addSectionFlush/{projectId}/{sectionId}/{benchmarkId}/{referId}", method = RequestMethod.POST)
-    public JsonResult addSectionFlush(@PathVariable String projectId, @PathVariable String sectionId, @PathVariable String benchmarkId, @PathVariable String referId, @JwtTokenParser("email") String email) {
-        return ResultUtils.success(analyticDataSetService.addSectionFlush(projectId, sectionId, benchmarkId, referId, email));
+    @RequestMapping(value = "/addSectionFlush", method = RequestMethod.POST)
+    public JsonResult addSectionFlush(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
+        String projectId = jsonObject.getString("projectId");
+        String sectionId = jsonObject.getString("sectionId");
+        String benchmarkId = jsonObject.getString("benchmarkId");
+        String referId = jsonObject.getString("referId");
+        String fileName = jsonObject.getString("fileName");
+        return ResultUtils.success(analyticDataSetService.addSectionFlush(projectId, sectionId, benchmarkId, referId, email, fileName));
     }
 
     @AuthCheck
-    @RequestMapping(value = "/addRegionFlush/{projectId}/{regionId}/{benchmarkId}/{referId}", method = RequestMethod.POST)
-    public JsonResult addRegionFlush(@PathVariable String projectId, @PathVariable String regionId, @PathVariable String benchmarkId, @PathVariable String referId, @JwtTokenParser("email") String email) {
-        return ResultUtils.success(analyticDataSetService.addRegionFlush(projectId, regionId, benchmarkId, referId, email));
+    @RequestMapping(value = "/addRegionFlush", method = RequestMethod.POST)
+    public JsonResult addRegionFlush(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
+        String projectId = jsonObject.getString("projectId");
+        String regionId = jsonObject.getString("regionId");
+        String benchmarkId = jsonObject.getString("benchmarkId");
+        String referId = jsonObject.getString("referId");
+        String fileName = jsonObject.getString("fileName");
+        return ResultUtils.success(analyticDataSetService.addRegionFlush(projectId, regionId, benchmarkId, referId, email, fileName));
     }
 
     @AuthCheck
@@ -82,21 +100,32 @@ public class AnalyticDataSetController {
     }
 
     @AuthCheck
-    @RequestMapping(value = "/addElevationFlush/{projectId}/{benchmarkId}/{referId}", method = RequestMethod.POST)
-    public JsonResult addElevationFlush(@PathVariable String projectId, @PathVariable String benchmarkId, @PathVariable String referId, @JwtTokenParser("email") String email) {
-        return ResultUtils.success(analyticDataSetService.addElevationFlush(projectId, benchmarkId, referId, email));
+    @RequestMapping(value = "/addElevationFlush", method = RequestMethod.POST)
+    public JsonResult addElevationFlush(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
+        String projectId = jsonObject.getString("projectId");
+        String benchmarkId = jsonObject.getString("benchmarkId");
+        String referId = jsonObject.getString("referId");
+        String fileName = jsonObject.getString("fileName");
+        return ResultUtils.success(analyticDataSetService.addElevationFlush(projectId, benchmarkId, referId, email, fileName));
     }
 
     @AuthCheck
-    @RequestMapping(value = "/addFlushContour/{projectId}/{benchmarkId}/{referId}", method = RequestMethod.POST)
-    public JsonResult addFlushContour(@PathVariable String projectId, @PathVariable String benchmarkId, @PathVariable String referId, @JwtTokenParser("email") String emial) {
-        return ResultUtils.success(analyticDataSetService.addFlushContour(projectId, benchmarkId, referId, emial));
+    @RequestMapping(value = "/addFlushContour", method = RequestMethod.POST)
+    public JsonResult addFlushContour(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
+        String projectId = jsonObject.getString("projectId");
+        String benchmarkId = jsonObject.getString("benchmarkId");
+        String referId = jsonObject.getString("referId");
+        String fileName = jsonObject.getString("fileName");
+        return ResultUtils.success(analyticDataSetService.addFlushContour(projectId, benchmarkId, referId, email, fileName));
     }
 
     @AuthCheck
-    @RequestMapping(value = "/addSlope/{projectId}/{demId}", method = RequestMethod.POST)
-    public JsonResult addSlope(@PathVariable String projectId, @PathVariable String demId, @JwtTokenParser("email") String email) {
-        return ResultUtils.success(analyticDataSetService.addSlope(projectId, demId, email));
+    @RequestMapping(value = "/addSlope", method = RequestMethod.POST)
+    public JsonResult addSlope(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
+        String projectId = jsonObject.getString("projectId");
+        String demId = jsonObject.getString("demId");
+        String fileName = jsonObject.getString("fileName");
+        return ResultUtils.success(analyticDataSetService.addSlope(projectId, demId, email, fileName));
     }
 
     @AuthCheck

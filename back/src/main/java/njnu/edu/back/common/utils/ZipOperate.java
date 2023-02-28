@@ -32,8 +32,6 @@ import java.util.zip.ZipEntry;
  */
 public class ZipOperate {
 
-    private static Logger logger = LoggerFactory.getLogger(CodeDetector.class);
-
     public static void compressFile(String destination, List<Map<String, Object>> fileList) {
         ZipFile zipFile = new ZipFile(destination);
         try {

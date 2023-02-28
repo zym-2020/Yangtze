@@ -1,8 +1,22 @@
 <template>
   <div class="right-visual">
     <div ref="container" class="container"></div>
-    <el-dialog v-model="chartVisual" width="900px" title="断面图">
+    <el-dialog v-model="chartVisual" width="900px" title="断面图" id="chart">
       <chart-visual :chartVisualInfo="chartVisualInfo"></chart-visual>
+    </el-dialog>
+    <el-dialog
+      v-model="dialogVisible"
+      :width="300"
+      :title="visualType == 'geoJsonLine' ? '断面名称：' : '区域名称：'"
+    >
+      <div class="name">
+        <el-input v-model="inputValue" />
+        <div class="btn">
+          <el-button type="primary" plain size="small" @click="clickHandle"
+            >确定</el-button
+          >
+        </div>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -32,6 +46,10 @@ export default defineComponent({
     let map: mapBoxGl.Map;
     const chartVisual = ref(false);
     const chartVisualInfo = ref();
+    const dialogVisible = ref(false);
+    const inputValue = ref("");
+    const visualType = ref("");
+    let geoJson: any;
 
     const lineDraw = new MapboxDraw({
       controls: {
@@ -80,19 +98,26 @@ export default defineComponent({
 
     const draw = async (e: any) => {
       if (map.hasControl(lineDraw)) {
-        context.emit("drawHandle", {
-          geoJson: e.features[0],
-          visualType: "geoJsonLine",
-        });
+        visualType.value = "geoJsonLine";
+        geoJson = e.features[0];
+        dialogVisible.value = true;
         lineDraw.deleteAll();
       }
       if (map.hasControl(polygonDraw)) {
-        context.emit("drawHandle", {
-          geoJson: e.features[0],
-          visualType: "geoJsonPolygon",
-        });
+        visualType.value = "geoJsonPolygon";
+        geoJson = e.features[0];
+        dialogVisible.value = true;
         polygonDraw.deleteAll();
       }
+    };
+
+    const clickHandle = () => {
+      context.emit("drawHandle", {
+        geoJson: geoJson,
+        visualType: visualType.value,
+        fileName: inputValue.value,
+      });
+      dialogVisible.value = false;
     };
 
     const basemap = computed(() => {
@@ -124,7 +149,6 @@ export default defineComponent({
     };
 
     const initLayers = async () => {
-      console.log("layers", props.layerList);
       for (let i = (props.layerList as any[]).length - 1; i >= 0; i--) {
         await addMapLayer((props.layerList as any[])[i]);
       }
@@ -220,7 +244,6 @@ export default defineComponent({
             type = "fill";
           }
           const geojson = await getAnalyticGeoJson(param.id);
-          console.log(geojson);
           if (geojson != null && (geojson as any).code === 0) {
             map.addSource(param.id, {
               type: "geojson",
@@ -296,7 +319,6 @@ export default defineComponent({
           }
         }
       });
-      console.log(list, source);
       if (url != "") {
         map.setStyle(url);
         map.once("styledata", () => {
@@ -340,9 +362,10 @@ export default defineComponent({
       chartVisualInfo,
       moveLayer,
       changeBasemap,
-      // chart,
-      // btnClick,
-      // flag,
+      dialogVisible,
+      inputValue,
+      visualType,
+      clickHandle,
     };
   },
 });
@@ -359,7 +382,7 @@ export default defineComponent({
     width: 100%;
     border-radius: 8px;
   }
-  /deep/.el-dialog {
+  /deep/ .el-dialog {
     .el-dialog__header {
       padding: 10px;
       background: #4c75a9;
@@ -376,6 +399,18 @@ export default defineComponent({
     }
     .el-dialog__body {
       padding: 0px;
+    }
+  }
+  .name {
+    padding: 10px;
+    height: 70px;
+    .btn {
+      position: relative;
+      margin-top: 10px;
+      .el-button {
+        position: absolute;
+        right: 0px;
+      }
     }
   }
 }
