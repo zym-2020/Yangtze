@@ -249,8 +249,8 @@
 
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref } from "vue";
-import DataDescription from "../page/DataDescription.vue";
-import DataHead from "@/components/page/DataHead.vue";
+import DataDescription from "@/components/data/DataDescription.vue";
+import DataHead from "@/components/data/DataHead.vue";
 import { dateFormat, imgBase64 } from "@/utils/common";
 import { decrypt } from "@/utils/auth";
 import { useStore } from "@/store";
@@ -264,13 +264,13 @@ import {
 } from "@/api/request";
 import "@/assets/css/wangeditor.css";
 import { notice } from "@/utils/notice";
-import LocationMap from "../scenePart/LocationMap.vue";
+import LocationMap from "@/components/data/LocationMap.vue";
 import router from "@/router";
 import MapVisual from "@/components/visual/MapVisual.vue";
 import PhotoVisual from "@/components/visual/PhotoVisual.vue";
 import ExcelVisual from "@/components/visual/ExcelVisual.vue";
 import Statistics from "@/components/visual/Statistics.vue";
-import PageCopyright from "@/components/page/PageCopyright.vue";
+import PageCopyright from "@/layout/components/PageCopyright.vue";
 import { prefix } from "@/prefix";
 export default defineComponent({
   components: {

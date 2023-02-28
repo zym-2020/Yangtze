@@ -150,17 +150,6 @@ export const asyncRouters: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: "scenarioThree",
-        name: "ScenarioThree",
-        component: () => import("@/views/scenario/aisShip.vue"),
-        meta: {
-          role: ["member", "admin"],
-          title: "AIS",
-          keepAlive: true,
-          key: "ScenarioThree",
-        },
-      },
-      {
         path: "scenarioFour",
         name: "ScenarioFour",
         component: () => import("@/views/scenario/projectMap.vue"),

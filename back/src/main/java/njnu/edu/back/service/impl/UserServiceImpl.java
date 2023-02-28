@@ -138,6 +138,7 @@ public class UserServiceImpl implements UserService {
         Map<String, Object> map = new HashMap<>();
         if(user == null) {
             user = userMapper.getUserByEmail(email);
+            redisService.set(email, user, 60*24*7l);
         }
         map.put("id", user.getId());
         map.put("name", user.getName());

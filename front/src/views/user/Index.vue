@@ -176,7 +176,7 @@ import { useStore } from "@/store";
 import { getUserByEmail, getResourceCount } from "@/api/request";
 import AvatarUpload from "@/components/upload/AvatarUpload.vue";
 import { prefix } from "@/prefix";
-import PageCopyright from "@/components/page/PageCopyright.vue";
+import PageCopyright from "@/layout/components/PageCopyright.vue";
 import router from "@/router";
 export default defineComponent({
   components: {

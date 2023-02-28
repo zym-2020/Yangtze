@@ -186,8 +186,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, reactive } from "vue";
-import DataCard from "@/components/cards/DataCard.vue";
+import { defineComponent, onMounted, ref } from "vue";
+import DataCard from "@/components/data/DataCard.vue";
 import {
   fuzzyQueryDataList,
   getHot,
@@ -196,7 +196,7 @@ import {
 import router from "@/router";
 import NProgress from "nprogress";
 import { Search } from "@element-plus/icons-vue";
-import PageCopyright from "@/components/page/PageCopyright.vue";
+import PageCopyright from "@/layout/components/PageCopyright.vue";
 // NProgress.configure({ showSpinner: false });
 
 export default defineComponent({

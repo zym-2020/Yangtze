@@ -12,8 +12,8 @@ type AugmentedActionContext = {
 } & Omit<ActionContext<UserState, RootState>, 'commit'>
 
 export interface Actions {
-    ['login']({ commit }: AugmentedActionContext, userInfo: { email: string, password: string }): void
-    getUserInfo({ commit }: AugmentedActionContext): void
+    ['login']({ commit }: AugmentedActionContext, userInfo: { email: string, password: string }): Promise<void>
+    getUserInfo({ commit }: AugmentedActionContext): Promise<void>
     logout({ commit }: AugmentedActionContext): void
     updateUserInfo({ commit }: AugmentedActionContext, userInfo: { name: string, avatar: File, occupation: string, department: string }): void
 }

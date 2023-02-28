@@ -177,7 +177,7 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { updateDataList, updateRelational } from "@/api/request";
 import router from "@/router";
 import { notice } from "@/utils/notice";
-import PageCopyright from "@/components/page/PageCopyright.vue";
+import PageCopyright from "@/layout/components/PageCopyright.vue";
 
 export default defineComponent({
   components: {

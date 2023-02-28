@@ -73,9 +73,6 @@
             </el-button>
             <template #dropdown>
               <el-dropdown-menu>
-                <!-- <el-dropdown-item> 河床演变 </el-dropdown-item>
-                <el-dropdown-item>水文分析</el-dropdown-item>
-                <el-dropdown-item>物模与数模</el-dropdown-item> -->
                 <el-dropdown-item>进入分析中心</el-dropdown-item>
               </el-dropdown-menu>
             </template>
@@ -262,8 +259,10 @@ onActivated(() => {
         #39d6fd 100%
       );
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
       -webkit-animation: hue 60s infinite linear;
+      animation: hue 60s infinite linear;
       word-wrap: break-word;
       font-size: 6vh;
       text-align: right;
@@ -306,8 +305,10 @@ onActivated(() => {
             #39d6fd 100%
           );
           -webkit-background-clip: text;
+          background-clip: text;
           -webkit-text-fill-color: transparent;
           -webkit-animation: hue 60s infinite linear;
+          animation: hue 60s infinite linear;
           cursor: pointer;
         }
       }
@@ -431,8 +432,10 @@ onActivated(() => {
     #39d6fd 100%
   );
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   -webkit-animation: hue 60s infinite linear;
+  animation: hue 60s infinite linear;
 
   &.data {
     background-image: linear-gradient(
@@ -442,8 +445,10 @@ onActivated(() => {
       #fff352 100%
     );
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     -webkit-animation: hue 60s infinite linear;
+    animation: hue 60s infinite linear;
   }
 
   &.amap {
@@ -454,8 +459,10 @@ onActivated(() => {
       #52ff52 100%
     );
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     -webkit-animation: hue 60s infinite linear;
+    animation: hue 60s infinite linear;
   }
 
   &.analysis {
@@ -466,8 +473,10 @@ onActivated(() => {
       #ff9252 100%
     );
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     -webkit-animation: hue 60s infinite linear;
+    animation: hue 60s infinite linear;
   }
 }
 

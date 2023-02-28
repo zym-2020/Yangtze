@@ -19,7 +19,7 @@
         />
       </router-view>
       <el-drawer v-model="uploadPageFlag" size="400px" :with-header="false">
-        <upload-page class="upload" ></upload-page>
+        <upload-page class="upload"></upload-page>
       </el-drawer>
     </div>
   </div>
@@ -151,6 +151,7 @@ input[type="submit"] {
   cursor: pointer;
   -webkit-appearance: button;
   -moz-appearance: button;
+  appearance: none;
 } /*按钮初始化*/
 input::-moz-placeholder,
 textarea::-moz-placeholder {

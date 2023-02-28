@@ -32,7 +32,7 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
-import PageCopyright from "@/components/page/PageCopyright.vue";
+import PageCopyright from "@/layout/components/PageCopyright.vue";
 import router from "@/router";
 export default defineComponent({
   components: { PageCopyright },

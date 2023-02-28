@@ -50,7 +50,7 @@
         >注册</el-button
       >
       <div>
-        <el-button type="text" @click="toLogin">去登录</el-button>
+        <el-button link @click="toLogin" type="primary">去登录</el-button>
       </div>
     </div>
   </div>

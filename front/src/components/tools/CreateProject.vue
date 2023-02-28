@@ -70,7 +70,7 @@ export default defineComponent({
 
     const change = (uploadFile: UploadFile) => {
       if (uploadFile.status === "ready") {
-        imageUrl.value = URL.createObjectURL(uploadFile.raw);
+        imageUrl.value = URL.createObjectURL(uploadFile.raw as Blob);
         file.value = uploadFile.raw;
       }
     };

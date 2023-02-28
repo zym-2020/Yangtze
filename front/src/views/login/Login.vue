@@ -23,8 +23,8 @@
         >登录</el-button
       >
       <div>
-        <el-button text @click="toRegister">注册</el-button>
-        <el-button text>忘记密码？</el-button>
+        <el-button link @click="toRegister" type="primary">注册</el-button>
+        <el-button link type="primary">忘记密码？</el-button>
       </div>
     </div>
   </div>

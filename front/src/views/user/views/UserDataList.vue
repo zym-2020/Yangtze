@@ -125,7 +125,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import { pageQueryByEmail, updateStatusById } from "@/api/request";
-import DataCard from "@/components/cards/DataCard.vue";
+import DataCard from "@/components/data/DataCard.vue"
 import { ElMessageBox } from "element-plus";
 import router from "@/router";
 import { notice } from "@/utils/notice";

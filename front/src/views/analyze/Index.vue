@@ -69,7 +69,7 @@ import {
 } from "vue";
 import { getAll } from "@/api/request";
 import ProjectCard from "@/components/analyse/ProjectCard.vue";
-import PageCopyright from "@/components/page/PageCopyright.vue";
+import PageCopyright from "@/layout/components/PageCopyright.vue";
 import NProgress from "nprogress";
 import router from "@/router";
 
