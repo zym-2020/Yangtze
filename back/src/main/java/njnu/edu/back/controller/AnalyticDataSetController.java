@@ -94,9 +94,14 @@ public class AnalyticDataSetController {
     }
 
     @AuthCheck
-    @RequestMapping(value = "/computeVolume/{projectId}/{regionId}/{demId}/{deep}", method = RequestMethod.POST)
-    public JsonResult computeVolume(@PathVariable String projectId, @PathVariable String regionId, @PathVariable String demId, @PathVariable double deep, @JwtTokenParser("email") String email) {
-        return ResultUtils.success(analyticDataSetService.computeVolume(deep, projectId, regionId, demId, email));
+    @RequestMapping(value = "/computeVolume", method = RequestMethod.POST)
+    public JsonResult computeVolume(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
+        Double deep = jsonObject.getDouble("deep");
+        String projectId = jsonObject.getString("projectId");
+        String regionId = jsonObject.getString("regionId");
+        String demId = jsonObject.getString("demId");
+        String fileName = jsonObject.getString("fileName");
+        return ResultUtils.success(analyticDataSetService.computeVolume(deep, projectId, regionId, demId, email, fileName));
     }
 
     @AuthCheck

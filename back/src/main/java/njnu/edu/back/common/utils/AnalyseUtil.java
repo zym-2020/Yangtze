@@ -142,7 +142,7 @@ public class AnalyseUtil {
     }
 
 
-    public static Process computeVolume(String tempPath, double deep, String rasterPath, String resultPath, String visualPath, JSONArray jsonArray) {
+    public static Process computeVolume(String tempPath, double deep, String rasterPath, String resultPath, String visualPath, JSONArray jsonArray, String volumePath, String coorPath) {
         BufferedWriter out = null;
         try {
             out = new BufferedWriter(new FileWriter(tempPath));
@@ -154,6 +154,8 @@ public class AnalyseUtil {
             out.write(rasterPath + "\n");
             out.write(resultPath + "\n");
             out.write(visualPath + "\n");
+            out.write(volumePath + "\n");
+            out.write(coorPath + "\n");
             out.close();
 
         } catch (Exception e) {
@@ -163,7 +165,7 @@ public class AnalyseUtil {
         ProcessBuilder processBuilder = new ProcessBuilder();
         List<String> commands = new ArrayList<>();
         commands.add(pythonStr);
-        commands.add(pythonDir + "dem.py");
+        commands.add(pythonDir + "compute_volume.py");
         commands.add(tempPath);
         processBuilder.command(commands);
         try {

@@ -250,6 +250,12 @@ public class VisualServiceImpl implements VisualService {
     }
 
     @Override
+    public JSONObject getContent(String visualId) {
+        Map<String, Object> map = visualFileMapper.findById(visualId);
+        return JSON.parseObject(map.get("content").toString());
+    }
+
+    @Override
     public JSONObject getTide(String visualId) {
         Map<String, Object> map = visualFileMapper.findById(visualId);
         String path = visualAddress + map.get("content");

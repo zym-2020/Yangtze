@@ -46,7 +46,7 @@
         />
       </el-select>
       <div class="deep" v-if="analyseType === 'volume'">
-        <span><strong>最大深度：</strong></span>
+        <span><strong>水面距岸高度：</strong></span>
         <el-input-number
           v-model="deep"
           :min="1"
@@ -393,18 +393,27 @@ export default defineComponent({
           notice("warning", "警告", target + "不得为空");
         }
       } else if (props.analyseType === "volume") {
-        if (sectionValue.value != "" && sectionDem.value != undefined) {
+        if (
+          sectionValue.value != "" &&
+          sectionDem.value != undefined &&
+          inputValue.value != ""
+        ) {
           context.emit("returnParameter", {
             region: sectionValue.value,
             dem: sectionDem.value,
             deep: deep.value,
+            fileName: inputValue.value,
           });
         } else {
-          notice(
-            "warning",
-            "警告",
-            (sectionValue.value === "" ? "区域" : "DEM") + "不得为空"
-          );
+          let target = "";
+          if (sectionValue.value == "") {
+            target = "区域不得为空";
+          } else if (sectionDem.value == undefined) {
+            target = "DEM不得为空";
+          } else {
+            target = "输入文件名不得为空";
+          }
+          notice("warning", "警告", target);
         }
       } else if (props.analyseType === "sectionCompare") {
         if (

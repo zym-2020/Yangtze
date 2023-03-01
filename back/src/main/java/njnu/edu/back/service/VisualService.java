@@ -32,6 +32,8 @@ public interface VisualService {
 
     void getPngResource(String visualId, HttpServletResponse response);
 
+    JSONObject getContent(String visualId);
+
     JSONObject getTide(String visualId);
 
     JSONObject getRateDirection(String visualId);

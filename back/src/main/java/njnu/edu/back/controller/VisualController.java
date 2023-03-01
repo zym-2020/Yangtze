@@ -82,7 +82,6 @@ public class VisualController {
     * @Author: Yiming
     * @Date: 2022/8/23
     */
-    @CrossOrigin
     @RequestMapping(value = "/getCoordinates/{visualId}", method = RequestMethod.GET)
     public JsonResult getCoordinates(@PathVariable String visualId) {
         return ResultUtils.success(visualService.getCoordinates(visualId));
@@ -92,6 +91,11 @@ public class VisualController {
     @RequestMapping(value = "/getPngResource/{visualId}", method = RequestMethod.GET)
     public void getPngResource(@PathVariable String visualId, HttpServletResponse response) {
         visualService.getPngResource(visualId, response);
+    }
+
+    @RequestMapping(value = "/getContent/{visualId}", method = RequestMethod.GET)
+    public JsonResult getContent(@PathVariable String visualId) {
+        return ResultUtils.success(visualService.getContent(visualId));
     }
 
     /**

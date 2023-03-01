@@ -1,7 +1,7 @@
 <template>
   <div class="right-visual">
     <div ref="container" class="container"></div>
-    <el-dialog v-model="chartVisual" width="900px" title="断面图" id="chart">
+    <el-dialog v-model="chartVisual" width="900px" id="chart">
       <chart-visual :chartVisualInfo="chartVisualInfo"></chart-visual>
     </el-dialog>
     <el-dialog
@@ -28,6 +28,7 @@ import {
   getCoordinates,
   getAnalyticGeoJson,
   updateBasemap,
+  getContent,
 } from "@/api/request";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import ChartVisual from "./ChartVisual.vue";
@@ -49,6 +50,10 @@ export default defineComponent({
     const dialogVisible = ref(false);
     const inputValue = ref("");
     const visualType = ref("");
+
+    const volumeList = ref<
+      { id: string; coordinates: number[][]; description: string }[]
+    >([]);
     let geoJson: any;
 
     const lineDraw = new MapboxDraw({
@@ -134,6 +139,25 @@ export default defineComponent({
       }
     });
 
+    const inPolygon = (
+      lon: number,
+      lat: number,
+      coordinates: number[][],
+      id: string
+    ) => {
+      if (
+        lon > coordinates[0][0] &&
+        lon < coordinates[2][0] &&
+        lat > coordinates[2][1] &&
+        lat < coordinates[0][1] &&
+        map.getLayoutProperty(id, "visibility") != "none"
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    };
+
     const initMap = () => {
       map = new mapBoxGl.Map({
         container: container.value as HTMLElement,
@@ -145,6 +169,31 @@ export default defineComponent({
       });
       map.on("load", async () => {
         await initLayers();
+      });
+      map.doubleClickZoom.disable();
+      map.on("dblclick", (e) => {
+        for (let i = 0; i < volumeList.value.length; i++) {
+          if (
+            inPolygon(
+              e.lngLat.lng,
+              e.lngLat.lat,
+              volumeList.value[i].coordinates,
+              volumeList.value[i].id
+            )
+          ) {
+            new mapBoxGl.Popup()
+              .setLngLat([
+                (volumeList.value[i].coordinates[0][0] +
+                  volumeList.value[i].coordinates[2][0]) /
+                  2,
+                (volumeList.value[i].coordinates[0][1] +
+                  volumeList.value[i].coordinates[2][1]) /
+                  2,
+              ])
+              .setHTML(volumeList.value[i].description)
+              .addTo(map);
+          }
+        }
       });
     };
 
@@ -232,6 +281,43 @@ export default defineComponent({
               source: param.id,
             });
           }
+        } else if (param.visualType === "volume") {
+          const content = await getContent(param.visualId);
+          if (content != null && (content as any).code === 0) {
+            map.addSource(param.id, {
+              type: "image",
+              url: `${prefix}visual/getPngResource/${param.visualId}`,
+              coordinates: content.data.coordinates,
+            });
+            map.addLayer({
+              id: param.id,
+              type: "raster",
+              source: param.id,
+            });
+            const description = `深度：${content.data.deep}，容积：${content.data.volume}㎡`;
+            volumeList.value.push({
+              id: param.id,
+              coordinates: content.data.coordinates,
+              description: description,
+            });
+            // map.on("dblclick", (e) => {
+            //   console.log(map.getLayoutProperty(param.id, "visibility"));
+
+            //   const description = `深度：${content.data.deep}，容积：${content.data.volume}㎡`;
+            //   console.log(description);
+            //   new mapBoxGl.Popup()
+            //     .setLngLat([
+            //       (content.data.coordinates[1][0] +
+            //         content.data.coordinates[0][0]) /
+            //         2,
+            //       (content.data.coordinates[1][1] +
+            //         content.data.coordinates[0][1]) /
+            //         2,
+            //     ])
+            //     .setHTML(description)
+            //     .addTo(map);
+            // });
+          }
         } else if (
           param.visualType === "geoJsonLine" ||
           param.visualType === "geoJsonPoint" ||
@@ -285,6 +371,12 @@ export default defineComponent({
       if (map.getLayer(id) != undefined) {
         map.removeLayer(id);
         map.removeSource(id);
+        for (let i = 0; i < volumeList.value.length; i++) {
+          if (id === volumeList.value[i].id) {
+            volumeList.value.splice(i, 1);
+            return;
+          }
+        }
       }
     };
 

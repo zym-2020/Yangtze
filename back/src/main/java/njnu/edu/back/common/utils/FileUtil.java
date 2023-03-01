@@ -80,4 +80,34 @@ public class FileUtil {
         }
     }
 
+    public static String readTextFile(String path) {
+        File file = new File(path);
+        if (!file.exists()) {
+            throw new MyException(ResultEnum.NO_OBJECT);
+        }
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader(path));
+            String jsonString = "";
+            String line = "";
+            while ((line = br.readLine()) != null) {
+                jsonString += line;
+            }
+            br.close();
+            return jsonString;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        } finally {
+            try {
+                if (br != null) {
+                    br.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+            }
+        }
+    }
+
 }

@@ -431,7 +431,7 @@ export default defineComponent({
           demId: param.value.dem.fileId as string,
           fileName: param.value.fileName,
         });
-        
+
         if (data != null && (data as any).code === 0) {
           console.log(data);
           treeData.value[treeData.value.length - 1].children.push({
@@ -445,7 +445,6 @@ export default defineComponent({
           notice("success", "成功", "河床坡度计算成功！");
         }
       } else if (param.type === "volume") {
-        console.log(param);
         addData([param.value.dem]);
         context.emit("operateLayer", {
           content: {
@@ -456,12 +455,13 @@ export default defineComponent({
           },
           type: "add",
         });
-        const data = await computeVolume(
-          router.currentRoute.value.params.id as string,
-          param.value.region as string,
-          param.value.dem.fileId,
-          param.value.deep
-        );
+        const data = await computeVolume({
+          projectId: router.currentRoute.value.params.id as string,
+          regionId: param.value.region as string,
+          demId: param.value.dem.fileId,
+          deep: param.value.deep,
+          fileName: param.value.fileName,
+        });
         if (data != null && (data as any).code === 0) {
           await checkStateHandle(data.data, "容积计算");
         }
@@ -498,7 +498,6 @@ export default defineComponent({
     };
 
     const operateLayer = async (keyword: string, flag: boolean) => {
-      console.log(flag);
       if (flag) {
         if (keyword != "rename" && keyword != "download") {
           context.emit("operateLayer", {
@@ -596,7 +595,8 @@ export default defineComponent({
         selectedData.value?.visualType === "regionFlush" ||
         selectedData.value?.visualType === "elevationFlush" ||
         selectedData.value?.visualType === "flushContour" ||
-        selectedData.value?.visualType === "slope"
+        selectedData.value?.visualType === "slope" ||
+        selectedData.value?.visualType === "volume"
       ) {
         return true;
       } else {

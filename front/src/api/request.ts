@@ -178,15 +178,14 @@ export async function addSlope(jsonData: {
   return await post(`/analyticDataSet/addSlope`, jsonData);
 }
 
-export async function computeVolume(
-  projectId: string,
-  regionId: string,
-  demId: string,
-  deep: number
-) {
-  return await post(
-    `/analyticDataSet/computeVolume/${projectId}/${regionId}/${demId}/${deep}`
-  );
+export async function computeVolume(jsonData: {
+  projectId: string;
+  regionId: string;
+  demId: string;
+  deep: number;
+  fileName: string;
+}) {
+  return await post(`/analyticDataSet/computeVolume`, jsonData);
 }
 
 export async function checkState(key: string) {
@@ -387,6 +386,10 @@ export async function getCoordinates(visualId: string) {
 
 export async function getPngResource(visualId: string) {
   return await get(`/visual/getPngResource/${visualId}`);
+}
+
+export async function getContent(visualId: string) {
+  return await get(`/visual/getContent/${visualId}`);
 }
 
 export async function getRateDirection(id: string) {

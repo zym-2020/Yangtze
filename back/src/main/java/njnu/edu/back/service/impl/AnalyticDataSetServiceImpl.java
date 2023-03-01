@@ -7,10 +7,7 @@ import lombok.SneakyThrows;
 import net.lingala.zip4j.ZipFile;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
-import njnu.edu.back.common.utils.AnalyseUtil;
-import njnu.edu.back.common.utils.Encrypt;
-import njnu.edu.back.common.utils.LocalUploadUtil;
-import njnu.edu.back.common.utils.TileUtil;
+import njnu.edu.back.common.utils.*;
 import njnu.edu.back.dao.main.AnalyticDataSetMapper;
 import njnu.edu.back.dao.main.AnalyticParameterMapper;
 import njnu.edu.back.dao.main.FileMapper;
@@ -292,7 +289,7 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
     }
 
     @Override
-    public String computeVolume(double deep, String projectId, String regionId, String demId, String email) {
+    public String computeVolume(double deep, String projectId, String regionId, String demId, String email, String fileName) {
         Map<String, Object> region = analyticDataSetMapper.getInfoById(regionId);
         String regionPath = basePath + email + "/project/" + projectId + "/" + region.get("address");
         JSONObject jsonObject = readJsonFile(regionPath);
@@ -303,19 +300,25 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
         String resultId = UUID.randomUUID().toString();
         String visualId = UUID.randomUUID().toString();
         String result = UUID.randomUUID().toString();
-        String resultPath = basePath + email + "/project/" + projectId + "/" + resultId + ".json";
-        String visualPath = visualAddress + "volume/" + visualId + ".json";
+        String resultPath = basePath + email + "/project/" + projectId + "/" + resultId + ".tif";
+        String visualPath = visualAddress + "volume/" + visualId + ".png";
+        String volumePath = visualAddress + "volume/" + visualId + ".txt";
+        String coordinatePath = visualAddress + "volume/" + visualId + ".json";
         redisService.set(result, 0, 60l);
         new Thread() {
             @Override
             @SneakyThrows
             public void run() {
-                Process process = AnalyseUtil.computeVolume(tempPath, deep, demPath, resultPath, visualPath, jsonArray);
+                Process process = AnalyseUtil.computeVolume(tempPath, deep, demPath, resultPath, visualPath, jsonArray, volumePath, coordinatePath);
                 int code = process.waitFor();
                 if(code == 0) {
-                    String content = "volume/" + visualId + ".json";
-                    Map<String, Object> map = visualFileMapper.addVisualFile(new VisualFile(null, visualId + ".json", "volume", content));
-                    analyticDataSetMapper.addDraw(result, region.get("fileName") + "_容积", resultId + ".json", email, "volume", map.get("id").toString(), projectId);
+                    String content = getPngContent("volume/" + visualId + ".png", coordinatePath);
+                    JSONObject json = JSON.parseObject(content);
+                    json.put("deep", deep);
+                    json.put("volume", Double.valueOf(FileUtil.readTextFile(volumePath)));
+                    content = json.toJSONString();
+                    Map<String, Object> map = visualFileMapper.addVisualFile(new VisualFile(null, visualId + ".png", "volume", content));
+                    analyticDataSetMapper.addDraw(result, fileName, resultId + ".json", email, "volume", map.get("id").toString(), projectId);
                     redisService.set(result, 1, 60l);
                 } else {
                     redisService.set(result, -1, 60l);
