@@ -126,8 +126,9 @@ import { dateFormat } from "@/utils/common";
 import NProgress from "nprogress";
 
 export default defineComponent({
+  emits: ["updateProjectTotal"],
   components: { CreateProject },
-  setup() {
+  setup(_, context) {
     const skeletonFlag = ref(true);
     const title = ref("");
     const projectInfo = ref<any>();
@@ -156,7 +157,7 @@ export default defineComponent({
       projectInfo.value = undefined;
       info.value = undefined;
       createFlag.value = true;
-      title.value = "创建项目"
+      title.value = "创建项目";
     };
 
     const headClick = async (param: number) => {
@@ -202,7 +203,14 @@ export default defineComponent({
           .then(async () => {
             const res = await deleteProject(data.value[val.index].id);
             if (res != null && (res as any).code === 0) {
-              data.value.splice(val.index, 1);
+              const data = await getCount();
+              if (data != null && (data as any).code === 0) {
+                allTotal.value = data.data.allTotal;
+                publicTotal.value = data.data.publicTotal;
+                privateTotal.value = data.data.privateTotal;
+              }
+              await getProjectList(currentPage.value - 1, 10, active.value);
+              context.emit("updateProjectTotal", allTotal.value);
               notice("success", "成功", "删除成功");
             }
           })
@@ -210,25 +218,20 @@ export default defineComponent({
       }
     };
 
-    const updateProject = (val: {
-      avatar: string;
-      id: string;
-      projectName: string;
-      isPublic: boolean;
-    }) => {
-      for (let i = 0; i < data.value.length; i++) {
-        if (data.value[i].id === val.id) {
-          data.value[i].projectName = val.projectName;
-          data.value[i].isPublic = val.isPublic;
-          data.value[i].avatar = val.avatar;
-          createFlag.value = false;
-          return;
-        }
+    const updateProject = async () => {
+      createFlag.value = false;
+      const data = await getCount();
+      if (data != null && (data as any).code === 0) {
+        allTotal.value = data.data.allTotal;
+        publicTotal.value = data.data.publicTotal;
+        privateTotal.value = data.data.privateTotal;
       }
+      await getProjectList(currentPage.value - 1, 10, active.value);
     };
 
     const copyProject = (val: string) => {
       createFlag.value = false;
+      context.emit("updateProjectTotal", allTotal.value + 1);
       router.push({
         name: "project",
         params: {

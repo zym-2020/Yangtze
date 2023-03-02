@@ -160,7 +160,7 @@
             v-if="route.meta.key === 'UserSpace'"
           >
             <keep-alive>
-              <component :is="Component" />
+              <component :is="Component" @updateProjectTotal="updateProjectTotal"/>
             </keep-alive>
           </router-view>
         </div>
@@ -294,6 +294,10 @@ export default defineComponent({
       editFlag.value = false;
     };
 
+    const updateProjectTotal = (val: number) => {
+      projectTotal.value = val
+    }
+
     onMounted(async () => {
       console.log("123");
       skeletonFlag.value = true;
@@ -324,6 +328,7 @@ export default defineComponent({
       fileTotal,
       dataListTotal,
       projectTotal,
+      updateProjectTotal
     };
   },
 });

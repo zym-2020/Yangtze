@@ -1,7 +1,9 @@
 <template>
   <div class="data-manage">
     <div class="data-manage-body">
-      <div class="input" />
+      <div class="input">
+        <!-- <strong>测试</strong> -->
+      </div>
       <div class="content">
         <div class="scroll">
           <el-scrollbar>
@@ -762,6 +764,7 @@ export default defineComponent({
       background: rgba($color: #abadb3, $alpha: 0.5);
       line-height: 40px;
       font-size: 20px;
+      text-align: center;
     }
     .content {
       padding: 0 10px;

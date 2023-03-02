@@ -143,9 +143,10 @@ export default defineComponent({
         form.name = (props.info as any).projectName;
         form.isPublic = (props.info as any).isPublic ? "true" : "false";
         imageUrl.value =
-          prefix + "visual/getAvatar/" + (props.info as any).avatar;
+          (props.info as any).avatar == ""
+            ? ""
+            : prefix + "visual/getAvatar/" + (props.info as any).avatar;
       } else if (props.projectInfo != undefined) {
-        console.log(props.projectInfo);
         form.name = (props.projectInfo as any).projectName + "-副本";
       }
     });

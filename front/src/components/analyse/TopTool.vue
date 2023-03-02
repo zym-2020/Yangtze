@@ -111,6 +111,7 @@
     >
       <create-project
         :projectInfo="projectInfo"
+        :info="undefined"
         @copyProject="copyProject"
       ></create-project>
     </el-dialog>

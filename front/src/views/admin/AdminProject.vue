@@ -29,7 +29,7 @@
           <project-card
             :info="item"
             @delete="deleteHandle"
-            @update="updateHandle"
+            @copyAndUpdate="copyAndUpdate"
             :keyword="keyword"
           />
         </el-col>
@@ -47,6 +47,21 @@
         ></el-pagination>
       </div>
     </div>
+
+    <el-dialog
+      v-model="createFlag"
+      width="500px"
+      :show-close="false"
+      :title="title"
+    >
+      <create-project
+        v-if="createFlag"
+        :projectInfo="projectInfo"
+        :info="info"
+        @updateProject="updateProject"
+        @copyProject="copyProject"
+      ></create-project>
+    </el-dialog>
   </div>
 </template>
 
@@ -55,9 +70,11 @@ import { defineComponent, onMounted, ref } from "vue";
 import { getAllByAdmin } from "@/api/request";
 import ProjectCard from "@/components/admin/ProjectCard.vue";
 import { notice } from "@/utils/notice";
+import CreateProject from "@/components/analyse/CreateProject.vue";
 import NProgress from "nprogress";
+import router from "@/router";
 export default defineComponent({
-  components: { ProjectCard },
+  components: { ProjectCard, CreateProject },
   setup() {
     const skeletonFlag = ref(true);
     const projectList = ref<any[]>([]);
@@ -68,6 +85,11 @@ export default defineComponent({
     const input = ref("");
     const active = ref("public");
     const status = ref(1);
+
+    const createFlag = ref(false);
+    const title = ref("");
+    const projectInfo = ref<any>();
+    const info = ref<any>();
 
     const statusClick = async (param: string) => {
       if (param === "public") {
@@ -104,7 +126,22 @@ export default defineComponent({
     const searchHandle = async () => {
       keyword.value = input.value;
       await getData(keyword.value, 0, 16, status.value);
-      currentPage.value = 1
+      currentPage.value = 1;
+    };
+
+    const updateProject = async () => {
+      createFlag.value = false;
+      await getData(keyword.value, currentPage.value - 1, 16, status.value);
+    };
+
+    const copyProject = (newId: string) => {
+      // createFlag.value = false;
+      router.push({
+        name: "project",
+        params: {
+          id: newId,
+        },
+      });
     };
 
     const deleteHandle = async () => {
@@ -112,8 +149,15 @@ export default defineComponent({
       notice("success", "成功", "删除成功");
     };
 
-    const updateHandle = async () => {
-      await getData(keyword.value, currentPage.value - 1, 16, status.value);
+    const copyAndUpdate = (val: {
+      title: string;
+      projectInfo: any;
+      info: any;
+    }) => {
+      title.value = val.title;
+      projectInfo.value = val.projectInfo;
+      info.value = val.info;
+      createFlag.value = true;
     };
 
     const handleCurrentChange = async (val: number) => {
@@ -132,12 +176,18 @@ export default defineComponent({
       currentPage,
       handleCurrentChange,
       deleteHandle,
-      updateHandle,
+      copyAndUpdate,
       active,
       statusClick,
       searchHandle,
       input,
-      keyword
+      keyword,
+      createFlag,
+      title,
+      info,
+      projectInfo,
+      updateProject,
+      copyProject,
     };
   },
 });
@@ -165,6 +215,19 @@ export default defineComponent({
     display: flex;
     justify-content: center;
     margin-top: 25px;
+  }
+  /deep/.el-dialog {
+    .el-dialog__header {
+      padding: 10px;
+      margin: 0;
+      background: #050d21;
+      .el-dialog__title {
+        color: white;
+      }
+    }
+    .el-dialog__body {
+      padding: 0;
+    }
   }
 }
 </style>

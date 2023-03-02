@@ -1,21 +1,21 @@
 <template>
   <div class="project-card">
     <div class="image">
-      <el-avatar shape="square" fit="cover" v-if="info.avatar === ''">{{
-        info.projectName
+      <el-avatar shape="square" fit="cover" v-if="propsInfo.avatar === ''">{{
+        propsInfo.projectName
       }}</el-avatar>
 
-      <img :src="prefix + 'visual/getAvatar/' + info.avatar" v-else />
+      <img :src="prefix + 'visual/getAvatar/' + propsInfo.avatar" v-else />
     </div>
     <div class="text">
       <div class="name">
-        <span v-html="replaceHandle(info.projectName)"></span>
+        <span v-html="replaceHandle(propsInfo.projectName)"></span>
       </div>
       <div class="creator">
         <el-icon><User /></el-icon>
-        <span v-html="replaceHandle(info.userName)"></span>
+        <span v-html="replaceHandle(propsInfo.userName)"></span>
       </div>
-      <div class="time">{{ getTime(info.createTime) }}</div>
+      <div class="time">{{ getTime(propsInfo.createTime) }}</div>
     </div>
     <div class="operate">
       <el-button
@@ -45,21 +45,6 @@
         </template>
       </el-dropdown>
     </div>
-    <el-dialog
-      v-model="createFlag"
-      width="500px"
-      :show-close="false"
-      :title="title"
-    >
-      <create-project
-        v-if="createFlag"
-        :projectInfo="projectInfo"
-        :info="info"
-        @updateProject="updateProject"
-        @copyProject="copyProject"
-        @createProject="createProject"
-      ></create-project>
-    </el-dialog>
   </div>
 </template>
 
@@ -69,10 +54,8 @@ import { dateFormat } from "@/utils/common";
 import { prefix } from "@/prefix";
 import { ElMessageBox } from "element-plus";
 import { deleteProject } from "@/api/request";
-import CreateProject from "@/components/analyse/CreateProject.vue";
 import router from "@/router";
 export default defineComponent({
-  components: { CreateProject },
   props: {
     info: {
       type: Object,
@@ -81,31 +64,31 @@ export default defineComponent({
       type: String,
     },
   },
-  emits: ["delete", "update"],
+  emits: ["delete", "copyAndUpdate"],
   setup(props, context) {
-    const createFlag = ref(false);
-    const info: any = computed(() => {
+    const propsInfo = computed(() => {
       return props.info;
     });
 
-    const createProjectInfo = ref<any>();
-    const projectInfo = ref<any>();
-    const title = ref("");
     const getTime = (time: string) => {
       return dateFormat(time, "yyyy-MM-dd hh:mm");
     };
 
     const commandHandle = (val: { type: string; index: number }) => {
       if (val.type === "update") {
-        projectInfo.value = undefined;
-        title.value = "修改项目";
-        createProjectInfo.value = JSON.parse(JSON.stringify(info.value));
-        createFlag.value = true;
+        let temp = { ...props.info };
+        context.emit("copyAndUpdate", {
+          title: "修改项目",
+          projectInfo: undefined,
+          info: temp,
+        });
       } else if (val.type === "copy") {
-        createProjectInfo.value = undefined;
-        title.value = "拷贝项目";
-        projectInfo.value = JSON.parse(JSON.stringify(info.value));
-        createFlag.value = true;
+        let temp = { ...props.info };
+        context.emit("copyAndUpdate", {
+          title: "拷贝项目",
+          projectInfo: temp,
+          info: undefined,
+        });
       } else if (val.type === "delete") {
         ElMessageBox.confirm("确定删除该项目吗?该操作执行后无法撤销", "警告", {
           confirmButtonText: "确定",
@@ -113,7 +96,7 @@ export default defineComponent({
           type: "warning",
         })
           .then(async () => {
-            const res = await deleteProject(info.id);
+            const res = await deleteProject(propsInfo.value?.id);
             if (res != null && (res as any).code === 0) {
               context.emit("delete");
             }
@@ -126,37 +109,7 @@ export default defineComponent({
       router.push({
         name: "project",
         params: {
-          id: info.value.id,
-        },
-      });
-    };
-
-    const updateProject = (val: {
-      avatar: string;
-      id: string;
-      projectName: string;
-      isPublic: boolean;
-    }) => {
-      context.emit("update");
-      createFlag.value = false;
-    };
-
-    const copyProject = (val: string) => {
-      createFlag.value = false;
-      router.push({
-        name: "project",
-        params: {
-          id: val,
-        },
-      });
-    };
-
-    const createProject = (val: string) => {
-      createFlag.value = false;
-      router.push({
-        name: "project",
-        params: {
-          id: val,
+          id: propsInfo.value?.id,
         },
       });
     };
@@ -172,15 +125,11 @@ export default defineComponent({
 
     return {
       getTime,
-      info,
+
+      propsInfo,
       prefix,
       commandHandle,
-      projectInfo,
-      createFlag,
-      title,
-      updateProject,
-      copyProject,
-      createProject,
+
       clickHandle,
       replaceHandle,
     };
@@ -262,20 +211,6 @@ export default defineComponent({
     position: absolute;
     right: 20px;
     bottom: 20px;
-  }
-
-  /deep/.el-dialog {
-    .el-dialog__header {
-      padding: 10px;
-      margin: 0;
-      background: #050d21;
-      .el-dialog__title {
-        color: white;
-      }
-    }
-    .el-dialog__body {
-      padding: 0;
-    }
   }
 }
 </style>
