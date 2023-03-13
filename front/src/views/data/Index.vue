@@ -174,7 +174,7 @@
           <div class="title"><strong>实时数据</strong></div>
           <div class="content">
             <ul>
-              <li class="text" @click="toNav('WaterLevel')">实时水情</li>
+              <li class="text">实时水情</li>
             </ul>
           </div>
         </div>

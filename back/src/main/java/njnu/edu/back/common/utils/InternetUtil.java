@@ -1,6 +1,8 @@
 package njnu.edu.back.common.utils;
 
 import com.alibaba.fastjson.JSONObject;
+import njnu.edu.back.common.exception.MyException;
+import njnu.edu.back.common.result.ResultEnum;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -15,6 +17,7 @@ import org.apache.http.util.EntityUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 
@@ -164,5 +167,29 @@ public class InternetUtil {
         }
         m.appendTail(b);
         return b.toString().replaceAll("\\+", "%20");
+    }
+
+    /**
+    * @Description:http协议
+    * @Author: Yiming
+    * @Date: 2023/3/13
+    */
+    public static <T>T httpHandle(String url, MultiValueMap<String, Object> param, Class<T> c, String method) throws Exception {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        org.springframework.http.HttpEntity httpEntity = new org.springframework.http.HttpEntity(param, headers);
+        ResponseEntity<T> result;
+        if (method.equals("post")) {
+            result = restTemplate.exchange(url, HttpMethod.POST, httpEntity, c);
+        } else if (method.equals("get")) {
+            result = restTemplate.exchange(url, HttpMethod.GET, httpEntity, c);
+        } else if (method.equals("delete")) {
+            result = restTemplate.exchange(url, HttpMethod.DELETE, httpEntity, c);
+        } else if (method.equals("put")) {
+            result = restTemplate.exchange(url, HttpMethod.PUT, httpEntity, c);
+        } else {
+            throw new Exception();
+        }
+        return result.getBody();
     }
 }

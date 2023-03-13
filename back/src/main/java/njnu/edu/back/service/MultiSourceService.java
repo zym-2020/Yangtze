@@ -39,11 +39,15 @@ public interface MultiSourceService {
 
     List<Map<String, Object>> getShipInfoByBoxAndTime(double top, double right, double bottom, double left, String startTime, String endTime);
 
+    List<JSONObject> queryBoxShip(double top, double right, double bottom, double left);
+
     JSONArray getBridgeInfo();
 
     void seaChart(String type, String x, String y, String z, HttpServletResponse response);
 
     JSONArray getStationByBox(Double top, Double right, Double bottom, Double left);
+
+    JSONArray getStationList();
 
     JSONArray getWaterLevelByStationAndTime(String type, String station, String startTime, String endTime);
 

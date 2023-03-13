@@ -29,7 +29,7 @@ export default defineComponent({
 
     const avatar = ref<HTMLElement>();
     const change = (uploadFile: UploadFile) => {
-      if (uploadFile.status === "ready") {
+      if (uploadFile.status === "ready" && uploadFile.raw) {
         imageUrl.value = URL.createObjectURL(uploadFile.raw);
         file.value = uploadFile.raw;
         context.emit("upload", file.value);

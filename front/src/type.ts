@@ -33,6 +33,33 @@ export type Ship = {
   width: string;
 };
 
+export type RealShip = {
+  acblx: string;
+  cb_aisdwlx: string;
+  cb_aisdwlx_name: string;
+  cb_aislx: string;
+  cbcs: string;
+  cbhh: string;
+  cbhx: number;
+  cbmc: string;
+  cd: string;
+  cjsj: string;
+  dqhs: number;
+  gxsj: string;
+  id: string;
+  imo: string;
+  jssj: string;
+  kd: string;
+  mdg: string;
+  mmsi: string;
+  sjly: string;
+  type: string;
+  yjsj: string;
+  zbjd: number;
+  zbwd: number;
+  zwmc: string;
+};
+
 export type Anchor = {
   id: string;
   mdmc: string;
@@ -104,6 +131,7 @@ export type Station = {
   lon: number;
   lat: number;
   type: string;
+  startTime: number[];
 };
 
 export type WaterLevelChartType = {

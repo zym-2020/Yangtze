@@ -37,8 +37,29 @@
       </div>
       <div>
         <el-button type="primary" plain @click="btnClick">查询</el-button>
+        <el-button type="warning" plain @click="dialogVisible = true"
+          >历史水位数据</el-button
+        >
       </div>
     </div>
+    <el-dialog v-model="dialogVisible" :show-close="false" width="500px">
+      <div class="history">
+        <el-table :data="fileList" border style="width: 100%" :height="400">
+          <el-table-column label="文件名">
+            <template #default="scope">
+              <span>{{ scope.row }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="下载" width="80">
+            <template #default="scope">
+              <el-button size="small" @click="downloadClick(scope.row)"
+                >下载</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -47,7 +68,7 @@ import { computed, defineComponent, onMounted, ref } from "vue";
 import WaterLevelChart from "@/components/visual/WaterLevelChart.vue";
 import { WaterLevelChartType } from "@/type";
 import { getWaterLevelByStationAndTime } from "@/api/request";
-import { dateFormat } from "@/utils/common";
+import { dateFormat, traverseDate } from "@/utils/common";
 import { Station, WaterLevel } from "@/type";
 export default defineComponent({
   components: { WaterLevelChart },
@@ -58,6 +79,8 @@ export default defineComponent({
   },
   setup(props) {
     const colors = ["#5470C6", "#91CC75", "#EE6666", "#E5DB4B"];
+    const dialogVisible = ref(false);
+    const fileList = ref<string[]>([]);
     const skeletonFlag = ref(true);
     const tableData = ref<WaterLevel[]>([]);
     const stationInfo = computed(() => {
@@ -182,8 +205,36 @@ export default defineComponent({
       loadingFlag.value = false;
     };
 
+    const getFileList = () => {
+      const timestamp = Date.now();
+      const timeList1 = traverseDate(
+        props.stationInfo?.startTime[0],
+        timestamp
+      );
+      const timeList2 = traverseDate(
+        props.stationInfo?.startTime[1],
+        timestamp
+      );
+      const name_en = props.stationInfo?.name_en;
+      timeList1.forEach((item) => {
+        fileList.value.push(name_en + item + ".txt");
+      });
+      timeList2.forEach((item) => {
+        fileList.value.push(name_en + "UTC+8" + item + ".txt");
+      });
+    };
+
+    const downloadClick = (name: string) => {
+      if (name.indexOf("UTC+") === -1) {
+        window.location.href = "https://geomodeling.njnu.edu.cn/waterLevel/download/downloadOne1/" + name;
+      } else {
+        window.location.href = "https://geomodeling.njnu.edu.cn/waterLevel/download/downloadOne2/" + name;
+      }
+    };
+
     onMounted(async () => {
       skeletonFlag.value = true;
+      getFileList();
       await dataHandle();
       skeletonFlag.value = false;
     });
@@ -200,6 +251,10 @@ export default defineComponent({
       loadingFlag,
       btnClick,
       waterLevelChart,
+      dialogVisible,
+      getFileList,
+      fileList,
+      downloadClick,
     };
   },
 });
@@ -239,6 +294,9 @@ export default defineComponent({
     .el-button {
       margin-left: 40px;
     }
+  }
+  .history {
+    padding: 20px;
   }
 }
 </style> 

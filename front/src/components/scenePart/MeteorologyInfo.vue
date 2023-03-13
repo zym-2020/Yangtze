@@ -44,7 +44,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .meteorology-info {
   width: 400px;
-  height: 230px;
+  height: 270px;
   .title {
     padding: 10px;
     color: white;
@@ -54,7 +54,7 @@ export default defineComponent({
   }
   .content {
     padding: 10px;
-    height: 160px;
+    height: 200px;
     font-size: 14px;
     background: white;
     .headline {

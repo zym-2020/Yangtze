@@ -640,17 +640,6 @@ export async function getBuoyByBox(
   );
 }
 
-export async function getShipInfoByBox(
-  top: number,
-  right: number,
-  bottom: number,
-  left: number
-) {
-  return await get(
-    `/multiSource/getShipInfoByBox/${top}/${right}/${bottom}/${left}`
-  );
-}
-
 export async function getShipInfoByBoxAndTime(
   top: number,
   right: number,
@@ -663,6 +652,17 @@ export async function getShipInfoByBoxAndTime(
     `/multiSource/getShipInfoByBoxAndTime/${top}/${right}/${bottom}/${left}/${startTime}/${endTime}`,
     undefined,
     true
+  );
+}
+
+export async function queryBoxShip(
+  top: number,
+  right: number,
+  bottom: number,
+  left: number
+) {
+  return await get(
+    `/multiSource/queryBoxShip/${top}/${right}/${bottom}/${left}`
   );
 }
 
@@ -694,6 +694,10 @@ export async function getBridgeInfo() {
 
 export async function getMeteorology() {
   return await get(`/multiSource/getMeteorology`);
+}
+
+export async function getStationList() {
+  return await get(`/multiSource/getStationList`);
 }
 
 export async function getStationByBox(

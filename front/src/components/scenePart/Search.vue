@@ -27,6 +27,16 @@
       <div>
         <div class="title">
           <span>{{ optionMap[selectValue] }}</span>
+          <div class="switch" v-if="selectValue === 'ship'">
+            <span>( </span>
+            <el-switch
+              v-model="switchValue"
+              active-text="实时数据"
+              inactive-text="模拟数据"
+              @change="switchChange"
+            />
+            <span> )</span>
+          </div>
           <el-icon @click="closeHandle"><Close /></el-icon>
         </div>
         <div>
@@ -68,10 +78,19 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { SearchTable, Buoy, Anchor, Park, Bridge, Station } from "@/type";
+import {
+  SearchTable,
+  Buoy,
+  Anchor,
+  Park,
+  Bridge,
+  Station,
+  RealShip,
+  Ship,
+} from "@/type";
 import { pageList } from "@/api/request";
 export default defineComponent({
-  emits: ["returnPoint"],
+  emits: ["returnPoint", "shipDataModeChange"],
   setup(_, context) {
     const inputValue = ref("");
     let keyword = "all";
@@ -79,6 +98,7 @@ export default defineComponent({
     const showFlag = ref(false);
     const skeletonFlag = ref(false);
     const tableData = ref<SearchTable[]>([]);
+    const switchValue = ref(true);
 
     const currentPage = ref(1);
     const total = ref(0);
@@ -155,7 +175,11 @@ export default defineComponent({
     };
 
     const getData = async (page: number, size: number) => {
-      const data = await pageList(selectValue.value, page, size, keyword);
+      let type = selectValue.value;
+      if (switchValue.value && selectValue.value == "ship") {
+        type = "realShip";
+      }
+      const data = await pageList(type, page, size, keyword);
       if (data != null && (data as any).code === 0) {
         tableData.value = data.data.list;
         total.value = data.data.total;
@@ -200,7 +224,7 @@ export default defineComponent({
     };
 
     const dblclickHnadle = (
-      row: Buoy | Bridge | Park | Anchor | Station | { mmsi: string }
+      row: Buoy | Bridge | Park | Anchor | Station | RealShip
     ) => {
       if ("hbmc" in row) {
         context.emit("returnPoint", {
@@ -228,12 +252,42 @@ export default defineComponent({
           point: [row.zbjd, row.zbwd],
           info: row,
         });
+      } else if ("mmsi" in row) {
+        if (switchValue) {
+          const ship: Ship = {
+            mmsi: row.mmsi,
+            update_time: row.jssj,
+            register_time: row.cjsj,
+            name: row.cbmc,
+            name_cn: row.zwmc,
+            direction: Number(row.cbhx),
+            velocity: Number(row.dqhs),
+            length: row.cd,
+            width: row.kd,
+            lon: Number(row.zbjd),
+            lat: Number(row.zbwd),
+          };
+          context.emit("returnPoint", {
+            point: [row.zbjd, row.zbwd],
+            info: ship,
+          });
+        }
+      }
+    };
+
+    const switchChange = async (val: boolean) => {
+      context.emit("shipDataModeChange", val);
+      if (selectValue.value === "ship") {
+        skeletonFlag.value = true;
+        await getData(0, 10);
+        skeletonFlag.value = false;
       }
     };
 
     return {
       inputValue,
       selectValue,
+      switchValue,
       options,
       showFlag,
       focusHandle,
@@ -249,6 +303,7 @@ export default defineComponent({
       replaceHandle,
       searchClick,
       dblclickHnadle,
+      switchChange,
     };
   },
 });
@@ -257,6 +312,10 @@ export default defineComponent({
 <style lang="scss" scoped>
 .search-component {
   width: 420px;
+  .el-input {
+    box-shadow: 0 0 3px 3px #ccc;
+  }
+
   .content {
     border-radius: 4px;
     padding: 10px;
@@ -264,11 +323,17 @@ export default defineComponent({
     min-height: 300px;
     background: white;
     margin-top: 10px;
+    box-shadow: 0 0 3px 3px #ccc;
     .title {
       position: relative;
       border-bottom: solid 1px;
       height: 30px;
       margin-bottom: 10px;
+      .switch {
+        position: absolute;
+        left: 65px;
+        top: -3px;
+      }
       .el-icon {
         position: absolute;
         right: 0px;

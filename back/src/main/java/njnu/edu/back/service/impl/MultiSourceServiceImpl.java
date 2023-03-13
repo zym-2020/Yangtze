@@ -14,22 +14,17 @@ import njnu.edu.back.service.MultiSourceService;
 import njnu.edu.back.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created with IntelliJ IDEA.
@@ -82,6 +77,18 @@ public class MultiSourceServiceImpl implements MultiSourceService {
 
     @Value("${visualAddress}")
     String visualAddress;
+
+    @Value("${meteorologyUrl}")
+    String meteorologyUrl;
+
+    @Value("${meteorologyPngUrl}")
+    String meteorologyPngUrl;
+
+    @Value("${AISUrl}")
+    String AISUrl;
+
+    @Value("${AISListUrl}")
+    String AISListUrl;
 
     @Override
     public List<Map<String, Object>> getBuoyByBox(double top, double right, double bottom, double left) {
@@ -251,12 +258,12 @@ public class MultiSourceServiceImpl implements MultiSourceService {
                 Map<String, String> map = new HashMap<>();
                 map.put("adcode", String.valueOf(code));
                 try {
-                    String str = InternetUtil.doGet("https://weather.cma.cn/api/map/alarm", map, "utf-8");
+                    String str = InternetUtil.doGet(meteorologyUrl, map, "utf-8");
                     JSONArray temp = JSON.parseObject(str).getJSONArray("data");
                     for (int j = 0; j < temp.size(); j++) {
                         File f = new File(resourcePath + "meteorology/png/" + temp.getJSONObject(j).getString("type") + ".png");
                         if (!f.exists()) {
-                            String url = "http://data.cma.cn/dataGis/static/ultra/img/gis/disasterWarning/" + temp.getJSONObject(j).getString("type") + ".png";
+                            String url = meteorologyPngUrl + temp.getJSONObject(j).getString("type") + ".png";
                             String pngPath = resourcePath + "meteorology/png/" + temp.getJSONObject(j).getString("type") + ".png";
                             InternetUtil.downloadMeteorologyPng(url, pngPath);
                         }
@@ -354,6 +361,37 @@ public class MultiSourceServiceImpl implements MultiSourceService {
     }
 
     @Override
+    public List<JSONObject> queryBoxShip(double top, double right, double bottom, double left) {
+        List<JSONObject> list = new ArrayList<>();
+        JSONObject jsonObject;
+        String url = MessageFormat.format(AISUrl, left, bottom, right, top);
+        try {
+            jsonObject = InternetUtil.httpHandle(url, new LinkedMultiValueMap<>(), JSONObject.class, "get");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
+        JSONArray jsonArray = jsonObject.getJSONObject("data").getJSONObject("hits").getJSONArray("hits");
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JSONObject json = JSON.parseObject(jsonArray.getJSONObject(i).getJSONObject("_source").getString("info"));
+            JSONObject j = new JSONObject();
+            j.put("mmsi", json.getString("mmsi"));
+            j.put("update_time", json.getString("jssj"));
+            j.put("register_time", json.getString("cjsj"));
+            j.put("name", json.getString("cbmc"));
+            j.put("name_cn", json.getString("zwmc"));
+            j.put("direction", json.getString("cbhx"));
+            j.put("velocity", json.getString("dqhs"));
+            j.put("length", json.getString("cd"));
+            j.put("width", json.getString("kd"));
+            j.put("lon", json.getString("zbjd"));
+            j.put("lat", json.getString("zbwd"));
+            list.add(j);
+        }
+        return list;
+    }
+
+    @Override
     public JSONArray getBridgeInfo() {
         return FileUtil.readJsonArray(resourcePath + "bridge.json");
     }
@@ -405,6 +443,11 @@ public class MultiSourceServiceImpl implements MultiSourceService {
     }
 
     @Override
+    public JSONArray getStationList() {
+        return FileUtil.readJsonArray(resourcePath + "station_name.json");
+    }
+
+    @Override
     public JSONArray getWaterLevelByStationAndTime(String type, String station, String startTime, String endTime) {
         String prefix;
         if (type.equals("yangtze")) {
@@ -436,6 +479,7 @@ public class MultiSourceServiceImpl implements MultiSourceService {
     @Override
     public Map<String, Object> pageList(String type, int page, int size, String keyword) {
         Map<String, Object> map = new HashMap<>();
+        String name = keyword.equals("all") ? "" : keyword;
         if (!keyword.equals("all")) {
             keyword = "%" + keyword + "%";
         }
@@ -467,6 +511,23 @@ public class MultiSourceServiceImpl implements MultiSourceService {
             }
             map.put("total", jsonArray.size());
             map.put("list", list);
+        } else if (type.equals("realShip")) {
+            String url = MessageFormat.format(AISListUrl, page * size, size, name);
+            JSONObject jsonObject;
+            try {
+                jsonObject = InternetUtil.httpHandle(url, new LinkedMultiValueMap<>(), JSONObject.class, "get");
+                JSONArray jsonArray = jsonObject.getJSONObject("data").getJSONObject("hits").getJSONArray("hits");
+                map.put("total", jsonObject.getJSONObject("data").getJSONObject("hits").getIntValue("total"));
+                List<JSONObject> list = new ArrayList<>();
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    JSONObject json = JSON.parseObject(jsonArray.getJSONObject(i).getJSONObject("_source").getString("info"));
+                    list.add(json);
+                }
+                map.put("list", list);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+            }
         } else {
             throw new MyException(ResultEnum.NO_OBJECT);
         }

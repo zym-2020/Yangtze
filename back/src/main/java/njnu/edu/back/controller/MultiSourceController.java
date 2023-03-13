@@ -7,8 +7,11 @@ import njnu.edu.back.common.result.ResultUtils;
 import njnu.edu.back.service.MultiSourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -127,10 +130,19 @@ public class MultiSourceController {
     * @Author: Yiming
     * @Date: 2022/12/7
     */
-    @CrossOrigin
     @RequestMapping(value = "/getShipInfoByBoxAndTime/{top}/{right}/{bottom}/{left}/{startTime}/{endTime}", method = RequestMethod.GET)
     public List<Map<String, Object>> getShipInfoByBoxAndTime(@PathVariable double top, @PathVariable double right, @PathVariable double bottom, @PathVariable double left, @PathVariable String startTime, @PathVariable String endTime) {
         return multiSourceService.getShipInfoByBoxAndTime(top, right, bottom, left, startTime, endTime);
+    }
+
+    /**
+    * @Description:AIS船舶实时接入
+    * @Author: Yiming
+    * @Date: 2023/3/13
+    */
+    @RequestMapping(value = "/queryBoxShip/{top}/{right}/{bottom}/{left}", method = RequestMethod.GET)
+    public List<JSONObject> queryBoxShip(@PathVariable double top, @PathVariable double right, @PathVariable double bottom, @PathVariable double left) {
+        return multiSourceService.queryBoxShip(top, right, bottom, left);
     }
 
 
@@ -160,6 +172,11 @@ public class MultiSourceController {
         return ResultUtils.success(multiSourceService.getStationByBox(top, right, bottom, left));
     }
 
+    @RequestMapping(value = "/getStationList", method = RequestMethod.GET)
+    public JsonResult getStationList() {
+        return ResultUtils.success(multiSourceService.getStationList());
+    }
+
     @RequestMapping(value = "/getWaterLevelByStationAndTime/{type}/{station}/{startTime}/{endTime}", method = RequestMethod.GET)
     public JsonResult getWaterLevelByStationAndTime(@PathVariable String type, @PathVariable String station, @PathVariable String startTime, @PathVariable String endTime) {
         return ResultUtils.success(multiSourceService.getWaterLevelByStationAndTime(type, station, startTime, endTime));
@@ -174,5 +191,6 @@ public class MultiSourceController {
     public JsonResult pageList(@RequestParam String type, @RequestParam int page, @RequestParam int size, @RequestParam String keyword) {
         return ResultUtils.success(multiSourceService.pageList(type, page, size, keyword));
     }
+
 
 }

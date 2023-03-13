@@ -20,7 +20,7 @@ export const constantRoutes: Array<RouteRecordRaw> = [
         component: Home,
         meta: {
           keepAlive: true,
-          title: "水文综合信息管理与分析平台",
+          title: "深水航道水沙环境与工程安全平台",
           key: "Home",
         },
       },
@@ -93,16 +93,6 @@ export const asyncRouters: Array<RouteRecordRaw> = [
           role: ["member", "admin"],
           title: "数据详情",
           key: "ShareFile",
-        },
-      },
-      {
-        path: "waterLevel",
-        name: "WaterLevel",
-        component: () => import("@/views/data/WaterLevel.vue"),
-        meta: {
-          role: ["member", "admin"],
-          title: "实时水情",
-          key: "WaterLevel",
         },
       },
     ],

@@ -2,8 +2,12 @@
   <div class="waterway">
     <head-notice :content="meteorologyList" />
     <div class="search">
-      <search @returnPoint="returnPoint" />
+      <search
+        @returnPoint="returnPoint"
+        @shipDataModeChange="shipDataModeChange"
+      />
     </div>
+
     <div id="layer-control" :class="{ active: controlActive }">
       <el-row id="layer-panel">
         <el-col id="layers-drop" :span="19">
@@ -17,7 +21,6 @@
                 <el-checkbox label="桥梁" />
                 <el-checkbox label="气象预警" />
                 <el-checkbox label="水位站点" />
-                <!-- <el-checkbox label="其他设施" /> -->
               </el-checkbox-group>
             </el-collapse-item>
           </el-collapse>
@@ -68,6 +71,7 @@ import { Point, Polygon } from "ol/geom";
 import {
   getBuoyByBox,
   getShipInfoByBoxAndTime,
+  queryBoxShip,
   getAnchorInfoByBox,
   getParkInfoByBox,
   getBridgeInfo,
@@ -86,6 +90,7 @@ import MeteorologyInfo from "@/components/scenePart/MeteorologyInfo.vue";
 import HeadNotice from "@/components/scenePart/HeadNotice.vue";
 import StationInfo from "@/components/scenePart/StationInfo.vue";
 import Search from "@/components/scenePart/Search.vue";
+import { AxiosResponse } from "axios";
 
 export default defineComponent({
   components: {
@@ -150,6 +155,7 @@ export default defineComponent({
     let toggleURLList = ["./layer.png", "./angle-double-left.png"];
     let toggleUrlIndex = 0;
     let toggleURL = ref(toggleURLList[toggleUrlIndex]);
+    let shipDataMode = true; //true为实时数据，false为模拟数据
 
     const init = () => {
       for (let i = 0; i < 24; i++) {
@@ -202,7 +208,7 @@ export default defineComponent({
       });
       meteorologyOverlay = new Overlay({
         element: meteorologyWindow.value,
-        offset: [-200, -240],
+        offset: [-200, -280],
         autoPan: {
           animation: {
             duration: 250,
@@ -430,14 +436,20 @@ export default defineComponent({
       }
       if ((map.getView().getZoom() as number) >= 12) {
         const coor = map.getView().calculateExtent(map.getSize());
-        const data = await getShipInfoByBoxAndTime(
-          coor[3],
-          coor[2],
-          coor[1],
-          coor[0],
-          timeArr[count],
-          timeArr[(count + 1) % timeArr.length]
-        );
+        let data: AxiosResponse;
+        if (shipDataMode) {
+          data = await queryBoxShip(coor[3], coor[2], coor[1], coor[0]);
+        } else {
+          data = await getShipInfoByBoxAndTime(
+            coor[3],
+            coor[2],
+            coor[1],
+            coor[0],
+            timeArr[count],
+            timeArr[(count + 1) % timeArr.length]
+          );
+        }
+
         const features: Feature[] = [];
 
         if (data != null) {
@@ -731,6 +743,7 @@ export default defineComponent({
     ) => {
       if ("mmsi" in info) {
         shipInfo.value = info;
+        (bridgeWindow.value as any).closeClick();
         (shipWindow.value as any).extend();
       } else if ("zxaqjl" in info) {
         buoyInfo.value = info;
@@ -743,6 +756,7 @@ export default defineComponent({
         parkOverlay.setPosition([info.zbjd, info.zbwd]);
       } else if ("polygon" in info) {
         bridgeInfo.value = info as any as Bridge;
+        (shipWindow.value as any).HideInfo();
         (bridgeWindow.value as any).popupClick();
       } else if ("effective" in info) {
         meteorologyInfo.value = info;
@@ -762,8 +776,15 @@ export default defineComponent({
         rotation: undefined, // 缩放完成view视图旋转弧度
         duration: 1000, // 缩放持续时间，默认不需要设置
       });
-      if (!("name_en" in val.info)) {
-        showInfo(val.info);
+      showInfo(val.info);
+    };
+
+    const shipDataModeChange = async (val: boolean) => {
+      shipDataMode = val;
+      if (!shipDataMode) setTime();
+      else {
+        if (t != null && t != undefined) clearTimeout(t);
+        await updateShip();
       }
     };
 
@@ -774,11 +795,11 @@ export default defineComponent({
     });
 
     onDeactivated(() => {
-      clearTimeout(t);
+      if (t != null && t != undefined) clearTimeout(t);
     });
 
     onActivated(() => {
-      setTime();
+      if (!shipDataMode) setTime();
     });
 
     return {
@@ -805,6 +826,7 @@ export default defineComponent({
       meteorologyList,
       stationDialog,
       returnPoint,
+      shipDataModeChange,
     };
   },
 });

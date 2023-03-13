@@ -63,9 +63,6 @@ pythondir:
   D:/zhuomian/水科院/python/
 
 
-
-
-
 pictureAddress:
   E:/yangtze/other/picture/
 visualAddress:
@@ -92,3 +89,14 @@ pgpath:
 #水情服务地址
 waterLevelAddress:
   http://172.21.212.116:9999
+
+#气象预警地址
+meteorologyUrl:
+  https://weather.cma.cn/api/map/alarm
+meteorologyPngUrl:
+  http://data.cma.cn/dataGis/static/ultra/img/gis/disasterWarning/
+#AIS船舶地址
+AISUrl:
+  http://www.cjienc.cn/rest/es/queryBoxShip?left={0}&bottom={1}&right={2}&top={3}
+AISListUrl:
+  http://www.cjienc.cn//rest/es/query/{0}/{1}?lx=acb&name={2}

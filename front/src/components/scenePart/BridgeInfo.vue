@@ -343,14 +343,14 @@ export default defineComponent({
 <style lang="scss" scoped>
 .bridge-info {
   position: absolute;
-  right: 0vw;
+  left: 0vw;
   width: 360px;
   height: 74vh;
   top: 100px;
   z-index: 99;
   border-top-left-radius: 6px;
   border-bottom-left-radius: 6px;
-  transform: translateX(400px);
+  transform: translateX(-400px);
   background: white;
   &.active {
     transform: translateX(0);
