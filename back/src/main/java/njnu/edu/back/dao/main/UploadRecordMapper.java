@@ -21,4 +21,6 @@ public interface UploadRecordMapper {
     List<Map<String, Object>> getRecords(@Param("email") String email);
 
     void delRecord(@Param("id") String id);
+
+    void delAll();
 }

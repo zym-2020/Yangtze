@@ -17,4 +17,8 @@
     <delete id="delRecord">
         delete from upload_record where id::text = #{id};
     </delete>
+
+    <delete id="delAll">
+        delete from upload_record
+    </delete>
 </mapper>

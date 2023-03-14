@@ -265,7 +265,11 @@ public class MultiSourceServiceImpl implements MultiSourceService {
                         if (!f.exists()) {
                             String url = meteorologyPngUrl + temp.getJSONObject(j).getString("type") + ".png";
                             String pngPath = resourcePath + "meteorology/png/" + temp.getJSONObject(j).getString("type") + ".png";
-                            InternetUtil.downloadMeteorologyPng(url, pngPath);
+                            try {
+                                InternetUtil.downloadMeteorologyPng(url, pngPath);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                         result.add(temp.getJSONObject(j));
                     }
@@ -403,6 +407,8 @@ public class MultiSourceServiceImpl implements MultiSourceService {
             path = resourcePath + "shipSpiderRes/depth_" + z + "/map/" + y + "_" + x + "_map.png";
         } else if(type.equals("mark")) {
             path = resourcePath + "shipSpiderRes/depth_" + z + "/mark/" + y + "_" + x + "_mark.png";
+        } else if (type.equals("yangtze")) {
+            path = MessageFormat.format(resourcePath + "yangtzeTiles/{0}/{1}/{2}.png", z, x, y);
         } else {
             throw new MyException(-99, "type参数错误");
         }

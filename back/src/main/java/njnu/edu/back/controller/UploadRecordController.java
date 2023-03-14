@@ -41,4 +41,11 @@ public class UploadRecordController {
         uploadRecordService.delRecord(id);
         return ResultUtils.success();
     }
+
+    @AuthCheck
+    @RequestMapping(value = "/delAll", method = RequestMethod.DELETE)
+    public JsonResult delAll() {
+        uploadRecordService.delAll();
+        return ResultUtils.success();
+    }
 }

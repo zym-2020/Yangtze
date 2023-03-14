@@ -18,4 +18,6 @@ public interface UploadRecordService {
     void delRecord(String id);
 
     void addRecord(UploadRecord record, String email);
+
+    void delAll();
 }

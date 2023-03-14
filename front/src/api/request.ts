@@ -92,6 +92,10 @@ export async function addRecord(jsonData: AddRecordJsonData) {
   return await post(`/uploadRecord/addRecord`, jsonData);
 }
 
+export async function delAll() {
+  return await del(`/uploadRecord/delAll`);
+}
+
 //========================analyticDataSet相关接口=================================
 export async function findDataByType(type: string) {
   return await get(`/analyticDataSet/findDataByType/${type}`);

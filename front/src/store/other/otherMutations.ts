@@ -45,6 +45,7 @@ export const otherMutations: MutationTree<OtherState> & Mutations = {
         state.waitList.push(waitItem)
     },
     SET_UPLOADED_LIST(state: OtherState, uploadedList: { id: string, fileName: string, uploader: string, uploadTime: Date, size: string }[]) {
+        state.uploadedList = []
         uploadedList.forEach(item => {
             state.uploadedList.push({
                 id: item.id,

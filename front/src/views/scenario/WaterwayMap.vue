@@ -68,6 +68,8 @@ import XYZ from "ol/source/XYZ";
 import { prefix } from "@/prefix";
 import { defaults as defaultControls } from "ol/control";
 import { Point, Polygon } from "ol/geom";
+import { getWidth, getTopLeft } from "ol/extent";
+import { get } from "ol/proj";
 import {
   getBuoyByBox,
   getShipInfoByBoxAndTime,
@@ -157,6 +159,13 @@ export default defineComponent({
     let toggleURL = ref(toggleURLList[toggleUrlIndex]);
     let shipDataMode = true; //true为实时数据，false为模拟数据
 
+    const startResolution = getWidth(get("EPSG:3857")!.getExtent()) / 256;
+    const resolutions: number[] = new Array(22);
+    for (var i = 0, ii = resolutions.length; i < ii; ++i) {
+      resolutions[i] = startResolution / Math.pow(2, i);
+    }
+    console.log(resolutions);
+
     const init = () => {
       for (let i = 0; i < 24; i++) {
         let hour = "";
@@ -232,16 +241,23 @@ export default defineComponent({
             visible: true,
             source: new XYZ({
               // url: "http://t0.tianditu.com/DataServer?T=ter_c&x={x}&y={y}&l={z}&tk=2e23e92f7c9790018ab06498f1f55c1e",
-              url: "http://t0.tianditu.com/DataServer?T=vec_c&x={x}&y={y}&l={z}&tk=35a94ab5985969d0b93229c30db6abd6",
+              // url: "http://t0.tianditu.com/DataServer?T=vec_c&x={x}&y={y}&l={z}&tk=35a94ab5985969d0b93229c30db6abd6",
               projection: "EPSG:4326",
             }),
           }),
           new TileLayer({
             visible: true,
-            source: new XYZ({
-              url: "http://t0.tianditu.com/DataServer?T=cva_c&x={x}&y={y}&l={z}&tk=35a94ab5985969d0b93229c30db6abd6",
-              projection: "EPSG:4326",
-            }),
+            // source: new XYZ({
+            //   url: "http://t0.tianditu.com/DataServer?T=cva_c&x={x}&y={y}&l={z}&tk=35a94ab5985969d0b93229c30db6abd6",
+            //   projection: "EPSG:4326",
+            // }),
+          }),
+          new TileLayer({
+            visible: true,
+            // source: new XYZ({
+            //   url: prefix + "multiSource/seaChart/yangtze/{x}/{y}/{z}",
+            //   projection: "EPSG:3857",
+            // }),
           }),
           //海图图层
           new TileLayer({
@@ -267,43 +283,43 @@ export default defineComponent({
               projection: "EPSG:4326",
             }),
           }),
-          //   锚地图层（4）
+          //   锚地图层（5）
           new VectorLayer({
             source: new VectorSource({
               features: [],
             }),
           }),
-          //   停泊区图层（5）
+          //   停泊区图层（6）
           new VectorLayer({
             source: new VectorSource({
               features: [],
             }),
           }),
-          //   桥梁图层(6)
+          //   桥梁图层(7)
           new VectorLayer({
             source: new VectorSource({
               features: [],
             }),
           }),
-          //   浮标图层（7）
+          //   浮标图层（8）
           new VectorLayer({
             source: new VectorSource({
               features: [],
             }),
           }),
-          //   AIS船舶图层（8）
+          //   AIS船舶图层（9）
           new VectorLayer({
             source: new VectorSource({
               features: [],
             }),
           }),
-          //   气象预警（9）
+          //   气象预警（10）
           new VectorLayer({
             source: new VectorSource({
               features: [],
             }),
           }),
-          //水位站图层（10）
+          //水位站图层（11）
           new VectorLayer({
             source: new VectorSource({
               features: [],
@@ -395,13 +411,13 @@ export default defineComponent({
           features.push(f);
         });
 
-        map.getAllLayers()[7].setSource(
+        map.getAllLayers()[8].setSource(
           new VectorSource({
             features: features,
           })
         );
       } else {
-        map.getAllLayers()[7].setSource(
+        map.getAllLayers()[8].setSource(
           new VectorSource({
             features: [],
           })
@@ -475,14 +491,14 @@ export default defineComponent({
               features.push(f);
             }
           });
-          map.getAllLayers()[8].setSource(
+          map.getAllLayers()[9].setSource(
             new VectorSource({
               features: features,
             })
           );
         }
       } else {
-        map.getAllLayers()[8].setSource(
+        map.getAllLayers()[9].setSource(
           new VectorSource({
             features: [],
           })
@@ -518,13 +534,13 @@ export default defineComponent({
           features.push(f);
         });
 
-        map.getAllLayers()[4].setSource(
+        map.getAllLayers()[5].setSource(
           new VectorSource({
             features: features,
           })
         );
       } else {
-        map.getAllLayers()[4].setSource(
+        map.getAllLayers()[5].setSource(
           new VectorSource({
             features: [],
           })
@@ -557,13 +573,13 @@ export default defineComponent({
           }
         });
 
-        map.getAllLayers()[5].setSource(
+        map.getAllLayers()[6].setSource(
           new VectorSource({
             features: features,
           })
         );
       } else {
-        map.getAllLayers()[5].setSource(
+        map.getAllLayers()[6].setSource(
           new VectorSource({
             features: [],
           })
@@ -596,7 +612,7 @@ export default defineComponent({
           features.push(f);
         });
 
-        map.getAllLayers()[6].setSource(
+        map.getAllLayers()[7].setSource(
           new VectorSource({
             features: features,
           })
@@ -631,7 +647,7 @@ export default defineComponent({
         });
 
         map
-          .getAllLayers()[9]
+          .getAllLayers()[10]
           .setSource(new VectorSource({ features: features }));
       }
     };
@@ -661,13 +677,13 @@ export default defineComponent({
           features.push(f);
         });
 
-        map.getAllLayers()[10].setSource(
+        map.getAllLayers()[11].setSource(
           new VectorSource({
             features: features,
           })
         );
       } else {
-        map.getAllLayers()[10].setSource(
+        map.getAllLayers()[11].setSource(
           new VectorSource({
             features: [],
           })
@@ -722,7 +738,7 @@ export default defineComponent({
           oj[item] = true;
         }
       });
-      let temp = 4;
+      let temp = 5;
       for (let key in oj) {
         if (oj[key]) {
           map.getAllLayers()[temp].setVisible(true);

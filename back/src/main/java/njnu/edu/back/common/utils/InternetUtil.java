@@ -133,7 +133,7 @@ public class InternetUtil {
     * @Author: Yiming
     * @Date: 2023/2/23
     */
-    public static void downloadMeteorologyPng(String url, String path) {
+    public static void downloadMeteorologyPng(String url, String path) throws Exception {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         org.springframework.http.HttpEntity httpEntity = new org.springframework.http.HttpEntity(headers);
@@ -146,6 +146,7 @@ public class InternetUtil {
             outs.close();
         } catch (Exception e) {
             e.printStackTrace();
+            throw e;
         }
     }
 

@@ -13,6 +13,11 @@
       "
     />
     <div class="scroll" v-else>
+      <div class="btn">
+        <el-button type="primary" link @click="delClick"
+          >删除所有记录</el-button
+        >
+      </div>
       <el-scrollbar>
         <div class="card" v-for="(value, key) in uploading" :key="key">
           <div class="file-name" :title="value.name">{{ value.name }}</div>
@@ -67,16 +72,11 @@
 </template>
 
 <script lang="ts">
-type Record = {
-  id: string;
-  fileName: string;
-  uploader: string;
-  uploadTime: string;
-  size: string;
-};
 import { computed, defineComponent, onMounted, ref, watch } from "vue";
 import { useStore } from "@/store";
 import { dateFormat } from "@/utils/common";
+import { delAll } from "@/api/request";
+import { notice } from "@/utils/notice";
 export default defineComponent({
   setup() {
     const store = useStore();
@@ -118,6 +118,14 @@ export default defineComponent({
       }
     };
 
+    const delClick = async () => {
+      const data = await delAll();
+      if (data != null && (data as any).code === 0) {
+        notice("success", "成功", "删除成功");
+        store.commit("SET_UPLOADED_LIST", []);
+      }
+    };
+
     onMounted(async () => {
       skeleton.value = true;
       await store.dispatch("initUploadedList", undefined);
@@ -131,6 +139,7 @@ export default defineComponent({
       uploadedList,
       closeHandle,
       getDate,
+      delClick,
     };
   },
 });
@@ -149,6 +158,14 @@ export default defineComponent({
     }
   }
   .scroll {
+    .btn {
+      height: 25px;
+      position: relative;
+      .el-button {
+        position: absolute;
+        right: 0px;
+      }
+    }
     height: calc(100% - 350px);
     .card {
       height: 100px;

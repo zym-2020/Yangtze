@@ -13,17 +13,18 @@
       <div class="btn">
         <el-button size="small" @click="openCreateFolder">创建文件夹</el-button>
         <el-button size="small" @click="flushed">刷新</el-button>
-        <el-button type="info" size="small" @click="uploadClick"
-          >上传</el-button
-        >
-        <input
-          type="file"
-          style="display: none"
-          multiple="multiple"
-          @change="checkFile($event)"
-          v-if="isShowFile"
+        <el-upload
+          action="#"
+          multiple
+          :auto-upload="false"
+          :show-file-list="false"
+          :on-change="uploadChange"
           ref="upload"
-        />
+        >
+          <el-button type="info" size="small" class="upload-btn"
+            >上传</el-button
+          >
+        </el-upload>
       </div>
     </div>
     <div v-if="!skeletonFlag" class="table">
@@ -186,6 +187,7 @@ import { useStore } from "@/store";
 import { decrypt } from "@/utils/auth";
 import { uuid, getFileSize } from "@/utils/common";
 import DataPreview from "../components/DataPreview.vue";
+import { UploadFile, UploadFiles } from "element-plus";
 
 NProgress.configure({ showSpinner: false });
 export default defineComponent({
@@ -205,7 +207,6 @@ export default defineComponent({
     const folderNames = ref<string[]>([]);
 
     const upload = ref<HTMLElement>();
-    const isShowFile = ref(true);
 
     const dataPreviewFlag = ref(false);
     const visualBindFlag = ref(false);
@@ -462,23 +463,15 @@ export default defineComponent({
       }
     };
 
-    const uploadClick = () => {
-      upload.value?.click();
-      isShowFile.value = false;
-    };
-
-    const checkFile = (val: any) => {
-      console.log(123, val.target.files);
-      isShowFile.value = true;
-
-      for (let i = 0; i < val.target.files.length; i++) {
-        store.commit("ADD_WAIT_ITEM", {
-          id: uuid(),
-          name: val.target.files[i].name,
-          file: val.target.files[i],
-          size: getFileSize(val.target.files[i].size),
-        });
-      }
+    const uploadChange = (uploadFile: UploadFile, uploadFiles: UploadFiles) => {
+      console.log(uploadFile, uploadFiles);
+      (upload.value as any).clearFiles();
+      store.commit("ADD_WAIT_ITEM", {
+        id: uuid(),
+        name: uploadFile.name,
+        file: uploadFile.raw!,
+        size: getFileSize(uploadFile.size!),
+      });
       store.dispatch("uploadFiles", {
         parentId:
           path.value.length === 0 ? "" : path.value[path.value.length - 1].id,
@@ -525,7 +518,6 @@ export default defineComponent({
       path,
       dblclick,
       backClick,
-      uploadClick,
       dialogCreateFolder,
       openCreateFolder,
       createFolder,
@@ -538,12 +530,11 @@ export default defineComponent({
       deleteClick,
       downloadClick,
       changeHandle,
+      uploadChange,
       selectList,
       batDelete,
       isVisual,
       upload,
-      checkFile,
-      isShowFile,
       viewClick,
       dataPreviewFlag,
       fileInfo,
@@ -587,6 +578,10 @@ export default defineComponent({
     .btn {
       position: absolute;
       right: 0px;
+      display: flex;
+      .upload-btn {
+        margin-left: 10px;
+      }
     }
   }
   .table {

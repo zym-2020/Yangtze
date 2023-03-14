@@ -37,4 +37,9 @@ public class UploadRecordServiceImpl implements UploadRecordService {
         record.setUploader(email);
         uploadRecordMapper.addUploadRecord(record);
     }
+
+    @Override
+    public void delAll() {
+        uploadRecordMapper.delAll();
+    }
 }
