@@ -108,16 +108,14 @@ public class FileController {
         return ResultUtils.success(fileService.bindVisualData(jsonObject));
     }
 
+    @RequestMapping(value = "/cancelVisualBind/{fileId}", method = RequestMethod.DELETE)
+    public JsonResult cancelVisualBind(@PathVariable String fileId) {
 
-
-    /**
-    * @Description:检查文件完整性
-    * @Author: Yiming
-    * @Date: 2022/10/4
-    */
-
-    @RequestMapping(value = "/check", method = RequestMethod.POST)
-    public JsonResult check(@RequestBody JSONObject jsonObject) {
-        return ResultUtils.success(fileService.check(jsonObject.getStr("path")));
+        fileService.cancelVisualBind(fileId);
+        return ResultUtils.success();
     }
+
+
+
+
 }

@@ -57,7 +57,7 @@
               <data-description
                 :data="{
                   key: '数据时间：',
-                  value: date(fileInfo.timeStamp),
+                  value: fileInfo.timeStamp,
                 }"
               ></data-description>
             </el-col>
@@ -568,7 +568,7 @@ export default defineComponent({
       currentPageSimilar,
       pageChangeSimilar,
       similarClick,
-      downloadAll
+      downloadAll,
     };
   },
 });

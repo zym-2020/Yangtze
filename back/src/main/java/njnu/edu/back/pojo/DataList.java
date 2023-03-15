@@ -37,5 +37,5 @@ public class DataList {
     String providerAddress;
     Boolean getOnline;
     String detail;
-    Date timeStamp;
+    String timeStamp;
 }

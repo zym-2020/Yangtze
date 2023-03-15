@@ -27,30 +27,29 @@
           />
         </el-form-item>
         <el-form-item label="标签：" prop="tags">
-          <el-select
-            v-model="form.tags"
-            multiple
-            placeholder="标签"
-            size="large"
-            style="width: 300px"
+          <el-tag
+            v-for="tag in form.tags"
+            :key="tag"
+            closable
+            :disable-transitions="false"
+            @close="handleClose(tag)"
           >
-            <el-option-group
-              v-for="(group, groupIndex) in options"
-              :key="groupIndex"
-              :label="group.title"
-            >
-              <el-option
-                v-for="(item, index) in group.data"
-                :key="index"
-                :label="item.name"
-                :value="item.name"
-              />
-            </el-option-group>
-          </el-select>
+            {{ tag }}
+          </el-tag>
+          <el-input
+            v-if="inputVisible"
+            ref="InputRef"
+            class="tag-input"
+            v-model="inputValue"
+            @keyup.enter="handleInputConfirm"
+            @blur="handleInputConfirm"
+          />
+          <el-button v-else @click="showInput"> + New Tag </el-button>
         </el-form-item>
 
         <el-form-item label="条目封面：">
           <avatar-upload
+            ref="avatarUpload"
             @upload="upload"
             :pictureName="avatarName"
           ></avatar-upload>
@@ -97,13 +96,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="数据时间：">
-          <el-date-picker
-            v-model="form.timeStamp"
-            type="date"
-            placeholder="选取时间"
-            size="default"
-            @change="say(form.timeStamp)"
-          />
+          <el-input v-model="form.timeStamp" />
         </el-form-item>
         <el-form-item label="空间范围描述：">
           <el-input v-model="form.range" />
@@ -112,7 +105,7 @@
           <div ref="container" class="container"></div>
         </el-form-item>
         <el-form-item label="数据绑定：">
-          <data-bind @changeData="changeData" />
+          <data-bind ref="dataBind" @changeData="changeData" />
         </el-form-item>
         <el-form-item label="数据获取方式：" prop="getOnline">
           <el-radio-group v-model="form.getOnline">
@@ -164,6 +157,8 @@ import {
   shallowRef,
   onBeforeUnmount,
   onMounted,
+  onActivated,
+  nextTick,
 } from "vue";
 import "@wangeditor/editor/dist/css/style.css"; // 引入 css
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
@@ -171,14 +166,14 @@ import { IDomEditor } from "@wangeditor/editor";
 import DataBind from "./components/DataBind.vue";
 import type { FormInstance } from "element-plus";
 import AvatarUpload from "@/components/upload/AvatarUpload.vue";
-import mapBoxGl, { AnySourceData } from "mapbox-gl";
+import mapBoxGl from "mapbox-gl";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { updateDataList, updateRelational } from "@/api/request";
 import router from "@/router";
 import { notice } from "@/utils/notice";
 import PageCopyright from "@/layout/components/PageCopyright.vue";
-
+import { ElInput } from "element-plus";
 export default defineComponent({
   components: {
     Editor,
@@ -192,6 +187,12 @@ export default defineComponent({
       children: "children",
       label: "label",
     };
+
+    const inputValue = ref("");
+    const inputVisible = ref(false);
+    const InputRef = ref<InstanceType<typeof ElInput>>();
+    const avatarUpload = ref();
+    const dataBind = ref();
 
     const editorRef = shallowRef<IDomEditor>();
     const toolbarConfig = {};
@@ -240,6 +241,21 @@ export default defineComponent({
       return coordinates;
     };
 
+    const computeCenter = (location: string[]): [number, number] => {
+      if (location.length > 0) {
+        const center: [number, number] = [0, 0];
+        for (let i = 0; i < location.length; i = i + 2) {
+          center[0] += parseFloat(location[i]);
+          center[1] += parseFloat(location[i + 1]);
+        }
+        center[0] = center[0] / (location.length / 2);
+        center[1] = center[1] / (location.length / 2);
+        return center;
+      } else {
+        return [121.18, 31.723];
+      }
+    };
+
     const commit = async (
       formEl1: FormInstance | undefined,
       formEl2: FormInstance | undefined
@@ -269,154 +285,26 @@ export default defineComponent({
         });
       });
     };
-    const options = ref([
-      {
-        title: "时间",
-        data: [
-          {
-            name: "2002以前",
-            count: false,
-          },
-          {
-            name: "2002~2012",
-            count: false,
-          },
-          {
-            name: "2013~2022",
-            count: false,
-          },
-        ],
-      },
-      {
-        title: "范围",
-        data: [
-          {
-            name: "长江区域",
-            count: false,
-          },
-          {
-            name: "南京区域",
-            count: false,
-          },
-        ],
-      },
-      {
-        title: "地点",
-        data: [
-          {
-            name: "白茆小沙",
-            count: false,
-          },
-          {
-            name: "福中+福北",
-            count: false,
-          },
-          {
-            name: "横港沙",
-            count: false,
-          },
-          {
-            name: "黄铁沙",
-            count: false,
-          },
-          {
-            name: "护漕港边滩",
-            count: false,
-          },
-          {
-            name: "沪通大桥",
-            count: false,
-          },
-          {
-            name: "江阴大桥",
-            count: false,
-          },
-          {
-            name: "苏通大桥",
-            count: false,
-          },
-          {
-            name: "双涧沙",
-            count: false,
-          },
-          {
-            name: "通白",
-            count: false,
-          },
-          {
-            name: "通州沙",
-            count: false,
-          },
-          {
-            name: "民主沙",
-            count: false,
-          },
-          {
-            name: "福姜沙",
-            count: false,
-          },
-          {
-            name: "新开沙",
-            count: false,
-          },
-          {
-            name: "西水道",
-            count: false,
-          },
-        ],
-      },
 
-      {
-        title: "文件格式",
-        data: [
-          {
-            name: "shp",
-            count: false,
-          },
-          {
-            name: "dwg",
-            count: false,
-          },
-          {
-            name: "txt",
-            count: false,
-          },
-          {
-            name: "jpg",
-            count: false,
-          },
-          {
-            name: "excel",
-            count: false,
-          },
-        ],
-      },
-      {
-        title: "文件性质",
-        data: [
-          {
-            name: "栅格文件",
-            count: false,
-          },
-          {
-            name: "矢量文件",
-            count: false,
-          },
-          {
-            name: "文本数据",
-            count: false,
-          },
-          {
-            name: "图片",
-            count: false,
-          },
-          {
-            name: "遥感影像",
-            count: false,
-          },
-        ],
-      },
-    ]);
+    const handleClose = (tag: string) => {
+      form.tags.splice(form.tags.indexOf(tag), 1);
+    };
+
+    const handleInputConfirm = () => {
+      if (inputValue.value) {
+        form.tags.push(inputValue.value);
+      }
+      inputVisible.value = false;
+      inputValue.value = "";
+    };
+
+    const showInput = () => {
+      inputVisible.value = true;
+      nextTick(() => {
+        InputRef.value!.input!.focus();
+      });
+    };
+
     const optionType = ref([
       {
         title: "地形数据",
@@ -573,41 +461,47 @@ export default defineComponent({
         { required: true, message: "数据获取方式不得为空！", trigger: "blur" },
       ],
     });
-    const say = (val: any) => {
-      form.timeStamp = String(formatDate(val));
-      console.log(typeof form.timeStamp);
-      console.log(form.timeStamp);
+
+    //自定义绘制面
+    const polygonDraw = new MapboxDraw({
+      controls: {
+        combine_features: false,
+        uncombine_features: false,
+        trash: true,
+        point: false,
+        line_string: false,
+      },
+    });
+    const addPolygonDraw = () => {
+      polygonDraw.deleteAll();
+      if (
+        (router.currentRoute.value.params.fileInfo as any).location.length > 0
+      ) {
+        polygonDraw.add({
+          type: "Feature",
+          properties: {},
+          geometry: {
+            type: "Polygon",
+            coordinates: [
+              getCoordinates(
+                (router.currentRoute.value.params.fileInfo as any).location
+              ),
+            ],
+          },
+        });
+      }
     };
-    function formatDate(date: any) {
-      const year = date.getFullYear();
-      let month = date.getMonth() + 1;
-      let day = date.getDate();
-      if (month < 10) {
-        month = `0${month}`;
-      }
-      if (day < 10) {
-        day = `0${day}`;
-      }
-      return `${year}-${month}-${day}`;
-    }
+
     const initMap = () => {
       map = new mapBoxGl.Map({
         container: container.value as HTMLElement,
         style: "mapbox://styles/16651699376/ckmpu8kuk0h8r17msqpz351vf",
-        center: [121.18, 31.723],
+        center: computeCenter(
+          (router.currentRoute.value.params.fileInfo as any).location
+        ),
         zoom: 8,
         accessToken:
           "pk.eyJ1IjoiMTY2NTE2OTkzNzYiLCJhIjoiY2ttMDh5amJpMHE2dzJ3cTd5eWZsMGQxZyJ9.XErH3kSOuRC_OWXWCpDLkQ",
-      });
-      //自定义绘制面
-      const polygonDraw = new MapboxDraw({
-        controls: {
-          combine_features: false,
-          uncombine_features: false,
-          trash: true,
-          point: false,
-          line_string: false,
-        },
       });
 
       //绘制事件
@@ -639,24 +533,7 @@ export default defineComponent({
       map.on("draw.create", updateArea);
       map.on("draw.delete", updateArea);
       map.on("draw.update", updateArea);
-      map.on("load", () => {
-        if (
-          (router.currentRoute.value.params.fileInfo as any).location.length > 0
-        ) {
-          polygonDraw.add({
-            type: "Feature",
-            properties: {},
-            geometry: {
-              type: "Polygon",
-              coordinates: [
-                getCoordinates(
-                  (router.currentRoute.value.params.fileInfo as any).location
-                ),
-              ],
-            },
-          });
-        }
-      });
+      map.on("load", addPolygonDraw);
     };
 
     // 组件销毁时，也及时销毁编辑器
@@ -666,18 +543,67 @@ export default defineComponent({
       editor.destroy();
     });
 
-    onMounted(async () => {
-      initMap();
+    onActivated(() => {
       (router.currentRoute.value.params.files as any[]).forEach((item) => {
         fileList.value.push(item.id);
       });
+      form.id = (router.currentRoute.value.params.fileInfo as any).id;
+      form.name = (router.currentRoute.value.params.fileInfo as any).name;
+      form.description = (
+        router.currentRoute.value.params.fileInfo as any
+      ).description;
+      form.tags = (router.currentRoute.value.params.fileInfo as any).tags;
+      form.location = (
+        router.currentRoute.value.params.fileInfo as any
+      ).location;
+      form.provider = (
+        router.currentRoute.value.params.fileInfo as any
+      ).provider;
+      form.range = (router.currentRoute.value.params.fileInfo as any).range;
+      form.detail = (router.currentRoute.value.params.fileInfo as any).detail;
+      form.type = (router.currentRoute.value.params.fileInfo as any).type;
+      form.providerPhone = (
+        router.currentRoute.value.params.fileInfo as any
+      ).providerPhone;
+      form.providerEmail = (
+        router.currentRoute.value.params.fileInfo as any
+      ).providerEmail;
+      form.providerAddress = (
+        router.currentRoute.value.params.fileInfo as any
+      ).providerAddress;
+      form.getOnline = (
+        router.currentRoute.value.params.fileInfo as any
+      ).getOnline;
+      form.timeStamp = (
+        router.currentRoute.value.params.fileInfo as any
+      ).timeStamp;
+      avatarName.value = (
+        router.currentRoute.value.params.fileInfo as any
+      ).avatar;
+
+      avatarUpload.value.initPicture(
+        (router.currentRoute.value.params.fileInfo as any).avatar
+      );
+      dataBind.value.getTableData(router.currentRoute.value.params.files);
+      addPolygonDraw();
+      map.setCenter(
+        computeCenter(
+          (router.currentRoute.value.params.fileInfo as any).location
+        )
+      );
+    });
+
+    onMounted(() => {
+      initMap();
     });
 
     return {
+      inputValue,
+      inputVisible,
+      InputRef,
       form,
       container,
       defaultProps,
-      options,
       editorRef,
       toolbarConfig,
       editorConfig,
@@ -689,10 +615,15 @@ export default defineComponent({
       fileRef,
       metaRef,
       upload,
-      say,
       avatarName,
       changeData,
       tableData,
+      handleClose,
+      handleInputConfirm,
+      showInput,
+      avatarUpload,
+      dataBind,
+      computeCenter,
     };
   },
 });
@@ -713,12 +644,16 @@ export default defineComponent({
     }
 
     .el-form {
-      .tag {
-        margin-left: 15px;
-      }
       .container {
         height: 400px;
         width: 100%;
+      }
+      .el-tag {
+        margin-right: 10px;
+        margin-bottom: 5px;
+      }
+      .tag-input {
+        width: 100px;
       }
     }
   }

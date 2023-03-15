@@ -6,14 +6,14 @@
       :auto-upload="false"
       :on-change="change"
     >
-      <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+      <img v-if="imageUrl != ''" :src="imageUrl" class="avatar" />
       <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
     </el-upload>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import type { UploadFile } from "element-plus";
 import { prefix } from "@/prefix";
 export default defineComponent({
@@ -36,8 +36,12 @@ export default defineComponent({
       }
     };
 
-    const initPicture = () => {
-      imageUrl.value = "";
+    const initPicture = (pictureStr: string) => {
+      if (pictureStr != "") {
+        imageUrl.value = `${prefix}visual/getAvatar/${pictureStr}`;
+      } else {
+        imageUrl.value = "";
+      }
     };
 
     onMounted(() => {

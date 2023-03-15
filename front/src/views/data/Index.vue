@@ -333,11 +333,6 @@ export default defineComponent({
       input.value = titleKeyword.value;
     };
 
-    const toMap = () => {
-      router.push({
-        path: "/data/findMap",
-      });
-    };
     const toDetail = (index: number) => {
       router.push({
         name: "shareFile",
@@ -416,7 +411,6 @@ export default defineComponent({
       total,
       toDetail,
       currentPage,
-      toMap,
       pageChange,
       sortWord,
       classList,

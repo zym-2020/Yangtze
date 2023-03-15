@@ -95,6 +95,12 @@
 
       <div class="btn">
         <el-button type="primary" @click="confirmClick">确定</el-button>
+        <el-button
+          type="info"
+          @click="cancelClick"
+          :disabled="fileInfo.visualType === ''"
+          >取消当前绑定</el-button
+        >
       </div>
     </div>
   </div>
@@ -104,8 +110,13 @@
 import { notice } from "@/utils/notice";
 import { createFileChunk } from "@/utils/file";
 import { uuid } from "@/utils/common";
-import { uploadParts, mergeParts, bindVisualData } from "@/api/request";
-import { defineComponent, onMounted, ref } from "vue";
+import {
+  uploadParts,
+  mergeParts,
+  bindVisualData,
+  cancelVisualBind,
+} from "@/api/request";
+import { computed, defineComponent, ref } from "vue";
 export default defineComponent({
   props: {
     fileInfo: {
@@ -218,6 +229,10 @@ export default defineComponent({
     let uploadedFileName: string = "";
     let uploadFlag: boolean = true;
 
+    const fileInfo = computed(() => {
+      return props.fileInfo;
+    });
+
     const init = () => {
       sridInput.value = "";
       leftInput.value = "";
@@ -264,12 +279,12 @@ export default defineComponent({
         upload.value.handleRemove(val2[0]);
       }
       uploadFile = val1;
-      uploadedFileName = ""
+      uploadedFileName = "";
     };
 
     const fileRemoveHandle = () => {
       uploadFile = undefined;
-      uploadedFileName = ""
+      uploadedFileName = "";
       status.value = "";
       percentage.value = 0;
       progressFlag.value = false;
@@ -280,10 +295,10 @@ export default defineComponent({
         uploadFlag = false;
       } else {
         notice("warning", "警告", "请不要重复点击");
-        return
+        return;
       }
       if (uploadFile != undefined) {
-        uploadedFileName = ""
+        uploadedFileName = "";
         const fileList = createFileChunk(uploadFile.raw);
         const total = fileList.length;
         progressFlag.value = true;
@@ -409,6 +424,13 @@ export default defineComponent({
       loading.value = false;
     };
 
+    const cancelClick = async () => {
+      const data = await cancelVisualBind(fileInfo.value!.id);
+      if (data != null && (data as any).code === 0) {
+        notice("success", "成功", "取消可视化数据绑定");
+      }
+    };
+
     return {
       typeValue,
       options,
@@ -429,7 +451,9 @@ export default defineComponent({
       upload,
       percentage,
       confirmClick,
+      cancelClick,
       loading,
+      fileInfo,
     };
   },
 });

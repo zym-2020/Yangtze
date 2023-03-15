@@ -94,6 +94,7 @@ public class DataListServiceImpl implements DataListService {
         dataList.setProviderPhone(jsonObject.getString("providerPhone"));
         dataList.setGetOnline(jsonObject.getBoolean("getOnline"));
         dataList.setDetail(jsonObject.getString("detail"));
+        dataList.setTimeStamp(jsonObject.getString("timeStamp"));
         dataListMapper.addDataList(dataList);
     }
 
@@ -123,13 +124,8 @@ public class DataListServiceImpl implements DataListService {
         dataList.setProviderPhone(jsonObject.getString("providerPhone"));
         dataList.setGetOnline(jsonObject.getBoolean("getOnline"));
         dataList.setDetail(jsonObject.getString("detail"));
-        DateFormat fmt =new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            dataList.setTimeStamp(fmt.parse(jsonObject.getString("timeStamp")));
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
-        }
+        dataList.setTimeStamp(jsonObject.getString("timeStamp"));
+
         dataListMapper.updateDataList(jsonObject.getString("id"), dataList);
     }
 

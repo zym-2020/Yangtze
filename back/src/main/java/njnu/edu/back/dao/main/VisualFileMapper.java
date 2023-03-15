@@ -21,5 +21,4 @@ public interface VisualFileMapper {
 
     Map<String, Object> addVisualFile(VisualFile visualFile);
 
-    Map<String, Object> findByFileName(@Param("fileName") String fileName);
 }

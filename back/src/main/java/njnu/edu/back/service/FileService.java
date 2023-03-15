@@ -39,8 +39,7 @@ public interface FileService {
 
     String bindVisualData(JSONObject jsonObject);
 
+    void cancelVisualBind(String id);
 
 
-
-    List<String> check(String path);
 }

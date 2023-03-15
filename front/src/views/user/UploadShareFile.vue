@@ -26,26 +26,24 @@
           />
         </el-form-item>
         <el-form-item label="标签：" prop="tags">
-          <el-select
-            v-model="form.tags"
-            multiple
-            placeholder="标签"
-            size="large"
-            style="width: 300px"
+          <el-tag
+            v-for="tag in form.tags"
+            :key="tag"
+            closable
+            :disable-transitions="false"
+            @close="handleClose(tag)"
           >
-            <el-option-group
-              v-for="(group, groupIndex) in options"
-              :key="groupIndex"
-              :label="group.title"
-            >
-              <el-option
-                v-for="(item, index) in group.data"
-                :key="index"
-                :label="item.name"
-                :value="item.name"
-              />
-            </el-option-group>
-          </el-select>
+            {{ tag }}
+          </el-tag>
+          <el-input
+            v-if="inputVisible"
+            ref="InputRef"
+            class="tag-input"
+            v-model="inputValue"
+            @keyup.enter="handleInputConfirm"
+            @blur="handleInputConfirm"
+          />
+          <el-button v-else @click="showInput"> + New Tag </el-button>
         </el-form-item>
 
         <el-form-item label="条目封面：">
@@ -96,13 +94,9 @@
             </el-option-group>
           </el-select>
         </el-form-item>
+
         <el-form-item label="数据时间：">
-          <el-date-picker
-            v-model="form.timeStamp"
-            type="date"
-            placeholder="选取时间"
-            size="default"
-          />
+          <el-input v-model="form.timeStamp" />
         </el-form-item>
         <el-form-item label="空间范围描述：">
           <el-input v-model="form.range" />
@@ -174,11 +168,12 @@ import {
   shallowRef,
   onBeforeUnmount,
   onMounted,
+  nextTick,
 } from "vue";
 import "@wangeditor/editor/dist/css/style.css"; // 引入 css
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
 import { IDomEditor } from "@wangeditor/editor";
-
+import { ElInput } from "element-plus";
 import { addDataList, addRelational } from "@/api/request";
 import { notice } from "@/utils/notice";
 import type { FormInstance } from "element-plus";
@@ -204,154 +199,10 @@ export default defineComponent({
     };
     const container = ref<HTMLElement>();
     const dataBind = ref();
-    const options = ref([
-      {
-        title: "时间",
-        data: [
-          {
-            name: "2002以前",
-            count: false,
-          },
-          {
-            name: "2002~2012",
-            count: false,
-          },
-          {
-            name: "2013~2022",
-            count: false,
-          },
-        ],
-      },
-      {
-        title: "范围",
-        data: [
-          {
-            name: "长江区域",
-            count: false,
-          },
-          {
-            name: "南京区域",
-            count: false,
-          },
-        ],
-      },
-      {
-        title: "地点",
-        data: [
-          {
-            name: "白茆小沙",
-            count: false,
-          },
-          {
-            name: "福中+福北",
-            count: false,
-          },
-          {
-            name: "横港沙",
-            count: false,
-          },
-          {
-            name: "黄铁沙",
-            count: false,
-          },
-          {
-            name: "护漕港边滩",
-            count: false,
-          },
-          {
-            name: "沪通大桥",
-            count: false,
-          },
-          {
-            name: "江阴大桥",
-            count: false,
-          },
-          {
-            name: "苏通大桥",
-            count: false,
-          },
-          {
-            name: "双涧沙",
-            count: false,
-          },
-          {
-            name: "通白",
-            count: false,
-          },
-          {
-            name: "通州沙",
-            count: false,
-          },
-          {
-            name: "民主沙",
-            count: false,
-          },
-          {
-            name: "福姜沙",
-            count: false,
-          },
-          {
-            name: "新开沙",
-            count: false,
-          },
-          {
-            name: "西水道",
-            count: false,
-          },
-        ],
-      },
+    const inputValue = ref("");
+    const inputVisible = ref(false);
+    const InputRef = ref<InstanceType<typeof ElInput>>();
 
-      {
-        title: "文件格式",
-        data: [
-          {
-            name: "shp",
-            count: false,
-          },
-          {
-            name: "dwg",
-            count: false,
-          },
-          {
-            name: "txt",
-            count: false,
-          },
-          {
-            name: "jpg",
-            count: false,
-          },
-          {
-            name: "excel",
-            count: false,
-          },
-        ],
-      },
-      {
-        title: "文件性质",
-        data: [
-          {
-            name: "栅格文件",
-            count: false,
-          },
-          {
-            name: "矢量文件",
-            count: false,
-          },
-          {
-            name: "文本数据",
-            count: false,
-          },
-          {
-            name: "图片",
-            count: false,
-          },
-          {
-            name: "遥感影像",
-            count: false,
-          },
-        ],
-      },
-    ]);
     const optionType = ref([
       {
         title: "地形数据",
@@ -558,6 +409,25 @@ export default defineComponent({
       });
     };
 
+    const handleClose = (tag: string) => {
+      form.tags.splice(form.tags.indexOf(tag), 1);
+    };
+
+    const handleInputConfirm = () => {
+      if (inputValue.value) {
+        form.tags.push(inputValue.value);
+      }
+      inputVisible.value = false;
+      inputValue.value = "";
+    };
+
+    const showInput = () => {
+      inputVisible.value = true;
+      nextTick(() => {
+        InputRef.value!.input!.focus();
+      });
+    };
+
     const init = () => {
       form.id = uuid();
       form.name = "";
@@ -659,7 +529,9 @@ export default defineComponent({
       container,
       form,
       defaultProps,
-      options,
+      inputValue,
+      inputVisible,
+      InputRef,
       optionType,
       editorRef,
       toolbarConfig,
@@ -674,6 +546,9 @@ export default defineComponent({
       avatarUpload,
       changeData,
       dataBind,
+      handleClose,
+      handleInputConfirm,
+      showInput,
     };
   },
 });
@@ -691,12 +566,16 @@ export default defineComponent({
     }
 
     .el-form {
-      .tag {
-        margin-left: 15px;
-      }
       .container {
         height: 400px;
         width: 100%;
+      }
+      .el-tag {
+        margin-right: 10px;
+        margin-bottom: 5px;
+      }
+      .tag-input {
+        width: 100px;
       }
     }
   }

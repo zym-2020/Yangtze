@@ -34,11 +34,9 @@ public interface FileMapper {
 
     List<Map<String, Object>> findListById(@Param("list") List<String> list);
 
-    List<Map<String, Object>> findListByVisualType(@Param("type") String type);
 
     void updateVisualIdAndType(@Param("id") String id, @Param("visualId") String visualId, @Param("type") String type);
 
-    Map<String, Object> findByAddress(@Param("address") String address);
 
     Map<String, Object> findInfoById(@Param("id") String id);
 
@@ -46,7 +44,7 @@ public interface FileMapper {
 
     int getCountByEmail(@Param("email") String email);
 
-
+    void updateVisualTypeAndVisualId(@Param("id") String id, @Param("visualType") String visualType, @Param("visualId") String visualId);
 
 
 

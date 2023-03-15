@@ -76,16 +76,6 @@ export const asyncRouters: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: "findMap",
-        name: "FindMap",
-        component: () => import("@/components/scenePart/FindMap.vue"),
-        meta: {
-          title: "高级检索",
-          role: ["member", "admin"],
-          key: "FindMap",
-        },
-      },
-      {
         path: ":id",
         name: "shareFile",
         component: () => import("@/views/data/ShareFileIndex.vue"),

@@ -366,17 +366,8 @@ public class FileServiceImpl implements FileService {
         return map.get("id").toString();
     }
 
-
     @Override
-    public List<String> check(String path) {
-        java.io.File file = new java.io.File(path);
-        String[] fileList = file.list();
-        for(int i = 0; i < fileList.length; i++) {
-            Map<String, Object> map = fileMapper.findByAddress(path.substring(16) + "/" + fileList[i]);
-            if(map == null) {
-                System.out.println(fileList[i]);
-            }
-        }
-        return null;
+    public void cancelVisualBind(String id) {
+        fileMapper.updateVisualTypeAndVisualId(id, "", "");
     }
 }

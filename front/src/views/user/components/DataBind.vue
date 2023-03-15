@@ -249,6 +249,7 @@ export default defineComponent({
     };
 
     const getTableData = (files: any[]) => {
+      tableData.value = []
       files.forEach((item) => {
         tableData.value.push({
           id: item.id,
@@ -310,6 +311,7 @@ export default defineComponent({
       listDelete,
       commit,
       clearData,
+      getTableData
     };
   },
 });

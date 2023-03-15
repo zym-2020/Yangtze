@@ -506,6 +506,10 @@ export async function bindVisualData(jsonData: {
   return await post(`/file/bindVisualData`, jsonData);
 }
 
+export async function cancelVisualBind(id: string) {
+  return await del(`/file/cancelVisualBind/${id}`);
+}
+
 //========================downloadHistory相关接口=================================
 export async function pageQueryDownloadHistory(
   size: number,

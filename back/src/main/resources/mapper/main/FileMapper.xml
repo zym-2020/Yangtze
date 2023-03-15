@@ -55,17 +55,11 @@
         </foreach>
     </select>
 
-    <select id="findListByVisualType" resultType="java.util.Map">
-        select * from files where visual_type = #{type};
-    </select>
 
     <update id="updateVisualIdAndType">
         update files set visual_id = #{visualId}, visual_type = #{type} where id::text = #{id}
     </update>
 
-    <select id="findByAddress" resultType="java.util.Map">
-        select * from files where address = #{address}
-    </select>
     
     <select id="findInfoById" resultType="java.util.Map">
         select id, file_name as "fileName", size, address, uploader, visual_type as "visualType", visual_id as "visualId", folder_id as "folderId"
@@ -84,4 +78,8 @@
     <select id="getCountByEmail" resultType="java.lang.Integer">
         select count(*) from files where uploader = #{email}
     </select>
+
+    <update id="updateVisualTypeAndVisualId">
+        update files set visual_type = #{visualType}, visualId = #{visualId} where id::text = #{id}
+    </update>
 </mapper>
