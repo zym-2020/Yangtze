@@ -2,7 +2,7 @@
   <div>
     <div class="head">数据预览</div>
     <el-skeleton :rows="5" animated v-if="skeletonFlag" />
-    <div style="width: 950px" v-if="mapVisualFlag">
+    <div style="width: 900px" v-if="mapVisualFlag">
       <map-visual
         :shpArray="shpArray"
         :movePngArray="movePngArray"
@@ -10,7 +10,7 @@
         :rasterTileArray="rasterTileArray"
       />
     </div>
-    <div style="width: 950px" v-if="excelVisualFlag">
+    <div style="width: 900px" v-if="excelVisualFlag">
       <excel-visual
         :tableNameList="tableNameList"
         :sandContentList="sandContentList"

@@ -44,4 +44,6 @@ public interface FileService {
     Map<String, Object> getVisualAuditFiles(String role, String keyword, Integer page, Integer size);
 
     void changeFileVisualState(String id, Integer state, String role);
+
+    String getView(String visualId);
 }

@@ -55,6 +55,7 @@
         </el-card>
       </el-col>
     </el-row>
+    
     <sand-content
       :visualId="sandContentList[centerIndex]"
       ref="sandContent"

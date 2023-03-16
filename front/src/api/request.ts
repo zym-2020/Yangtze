@@ -526,6 +526,10 @@ export async function changeFileVisualState(id: string, state: number) {
   return await post(`/file/changeFileVisualState/${id}/${state}`);
 }
 
+export async function getView(visualId: string) {
+  return await get(`/file/getView/${visualId}`);
+}
+
 //========================downloadHistory相关接口=================================
 export async function pageQueryDownloadHistory(
   size: number,

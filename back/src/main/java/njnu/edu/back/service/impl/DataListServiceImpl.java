@@ -296,8 +296,12 @@ public class DataListServiceImpl implements DataListService {
     public List<Map<String, Object>> findFiles(String dataListId) {
         List<Map<String, Object>> list = dataRelationalMapper.findFilesByDataListId(dataListId);
         for (Map<String, Object> map : list) {
-            if (!map.get("visualType").equals("")) {
+            if (!map.get("visualType").equals("") && !map.get("visualType").equals("audit")) {
                 map.put("view", visualFileMapper.getView(map.get("visualId").toString()));
+            }
+            if (map.get("visualType").equals("audit")) {
+                JSONObject jsonObject = JSON.parseObject(map.get("visualId").toString());
+                map.put("view", visualFileMapper.getView(jsonObject.getString("oldVisualId")));
             }
         }
         return list;

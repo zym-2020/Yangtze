@@ -87,7 +87,12 @@
               v-if="isAudit(scope.row)"
             >
               <span style="margin-right: 10px">
-                <el-button size="small" type="info">...</el-button>
+                <el-button
+                  size="small"
+                  type="info"
+                  @click="auditClick(scope.row)"
+                  >...</el-button
+                >
               </span>
             </el-tooltip>
             <el-tooltip
@@ -153,8 +158,15 @@
       ></folder-dialog>
     </el-dialog>
 
-    <el-dialog v-model="dataPreviewFlag" width="950px">
+    <el-dialog v-model="dataPreviewFlag" width="900px">
       <data-preview :fileInfo="fileInfo" v-if="dataPreviewFlag"></data-preview>
+    </el-dialog>
+
+    <el-dialog v-model="visualCompareFlag" width="900px">
+      <visual-compare
+        v-if="visualCompareFlag"
+        :compareInfo="compareInfo"
+      ></visual-compare>
     </el-dialog>
 
     <el-dialog v-model="visualBindFlag" width="600px">
@@ -168,7 +180,6 @@
 </template>
 
 <script lang="ts">
-
 import { defineComponent, onMounted, ref } from "vue";
 import { ElMessageBox } from "element-plus";
 import FolderDialog from "../components/FolderDialog.vue";
@@ -187,7 +198,8 @@ import { decrypt } from "@/utils/auth";
 import { uuid, getFileSize } from "@/utils/common";
 import DataPreview from "../components/DataPreview.vue";
 import { UploadFile, UploadFiles } from "element-plus";
-import { File, Folder } from '@/type'
+import { File, Folder } from "@/type";
+import VisualCompare from "../components/VisualCompare.vue";
 
 NProgress.configure({ showSpinner: false });
 export default defineComponent({
@@ -195,6 +207,7 @@ export default defineComponent({
     FolderDialog,
     DataPreview,
     VisualDataBind,
+    VisualCompare,
   },
   setup() {
     const skeletonFlag = ref(true);
@@ -210,7 +223,17 @@ export default defineComponent({
 
     const dataPreviewFlag = ref(false);
     const visualBindFlag = ref(false);
+    const visualCompareFlag = ref(false);
     const fileInfo = ref<any>();
+
+    const compareInfo = ref<{
+      oldVisualId: string;
+      oldVisualType: string;
+      visualType: string;
+      visualId: string;
+      time: string;
+      fileName: string;
+    }>();
 
     const getIcon = (item: Folder | File) => {
       if ("fileName" in item) {
@@ -420,6 +443,13 @@ export default defineComponent({
       }
     };
 
+    const auditClick = (val: any) => {
+      const json = JSON.parse(val.visualId);
+      json["fileName"] = val.fileName;
+      compareInfo.value = json;
+      visualCompareFlag.value = true;
+    };
+
     const viewClick = (val: any) => {
       fileInfo.value = val;
       dataPreviewFlag.value = true;
@@ -510,7 +540,7 @@ export default defineComponent({
             uploader: item.uploader,
             folderId: item.folderId,
             flag: false,
-            view: item.view
+            view: item.view,
           });
         }
       });
@@ -550,12 +580,15 @@ export default defineComponent({
       isAudit,
       upload,
       viewClick,
+      auditClick,
       dataPreviewFlag,
+      visualCompareFlag,
       fileInfo,
       visualClick,
       skeletonFlag,
       visualBindFlag,
       updateVisualFile,
+      compareInfo,
     };
   },
 });

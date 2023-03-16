@@ -96,8 +96,12 @@ public class FileServiceImpl implements FileService {
         result.addAll(folderMapper.findByParentId(folderId, email));
         List<Map<String, Object>> list = fileMapper.findByFolderId(folderId, email);
         for (Map<String, Object> map : list) {
-            if (!map.get("visualType").equals("")) {
+            if (!map.get("visualType").equals("") && !map.get("visualType").equals("audit")) {
                 map.put("view", visualFileMapper.getView(map.get("visualId").toString()));
+            }
+            if (map.get("visualType").equals("audit")) {
+                com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(map.get("visualId").toString());
+                map.put("view", visualFileMapper.getView(jsonObject.getString("oldVisualId")));
             }
         }
         result.addAll(list);
@@ -461,5 +465,10 @@ public class FileServiceImpl implements FileService {
             throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
         }
 
+    }
+
+    @Override
+    public String getView(String visualId) {
+        return visualFileMapper.getView(visualId);
     }
 }

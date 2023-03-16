@@ -128,4 +128,10 @@ public class FileController {
         return ResultUtils.success();
     }
 
+    @AuthCheck
+    @RequestMapping(value = "/getView/{visualId}", method = RequestMethod.GET)
+    public JsonResult getView(@PathVariable String visualId) {
+        return ResultUtils.success(fileService.getView(visualId));
+    }
+
 }
