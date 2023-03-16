@@ -467,7 +467,6 @@ export default defineComponent({
             }
           }
           if (!viewDisabledFlag.value) {
-            console.log(1)
             if (longValue.value === "" || latValue.value === "") {
               notice("warning", "警告", "视图经纬度不得为空");
               return;

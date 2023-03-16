@@ -241,14 +241,15 @@ export type File = {
   folderId: string;
   visualId: string;
   flag: boolean;
+  view?: string;
 };
 
 export type AuditFile = {
-  id: string
-  fileName: string
-  size: string
-  uploader: string
-  visualType: string
-  visualId: string
-  name: string
-}
+  id: string;
+  fileName: string;
+  size: string;
+  uploader: string;
+  visualType: string;
+  visualId: string;
+  name: string;
+};

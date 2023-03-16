@@ -584,6 +584,7 @@ export default defineComponent({
       avatarUpload.value.initPicture(
         (router.currentRoute.value.params.fileInfo as any).avatar
       );
+      console.log(router.currentRoute.value.params.files)
       dataBind.value.getTableData(router.currentRoute.value.params.files);
       addPolygonDraw();
       map.setCenter(

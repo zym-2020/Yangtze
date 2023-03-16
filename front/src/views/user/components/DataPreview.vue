@@ -2,7 +2,7 @@
   <div>
     <div class="head">数据预览</div>
     <el-skeleton :rows="5" animated v-if="skeletonFlag" />
-    <div style="width: 950px; height: 400px" v-if="mapVisualFlag">
+    <div style="width: 950px" v-if="mapVisualFlag">
       <map-visual
         :shpArray="shpArray"
         :movePngArray="movePngArray"
@@ -32,6 +32,7 @@ type FileInfo = {
   visualType: string;
   visualId: string;
   folderId: string;
+  view?: string;
 };
 import { defineComponent, ref, PropType, onMounted } from "vue";
 import MapVisual from "@/components/visual/MapVisual.vue";
@@ -53,13 +54,29 @@ export default defineComponent({
     const excelVisualFlag = ref(false);
 
     const shpArray = ref<
-      { visualId: string; type: "line" | "fill" | "circle" }[]
+      {
+        visualId: string;
+        type: "line" | "fill" | "circle";
+        view: { zoom: number; center: number[] };
+      }[]
     >([]);
-    const movePngArray = ref<{ visualId: string; coordinates: number[][] }[]>(
-      []
-    );
-    const pngArray = ref<{ visualId: string; coordinates: number[][] }[]>([]);
-    const rasterTileArray = ref<string[]>([]);
+    const movePngArray = ref<
+      {
+        visualId: string;
+        coordinates: number[][];
+        view: { zoom: number; center: number[] };
+      }[]
+    >([]);
+    const pngArray = ref<
+      {
+        visualId: string;
+        coordinates: number[][];
+        view: { zoom: number; center: number[] };
+      }[]
+    >([]);
+    const rasterTileArray = ref<
+      { visualId: string; view: { zoom: number; center: number[] } }[]
+    >([]);
     const tableNameList = ref<string[]>([]);
     const sandContentList = ref<string[]>([]);
     const suspensionList = ref<string[]>([]);
@@ -80,6 +97,7 @@ export default defineComponent({
           shpArray.value.push({
             visualId: props.fileInfo.visualId,
             type: "line",
+            view: JSON.parse(props.fileInfo.view as string),
           });
           MapFlag = true;
         }
@@ -90,6 +108,7 @@ export default defineComponent({
           shpArray.value.push({
             visualId: props.fileInfo.visualId,
             type: "circle",
+            view: JSON.parse(props.fileInfo.view as string),
           });
           MapFlag = true;
         }
@@ -100,11 +119,15 @@ export default defineComponent({
           shpArray.value.push({
             visualId: props.fileInfo.visualId,
             type: "fill",
+            view: JSON.parse(props.fileInfo.view as string),
           });
           MapFlag = true;
         }
         if (props.fileInfo.visualType == "rasterTile") {
-          rasterTileArray.value.push(props.fileInfo.visualId);
+          rasterTileArray.value.push({
+            visualId: props.fileInfo.visualId,
+            view: JSON.parse(props.fileInfo.view as string),
+          });
           MapFlag = true;
         }
         if (props.fileInfo.visualType == "png") {
@@ -113,6 +136,7 @@ export default defineComponent({
             pngArray.value.push({
               visualId: props.fileInfo.visualId,
               coordinates: coordinates.data,
+              view: JSON.parse(props.fileInfo.view as string),
             });
           }
           MapFlag = true;
@@ -123,6 +147,7 @@ export default defineComponent({
             movePngArray.value.push({
               visualId: props.fileInfo.visualId,
               coordinates: coordinates.data,
+              view: JSON.parse(props.fileInfo.view as string),
             });
           }
           MapFlag = true;

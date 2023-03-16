@@ -172,6 +172,7 @@
           <div v-else>
             <div v-if="mapShow" class="map">
               <map-visual
+                v-if="mapShow"
                 :shpArray="shpArray"
                 :movePngArray="movePngArray"
                 :pngArray="pngArray"
@@ -204,10 +205,13 @@
 
       <div class="right">
         <div class="title"><strong>空间位置</strong></div>
-        <location-map style="width: 100%; height: 300px"></location-map>
+        <location-map
+          style="width: 100%; height: 300px"
+          ref="locationMap"
+        ></location-map>
         <div class="title"><strong>近10天访问记录</strong></div>
         <div class="visit">
-          <statistics :dataListId="fileInfo.id"></statistics>
+          <statistics :dataListId="fileInfo.id" ref="statistics"></statistics>
         </div>
         <div class="title"><strong>相似数据</strong></div>
         <el-skeleton :rows="5" animated v-if="similarSkeleton" />
@@ -248,7 +252,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, onMounted, ref, watch } from "vue";
 import DataDescription from "@/components/data/DataDescription.vue";
 import DataHead from "@/components/data/DataHead.vue";
 import { dateFormat, imgBase64 } from "@/utils/common";
@@ -256,7 +260,6 @@ import { decrypt } from "@/utils/auth";
 import { useStore } from "@/store";
 import {
   getDownloadURLDataList,
-  pageQueryDownloadHistory,
   getCoordinates,
   findFiles,
   getDownloadURL,
@@ -328,11 +331,13 @@ export default defineComponent({
     const rateDirectionList = ref<string[]>([]);
     const salinityList = ref<string[]>([]);
     const flowSandZList = ref<string[]>([]);
-    const downLoadList = ref<any[]>([]);
     const fileList = ref<any[]>([]);
     const similarDataList = ref<[]>();
     const similarTotal = ref(0);
     const currentPageSimilar = ref(1);
+
+    const statistics = ref();
+    const locationMap = ref();
 
     const location = computed(() => {
       return props.fileInfo?.location;
@@ -414,15 +419,19 @@ export default defineComponent({
       }
     };
 
-    const initVisual = async () => {
+    const initVisual = async (id: string) => {
       //  获取file文件
       fileSkeleton.value = true;
-      const fileData = await findFiles(fileInfo.value?.id);
+      const fileData = await findFiles(id);
       if (fileData != null && (fileData as any).code === 0) {
         fileList.value = fileData.data;
       }
       fileSkeleton.value = false;
       //获取file文件的可视化方法
+      shpArray.value = [];
+      pngArray.value = [];
+      movePngArray.value = [];
+      rasterTileArray.value = [];
       let MapFlag = false;
       let photoFlag = false;
       let excelFlag = false;
@@ -540,21 +549,9 @@ export default defineComponent({
       visualSkeleton.value = false;
     };
 
-    const initDownloadHistory = async () => {
-      const data = await pageQueryDownloadHistory(10, 0, props.fileInfo?.id);
-      if (data != null && (data as any).code === 0) {
-        downLoadList.value = data.data.list;
-      }
-    };
-
-    const initSimilarData = async () => {
+    const initSimilarData = async (id: string, type: string) => {
       similarSkeleton.value = true;
-      const data = await getSimilarData(
-        fileInfo.value?.type,
-        fileInfo.value?.id,
-        10,
-        0
-      );
+      const data = await getSimilarData(type, id, 10, 0);
       if (data != null && (data as any).code === 0) {
         similarDataList.value = data.data.list;
         similarTotal.value = data.data.total;
@@ -562,20 +559,33 @@ export default defineComponent({
       similarSkeleton.value = false;
     };
 
-    onMounted(async () => {
-      await initVisual();
-      await initSimilarData();
-      await initDownloadHistory();
+    watch(
+      () => router.currentRoute.value.params.id,
+      (newVal, oldVal) => {
+        if (router.currentRoute.value.name === "shareFile") {
+          mapShow.value = false;
+          initVisual(newVal as string);
+          initSimilarData(newVal as string, fileInfo.value!.type);
+          statistics.value.setData(newVal);
+          locationMap.value.setData();
+        }
+      }
+    );
+
+    onMounted(() => {
+      initVisual(fileInfo.value!.id);
+      initSimilarData(fileInfo.value!.id, fileInfo.value!.type);
     });
 
     return {
+      statistics,
+      locationMap,
       fileInfo,
       photoList,
       date,
       avatar,
       downloadOrigin,
       location,
-      downLoadList,
       fileList,
       sandContentList,
       suspensionList,

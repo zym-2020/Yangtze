@@ -16,16 +16,6 @@ export default defineComponent({
       return router.currentRoute.value.params.fileInfo;
     });
 
-    onMounted(async () => {
-      if (
-        router.currentRoute.value.params.id != null &&
-        router.currentRoute.value.params.id != undefined
-      ) {
-        addWatchCount(router.currentRoute.value.params.id as string);
-        addBrowseHistory(router.currentRoute.value.params.id as string);
-      }
-    });
-
     return {
       fileInfo,
     };

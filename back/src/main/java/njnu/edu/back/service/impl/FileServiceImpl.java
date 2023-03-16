@@ -94,7 +94,13 @@ public class FileServiceImpl implements FileService {
             folderId = "";
         }
         result.addAll(folderMapper.findByParentId(folderId, email));
-        result.addAll(fileMapper.findByFolderId(folderId, email));
+        List<Map<String, Object>> list = fileMapper.findByFolderId(folderId, email);
+        for (Map<String, Object> map : list) {
+            if (!map.get("visualType").equals("")) {
+                map.put("view", visualFileMapper.getView(map.get("visualId").toString()));
+            }
+        }
+        result.addAll(list);
         return result;
     }
 

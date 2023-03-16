@@ -13,7 +13,11 @@
           <el-button size="small" type="info" v-if="isAudit(scope.row)"
             >...</el-button
           >
-          <el-button size="small" type="primary" v-if="isView(scope.row)"
+          <el-button
+            size="small"
+            type="primary"
+            v-if="isView(scope.row)"
+            @click="viewClick(scope.row)"
             ><el-icon><View /></el-icon
           ></el-button>
           <el-button size="small" type="danger" @click="deleteClick(scope.row)"
@@ -95,6 +99,10 @@
         </div>
       </el-dialog>
     </el-dialog>
+
+    <el-dialog v-model="dataPreviewFlag" width="950px">
+      <data-preview :fileInfo="fileInfo" v-if="dataPreviewFlag"></data-preview>
+    </el-dialog>
   </div>
 </template>
 
@@ -106,13 +114,16 @@ type DialogTableType = {
   size: string;
   flag: boolean;
   parentId: string;
-  visualType?: string
-  visualId?: string
+  visualType?: string;
+  visualId?: string;
+  view?: string;
 };
 import { defineComponent, onMounted, ref } from "vue";
 import { findByFolderId } from "@/api/request";
 import router from "@/router";
+import DataPreview from "./DataPreview.vue";
 export default defineComponent({
+  components: { DataPreview },
   emits: ["changeData"],
   setup(props, context) {
     const dialogFlag = ref(false);
@@ -122,6 +133,9 @@ export default defineComponent({
     const loading = ref(false);
     const tempTableData = ref<DialogTableType[]>([]);
     const tableData = ref<DialogTableType[]>([]);
+
+    const fileInfo = ref<DialogTableType>();
+    const dataPreviewFlag = ref(false);
 
     const getIcon = (floder: boolean) => {
       if (floder) {
@@ -145,9 +159,14 @@ export default defineComponent({
     };
 
     const isView = (param: DialogTableType) => {
-      if (param.visualType != '' && param.visualType != 'audit') return true
-      else return false
-    }
+      if (param.visualType != "" && param.visualType != "audit") return true;
+      else return false;
+    };
+
+    const viewClick = (val: any) => {
+      fileInfo.value = val;
+      dataPreviewFlag.value = true;
+    };
 
     const deleteClick = (val: DialogTableType) => {
       for (let i = 0; i < tableData.value.length; i++) {
@@ -215,7 +234,8 @@ export default defineComponent({
           flag: checkFlag(val.id),
           parentId: val.folderId,
           visualId: val.visualId,
-          visualType: val.visualType
+          visualType: val.visualType,
+          view: val.view,
         });
       } else {
         dialogTableData.value.push({
@@ -277,6 +297,9 @@ export default defineComponent({
           size: item.size,
           flag: true,
           parentId: "",
+          visualId: item.visualId,
+          visualType: item.visualType,
+          view: item.view,
         });
       });
     };
@@ -332,7 +355,10 @@ export default defineComponent({
       clearData,
       getTableData,
       isAudit,
-      isView
+      isView,
+      viewClick,
+      fileInfo,
+      dataPreviewFlag,
     };
   },
 });

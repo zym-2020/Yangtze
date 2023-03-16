@@ -21,7 +21,7 @@ public interface DataListService {
 
     Map<String, Object> getFileInfo(String id);
 
-    Map<String, Object> getFileInfoAndUserInfo(String id);
+    Map<String, Object> getFileInfoAndUserInfo(String id, String email, String role);
 
     void addWatchCount(String id);
 

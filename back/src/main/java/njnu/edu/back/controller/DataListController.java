@@ -49,8 +49,8 @@ public class DataListController {
 
     @AuthCheck
     @RequestMapping(value = "/getFileInfoAndUserInfo/{id}", method = RequestMethod.GET)
-    public JsonResult getFileInfoAndUserInfo(@PathVariable String id) {
-        return ResultUtils.success(dataListService.getFileInfoAndUserInfo(id));
+    public JsonResult getFileInfoAndUserInfo(@PathVariable String id, @JwtTokenParser("email") String email, @JwtTokenParser("role") String role) {
+        return ResultUtils.success(dataListService.getFileInfoAndUserInfo(id, email, role));
     }
 
     @AuthCheck

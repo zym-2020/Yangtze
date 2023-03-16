@@ -139,13 +139,22 @@ public class DataListServiceImpl implements DataListService {
     }
 
     @Override
-    public Map<String, Object> getFileInfoAndUserInfo(String id) {
-        return dataListMapper.getFileInfoAndUserInfo(id);
+    public Map<String, Object> getFileInfoAndUserInfo(String id, String email, String role) {
+        Map<String, Object> result = dataListMapper.getFileInfoAndUserInfo(id);
+        if ((Integer) result.get("status") == -1) {
+            if (result.get("creator").equals(email) || role.equals("admin")) {
+                return result;
+            } else {
+                throw new MyException(-99, "没有权限");
+            }
+        }
+        return result;
     }
 
     @Override
     public void addWatchCount(String id) {
-        dataListMapper.addWatchCount(id);
+        Map<String, Object> map = dataListMapper.getFileInfo(id);
+        if ((Integer) map.get("status") == 1) dataListMapper.addWatchCount(id);
     }
 
     @Override

@@ -510,6 +510,7 @@ export default defineComponent({
             uploader: item.uploader,
             folderId: item.folderId,
             flag: false,
+            view: item.view
           });
         }
       });

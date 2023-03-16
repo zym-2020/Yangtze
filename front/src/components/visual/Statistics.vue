@@ -18,9 +18,8 @@ export default defineComponent({
     let myChart: echarts.ECharts;
     let option: any = {};
 
-    const initData = async () => {
-      const data = await getDataGroup(props.dataListId as string, -9);
-      console.log(data);
+    const initData = async (id: string) => {
+      const data = await getDataGroup(id, -9);
       const nowDate = new Date();
       const dateList = getLastOrNextFewDateBy(
         nowDate.toLocaleDateString(),
@@ -88,13 +87,19 @@ export default defineComponent({
       };
     };
 
+    const setData = async (id: string) => {
+      await initData(id)
+      myChart.setOption(option)
+    }
+
     onMounted(async () => {
-      await initData();
+      await initData(props.dataListId!);
       myChart = echarts.init(statisticChart.value as HTMLElement);
       myChart.setOption(option);
     });
 
     return {
+      setData,
       statisticChart,
     };
   },
