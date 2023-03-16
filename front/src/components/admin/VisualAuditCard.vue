@@ -1,17 +1,16 @@
 <template>
-  <div class="audit-card">
-    <div class="image">
-      <img :src="getAvatar(info.avatar, info.name)" />
-    </div>
+  <div class="visual-audit-card">
     <div class="name-creator">
-      <div class="name"><span v-html="replaceHandle(info.name)"></span></div>
+      <div class="name">
+        <span v-html="replaceHandle(info.fileName)"></span>
+      </div>
       <div class="creator">
-        <span v-html="replaceHandle(info.userName)"></span>
+        <span v-html="replaceHandle(info.name)"></span>
       </div>
     </div>
     <div class="time">
       <div class="top">申请时间</div>
-      <div class="bottom">{{ getTime(info.updateTime) }}</div>
+      <div class="bottom">{{ jsonInfo.time }}</div>
     </div>
 
     <div class="btn">
@@ -30,12 +29,10 @@
   </div>
 </template>
 
+
 <script lang="ts">
 import { computed, defineComponent } from "vue";
-import { updateStatusById } from "@/api/request";
-import { notice } from "@/utils/notice";
-import { dateFormat, imgBase64 } from "@/utils/common";
-import { prefix } from "@/prefix";
+import { changeFileVisualState } from "@/api/request";
 export default defineComponent({
   props: {
     info: {
@@ -45,30 +42,15 @@ export default defineComponent({
       type: String,
     },
   },
-  emits: ["auditHandle"],
+  emits: ["auditHandleVisual"],
   setup(props, context) {
-    const info: any = computed(() => {
+    const info = computed(() => {
       return props.info;
     });
-    const operateHandle = async (param: number) => {
-      const data = await updateStatusById(info.value.id, param);
-      if (data != null && (data as any).code === 0) {
-        notice("success", "成功", "审核成功");
-        context.emit("auditHandle");
-      }
-    };
 
-    const getAvatar = (avatar: string, name: string) => {
-      if (avatar === "") {
-        return imgBase64(name);
-      } else {
-        return prefix + "visual/getAvatar/" + avatar;
-      }
-    };
-
-    const getTime = (time: string) => {
-      return dateFormat(time, "yyyy-MM-dd hh:mm");
-    };
+    const jsonInfo = computed(() => {
+      return JSON.parse(props.info!.visualId);
+    });
 
     const replaceHandle = (currentStr: string) => {
       const res = new RegExp("(" + props.keyword + ")", "g");
@@ -79,35 +61,31 @@ export default defineComponent({
       return currentStr;
     };
 
+    const operateHandle = async (param: number) => {
+      if (param === 1 || param === -1) {
+        await changeFileVisualState(info.value!.id, param);
+        context.emit("auditHandleVisual");
+      }
+    };
+
     return {
       info,
-      operateHandle,
+      jsonInfo,
       replaceHandle,
-      getAvatar,
-      getTime,
+      operateHandle,
     };
   },
 });
 </script>
 
-
 <style lang="scss" scoped>
-.audit-card {
+.visual-audit-card {
   width: calc(100% - 40px);
   padding: 20px 10px;
-  display: flex;
-  border-bottom: solid 1px #dcdfe6;
   height: 60px;
+  border-bottom: solid 1px #dcdfe6;
+  display: flex;
   position: relative;
-  .image {
-    height: 100%;
-    width: 60px;
-    img {
-      height: 100%;
-      width: 100%;
-      object-fit: cover;
-    }
-  }
   .name-creator {
     margin-left: 20px;
     width: 30%;
@@ -128,7 +106,7 @@ export default defineComponent({
       line-height: 35px;
     }
   }
-  
+
   .btn {
     position: absolute;
     text-align: center;

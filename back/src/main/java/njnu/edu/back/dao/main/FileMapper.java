@@ -37,7 +37,6 @@ public interface FileMapper {
 
     void updateVisualIdAndType(@Param("id") String id, @Param("visualId") String visualId, @Param("type") String type);
 
-
     Map<String, Object> findInfoById(@Param("id") String id);
 
     List<Map<String, Object>> findInfoListById(@Param("list") List<String> list);
@@ -46,8 +45,8 @@ public interface FileMapper {
 
     void updateVisualTypeAndVisualId(@Param("id") String id, @Param("visualType") String visualType, @Param("visualId") String visualId);
 
+    List<Map<String, Object>> getVisualAuditFiles(@Param("keyword") String keyword, @Param("size") Integer size, @Param("start") Integer start);
 
-
-
+    int getVisualAuditFilesCount(@Param("keyword") String keyword);
 
 }

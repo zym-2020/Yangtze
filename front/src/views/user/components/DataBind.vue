@@ -10,6 +10,12 @@
           </el-button>
         </template>
         <template #default="scope">
+          <el-button size="small" type="info" v-if="isAudit(scope.row)"
+            >...</el-button
+          >
+          <el-button size="small" type="primary" v-if="isView(scope.row)"
+            ><el-icon><View /></el-icon
+          ></el-button>
           <el-button size="small" type="danger" @click="deleteClick(scope.row)"
             ><el-icon><Delete /></el-icon
           ></el-button>
@@ -100,12 +106,13 @@ type DialogTableType = {
   size: string;
   flag: boolean;
   parentId: string;
+  visualType?: string
+  visualId?: string
 };
 import { defineComponent, onMounted, ref } from "vue";
 import { findByFolderId } from "@/api/request";
 import router from "@/router";
 export default defineComponent({
-
   emits: ["changeData"],
   setup(props, context) {
     const dialogFlag = ref(false);
@@ -131,6 +138,16 @@ export default defineComponent({
       });
       dialogFlag.value = true;
     };
+
+    const isAudit = (param: DialogTableType) => {
+      if (param.visualType === "audit") return true;
+      else return false;
+    };
+
+    const isView = (param: DialogTableType) => {
+      if (param.visualType != '' && param.visualType != 'audit') return true
+      else return false
+    }
 
     const deleteClick = (val: DialogTableType) => {
       for (let i = 0; i < tableData.value.length; i++) {
@@ -197,6 +214,8 @@ export default defineComponent({
           size: val.size,
           flag: checkFlag(val.id),
           parentId: val.folderId,
+          visualId: val.visualId,
+          visualType: val.visualType
         });
       } else {
         dialogTableData.value.push({
@@ -249,7 +268,7 @@ export default defineComponent({
     };
 
     const getTableData = (files: any[]) => {
-      tableData.value = []
+      tableData.value = [];
       files.forEach((item) => {
         tableData.value.push({
           id: item.id,
@@ -311,7 +330,9 @@ export default defineComponent({
       listDelete,
       commit,
       clearData,
-      getTableData
+      getTableData,
+      isAudit,
+      isView
     };
   },
 });

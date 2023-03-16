@@ -21,11 +21,15 @@
     </delete>
 
     <select id="findFilesByDataListId" resultType="java.util.Map">
-        select files.id as id, file_name as "fileName", size, visual_type as "visualType", visual_id as "visualId", address from files, data_relational where files.id::text = data_relational.file_id and data_relational.data_list_id = #{dataListId}
+        select files.id as id, files.file_name as "fileName", size, visual_type as "visualType", visual_id as "visualId" from files, data_relational where files.id::text = data_relational.file_id and data_relational.data_list_id = #{dataListId}
     </select>
 
     <select id="findFileIdByDataListId" resultType="java.util.Map">
         select file_id as "fileId" from data_relational where data_list_id = #{dataListId};
+    </select>
+
+    <select id="findDataListIdsByFileId" resultType="java.lang.String">
+        select data_list_id from data_relational where file_id = #{fileId}
     </select>
 
     <insert id="batchInsert">

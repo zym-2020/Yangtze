@@ -297,12 +297,29 @@ export default defineComponent({
     const photoShow = ref(false);
     const excelShow = ref(false);
     const shpArray = ref<
-      { visualId: string; type: "line" | "fill" | "circle" }[]
+      {
+        visualId: string;
+        type: "line" | "fill" | "circle";
+        view: { zoom: number; center: number[] };
+      }[]
     >([]);
-    const pngArray = ref<{ visualId: string; coordinates: number[][] }[]>([]);
-    const rasterTileArray = ref<string[]>([]);
+    const pngArray = ref<
+      {
+        visualId: string;
+        coordinates: number[][];
+        view: { zoom: number; center: number[] };
+      }[]
+    >([]);
+    const rasterTileArray = ref<
+      { visualId: string; view: { zoom: number; center: number[] } }[]
+    >([]);
     const movePngArray = ref<
-      { visualId: string; name: string; coordinates: number[][] }[]
+      {
+        visualId: string;
+        name: string;
+        coordinates: number[][];
+        view: { zoom: number; center: number[] };
+      }[]
     >([]);
     const photoList = ref<string[]>([]);
     const tableNameList = ref<string[]>([]);
@@ -411,94 +428,107 @@ export default defineComponent({
       let excelFlag = false;
       visualSkeleton.value = true;
       for (let i = 0; i < fileList.value.length; i++) {
-        if (fileList.value[i].visualType != "") {
+        let visualType: string, visualId: string;
+        if (fileList.value[i].visualType === "audit") {
+          const json = JSON.parse(fileList.value[i].visualId);
+          visualType = json["oldVisualType"];
+          visualId = json["visualId"];
+        } else {
+          visualType = fileList.value[i].visualType;
+          visualId = fileList.value[i].visualId;
+        }
+        if (visualType != "") {
           if (
-            fileList.value[i].visualType === "lineVectorTile3D" ||
-            fileList.value[i].visualType === "lineVectorTile"
+            visualType === "lineVectorTile3D" ||
+            visualType === "lineVectorTile"
           ) {
             shpArray.value.push({
-              visualId: fileList.value[i].visualId,
+              visualId: visualId,
               type: "line",
+              view: JSON.parse(fileList.value[i].view),
             });
             MapFlag = true;
           }
           if (
-            fileList.value[i].visualType === "pointVectorTile" ||
-            fileList.value[i].visualType === "pointVectorTile3D"
+            visualType === "pointVectorTile" ||
+            visualType === "pointVectorTile3D"
           ) {
             shpArray.value.push({
-              visualId: fileList.value[i].visualId,
+              visualId: visualId,
               type: "circle",
+              view: JSON.parse(fileList.value[i].view),
             });
             MapFlag = true;
           }
           if (
-            fileList.value[i].visualType === "polygonVectorTile" ||
-            fileList.value[i].visualType === "polygonVectorTile3D"
+            visualType === "polygonVectorTile" ||
+            visualType === "polygonVectorTile3D"
           ) {
             shpArray.value.push({
-              visualId: fileList.value[i].visualId,
+              visualId: visualId,
               type: "fill",
+              view: JSON.parse(fileList.value[i].view),
             });
             MapFlag = true;
           }
-          if (fileList.value[i].visualType == "rasterTile") {
-            rasterTileArray.value.push(fileList.value[i].visualId);
+          if (visualType == "rasterTile") {
+            rasterTileArray.value.push({
+              visualId: visualId,
+              view: JSON.parse(fileList.value[i].view),
+            });
             MapFlag = true;
           }
-          if (fileList.value[i].visualType == "png") {
-            const coordinates = await getCoordinates(
-              fileList.value[i].visualId
-            );
+          if (visualType == "png") {
+            const coordinates = await getCoordinates(visualId);
             if (coordinates != null && (coordinates as any).code === 0) {
               pngArray.value.push({
-                visualId: fileList.value[i].visualId,
+                visualId: visualId,
                 coordinates: coordinates.data,
+                view: JSON.parse(fileList.value[i].view),
               });
             }
             MapFlag = true;
           }
-          if (fileList.value[i].visualType == "movePng") {
-            const coordinates = await getCoordinates(
-              fileList.value[i].visualId
-            );
+          if (visualType == "movePng") {
+            const coordinates = await getCoordinates(visualId);
             if (coordinates != null && (coordinates as any).code === 0) {
               movePngArray.value.push({
                 name: fileList.value[i].fileName,
-                visualId: fileList.value[i].visualId,
+                visualId: visualId,
                 coordinates: coordinates.data,
+                view: JSON.parse(fileList.value[i].view),
               });
             }
             MapFlag = true;
           }
-          if (fileList.value[i].visualType === "photo") {
+          if (visualType === "photo") {
             photoList.value.push(
               `${prefix}visual/getPhoto/${fileList.value[i].id}`
             );
             photoFlag = true;
           }
-          if (fileList.value[i].visualType === "sandContent") {
-            sandContentList.value.push(fileList.value[i].visualId);
+          if (visualType === "sandContent") {
+            sandContentList.value.push(visualId);
             tableNameList.value.push(fileList.value[i].fileName);
             excelFlag = true;
           }
-          if (fileList.value[i].visualType === "suspension") {
-            suspensionList.value.push(fileList.value[i].visualId);
+          if (visualType === "suspension") {
+            suspensionList.value.push(visualId);
             tableNameList.value.push(fileList.value[i].fileName);
             excelFlag = true;
           }
-          if (fileList.value[i].visualType === "rateDirection") {
-            rateDirectionList.value.push(fileList.value[i].visualId);
+          if (visualType === "rateDirection") {
+            rateDirectionList.value.push(visualId);
             tableNameList.value.push(fileList.value[i].fileName);
             excelFlag = true;
           }
-          if (fileList.value[i].visualType === "salinity") {
-            salinityList.value.push(fileList.value[i].visualId);
+          if (visualType === "salinity") {
+            salinityList.value.push(visualId);
             tableNameList.value.push(fileList.value[i].fileName);
             excelFlag = true;
           }
-          if (fileList.value[i].visualType === "flowSand_Z") {
-            flowSandZList.value.push(fileList.value[i].visualId);
+          if (visualType === "flowSand_Z") {
+            flowSandZList.value.push(visualId);
             tableNameList.value.push(fileList.value[i].fileName);
             excelFlag = true;
           }

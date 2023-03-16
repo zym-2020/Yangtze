@@ -80,12 +80,26 @@
             >
           </template>
           <template #default="scope">
-            <el-tooltip effect="dark" content="预览" placement="top">
+            <el-tooltip
+              effect="dark"
+              content="审核中"
+              placement="top"
+              v-if="isAudit(scope.row)"
+            >
+              <span style="margin-right: 10px">
+                <el-button size="small" type="info">...</el-button>
+              </span>
+            </el-tooltip>
+            <el-tooltip
+              effect="dark"
+              content="预览"
+              placement="top"
+              v-if="isVisual(scope.row)"
+            >
               <span style="margin-right: 10px">
                 <el-button
                   size="small"
                   type="primary"
-                  v-if="isVisual(scope.row)"
                   @click="viewClick(scope.row)"
                   ><el-icon><View /></el-icon
                 ></el-button>
@@ -154,22 +168,7 @@
 </template>
 
 <script lang="ts">
-type Folder = {
-  id: string;
-  folderName: string;
-  parentId: string;
-  flag: boolean;
-};
-type File = {
-  id: string;
-  fileName: string;
-  visualType: string;
-  size: string;
-  uploader: string;
-  folderId: string;
-  visualId: string;
-  flag: boolean;
-};
+
 import { defineComponent, onMounted, ref } from "vue";
 import { ElMessageBox } from "element-plus";
 import FolderDialog from "../components/FolderDialog.vue";
@@ -188,6 +187,7 @@ import { decrypt } from "@/utils/auth";
 import { uuid, getFileSize } from "@/utils/common";
 import DataPreview from "../components/DataPreview.vue";
 import { UploadFile, UploadFiles } from "element-plus";
+import { File, Folder } from '@/type'
 
 NProgress.configure({ showSpinner: false });
 export default defineComponent({
@@ -246,7 +246,19 @@ export default defineComponent({
 
     const isVisual = (item: Folder | File) => {
       if ("fileName" in item) {
-        if (item.visualType != "") {
+        if (item.visualType != "" && item.visualType != "audit") {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    };
+
+    const isAudit = (item: Folder | File) => {
+      if ("fileName" in item) {
+        if (item.visualType === "audit") {
           return true;
         } else {
           return false;
@@ -534,6 +546,7 @@ export default defineComponent({
       selectList,
       batDelete,
       isVisual,
+      isAudit,
       upload,
       viewClick,
       dataPreviewFlag,

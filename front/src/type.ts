@@ -225,3 +225,30 @@ export type TreeData = {
   parentId?: string;
   parentName?: string;
 };
+
+export type Folder = {
+  id: string;
+  folderName: string;
+  parentId: string;
+  flag: boolean;
+};
+export type File = {
+  id: string;
+  fileName: string;
+  visualType: string;
+  size: string;
+  uploader: string;
+  folderId: string;
+  visualId: string;
+  flag: boolean;
+};
+
+export type AuditFile = {
+  id: string
+  fileName: string
+  size: string
+  uploader: string
+  visualType: string
+  visualId: string
+  name: string
+}

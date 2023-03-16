@@ -10,6 +10,7 @@ import njnu.edu.back.common.utils.ZipOperate;
 import njnu.edu.back.dao.main.DataListMapper;
 import njnu.edu.back.dao.main.DataRelationalMapper;
 import njnu.edu.back.dao.main.DownloadHistoryMapper;
+import njnu.edu.back.dao.main.VisualFileMapper;
 import njnu.edu.back.pojo.DataList;
 import njnu.edu.back.pojo.DownloadHistory;
 import njnu.edu.back.service.DataListService;
@@ -64,6 +65,9 @@ public class DataListServiceImpl implements DataListService {
 
     @Autowired
     DownloadHistoryMapper downloadHistoryMapper;
+
+    @Autowired
+    VisualFileMapper visualFileMapper;
 
     @Override
     public void addDataList(MultipartFile avatar, String jsonString, String email) {
@@ -281,7 +285,13 @@ public class DataListServiceImpl implements DataListService {
 
     @Override
     public List<Map<String, Object>> findFiles(String dataListId) {
-        return dataRelationalMapper.findFilesByDataListId(dataListId);
+        List<Map<String, Object>> list = dataRelationalMapper.findFilesByDataListId(dataListId);
+        for (Map<String, Object> map : list) {
+            if (!map.get("visualType").equals("")) {
+                map.put("view", visualFileMapper.getView(map.get("visualId").toString()));
+            }
+        }
+        return list;
     }
 
 

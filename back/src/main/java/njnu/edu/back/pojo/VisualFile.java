@@ -19,4 +19,5 @@ public class VisualFile {
     String fileName;
     String type;
     String content;
+    String view;
 }

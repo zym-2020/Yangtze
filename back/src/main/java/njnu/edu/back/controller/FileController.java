@@ -115,7 +115,17 @@ public class FileController {
         return ResultUtils.success();
     }
 
+    @AuthCheck
+    @RequestMapping(value = "/getVisualAuditFiles/{page}/{size}/{keyword}", method = RequestMethod.GET)
+    public JsonResult getVisualAuditFiles(@JwtTokenParser("role") String role, @PathVariable String keyword, @PathVariable Integer page, @PathVariable Integer size) {
+        return ResultUtils.success(fileService.getVisualAuditFiles(role, keyword, page, size));
+    }
 
-
+    @AuthCheck
+    @RequestMapping(value = "/changeFileVisualState/{id}/{state}", method = RequestMethod.POST)
+    public JsonResult changeFileVisualState(@PathVariable String id, @PathVariable Integer state, @JwtTokenParser("role") String role) {
+        fileService.changeFileVisualState(id, state, role);
+        return ResultUtils.success();
+    }
 
 }

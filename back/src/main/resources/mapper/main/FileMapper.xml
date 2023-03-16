@@ -80,6 +80,25 @@
     </select>
 
     <update id="updateVisualTypeAndVisualId">
-        update files set visual_type = #{visualType}, visualId = #{visualId} where id::text = #{id}
+        update files set visual_type = #{visualType}, visual_id = #{visualId} where id::text = #{id}
     </update>
+
+    <select id="getVisualAuditFiles" resultType="java.util.Map">
+        select files.id, file_name as "fileName", size, uploader, visual_type as "visualType", visual_id as "visualId", name
+        from files, users
+        where visual_type = 'audit' and email = uploader
+        <if test="keyword != ''">
+            and (file_name like #{keyword} or users.name like #{keyword})
+        </if>
+        order by (visual_id::json->'time')::text asc
+        limit #{size} offset #{start}
+    </select>
+
+    <select id="getVisualAuditFilesCount" resultType="java.lang.Integer">
+        select count(*) from files, users where visual_type = 'audit' and email = uploader
+        <if test="keyword != ''">
+            and (file_name like #{keyword} or users.name like #{keyword})
+        </if>
+    </select>
+
 </mapper>

@@ -21,4 +21,5 @@ public interface VisualFileMapper {
 
     Map<String, Object> addVisualFile(VisualFile visualFile);
 
+    String getView(@Param("id") String id);
 }

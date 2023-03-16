@@ -277,7 +277,7 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
                 int code = process.waitFor();
                 if(code == 0) {
                     String content = getPngContent("png/" + resultUUID + ".png", coordinatePath);
-                    Map<String, Object> map = visualFileMapper.addVisualFile(new VisualFile(null, resultUUID + ".png", "png", content));
+                    Map<String, Object> map = visualFileMapper.addVisualFile(new VisualFile(null, resultUUID + ".png", "png", content, ""));
                     analyticDataSetMapper.addDraw(result, fileName, resultUUID + ".tif", email, "regionFlush", map.get("id").toString(), projectId);
                     redisService.set(result, 1, 60l);
                 } else {
@@ -317,7 +317,7 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
                     json.put("deep", deep);
                     json.put("volume", Double.valueOf(FileUtil.readTextFile(volumePath)));
                     content = json.toJSONString();
-                    Map<String, Object> map = visualFileMapper.addVisualFile(new VisualFile(null, visualId + ".png", "volume", content));
+                    Map<String, Object> map = visualFileMapper.addVisualFile(new VisualFile(null, visualId + ".png", "volume", content, ""));
                     analyticDataSetMapper.addDraw(result, fileName, resultId + ".json", email, "volume", map.get("id").toString(), projectId);
                     redisService.set(result, 1, 60l);
                 } else {

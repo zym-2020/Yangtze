@@ -2,11 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="njnu.edu.back.dao.main.VisualFileMapper">
     <select id="findById" resultType="java.util.Map">
-        select id, file_name as "fileName", type, content from visual_file where id::text = #{id}
+        select id, file_name as "fileName", type, content, view from visual_file where id::text = #{id}
     </select>
 
     <select id="addVisualFile" parameterType="njnu.edu.back.pojo.VisualFile" resultType="java.util.Map">
-        insert into visual_file values (default, #{fileName}, #{type}, #{content}) returning *
+        insert into visual_file values (default, #{fileName}, #{type}, #{content}, #{view}) returning *
     </select>
 
+    <select id="getView" resultType="java.lang.String">
+        select view from visual_file where id::text = #{id}
+    </select>
 </mapper>

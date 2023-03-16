@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -303,11 +304,24 @@ public class FileServiceImpl implements FileService {
         String type = jsonObject.getStr("type");
         JSONArray jsonArray = jsonObject.getJSONArray("coordinates");
         String srid = jsonObject.getStr("srid");
+        JSONObject view = jsonObject.getJSONObject("view");
+        String viewStr = "";
+        if (view != null) {
+            viewStr = JSON.toJSONString(view);
+        }
         String content = "";
+        List<String> list = dataRelationalMapper.findDataListIdsByFileId(fileId);
+        Map<String, Object> fileInfo = fileMapper.findInfoById(fileId);
+        boolean flag;
+        if (list.size() > 0) {
+            flag = true;
+        } else {
+            flag = false;
+        }
         if (type.equals("png") || type.equals("movePng")) {
             JSONObject json = new JSONObject();
-            json.append("address", "png/" + fileName);
-            json.append("coordinates", jsonArray);
+            json.putOnce("address", "png/" + fileName);
+            json.putOnce("coordinates", jsonArray);
             content = JSON.toJSONString(json);
         } else if (type.equals("rateDirection") || type.equals("sandContent") || type.equals("salinity") || type.equals("suspension") || type.equals("flowSand_Z") || type.equals("tide")) {
             if (type.equals("flowSand_Z")) {
@@ -355,19 +369,91 @@ public class FileServiceImpl implements FileService {
                 throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
             }
         } else if (type.equals("photo")) {
+            if (flag) {
+                SimpleDateFormat dateFormat= new SimpleDateFormat("yyyy-MM-dd hh:mm");
+                JSONObject json = new JSONObject();
+                if (fileInfo.get("visualType").equals("audit")) {
+                    json.putOnce("oldVisualType", JSON.parseObject(fileInfo.get("visualId").toString()).getString("oldVisualType"));
+                    json.putOnce("oldVisualId", JSON.parseObject(fileInfo.get("visualId").toString()).getString("oldVisualId"));
+                } else {
+                    json.putOnce("oldVisualType", fileInfo.get("visualType"));
+                    json.putOnce("oldVisualId", fileInfo.get("visualId"));
+                }
+                json.putOnce("visualType", "photo");
+                json.putOnce("visualId", "");
+                json.putOnce("time", dateFormat.format(new Date()));
+                fileMapper.updateVisualIdAndType(fileId, JSON.toJSONString(json), "audit");
+                throw new MyException(1, JSON.toJSONString(json));
+            }
             fileMapper.updateVisualIdAndType(fileId, "", "photo");
             return "";
         } else {
+            // excel表格形式的数据上传
             throw new MyException(ResultEnum.QUERY_TYPE_ERROR);
         }
-        VisualFile visualFile = new VisualFile(null, fileName, type, content);
+        VisualFile visualFile = new VisualFile(null, fileName, type, content, viewStr);
         Map<String, Object> map = visualFileMapper.addVisualFile(visualFile);
-        fileMapper.updateVisualIdAndType(fileId, map.get("id").toString(), type);
+        if (flag) {
+            SimpleDateFormat dateFormat= new SimpleDateFormat("yyyy-MM-dd hh:mm");
+            JSONObject json = new JSONObject();
+            if (fileInfo.get("visualType").equals("audit")) {
+
+                json.putOnce("oldVisualType", JSON.parseObject(fileInfo.get("visualId").toString()).getString("oldVisualType"));
+                json.putOnce("oldVisualId", JSON.parseObject(fileInfo.get("visualId").toString()).getString("oldVisualId"));
+            } else {
+                json.putOnce("oldVisualType", fileInfo.get("visualType"));
+                json.putOnce("oldVisualId", fileInfo.get("visualId"));
+            }
+            json.putOnce("visualType", type);
+            json.putOnce("visualId", map.get("id").toString());
+            json.putOnce("time", dateFormat.format(new Date()));
+            fileMapper.updateVisualIdAndType(fileId, JSON.toJSONString(json), "audit");
+            throw new MyException(1, JSON.toJSONString(json));
+        } else {
+            fileMapper.updateVisualIdAndType(fileId, map.get("id").toString(), type);
+        }
+
         return map.get("id").toString();
     }
 
     @Override
     public void cancelVisualBind(String id) {
         fileMapper.updateVisualTypeAndVisualId(id, "", "");
+    }
+
+    @Override
+    public Map<String, Object> getVisualAuditFiles(String role, String keyword, Integer page, Integer size) {
+        Map<String, Object> result = new HashMap<>();
+        if (!role.equals("admin")) {
+            throw new MyException(-99, "没有权限");
+        }
+        if (keyword.equals("all")) {
+            keyword = "";
+        } else {
+            keyword = "%" + keyword + "%";
+        }
+        result.put("total", fileMapper.getVisualAuditFilesCount(keyword));
+        result.put("list", fileMapper.getVisualAuditFiles(keyword, size, page * size));
+        return result;
+    }
+
+    @Override
+    public void changeFileVisualState(String id, Integer state, String role) {
+        if (!role.equals("admin")) {
+            throw new MyException(-99, "没有权限");
+        }
+        Map<String, Object> fileInfo = fileMapper.findInfoById(id);
+        if (!fileInfo.get("visualType").equals("audit")) {
+            throw new MyException(ResultEnum.NO_OBJECT);
+        }
+        com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(fileInfo.get("visualId").toString());
+        if (state == 1) {
+            fileMapper.updateVisualIdAndType(id, jsonObject.getString("visualId"), jsonObject.getString("visualType"));
+        } else if (state == -1) {
+            fileMapper.updateVisualIdAndType(id, jsonObject.getString("oldVisualId"), jsonObject.getString("oldVisualType"));
+        } else {
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
+
     }
 }

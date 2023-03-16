@@ -45,4 +45,5 @@ public interface DataListMapper {
     int getSimilarCount(@Param("type") String type);
 
     List<Map<String, Object>> getHot(@Param("size") int size);
+
 }

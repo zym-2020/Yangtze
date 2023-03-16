@@ -24,6 +24,38 @@
         </el-select>
       </div>
 
+      <div class="view">
+        <div class="flex-item">
+          <div><strong>视图缩放层级：</strong></div>
+          <el-select v-model="selectValue" :disabled="viewDisabledFlag">
+            <el-option
+              v-for="item in zoomOptions"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
+        </div>
+        <div class="flex-item">
+          <div><strong>视图经度：</strong></div>
+          <el-input-number
+            v-model="longValue"
+            :max="180"
+            :min="-180"
+            :disabled="viewDisabledFlag"
+          />
+        </div>
+        <div class="flex-item">
+          <div><strong>视图纬度：</strong></div>
+          <el-input-number
+            v-model="latValue"
+            :max="90"
+            :min="-90"
+            :disabled="viewDisabledFlag"
+          />
+        </div>
+      </div>
+
       <div class="srid">
         <div><strong>矢量SRID：</strong></div>
         <el-input
@@ -127,6 +159,12 @@ export default defineComponent({
   setup(props, context) {
     const upload = ref<any>();
 
+    const selectValue = ref(8);
+    const zoomOptions = [
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+    ];
+    const longValue = ref<number | "">(121);
+    const latValue = ref<number | "">(32);
     const options = [
       {
         label: "基础地理数据",
@@ -215,6 +253,7 @@ export default defineComponent({
     const topInput = ref("");
     const bottomInput = ref("");
 
+    const viewDisabledFlag = ref(true);
     const uploadDisabledFlag = ref(true);
     const coordinateDisabledFlag = ref(true);
     const sridDisabledFlag = ref(true);
@@ -270,6 +309,21 @@ export default defineComponent({
         sridDisabledFlag.value = false;
       } else {
         sridDisabledFlag.value = true;
+      }
+      if (
+        val === "png" ||
+        val === "movePng" ||
+        val === "rasterTile" ||
+        val === "polygonVectorTile3D" ||
+        val === "pointVectorTile3D" ||
+        val === "lineVectorTile3D" ||
+        val === "polygonVectorTile" ||
+        val === "pointVectorTile" ||
+        val === "lineVectorTile"
+      ) {
+        viewDisabledFlag.value = false;
+      } else {
+        viewDisabledFlag.value = true;
       }
       init();
     };
@@ -353,12 +407,17 @@ export default defineComponent({
         type: string;
         srid: string;
         coordinates: number[][];
+        view: {
+          zoom: number;
+          center: number[];
+        } | null;
       } = {
         id: (props.fileInfo as any).id,
         fileName: uploadedFileName,
         type: typeValue.value,
         coordinates: [],
         srid: sridInput.value,
+        view: null,
       };
       if (typeValue.value != "") {
         if (typeValue.value != "photo") {
@@ -407,10 +466,24 @@ export default defineComponent({
               ]);
             }
           }
+          if (!viewDisabledFlag.value) {
+            console.log(1)
+            if (longValue.value === "" || latValue.value === "") {
+              notice("warning", "警告", "视图经纬度不得为空");
+              return;
+            } else {
+              jsonData.view = {
+                zoom: selectValue.value,
+                center: [longValue.value, latValue.value],
+              };
+            }
+          }
         }
       } else {
         notice("warning", "警告", "请选择类型");
+        return;
       }
+      console.log(jsonData);
 
       loading.value = true;
       const data = await bindVisualData(jsonData);
@@ -420,6 +493,16 @@ export default defineComponent({
           visualId: data.data,
         });
         notice("success", "成功", "可视化数据绑定成功");
+      } else if (data != null && (data as any).code === 1) {
+        notice(
+          "warning",
+          "警告",
+          "当前文件绑定数据条目，若更改可视化绑定需要通过管理审核!"
+        );
+        context.emit("updateVisualFile", {
+          visualType: "audit",
+          visualId: (data as any).msg,
+        });
       }
       loading.value = false;
     };
@@ -428,12 +511,17 @@ export default defineComponent({
       const data = await cancelVisualBind(fileInfo.value!.id);
       if (data != null && (data as any).code === 0) {
         notice("success", "成功", "取消可视化数据绑定");
+        context.emit("updateVisualFile", { visualType: "", visualId: "" });
       }
     };
 
     return {
+      longValue,
+      latValue,
       typeValue,
+      selectValue,
       options,
+      zoomOptions,
       sridInput,
       leftInput,
       rightInput,
@@ -441,6 +529,7 @@ export default defineComponent({
       bottomInput,
       uploadDisabledFlag,
       coordinateDisabledFlag,
+      viewDisabledFlag,
       sridDisabledFlag,
       selectChangeHandle,
       uploadHandle,
@@ -461,7 +550,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .visual-data-bind {
-  height: 580px;
+  height: 640px;
   position: relative;
   .visual-head {
     height: 50px;
@@ -483,6 +572,25 @@ export default defineComponent({
         width: 100%;
         margin-top: 10px;
       }
+    }
+  }
+
+  .view {
+    margin-top: 20px;
+    display: flex;
+    .flex-item {
+      flex: 1;
+      strong {
+        font-size: 16px;
+      }
+    }
+
+    .el-select {
+      margin-top: 5px;
+      width: 150px;
+    }
+    .el-input-number {
+      margin-top: 5px;
     }
   }
 

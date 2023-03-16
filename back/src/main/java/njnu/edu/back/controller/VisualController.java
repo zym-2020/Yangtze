@@ -250,33 +250,5 @@ public class VisualController {
     }
 
 
-//    @ApiOperation(value = "上传输入文件数据")
-    @CrossOrigin
-    @PostMapping("/CREST/uploadFile/{dataType}")
-    boolean uploadFile(@RequestParam MultipartFile multipartFile, @PathVariable String dataType) {
-        //获取文件名称
-        String fileName = multipartFile.getOriginalFilename();
-        //获取文件类型
-        String fileType = (fileName.substring(fileName.lastIndexOf("."))).substring(1);
-        //获取文件名称
-        String title = fileName.substring(0, fileName.lastIndexOf("."));
-        //文件存储路径
-        String storagePath = "E:\\models\\CREST_Example\\" + dataType;
-        File fold = new File(storagePath);
-        if (!fold.exists()) {
-            fold.mkdirs();
-        }
-        try {
-            File file = new File(fold, title + '.' + fileType);
-            multipartFile.transferTo(file);
-            return true;
-        } catch (IOException e) {
-            System.out.println("文件上传失败");
-            e.printStackTrace();
-
-            return false;
-        }
-
-    }
 
 }

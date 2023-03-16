@@ -502,12 +502,28 @@ export async function bindVisualData(jsonData: {
   type: string;
   srid: string;
   coordinates: number[][];
+  view: {
+    zoom: number;
+    center: number[];
+  } | null;
 }) {
   return await post(`/file/bindVisualData`, jsonData);
 }
 
 export async function cancelVisualBind(id: string) {
   return await del(`/file/cancelVisualBind/${id}`);
+}
+
+export async function getVisualAuditFiles(
+  keyword: string,
+  page: number,
+  size: number
+) {
+  return await get(`/file/getVisualAuditFiles/${page}/${size}/${keyword}`);
+}
+
+export async function changeFileVisualState(id: string, state: number) {
+  return await post(`/file/changeFileVisualState/${id}/${state}`);
 }
 
 //========================downloadHistory相关接口=================================

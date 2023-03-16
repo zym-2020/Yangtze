@@ -62,9 +62,8 @@ public interface VisualService {
 
     JSONObject getTianDiTuImage();
 
-
-
     void uploadParts(String uid, String number, MultipartFile file);
 
     String mergeParts(String uid, Integer total, String type, String name);
+
 }

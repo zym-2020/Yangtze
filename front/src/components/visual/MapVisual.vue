@@ -61,12 +61,7 @@
 </template>
 
 <script lang="ts">
-import {
-  computed,
-  defineComponent,
-  onMounted,
-  ref,
-} from "vue";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import mapBoxGl, { AnySourceData } from "mapbox-gl";
 import { prefix } from "@/prefix";
 export default defineComponent({
@@ -84,9 +79,13 @@ export default defineComponent({
       type: Array,
     },
   },
+
   setup(props) {
     const container = ref<HTMLElement>();
     let map: mapBoxGl.Map;
+
+    let cneter: [number, number];
+    let zoom: number;
 
     const initMap = () => {
       map = new mapBoxGl.Map({
@@ -126,29 +125,38 @@ export default defineComponent({
             },
           ],
         },
-        center: [121.18, 31.723],
-        zoom: 8,
+        center: cneter,
+        zoom: zoom,
         accessToken:
           "pk.eyJ1IjoiMTY2NTE2OTkzNzYiLCJhIjoiY2ttMDh5amJpMHE2dzJ3cTd5eWZsMGQxZyJ9.XErH3kSOuRC_OWXWCpDLkQ",
       });
       map.on("load", () => {
         if (props.rasterTileArray != undefined) {
-          (props.rasterTileArray as string[]).forEach((item) => {
-            map.addSource(item, {
+          (
+            props.rasterTileArray as {
+              visualId: string;
+              view: { zoom: number; center: number[] };
+            }[]
+          ).forEach((item) => {
+            map.addSource(item.visualId, {
               type: "raster",
-              tiles: [`${prefix}visual/getRaster/${item}/{x}/{y}/{z}`],
+              tiles: [`${prefix}visual/getRaster/${item.visualId}/{x}/{y}/{z}`],
             });
             map.addLayer({
-              id: item,
+              id: item.visualId,
               type: "raster",
-              source: item,
+              source: item.visualId,
             });
           });
         }
 
         if (props.pngArray != undefined) {
           (
-            props.pngArray as { visualId: string; coordinates: number[][] }[]
+            props.pngArray as {
+              visualId: string;
+              coordinates: number[][];
+              view: { zoom: number; center: number[] };
+            }[]
           ).forEach((item) => {
             map.addSource(item.visualId, {
               type: "image",
@@ -181,6 +189,7 @@ export default defineComponent({
             props.shpArray as {
               visualId: string;
               type: "line" | "circle" | "fill";
+              view: { zoom: number; center: number[] };
             }[]
           ).forEach((item) => {
             map.addSource(item.visualId, {
@@ -238,11 +247,23 @@ export default defineComponent({
         type: "raster",
         source: movePngArray.value[centerIndex.value].visualId,
       });
+      map.setZoom(movePngArray.value[centerIndex.value].view.zoom);
+      map.setCenter(movePngArray.value[centerIndex.value].view.center);
       map.removeLayer(movePngArray.value[temp].visualId);
       map.removeSource(movePngArray.value[temp].visualId);
     };
 
     onMounted(() => {
+      const arr = [
+        ...(props.movePngArray as any[]),
+        ...(props.pngArray as any[]),
+        ...(props.rasterTileArray as any[]),
+        ...(props.shpArray as any[]),
+      ];
+      for (let i = 0; i < arr.length; i++) {
+        cneter = arr[i].view.center;
+        zoom = arr[i].view.zoom;
+      }
       initMap();
     });
 

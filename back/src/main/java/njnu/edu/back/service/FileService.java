@@ -41,5 +41,7 @@ public interface FileService {
 
     void cancelVisualBind(String id);
 
+    Map<String, Object> getVisualAuditFiles(String role, String keyword, Integer page, Integer size);
 
+    void changeFileVisualState(String id, Integer state, String role);
 }

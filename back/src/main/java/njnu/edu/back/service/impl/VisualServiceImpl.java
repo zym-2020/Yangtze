@@ -538,5 +538,4 @@ public class VisualServiceImpl implements VisualService {
             return fileName;
         }
     }
-
 }
