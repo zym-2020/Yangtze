@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="photo-visual">
     <el-carousel :interval="2000" type="card" style="margin-top: 30px" indicator-position="none">
       <el-carousel-item v-for="item in photoList" :key="item">
         <el-image fit="fill" :src="item" />
@@ -29,4 +29,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+.photo-visual {
+  padding-bottom: 20px;
+}
 </style>

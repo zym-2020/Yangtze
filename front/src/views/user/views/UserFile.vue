@@ -227,6 +227,7 @@ export default defineComponent({
     const fileInfo = ref<any>();
 
     const compareInfo = ref<{
+      id: string;
       oldVisualId: string;
       oldVisualType: string;
       visualType: string;
@@ -446,6 +447,7 @@ export default defineComponent({
     const auditClick = (val: any) => {
       const json = JSON.parse(val.visualId);
       json["fileName"] = val.fileName;
+      json["id"] = val.id
       compareInfo.value = json;
       visualCompareFlag.value = true;
     };

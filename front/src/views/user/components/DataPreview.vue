@@ -20,6 +20,9 @@
         :flowSandZList="flowSandZList"
       />
     </div>
+    <div v-if="photoVisualFlag">
+      <photo-visual :photoList="photoList" />
+    </div>
   </div>
 </template>
 
@@ -38,6 +41,8 @@ import { defineComponent, ref, PropType, onMounted } from "vue";
 import MapVisual from "@/components/visual/MapVisual.vue";
 import ExcelVisual from "@/components/visual/ExcelVisual.vue";
 import { getCoordinates } from "@/api/request";
+import { prefix } from "@/prefix";
+import PhotoVisual from "@/components/visual/PhotoVisual.vue";
 export default defineComponent({
   props: {
     fileInfo: {
@@ -47,11 +52,13 @@ export default defineComponent({
   components: {
     MapVisual,
     ExcelVisual,
+    PhotoVisual,
   },
   setup(props) {
     const skeletonFlag = ref(true);
     const mapVisualFlag = ref(false);
     const excelVisualFlag = ref(false);
+    const photoVisualFlag = ref(false);
 
     const shpArray = ref<
       {
@@ -83,6 +90,7 @@ export default defineComponent({
     const rateDirectionList = ref<string[]>([]);
     const salinityList = ref<string[]>([]);
     const flowSandZList = ref<string[]>([]);
+    const photoList = ref<string[]>([]);
 
     const initVisual = async () => {
       //获取file文件的可视化方法
@@ -152,12 +160,10 @@ export default defineComponent({
           }
           MapFlag = true;
         }
-        // if (props.fileInfo.visualType === "photo") {
-        //   photoList.value.push(
-        //     `${prefix}visual/getPhoto/${fileList.value[i].id}`
-        //   );
-        //   photoFlag = true;
-        // }
+        if (props.fileInfo.visualType === "photo") {
+          photoList.value.push(`${prefix}visual/getPhoto/${props.fileInfo.id}`);
+          photoFlag = true;
+        }
         if (props.fileInfo.visualType === "sandContent") {
           sandContentList.value.push(props.fileInfo.visualId);
           tableNameList.value.push(props.fileInfo.fileName);
@@ -186,6 +192,7 @@ export default defineComponent({
       }
       mapVisualFlag.value = MapFlag;
       excelVisualFlag.value = excelFlag;
+      photoVisualFlag.value = photoFlag;
       skeletonFlag.value = false;
     };
 
@@ -207,6 +214,8 @@ export default defineComponent({
       rateDirectionList,
       salinityList,
       flowSandZList,
+      photoVisualFlag,
+      photoList,
     };
   },
 });

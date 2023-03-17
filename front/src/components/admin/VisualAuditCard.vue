@@ -46,9 +46,9 @@
 import { computed, defineComponent, ref } from "vue";
 import { changeFileVisualState, getDownloadURL } from "@/api/request";
 import VisualCompare from "@/views/user/components/VisualCompare.vue";
-import { prefix } from '@/prefix'
-import { useStore } from '@/store'
-import { decrypt } from '@/utils/auth'
+import { prefix } from "@/prefix";
+import { useStore } from "@/store";
+import { decrypt } from "@/utils/auth";
 export default defineComponent({
   props: {
     info: {
@@ -61,7 +61,7 @@ export default defineComponent({
   components: { VisualCompare },
   emits: ["auditHandleVisual"],
   setup(props, context) {
-    const store = useStore()
+    const store = useStore();
     const visualCompareFlag = ref(false);
     const compareInfo = ref<{
       oldVisualId: string;
@@ -98,6 +98,7 @@ export default defineComponent({
     const viewCompare = () => {
       const json = JSON.parse(info.value!.visualId);
       json["fileName"] = info.value!.fileName;
+      json["id"] = info.value!.id;
       compareInfo.value = json;
       visualCompareFlag.value = true;
     };
@@ -118,7 +119,7 @@ export default defineComponent({
       viewCompare,
       visualCompareFlag,
       compareInfo,
-      downloadClick
+      downloadClick,
     };
   },
 });
