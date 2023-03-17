@@ -88,8 +88,8 @@
               <el-option
                 v-for="(item, index) in group.data"
                 :key="index"
-                :label="item.name"
-                :value="item.name"
+                :label="item"
+                :value="item"
               />
             </el-option-group>
           </el-select>
@@ -207,116 +207,37 @@ export default defineComponent({
       {
         title: "地形数据",
         data: [
-          {
-            name: "DEM",
-            count: false,
-          },
-          {
-            name: "边界",
-            count: false,
-          },
-          {
-            name: "等高线",
-            count: false,
-          },
-          {
-            name: "DWG",
-            count: false,
-          },
-          {
-            name: "高程点",
-            count: false,
-          },
-          {
-            name: "固定断面线",
-            count: false,
-          },
-
-          {
-            name: "深泓线",
-            count: false,
-          },
+          "DEM",
+          "边界",
+          "等高线",
+          "DWG",
+          "高程点",
+          "固定断面线",
+          "深泓线",
         ],
       },
       {
         title: "工程数据",
         data: [
-          {
-            name: "航标",
-            count: false,
-          },
-          {
-            name: "护岸工程",
-            count: false,
-          },
-          {
-            name: "码头工程",
-            count: false,
-          },
-          {
-            name: "水利工程",
-            count: false,
-          },
-          {
-            name: "整治工程",
-            count: false,
-          },
-          {
-            name: "桥梁工程",
-            count: false,
-          },
+          "航标",
+          "护岸工程",
+          "码头工程",
+          "水利工程",
+          "整治工程",
+          "桥梁工程",
         ],
       },
       {
         title: "物理模型",
-        data: [
-          {
-            name: "浓度场",
-            count: false,
-          },
-          {
-            name: "照片",
-            count: false,
-          },
-        ],
+        data: ["浓度场", "照片", "视频"],
       },
       {
         title: "水文数据",
-        data: [
-          {
-            name: "潮位",
-            count: false,
-          },
-          {
-            name: "断面输沙率",
-            count: false,
-          },
-          {
-            name: "含沙量",
-            count: false,
-          },
-          {
-            name: "含盐度",
-            count: false,
-          },
-          {
-            name: "流速流向",
-            count: false,
-          },
-          {
-            name: "悬移质",
-            count: false,
-          },
-        ],
+        data: ["潮位", "断面输沙率", "含沙量", "含盐度", "流速流向", "悬移质"],
       },
       {
         title: "遥感影像",
-        data: [
-          {
-            name: "遥感影像",
-            count: false,
-          },
-        ],
+        data: ["遥感影像"],
       },
     ]);
     const form: Form = reactive({

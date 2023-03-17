@@ -23,6 +23,9 @@
     <div v-if="photoVisualFlag">
       <photo-visual :photoList="photoList" />
     </div>
+    <div v-if="videoVisualFlag">
+      <video-visual :urls="videoURLs" />
+    </div>
   </div>
 </template>
 
@@ -43,6 +46,8 @@ import ExcelVisual from "@/components/visual/ExcelVisual.vue";
 import { getCoordinates } from "@/api/request";
 import { prefix } from "@/prefix";
 import PhotoVisual from "@/components/visual/PhotoVisual.vue";
+import VideoVisual from "@/components/visual/VideoVisual.vue";
+
 export default defineComponent({
   props: {
     fileInfo: {
@@ -53,13 +58,16 @@ export default defineComponent({
     MapVisual,
     ExcelVisual,
     PhotoVisual,
+    VideoVisual,
   },
   setup(props) {
     const skeletonFlag = ref(true);
     const mapVisualFlag = ref(false);
     const excelVisualFlag = ref(false);
     const photoVisualFlag = ref(false);
+    const videoVisualFlag = ref(false);
 
+    const videoURLs = ref<{ fileName: string; url: string }[]>([]);
     const shpArray = ref<
       {
         visualId: string;
@@ -97,6 +105,7 @@ export default defineComponent({
       let MapFlag = false;
       let photoFlag = false;
       let excelFlag = false;
+      let videoFlag = false;
       if (props.fileInfo) {
         if (
           props.fileInfo.visualType === "lineVectorTile3D" ||
@@ -160,9 +169,17 @@ export default defineComponent({
           }
           MapFlag = true;
         }
+
         if (props.fileInfo.visualType === "photo") {
           photoList.value.push(`${prefix}visual/getPhoto/${props.fileInfo.id}`);
           photoFlag = true;
+        }
+        if (props.fileInfo.visualType === "video") {
+          videoURLs.value.push({
+            url: `${prefix}visual/video/${props.fileInfo.id}`,
+            fileName: props.fileInfo.fileName,
+          });
+          videoFlag = true;
         }
         if (props.fileInfo.visualType === "sandContent") {
           sandContentList.value.push(props.fileInfo.visualId);
@@ -193,6 +210,7 @@ export default defineComponent({
       mapVisualFlag.value = MapFlag;
       excelVisualFlag.value = excelFlag;
       photoVisualFlag.value = photoFlag;
+      videoVisualFlag.value = videoFlag;
       skeletonFlag.value = false;
     };
 
@@ -216,6 +234,8 @@ export default defineComponent({
       flowSandZList,
       photoVisualFlag,
       photoList,
+      videoVisualFlag,
+      videoURLs,
     };
   },
 });

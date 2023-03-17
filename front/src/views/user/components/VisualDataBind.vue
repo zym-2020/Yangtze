@@ -243,6 +243,10 @@ export default defineComponent({
             label: "photo（图片类型）",
             value: "photo",
           },
+          {
+            label: "video（视频类型）",
+            value: "video",
+          },
         ],
       },
     ];
@@ -292,7 +296,7 @@ export default defineComponent({
         coordinateDisabledFlag.value = true;
       }
 
-      if (val === "photo") {
+      if (val === "photo" || val === "video") {
         uploadDisabledFlag.value = true;
       } else {
         uploadDisabledFlag.value = false;
@@ -310,6 +314,7 @@ export default defineComponent({
       } else {
         sridDisabledFlag.value = true;
       }
+
       if (
         val === "png" ||
         val === "movePng" ||
@@ -419,8 +424,8 @@ export default defineComponent({
         srid: sridInput.value,
         view: null,
       };
-      if (typeValue.value != "") {
-        if (typeValue.value != "photo") {
+      if (typeValue.value !== "") {
+        if (typeValue.value !== "photo" && typeValue.value !== "video") {
           if (uploadedFileName == "") {
             notice("warning", "警告", "请上传文件");
             return;

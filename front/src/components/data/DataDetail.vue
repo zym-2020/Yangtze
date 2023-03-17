@@ -182,6 +182,9 @@
             <div v-if="photoShow" class="photo">
               <photo-visual :photoList="photoList" />
             </div>
+            <div v-if="videoShow" class="video">
+              <video-visual :urls="videoList" />
+            </div>
             <div v-if="excelShow" class="excel">
               <excel-visual
                 :tableNameList="tableNameList"
@@ -192,7 +195,7 @@
                 :flowSandZList="flowSandZList"
               />
             </div>
-            <div v-if="!mapShow && !photoShow && !excelShow">
+            <div v-if="!mapShow && !photoShow && !excelShow && !videoShow">
               <el-empty description="数据暂不支持预览" />
             </div>
           </div>
@@ -272,6 +275,7 @@ import router from "@/router";
 import MapVisual from "@/components/visual/MapVisual.vue";
 import PhotoVisual from "@/components/visual/PhotoVisual.vue";
 import ExcelVisual from "@/components/visual/ExcelVisual.vue";
+import VideoVisual from "@/components/visual/VideoVisual.vue";
 import Statistics from "@/components/visual/Statistics.vue";
 import PageCopyright from "@/layout/components/PageCopyright.vue";
 import { prefix } from "@/prefix";
@@ -283,6 +287,7 @@ export default defineComponent({
     MapVisual,
     PhotoVisual,
     ExcelVisual,
+    VideoVisual,
     Statistics,
     PageCopyright,
   },
@@ -299,6 +304,7 @@ export default defineComponent({
     const mapShow = ref(false);
     const photoShow = ref(false);
     const excelShow = ref(false);
+    const videoShow = ref(false);
     const shpArray = ref<
       {
         visualId: string;
@@ -325,6 +331,7 @@ export default defineComponent({
       }[]
     >([]);
     const photoList = ref<string[]>([]);
+    const videoList = ref<{ fileName: string; url: string }[]>([]);
     const tableNameList = ref<string[]>([]);
     const sandContentList = ref<string[]>([]);
     const suspensionList = ref<string[]>([]);
@@ -435,6 +442,7 @@ export default defineComponent({
       let MapFlag = false;
       let photoFlag = false;
       let excelFlag = false;
+      let videoFlag = false;
       visualSkeleton.value = true;
       for (let i = 0; i < fileList.value.length; i++) {
         let visualType: string, visualId: string;
@@ -516,6 +524,13 @@ export default defineComponent({
             );
             photoFlag = true;
           }
+          if (visualType === "video") {
+            videoList.value.push({
+              fileName: fileList.value[i].fileName,
+              url: `${prefix}visual/video/${fileList.value[i].id}`,
+            });
+            videoFlag = true;
+          }
           if (visualType === "sandContent") {
             sandContentList.value.push(visualId);
             tableNameList.value.push(fileList.value[i].fileName);
@@ -546,6 +561,7 @@ export default defineComponent({
       mapShow.value = MapFlag;
       photoShow.value = photoFlag;
       excelShow.value = excelFlag;
+      videoShow.value = videoFlag;
       visualSkeleton.value = false;
     };
 
@@ -582,6 +598,7 @@ export default defineComponent({
       locationMap,
       fileInfo,
       photoList,
+      videoList,
       date,
       avatar,
       downloadOrigin,
@@ -600,6 +617,7 @@ export default defineComponent({
       excelShow,
       shpArray,
       pngArray,
+      videoShow,
       tableNameList,
       movePngArray,
       rasterTileArray,

@@ -24,6 +24,9 @@
       <div v-if="oldPhotoVisualFlag">
         <photo-visual :photoList="oldPhotoList" />
       </div>
+      <div v-if="oldVideoVisualFlag">
+        <video-visual :urls="oldVideoURLs" />
+      </div>
     </div>
     <div class="divider">
       <el-divider content-position="left"
@@ -53,6 +56,9 @@
       <div v-if="nowPhotoVisualFlag">
         <photo-visual :photoList="photoList" />
       </div>
+      <div v-if="nowVideoVisualFlag">
+        <video-visual :urls="nowVideoURLs" />
+      </div>
     </div>
   </div>
 </template>
@@ -64,11 +70,13 @@ import ExcelVisual from "@/components/visual/ExcelVisual.vue";
 import PhotoVisual from "@/components/visual/PhotoVisual.vue";
 import { getView, getCoordinates } from "@/api/request";
 import { prefix } from "@/prefix";
+import VideoVisual from "@/components/visual/VideoVisual.vue";
 export default defineComponent({
   components: {
     MapVisual,
     ExcelVisual,
     PhotoVisual,
+    VideoVisual,
   },
   props: {
     compareInfo: {
@@ -80,6 +88,7 @@ export default defineComponent({
     const oldMapVisualFlag = ref(false);
     const oldExcelVisualFlag = ref(false);
     const oldPhotoVisualFlag = ref(false);
+    const oldVideoVisualFlag = ref(false);
     const oldShpArray = ref<
       {
         visualId: string;
@@ -105,6 +114,7 @@ export default defineComponent({
       { visualId: string; view: { zoom: number; center: number[] } }[]
     >([]);
     const oldPhotoList = ref<string[]>([]);
+    const oldVideoURLs = ref<{ url: string; fileName: string }[]>([]);
     const oldTableNameList = ref<string[]>([]);
     const oldSandContentList = ref<string[]>([]);
     const oldSuspensionList = ref<string[]>([]);
@@ -116,6 +126,7 @@ export default defineComponent({
     const nowMapVisualFlag = ref(false);
     const nowExcelVisualFlag = ref(false);
     const nowPhotoVisualFlag = ref(false);
+    const nowVideoVisualFlag = ref(false);
     const nowShpArray = ref<
       {
         visualId: string;
@@ -141,6 +152,7 @@ export default defineComponent({
       { visualId: string; view: { zoom: number; center: number[] } }[]
     >([]);
     const nowPhotoList = ref<string[]>([]);
+    const nowVideoURLs = ref<{ url: string; fileName: string }[]>([]);
     const nowTableNameList = ref<string[]>([]);
     const nowSandContentList = ref<string[]>([]);
     const nowSuspensionList = ref<string[]>([]);
@@ -156,6 +168,8 @@ export default defineComponent({
       let oldExcelFlag = false;
       let nowExcelFlag = false;
       let nowPhotoFlag = false;
+      let oldVideoFlag = false;
+      let nowVideoFlag = false;
       if (props.compareInfo) {
         const oldView = await getView(props.compareInfo.oldVisualId);
         const nowView = await getView(props.compareInfo.visualId);
@@ -226,6 +240,13 @@ export default defineComponent({
             `${prefix}visual/getPhoto/${props.compareInfo.id}`
           );
           nowPhotoFlag = true;
+        }
+        if (props.compareInfo.visualType === "video") {
+          nowVideoURLs.value.push({
+            url: `${prefix}visual/video/${props.compareInfo.id}`,
+            fileName: props.compareInfo.fileName,
+          });
+          nowVideoFlag = true;
         }
         if (props.compareInfo.visualType === "sandContent") {
           nowSandContentList.value.push(props.compareInfo.visualId);
@@ -327,6 +348,13 @@ export default defineComponent({
           );
           oldPhotoFlag = true;
         }
+        if (props.compareInfo.oldVisualType === "video") {
+          oldVideoURLs.value.push({
+            url: `${prefix}visual/video/${props.compareInfo.id}`,
+            fileName: props.compareInfo.fileName,
+          });
+          oldVideoFlag = true;
+        }
         if (props.compareInfo.oldVisualType === "sandContent") {
           oldSandContentList.value.push(props.compareInfo.oldVisualId);
           oldTableNameList.value.push(props.compareInfo.fileName);
@@ -356,9 +384,12 @@ export default defineComponent({
       nowMapVisualFlag.value = nowMapFlag;
       nowExcelVisualFlag.value = nowExcelFlag;
       nowPhotoVisualFlag.value = nowPhotoFlag;
+      nowVideoVisualFlag.value = nowVideoFlag;
       oldMapVisualFlag.value = oldMapFlag;
       oldExcelVisualFlag.value = oldExcelFlag;
       oldPhotoVisualFlag.value = oldPhotoFlag;
+      oldVideoVisualFlag.value = oldVideoFlag;
+
       nowSkeletonFlag.value = false;
       oldSkeletonFlag.value = false;
     };
@@ -372,6 +403,7 @@ export default defineComponent({
       oldMapVisualFlag,
       oldExcelVisualFlag,
       oldPhotoVisualFlag,
+      oldVideoVisualFlag,
       oldShpArray,
       oldMovePngArray,
       oldPngArray,
@@ -383,10 +415,12 @@ export default defineComponent({
       oldSalinityList,
       oldFlowSandZList,
       oldPhotoList,
+      oldVideoURLs,
       nowSkeletonFlag,
       nowMapVisualFlag,
       nowExcelVisualFlag,
       nowPhotoVisualFlag,
+      nowVideoVisualFlag,
       nowShpArray,
       nowMovePngArray,
       nowPngArray,
@@ -397,7 +431,8 @@ export default defineComponent({
       nowRateDirectionList,
       nowSalinityList,
       nowFlowSandZList,
-      nowPhotoList
+      nowPhotoList,
+      nowVideoURLs,
     };
   },
 });

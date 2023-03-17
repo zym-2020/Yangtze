@@ -1,6 +1,12 @@
 <template>
   <div>
-    <video poster="../../assets/login/video-cover.jpeg" loop autoplay muted>
+    <video
+      poster="../../assets/login/video-cover.jpeg"
+      loop
+      autoplay
+      muted
+      class="video-class"
+    >
       <source src="../../assets/login/night.mp4" />
     </video>
     <div class="form">
@@ -82,7 +88,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-video {
+.video-class {
   position: absolute;
   /* Vertical and Horizontal center*/
   top: 0;

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
@@ -250,5 +251,14 @@ public class VisualController {
     }
 
 
+    /**
+    * @Description:视频分段播放
+    * @Author: Yiming
+    * @Date: 2023/3/17
+    */
+    @RequestMapping(value = "/video/{id}", method = RequestMethod.GET)
+    public void video(@PathVariable String id, HttpServletRequest request, HttpServletResponse response) {
+        visualService.video(id, request, response);
+    }
 
 }

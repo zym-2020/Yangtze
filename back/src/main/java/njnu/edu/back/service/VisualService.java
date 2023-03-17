@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import njnu.edu.back.pojo.VisualFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
@@ -66,4 +67,5 @@ public interface VisualService {
 
     String mergeParts(String uid, Integer total, String type, String name);
 
+    void video(String id, HttpServletRequest request, HttpServletResponse response);
 }

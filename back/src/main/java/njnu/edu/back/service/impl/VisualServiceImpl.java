@@ -1,5 +1,6 @@
 package njnu.edu.back.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
@@ -536,6 +538,39 @@ public class VisualServiceImpl implements VisualService {
             }
             LocalUploadUtil.merge(tempAddress + uid, to, total);
             return fileName;
+        }
+    }
+
+    @Override
+    public void video(String id, HttpServletRequest request, HttpServletResponse response) {
+        Map<String, Object> fileInfo = fileMapper.findInfoById(id);
+        String path = basePath + fileInfo.get("address");
+        File file = new File(path);
+        if (!file.exists()) {
+            throw new MyException(ResultEnum.NO_OBJECT);
+        }
+        long fileLength = file.length();
+        try {
+            RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
+            String rangeString = request.getHeader("Range");
+            long range=0;
+            if (StrUtil.isNotBlank(rangeString)) {
+                range = Long.valueOf(rangeString.substring(rangeString.indexOf("=") + 1, rangeString.indexOf("-")));
+            }
+            OutputStream outputStream = response.getOutputStream();
+            response.setHeader("Content-Type", "video/mp4");
+            response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
+            randomAccessFile.seek(range);
+            byte[] bytes = new byte[1024 * 1024 * 2];
+            int len = randomAccessFile.read(bytes);
+            response.setContentLength(len);
+            response.setHeader("Content-Range", "bytes "+range+"-"+(fileLength-1)+"/"+fileLength);
+            outputStream.write(bytes, 0, len);
+            outputStream.close();
+            randomAccessFile.close();
+
+        } catch (Exception e) {
+
         }
     }
 }

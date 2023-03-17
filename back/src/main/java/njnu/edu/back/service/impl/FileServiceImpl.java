@@ -385,7 +385,7 @@ public class FileServiceImpl implements FileService {
                 e.printStackTrace();
                 throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
             }
-        } else if (type.equals("photo")) {
+        } else if (type.equals("photo") || type.equals("video")) {
             if (flag) {
                 SimpleDateFormat dateFormat= new SimpleDateFormat("yyyy-MM-dd hh:mm");
                 JSONObject json = new JSONObject();
@@ -402,7 +402,7 @@ public class FileServiceImpl implements FileService {
                 fileMapper.updateVisualIdAndType(fileId, JSON.toJSONString(json), "audit");
                 throw new MyException(1, JSON.toJSONString(json));
             }
-            fileMapper.updateVisualIdAndType(fileId, "", "photo");
+            fileMapper.updateVisualIdAndType(fileId, "", type);
             return "";
         } else {
             // excel表格形式的数据上传

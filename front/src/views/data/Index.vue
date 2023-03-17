@@ -233,7 +233,7 @@ export default defineComponent({
       },
       {
         label: "物理模型",
-        value: ["浓度场", "照片"],
+        value: ["浓度场", "照片", "视频"],
       },
       {
         label: "水文数据",

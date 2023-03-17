@@ -4,7 +4,7 @@
       :gutter="20"
       justify="center"
       style="margin-bottom: 20px"
-      v-if="movePngArray.length > 0"
+      v-if="movePngArray.length > 1"
     >
       <el-col :span="8" style="text-align: center">
         <el-card
