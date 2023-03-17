@@ -6,7 +6,6 @@
 
 <script lang="ts">
 import { computed, defineComponent, onMounted } from "vue";
-import { addWatchCount, addBrowseHistory } from "@/api/request";
 import DataDetail from "@/components/data/DataDetail.vue";
 import router from "@/router";
 export default defineComponent({

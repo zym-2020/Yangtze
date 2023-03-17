@@ -15,7 +15,12 @@
 
     <div class="btn">
       <div class="info">
-        <el-button type="primary" text size="small">查看详情</el-button>
+        <el-button type="primary" text size="small" @click="viewCompare"
+          >查看详情</el-button
+        >
+        <el-button type="primary" text size="small" @click="downloadClick"
+          >下载文件</el-button
+        >
       </div>
       <div>
         <el-button type="primary" size="small" @click="operateHandle(1)"
@@ -26,13 +31,24 @@
         >
       </div>
     </div>
+
+    <el-dialog v-model="visualCompareFlag" width="900px">
+      <visual-compare
+        v-if="visualCompareFlag"
+        :compareInfo="compareInfo"
+      ></visual-compare>
+    </el-dialog>
   </div>
 </template>
 
 
 <script lang="ts">
-import { computed, defineComponent } from "vue";
-import { changeFileVisualState } from "@/api/request";
+import { computed, defineComponent, ref } from "vue";
+import { changeFileVisualState, getDownloadURL } from "@/api/request";
+import VisualCompare from "@/views/user/components/VisualCompare.vue";
+import { prefix } from '@/prefix'
+import { useStore } from '@/store'
+import { decrypt } from '@/utils/auth'
 export default defineComponent({
   props: {
     info: {
@@ -42,8 +58,19 @@ export default defineComponent({
       type: String,
     },
   },
+  components: { VisualCompare },
   emits: ["auditHandleVisual"],
   setup(props, context) {
+    const store = useStore()
+    const visualCompareFlag = ref(false);
+    const compareInfo = ref<{
+      oldVisualId: string;
+      oldVisualType: string;
+      visualType: string;
+      visualId: string;
+      time: string;
+      fileName: string;
+    }>();
     const info = computed(() => {
       return props.info;
     });
@@ -68,11 +95,30 @@ export default defineComponent({
       }
     };
 
+    const viewCompare = () => {
+      const json = JSON.parse(info.value!.visualId);
+      json["fileName"] = info.value!.fileName;
+      compareInfo.value = json;
+      visualCompareFlag.value = true;
+    };
+
+    const downloadClick = async () => {
+      const key = await getDownloadURL(info.value!.id);
+      if (key != null && (key as any).code === 0) {
+        const token = decrypt(key.data, store.state.user.id);
+        window.location.href = `${prefix}file/downloadLocalFile/${store.state.user.id}/${token}`;
+      }
+    };
+
     return {
       info,
       jsonInfo,
       replaceHandle,
       operateHandle,
+      viewCompare,
+      visualCompareFlag,
+      compareInfo,
+      downloadClick
     };
   },
 });
@@ -116,6 +162,15 @@ export default defineComponent({
     }
     .el-icon {
       margin-right: 5px;
+    }
+  }
+
+  /deep/.el-dialog {
+    .el-dialog__header {
+      padding: 0;
+    }
+    .el-dialog__body {
+      padding: 0;
     }
   }
 }

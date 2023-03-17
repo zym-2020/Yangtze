@@ -16,7 +16,9 @@
 
     <div class="btn">
       <div class="info">
-        <el-button type="primary" text size="small">查看详情</el-button>
+        <el-button type="primary" text size="small" @click="viewClick"
+          >查看详情</el-button
+        >
       </div>
       <div>
         <el-button type="primary" size="small" @click="operateHandle(1)"
@@ -36,6 +38,7 @@ import { updateStatusById } from "@/api/request";
 import { notice } from "@/utils/notice";
 import { dateFormat, imgBase64 } from "@/utils/common";
 import { prefix } from "@/prefix";
+import router from "@/router";
 export default defineComponent({
   props: {
     info: {
@@ -79,12 +82,23 @@ export default defineComponent({
       return currentStr;
     };
 
+    const viewClick = () => {
+      router.push({
+        name: "shareFile",
+        params: {
+          id: info.value.id,
+          fileInfo: JSON.stringify(info.value),
+        },
+      });
+    };
+
     return {
       info,
       operateHandle,
       replaceHandle,
       getAvatar,
       getTime,
+      viewClick,
     };
   },
 });
@@ -128,7 +142,7 @@ export default defineComponent({
       line-height: 35px;
     }
   }
-  
+
   .btn {
     position: absolute;
     text-align: center;

@@ -344,7 +344,6 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      console.log(props.compareInfo);
       initVisual()
     });
 

@@ -10,7 +10,11 @@
           </el-button>
         </template>
         <template #default="scope">
-          <el-button size="small" type="info" v-if="isAudit(scope.row)"
+          <el-button
+            size="small"
+            type="info"
+            v-if="isAudit(scope.row)"
+            @click="auditClick(scope.row)"
             >...</el-button
           >
           <el-button
@@ -19,6 +23,12 @@
             v-if="isView(scope.row)"
             @click="viewClick(scope.row)"
             ><el-icon><View /></el-icon
+          ></el-button>
+          <el-button
+            size="small"
+            type="success"
+            @click="downloadClick(scope.row)"
+            ><el-icon><Download /></el-icon
           ></el-button>
           <el-button size="small" type="danger" @click="deleteClick(scope.row)"
             ><el-icon><Delete /></el-icon
@@ -100,8 +110,15 @@
       </el-dialog>
     </el-dialog>
 
-    <el-dialog v-model="dataPreviewFlag" width="950px">
+    <el-dialog v-model="dataPreviewFlag" width="900px">
       <data-preview :fileInfo="fileInfo" v-if="dataPreviewFlag"></data-preview>
+    </el-dialog>
+
+    <el-dialog v-model="visualCompareFlag" width="900px">
+      <visual-compare
+        v-if="visualCompareFlag"
+        :compareInfo="compareInfo"
+      ></visual-compare>
     </el-dialog>
   </div>
 </template>
@@ -119,13 +136,18 @@ type DialogTableType = {
   view?: string;
 };
 import { defineComponent, onMounted, ref } from "vue";
-import { findByFolderId } from "@/api/request";
+import { findByFolderId, getDownloadURL } from "@/api/request";
 import router from "@/router";
 import DataPreview from "./DataPreview.vue";
+import VisualCompare from "./VisualCompare.vue";
+import { useStore } from "@/store";
+import { decrypt } from "@/utils/auth";
+import { prefix } from "@/prefix";
 export default defineComponent({
-  components: { DataPreview },
+  components: { DataPreview, VisualCompare },
   emits: ["changeData"],
   setup(props, context) {
+    const store = useStore();
     const dialogFlag = ref(false);
     const listShow = ref(false);
     const dialogTableData = ref<DialogTableType[]>([]);
@@ -136,6 +158,16 @@ export default defineComponent({
 
     const fileInfo = ref<DialogTableType>();
     const dataPreviewFlag = ref(false);
+    const visualCompareFlag = ref(false);
+
+    const compareInfo = ref<{
+      oldVisualId: string;
+      oldVisualType: string;
+      visualType: string;
+      visualId: string;
+      time: string;
+      fileName: string;
+    }>();
 
     const getIcon = (floder: boolean) => {
       if (floder) {
@@ -163,9 +195,24 @@ export default defineComponent({
       else return false;
     };
 
+    const auditClick = (val: any) => {
+      const json = JSON.parse(val.visualId);
+      json["fileName"] = val.name;
+      compareInfo.value = json;
+      visualCompareFlag.value = true;
+    };
+
     const viewClick = (val: any) => {
       fileInfo.value = val;
       dataPreviewFlag.value = true;
+    };
+
+    const downloadClick = async (val: any) => {
+      const key = await getDownloadURL(val.id);
+      if (key != null && (key as any).code === 0) {
+        const token = decrypt(key.data, store.state.user.id);
+        window.location.href = `${prefix}file/downloadLocalFile/${store.state.user.id}/${token}`;
+      }
     };
 
     const deleteClick = (val: DialogTableType) => {
@@ -356,9 +403,13 @@ export default defineComponent({
       getTableData,
       isAudit,
       isView,
+      auditClick,
       viewClick,
+      downloadClick,
       fileInfo,
       dataPreviewFlag,
+      visualCompareFlag,
+      compareInfo,
     };
   },
 });

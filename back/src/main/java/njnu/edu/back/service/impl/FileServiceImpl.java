@@ -77,6 +77,9 @@ public class FileServiceImpl implements FileService {
     @Autowired
     VisualFileMapper visualFileMapper;
 
+    @Autowired
+    UserMapper userMapper;
+
     @Override
     public String addFile(File file, String email) {
         file.setUploader(email);
@@ -267,6 +270,10 @@ public class FileServiceImpl implements FileService {
         Map<String, Object> fileInfo = fileMapper.findInfoById(id);
         String fileName = (String) fileInfo.get("fileName");
         String address = basePath + fileInfo.get("address");
+        Map<String, Object> userInfo = userMapper.findById(userId);
+        if (!userInfo.get("email").equals(fileInfo.get("uploader")) || !userInfo.get("role").equals("admin")) {
+            throw new MyException(-99, "没有权限");
+        }
         java.io.File file = new java.io.File(address);
         if(!file.exists()) {
             throw new MyException(ResultEnum.NO_OBJECT);

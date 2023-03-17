@@ -228,6 +228,7 @@ export default defineComponent({
       val.forEach((item) => {
         fileList.value.push(item.id);
       });
+      console.log(fileList.value)
     };
 
     const getCoordinates = (location: string[]) => {
