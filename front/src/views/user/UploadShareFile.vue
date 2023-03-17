@@ -364,7 +364,7 @@ export default defineComponent({
       form.providerAddress = "";
       form.getOnline = true;
       form.timeStamp = "";
-      avatarUpload.value.initPicture();
+      avatarUpload.value.initPicture("");
 
       dataBind.value?.clearData();
     };
