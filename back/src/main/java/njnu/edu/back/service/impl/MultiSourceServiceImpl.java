@@ -375,23 +375,29 @@ public class MultiSourceServiceImpl implements MultiSourceService {
             e.printStackTrace();
             throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
         }
-        JSONArray jsonArray = jsonObject.getJSONObject("data").getJSONObject("hits").getJSONArray("hits");
-        for (int i = 0; i < jsonArray.size(); i++) {
-            JSONObject json = JSON.parseObject(jsonArray.getJSONObject(i).getJSONObject("_source").getString("info"));
-            JSONObject j = new JSONObject();
-            j.put("mmsi", json.getString("mmsi"));
-            j.put("update_time", json.getString("jssj"));
-            j.put("register_time", json.getString("cjsj"));
-            j.put("name", json.getString("cbmc"));
-            j.put("name_cn", json.getString("zwmc"));
-            j.put("direction", json.getString("cbhx"));
-            j.put("velocity", json.getString("dqhs"));
-            j.put("length", json.getString("cd"));
-            j.put("width", json.getString("kd"));
-            j.put("lon", json.getString("zbjd"));
-            j.put("lat", json.getString("zbwd"));
-            list.add(j);
+
+        if (jsonObject.getIntValue("status") == 200) {
+            JSONArray jsonArray = jsonObject.getJSONObject("data").getJSONObject("hits").getJSONArray("hits");
+            for (int i = 0; i < jsonArray.size(); i++) {
+                JSONObject json = JSON.parseObject(jsonArray.getJSONObject(i).getJSONObject("_source").getString("info"));
+                JSONObject j = new JSONObject();
+                j.put("mmsi", json.getString("mmsi"));
+                j.put("update_time", json.getString("jssj"));
+                j.put("register_time", json.getString("cjsj"));
+                j.put("name", json.getString("cbmc"));
+                j.put("name_cn", json.getString("zwmc"));
+                j.put("direction", json.getString("cbhx"));
+                j.put("velocity", json.getString("dqhs"));
+                j.put("length", json.getString("cd"));
+                j.put("width", json.getString("kd"));
+                j.put("lon", json.getString("zbjd"));
+                j.put("lat", json.getString("zbwd"));
+                list.add(j);
+            }
+        } else {
+            throw new MyException(-99, "接口请求过于频繁");
         }
+
         return list;
     }
 

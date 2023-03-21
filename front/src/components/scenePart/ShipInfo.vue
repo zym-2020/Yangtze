@@ -1,5 +1,5 @@
 <template>
-  <div id="ship-info" :class="{ active: cardActive }">
+  <div id="ship-info">
     <el-card shadow="hover">
       <template #header>
         <div class="card-header">
@@ -8,15 +8,9 @@
           }}</span>
           <br />
           <span class="ship-type">Cargo Ship</span>
-          <el-icon id="hide-icon" size="1.6vw" @click="HideInfo()"
-            ><DArrowLeft
-          /></el-icon>
         </div>
       </template>
-      <img
-        src="https://static.vesselfinder.net/images/cool-ship2@1.png"
-        class="ship-image"
-      />
+
       <el-descriptions direction="vertical" :column="4" size="large" border>
         <el-descriptions-item
           label="速度"
@@ -66,6 +60,11 @@
         </el-descriptions-item>
       </el-descriptions>
     </el-card>
+    <el-row id="down-arrow">
+      <el-col :span="24">
+        <div class="down-arrow"></div>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -103,18 +102,11 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 #ship-info {
-  position: absolute;
-  left: 0vw;
   width: 20vw;
-  // height: 66vh;
-  top: 16vh;
+  height: 285px;
+
   z-index: 99;
   min-width: 300px;
-  transform: translateX(-24vw);
-  &.active {
-    transform: translateX(0);
-  }
-  transition: transform 0.4s ease-in-out;
 
   /deep/ .el-card {
     height: 100%;
@@ -190,6 +182,21 @@ export default defineComponent({
             color: rgb(96, 136, 211);
           }
         }
+      }
+    }
+  }
+
+  .el-row#down-arrow {
+    width: 100%;
+    .el-col {
+      display: flex;
+      justify-content: center;
+      .down-arrow {
+        width: 0px;
+        height: 0px;
+        border-top: 10px solid rgb(107, 176, 255);
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
       }
     }
   }
