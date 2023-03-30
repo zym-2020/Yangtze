@@ -173,31 +173,11 @@ export default defineComponent({
       resolutions[i] = startResolution / Math.pow(2, i);
     }
 
-    // const projection_3395 = new Projection({
-    //   code: "EPSG:3395",
-    //   extent: [-20037508.34, -15496570.74, 20037508.34, 18764656.23],
-    //   units: "m",
-    //   axisOrientation: "neu",
-    //   getPointResolution(r) {
-    //     return r;
-    //   },
-    // });
     proj4.defs(
-      "EPSG:3395",
-      "+proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs"
+      "EPSG:900913",
+      "+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs +type=crs"
     );
     register(proj4);
-    // addProjection(projection_3395);
-    // addCoordinateTransforms(
-    //   "EPSG:4326",
-    //   "EPSG:3395",
-    //   function (coordinate) {
-    //     return proj4("EPSG:4326", "EPSG:3395", coordinate);
-    //   },
-    //   function (coordinate) {
-    //     return proj4("EPSG:3395", "EPSG:4326", coordinate);
-    //   }
-    // );
 
     const selected = new Style({
       fill: new Fill({
@@ -312,28 +292,30 @@ export default defineComponent({
         layers: [
           new TileLayer({
             visible: true,
-            // source: new XYZ({
-            //   // url: "http://t0.tianditu.com/DataServer?T=ter_c&x={x}&y={y}&l={z}&tk=2e23e92f7c9790018ab06498f1f55c1e",
-            //   url: "http://t0.tianditu.com/DataServer?T=vec_c&x={x}&y={y}&l={z}&tk=35a94ab5985969d0b93229c30db6abd6",
-            //   projection: "EPSG:4326",
-            // }),
+            source: new XYZ({
+              // url: "http://t0.tianditu.com/DataServer?T=ter_c&x={x}&y={y}&l={z}&tk=2e23e92f7c9790018ab06498f1f55c1e",
+              url: "http://t0.tianditu.com/DataServer?T=vec_c&x={x}&y={y}&l={z}&tk=35a94ab5985969d0b93229c30db6abd6",
+              projection: "EPSG:4326",
+            }),
           }),
           new TileLayer({
             visible: true,
-            // source: new XYZ({
-            //   url: "http://t0.tianditu.com/DataServer?T=cva_c&x={x}&y={y}&l={z}&tk=35a94ab5985969d0b93229c30db6abd6",
-            //   projection: "EPSG:4326",
-            // }),
+            source: new XYZ({
+              url: "http://t0.tianditu.com/DataServer?T=cva_c&x={x}&y={y}&l={z}&tk=35a94ab5985969d0b93229c30db6abd6",
+              projection: "EPSG:4326",
+            }),
           }),
           new TileLayer({
             visible: true,
-            // source: new XYZ({
-            //   // url: "/map/mtile?l=Na&m=v&x={x}&y={y}&z={z}",
-            //   url: prefix + "multiSource/seaChart/yangtze/{x}/{y}/{z}",
-            //   // url: `${prefix}visual/getRaster/3884904c-7fc6-4811-b3a1-588853da8942/{x}/{y}/{z}`,
-            //   projection: "EPSG:3395",
-            //   // tileGrid: projection_3395.getDefaultTileGrid(),
-            // }),
+            source: new XYZ({
+              url: prefix + "multiSource/seaChart/yangtze/{x}/{y}/{z}",
+              projection: "EPSG:3857",
+              tileGrid: new TileGrid({
+                resolutions: resolutions,
+                extent: [-20037508.34, -20060066.1, 20037508.34, 20060066.1],
+              }),
+            }),
+            extent: [121.2890625, 31.0529338, 122.34375, 31.9521622],
           }),
           //海图图层
           new TileLayer({
@@ -425,6 +407,11 @@ export default defineComponent({
           (param1, param2) => {
             if (flag) {
               flag = false;
+              overlay.setPosition(undefined);
+              anchorOverlay.setPosition(undefined);
+              parkOverlay.setPosition(undefined);
+              meteorologyOverlay.setPosition(undefined);
+              shipOverlay.setPosition(undefined);
               showInfo(param1.getProperties()["info"]);
             }
             return true;
@@ -441,7 +428,7 @@ export default defineComponent({
           anchorOverlay.setPosition(undefined);
           parkOverlay.setPosition(undefined);
           meteorologyOverlay.setPosition(undefined);
-          shipOverlay.setPosition(undefined)
+          shipOverlay.setPosition(undefined);
         }
       });
 

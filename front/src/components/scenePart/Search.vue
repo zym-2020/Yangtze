@@ -46,7 +46,7 @@
             border
             style="width: 100%"
             v-else
-            @cell-dblclick="dblclickHnadle"
+            @row-click="rowClickHnadle"
           >
             <el-table-column
               :label="item.label"
@@ -223,7 +223,7 @@ export default defineComponent({
       currentPage.value = 1;
     };
 
-    const dblclickHnadle = (
+    const rowClickHnadle = (
       row: Buoy | Bridge | Park | Anchor | Station | RealShip
     ) => {
       if ("hbmc" in row) {
@@ -302,7 +302,7 @@ export default defineComponent({
       changeHandle,
       replaceHandle,
       searchClick,
-      dblclickHnadle,
+      rowClickHnadle,
       switchChange,
     };
   },
