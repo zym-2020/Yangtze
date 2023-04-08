@@ -128,7 +128,7 @@ export default defineComponent({
         center: cneter,
         zoom: zoom,
         accessToken:
-          "pk.eyJ1IjoiMTY2NTE2OTkzNzYiLCJhIjoiY2ttMDh5amJpMHE2dzJ3cTd5eWZsMGQxZyJ9.XErH3kSOuRC_OWXWCpDLkQ",
+          "pk.eyJ1Ijoiam9obm55dCIsImEiOiJja2xxNXplNjYwNnhzMm5uYTJtdHVlbTByIn0.f1GfZbFLWjiEayI6hb_Qvg",
       });
       map.on("load", () => {
         if (props.rasterTileArray != undefined) {
