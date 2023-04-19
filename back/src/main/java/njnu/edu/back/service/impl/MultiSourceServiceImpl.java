@@ -263,7 +263,7 @@ public class MultiSourceServiceImpl implements MultiSourceService {
                             try {
                                 InternetUtil.downloadMeteorologyPng(url, pngPath);
                             } catch (Exception e) {
-                                e.printStackTrace();
+                                
                             }
                         }
                         result.add(temp.getJSONObject(j));
@@ -290,7 +290,7 @@ public class MultiSourceServiceImpl implements MultiSourceService {
         String path = resourcePath + "meteorology/png/" + fileName;
         File file = new File(path);
         if (!file.exists()) {
-            throw new MyException(ResultEnum.NO_OBJECT);
+            path = resourcePath + "meteorology/png/11B62_YELLOW.png";
         }
         try {
             InputStream inputStream = new FileInputStream(path);
