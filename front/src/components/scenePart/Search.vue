@@ -155,8 +155,8 @@ export default defineComponent({
         { prop: "yt", label: "用途" },
       ],
       bridge: [
-        { prop: "桥梁名称", label: "桥梁名称" },
-        { prop: "桥梁属性", label: "桥梁属性" },
+        { prop: "qlmc", label: "桥梁名称" },
+        { prop: "qlsx", label: "桥梁属性" },
       ],
       station: [{ prop: "name", label: "站点" }],
     };

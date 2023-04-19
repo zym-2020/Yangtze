@@ -716,16 +716,12 @@ export async function getParkInfoByBox(
   );
 }
 
-export async function getBridgeInfo() {
-  return await get(`/multiSource/getBridgeInfo`);
+export async function getAllBridgeInfo() {
+  return await get(`/multiSource/getAllBridgeInfo`);
 }
 
 export async function getMeteorology() {
   return await get(`/multiSource/getMeteorology`);
-}
-
-export async function getStationList() {
-  return await get(`/multiSource/getStationList`);
 }
 
 export async function getStationByBox(

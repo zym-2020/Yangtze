@@ -52,7 +52,7 @@ public class MultiSourceServiceImpl implements MultiSourceService {
     PhotoMapper photoMapper;
 
     @Autowired
-    BuoyMoveMapper buoyMoveMapper;
+    BridgeMapper bridgeMapper;
 
     @Autowired
     ParkMapper parkMapper;
@@ -93,11 +93,6 @@ public class MultiSourceServiceImpl implements MultiSourceService {
     @Override
     public List<Map<String, Object>> getBuoyByBox(double top, double right, double bottom, double left) {
         return buoyMapper.getBuoyByBox(top, right, bottom, left);
-    }
-
-    @Override
-    public List<Map<String, Object>> getBuoyMoveInfoByTimestamp(long startTime, long endTime) {
-        return buoyMoveMapper.getInfoByTimestamp(startTime, endTime);
     }
 
     @Override
@@ -402,8 +397,13 @@ public class MultiSourceServiceImpl implements MultiSourceService {
     }
 
     @Override
-    public JSONArray getBridgeInfo() {
-        return FileUtil.readJsonArray(resourcePath + "bridge.json");
+    public List<Map<String, Object>> getAllBridgeInfo() {
+        List<Map<String, Object>> list = bridgeMapper.getAllBridgeInfo();
+        for(Map<String, Object> map : list) {
+            JSONObject jsonObject = JSON.parseObject(map.get("polygon").toString());
+            map.put("polygon", jsonObject);
+        }
+        return list;
     }
 
     @Override
@@ -443,21 +443,19 @@ public class MultiSourceServiceImpl implements MultiSourceService {
     }
 
     @Override
-    public JSONArray getStationByBox(Double top, Double right, Double bottom, Double left) {
-        JSONArray result = new JSONArray();
-        JSONArray jsonArray = FileUtil.readJsonArray(resourcePath + "station_name.json");
-        for (int i = 0; i < jsonArray.size(); i++) {
-            if(jsonArray.getJSONObject(i).getDouble("lon") > left && jsonArray.getJSONObject(i).getDouble("lon") < right && jsonArray.getJSONObject(i).getDouble("lat") > bottom && jsonArray.getJSONObject(i).getDouble("lat") < top) {
-                result.add(jsonArray.getJSONObject(i));
-            }
+    public List<Map<String, Object>> getStationByBox(Double top, Double right, Double bottom, Double left) {
+        List<Map<String, Object>> list = stationMapper.getStationByBox(top, right, bottom, left);
+        for (Map<String, Object> map : list) {
+            JSONArray keysJson = JSON.parseObject(map.get("keys").toString()).getJSONArray("key");
+            JSONArray keysCNJson = JSON.parseObject(map.get("keys_cn").toString()).getJSONArray("key");
+            JSONArray startTimeJson = JSON.parseObject(map.get("start_time").toString()).getJSONArray("key");
+            map.put("keys", keysJson);
+            map.put("keys_cn", keysCNJson);
+            map.put("start_time", startTimeJson);
         }
-        return result;
+        return list;
     }
 
-    @Override
-    public JSONArray getStationList() {
-        return FileUtil.readJsonArray(resourcePath + "station_name.json");
-    }
 
     @Override
     public JSONArray getWaterLevelByStationAndTime(String type, String station, String startTime, String endTime) {
@@ -508,21 +506,11 @@ public class MultiSourceServiceImpl implements MultiSourceService {
             map.put("total", anchorMapper.count(keyword));
             map.put("list", anchorMapper.pageQuery(size, size * page, keyword));
         } else if (type.equals("bridge")) {
-            JSONArray jsonArray = FileUtil.readJsonArray(resourcePath + "bridge.json");
-            List<JSONObject> list = new ArrayList<>();
-            for (int i = size * page, count = 0; i < jsonArray.size() && count < size; i++, count++) {
-                list.add(jsonArray.getJSONObject(i));
-            }
-            map.put("total", jsonArray.size());
-            map.put("list", list);
+            map.put("total", bridgeMapper.count(keyword));
+            map.put("list", bridgeMapper.pageQuery(size, size * page, keyword));
         } else if (type.equals("station")) {
-            JSONArray jsonArray = FileUtil.readJsonArray(resourcePath + "station_name.json");
-            List<JSONObject> list = new ArrayList<>();
-            for (int i = size * page, count = 0; i < jsonArray.size() && count < size; i++, count++) {
-                list.add(jsonArray.getJSONObject(i));
-            }
-            map.put("total", jsonArray.size());
-            map.put("list", list);
+            map.put("total", stationMapper.count(keyword));
+            map.put("list", stationMapper.pageQuery(size, size * page, keyword));
         } else if (type.equals("realShip")) {
             String url = MessageFormat.format(AISListUrl, page * size, size, name);
             JSONObject jsonObject;

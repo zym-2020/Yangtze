@@ -208,11 +208,11 @@ export default defineComponent({
     const getFileList = () => {
       const timestamp = Date.now();
       const timeList1 = traverseDate(
-        props.stationInfo?.startTime[0],
+        props.stationInfo?.start_time[0],
         timestamp
       );
       const timeList2 = traverseDate(
-        props.stationInfo?.startTime[1],
+        props.stationInfo?.start_time[1],
         timestamp
       );
       const name_en = props.stationInfo?.name_en;

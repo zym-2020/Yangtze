@@ -10,7 +10,7 @@
     </div>
     <div class="content">
       <div class="bridge-name">
-        {{ bridgeInfo == undefined ? "" : bridgeInfo["桥梁名称"] }}
+        {{ bridgeInfo == undefined ? "" : bridgeInfo["qlmc"] }}
       </div>
       <div class="info">
         <el-scrollbar>
@@ -20,7 +20,7 @@
               label-align="center"
               align="center"
               >{{
-                bridgeInfo == undefined ? "" : bridgeInfo["桥区水域范围"]
+                bridgeInfo == undefined ? "" : bridgeInfo["syfw"]
               }}</el-descriptions-item
             >
             <el-descriptions-item
@@ -30,8 +30,8 @@
               >{{
                 bridgeInfo == undefined
                   ? ""
-                  : bridgeInfo["桥涵标"] != undefined
-                  ? bridgeInfo["桥涵标"]
+                  : bridgeInfo["qhb"] != undefined
+                  ? bridgeInfo["qhb"]
                   : ""
               }}</el-descriptions-item
             >
@@ -42,8 +42,8 @@
               >{{
                 bridgeInfo == undefined
                   ? ""
-                  : bridgeInfo["桥区水域水上航路航法"] != undefined
-                  ? bridgeInfo["桥区水域水上航路航法"]
+                  : bridgeInfo["hlhf"] != undefined
+                  ? bridgeInfo["hlhf"]
                   : ""
               }}</el-descriptions-item
             >
@@ -54,8 +54,8 @@
               >{{
                 bridgeInfo == undefined
                   ? ""
-                  : bridgeInfo["航评批复文件"] != undefined
-                  ? bridgeInfo["航评批复文件"]
+                  : bridgeInfo["hppfwj"] != undefined
+                  ? bridgeInfo["hppfwj"]
                   : ""
               }}</el-descriptions-item
             >
@@ -66,8 +66,8 @@
               >{{
                 bridgeInfo == undefined
                   ? ""
-                  : bridgeInfo["海事管理机构"] != undefined
-                  ? bridgeInfo["海事管理机构"]
+                  : bridgeInfo["hsgljg"] != undefined
+                  ? bridgeInfo["hsgljg"]
                   : ""
               }}</el-descriptions-item
             >
@@ -78,8 +78,8 @@
               >{{
                 bridgeInfo == undefined
                   ? ""
-                  : bridgeInfo["桥梁属性"] != undefined
-                  ? bridgeInfo["桥梁属性"]
+                  : bridgeInfo["qlsx"] != undefined
+                  ? bridgeInfo["qlsx"]
                   : ""
               }}</el-descriptions-item
             >
@@ -90,8 +90,8 @@
               >{{
                 bridgeInfo == undefined
                   ? ""
-                  : bridgeInfo["设计通航代表船型、船队"] != undefined
-                  ? bridgeInfo["设计通航代表船型、船队"]
+                  : bridgeInfo["sjthdbcx"] != undefined
+                  ? bridgeInfo["sjthdbcx"]
                   : ""
               }}</el-descriptions-item
             >
@@ -102,8 +102,8 @@
               >{{
                 bridgeInfo == undefined
                   ? ""
-                  : bridgeInfo["桥柱灯"] != undefined
-                  ? bridgeInfo["桥柱灯"]
+                  : bridgeInfo["qzd"] != undefined
+                  ? bridgeInfo["qzd"]
                   : ""
               }}</el-descriptions-item
             >
@@ -114,8 +114,8 @@
               >{{
                 bridgeInfo == undefined
                   ? ""
-                  : bridgeInfo["区段通航代表船型、船队"] != undefined
-                  ? bridgeInfo["区段通航代表船型、船队"]
+                  : bridgeInfo["qdthdbcx"] != undefined
+                  ? bridgeInfo["qdthdbcx"]
                   : ""
               }}</el-descriptions-item
             >
@@ -126,8 +126,8 @@
               >{{
                 bridgeInfo == undefined
                   ? ""
-                  : bridgeInfo["桥梁主动防撞设施"] != undefined
-                  ? bridgeInfo["桥梁主动防撞设施"]
+                  : bridgeInfo["qlzdfzss"] != undefined
+                  ? bridgeInfo["qlzdfzss"]
                   : ""
               }}</el-descriptions-item
             >
@@ -138,8 +138,8 @@
               >{{
                 bridgeInfo == undefined
                   ? ""
-                  : bridgeInfo["桥梁运行管理单位"] != undefined
-                  ? bridgeInfo["桥梁运行管理单位"]
+                  : bridgeInfo["qlyxgldw"] != undefined
+                  ? bridgeInfo["qlyxgldw"]
                   : ""
               }}</el-descriptions-item
             >
@@ -150,8 +150,8 @@
               >{{
                 bridgeInfo == undefined
                   ? ""
-                  : bridgeInfo["通车时间"] != undefined
-                  ? bridgeInfo["通车时间"]
+                  : bridgeInfo["tcsj"] != undefined
+                  ? bridgeInfo["tcsj"]
                   : ""
               }}</el-descriptions-item
             >
@@ -162,8 +162,8 @@
               >{{
                 bridgeInfo == undefined
                   ? ""
-                  : bridgeInfo["桥梁被动防撞设施"] != undefined
-                  ? bridgeInfo["桥梁被动防撞设施"]
+                  : bridgeInfo["qlbdfzss"] != undefined
+                  ? bridgeInfo["qlbdfzss"]
                   : ""
               }}</el-descriptions-item
             >
@@ -174,8 +174,8 @@
               >{{
                 bridgeInfo == undefined
                   ? ""
-                  : bridgeInfo["日均断面流量"] != undefined
-                  ? bridgeInfo["日均断面流量"]
+                  : bridgeInfo["rjdmll"] != undefined
+                  ? bridgeInfo["rjdmll"]
                   : ""
               }}</el-descriptions-item
             >
@@ -186,8 +186,8 @@
               >{{
                 bridgeInfo == undefined
                   ? ""
-                  : bridgeInfo["桥区视频设施"] != undefined
-                  ? bridgeInfo["桥区视频设施"]
+                  : bridgeInfo["qqspss"] != undefined
+                  ? bridgeInfo["qqspss"]
                   : ""
               }}</el-descriptions-item
             >
@@ -198,9 +198,8 @@
               >{{
                 bridgeInfo == undefined
                   ? ""
-                  : bridgeInfo["已建立的桥区水域水上交通安全管理制度"] !=
-                    undefined
-                  ? bridgeInfo["已建立的桥区水域水上交通安全管理制度"]
+                  : bridgeInfo["glzd"] != undefined
+                  ? bridgeInfo["glzd"]
                   : ""
               }}</el-descriptions-item
             >
@@ -211,8 +210,8 @@
               >{{
                 bridgeInfo == undefined
                   ? ""
-                  : bridgeInfo["桥区水域内临河设施"] != undefined
-                  ? bridgeInfo["桥区水域内临河设施"]
+                  : bridgeInfo["lhss"] != undefined
+                  ? bridgeInfo["lhss"]
                   : ""
               }}</el-descriptions-item
             >
@@ -223,8 +222,8 @@
               >{{
                 bridgeInfo == undefined
                   ? ""
-                  : bridgeInfo["主通航孔编号"] != undefined
-                  ? bridgeInfo["主通航孔编号"]
+                  : bridgeInfo["zthkbh"] != undefined
+                  ? bridgeInfo["zthkbh"]
                   : ""
               }}</el-descriptions-item
             >
@@ -235,8 +234,8 @@
               >{{
                 bridgeInfo == undefined
                   ? ""
-                  : bridgeInfo["桥区水域内锚地、停泊区"] != undefined
-                  ? bridgeInfo["桥区水域内锚地、停泊区"]
+                  : bridgeInfo["tbq"] != undefined
+                  ? bridgeInfo["tbq"]
                   : ""
               }}</el-descriptions-item
             >
@@ -247,8 +246,8 @@
               >{{
                 bridgeInfo == undefined
                   ? ""
-                  : bridgeInfo["桥区水域内跨河设施"] != undefined
-                  ? bridgeInfo["桥区水域内跨河设施"]
+                  : bridgeInfo["khss"] != undefined
+                  ? bridgeInfo["khss"]
                   : ""
               }}</el-descriptions-item
             >
@@ -259,8 +258,8 @@
               >{{
                 bridgeInfo == undefined
                   ? ""
-                  : bridgeInfo["桥区水上航标布置"] != undefined
-                  ? bridgeInfo["桥区水上航标布置"]
+                  : bridgeInfo["hbbz"] != undefined
+                  ? bridgeInfo["hbbz"]
                   : ""
               }}</el-descriptions-item
             >
@@ -271,8 +270,8 @@
               >{{
                 bridgeInfo == undefined
                   ? ""
-                  : bridgeInfo["小轮通航孔编号"] != undefined
-                  ? bridgeInfo["小轮通航孔编号"]
+                  : bridgeInfo["xlthkbh"] != undefined
+                  ? bridgeInfo["xlthkbh"]
                   : ""
               }}</el-descriptions-item
             >
@@ -283,8 +282,8 @@
               >{{
                 bridgeInfo == undefined
                   ? ""
-                  : bridgeInfo["航道养护单位"] != undefined
-                  ? bridgeInfo["航道养护单位"]
+                  : bridgeInfo["yhdw"] != undefined
+                  ? bridgeInfo["yhdw"]
                   : ""
               }}</el-descriptions-item
             >
@@ -295,8 +294,8 @@
               >{{
                 bridgeInfo == undefined
                   ? ""
-                  : bridgeInfo["主通航孔桥墩防船撞能力"] != undefined
-                  ? bridgeInfo["主通航孔桥墩防船撞能力"]
+                  : bridgeInfo["fznl"] != undefined
+                  ? bridgeInfo["fznl"]
                   : ""
               }}</el-descriptions-item
             >
@@ -308,11 +307,12 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, PropType, ref } from "vue";
+import { Bridge } from "@/type";
 export default defineComponent({
   props: {
     bridgeInfo: {
-      type: Object,
+      type: Object as PropType<Bridge>,
     },
   },
   setup(props) {

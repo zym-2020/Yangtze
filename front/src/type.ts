@@ -109,8 +109,36 @@ export type Park = {
 };
 
 export type Bridge = {
-  [key: string]: string;
-} & { polygon: { coordinates: number[][][]; type: string } };
+  id: string;
+  syfw: string;
+  qhb: string;
+  hlhf: string;
+  hppfwj: string;
+  hsgljg: string;
+  qlsx: string;
+  sjthdbcx: string;
+  qzd: string;
+  qdthdbcx: string;
+  qlzdfzss: string;
+  qlyxgldw: string;
+  tcsj: string;
+  qlbdfzss: string;
+  rjdmll: string;
+  qqspss: string;
+  glzd: string;
+  lhss: string;
+  qt: string;
+  zthkbh: string;
+  tbq: string;
+  khss: string;
+  hbbz: string;
+  xlthkbh: string;
+  polygon: { coordinates: number[][][]; type: string };
+  yhdw: string;
+  qlmc: string;
+  name: string;
+  fznl: string;
+};
 
 export type Meteorology = {
   description: string;
@@ -131,7 +159,7 @@ export type Station = {
   lon: number;
   lat: number;
   type: string;
-  startTime: number[];
+  start_time: number[];
 };
 
 export type WaterLevelChartType = {

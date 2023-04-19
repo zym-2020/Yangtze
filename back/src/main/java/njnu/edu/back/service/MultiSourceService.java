@@ -17,8 +17,6 @@ import java.util.Map;
 public interface MultiSourceService {
     List<Map<String, Object>> getBuoyByBox(double top, double right, double bottom, double left);
 
-    List<Map<String, Object>> getBuoyMoveInfoByTimestamp(long startTime, long endTime);
-
     void getPhoto(String fileName, HttpServletResponse response);
 
     List<Map<String, Object>> getParkInfoByBox(double top, double right, double bottom, double left);
@@ -41,13 +39,11 @@ public interface MultiSourceService {
 
     List<JSONObject> queryBoxShip(double top, double right, double bottom, double left);
 
-    JSONArray getBridgeInfo();
+    List<Map<String, Object>> getAllBridgeInfo();
 
     void seaChart(String type, String x, String y, String z, HttpServletResponse response);
 
-    JSONArray getStationByBox(Double top, Double right, Double bottom, Double left);
-
-    JSONArray getStationList();
+    List<Map<String, Object>> getStationByBox(Double top, Double right, Double bottom, Double left);
 
     JSONArray getWaterLevelByStationAndTime(String type, String station, String startTime, String endTime);
 

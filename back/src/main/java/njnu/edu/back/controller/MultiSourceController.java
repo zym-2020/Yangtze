@@ -34,12 +34,6 @@ public class MultiSourceController {
         return multiSourceService.getBuoyByBox(top, right, bottom, left);
     }
 
-    @CrossOrigin
-    @RequestMapping(value = "/getBuoyMoveInfoByTimestamp/{startTime}/{endTime}", method = RequestMethod.GET)
-    public JsonResult getBuoyMoveInfoByTimestamp(@PathVariable long startTime, @PathVariable long endTime) {
-        return ResultUtils.success(multiSourceService.getBuoyMoveInfoByTimestamp(startTime, endTime));
-    }
-
     /**
      * @Description:获取sqlite中图片资源
      * @Author: Yiming
@@ -151,9 +145,9 @@ public class MultiSourceController {
     * @Author: Yiming
     * @Date: 2023/2/22
     */
-    @RequestMapping(value = "/getBridgeInfo", method = RequestMethod.GET)
+    @RequestMapping(value = "/getAllBridgeInfo", method = RequestMethod.GET)
     public JsonResult getBridgeInfo() {
-        return ResultUtils.success(multiSourceService.getBridgeInfo());
+        return ResultUtils.success(multiSourceService.getAllBridgeInfo());
     }
 
     /**
@@ -172,10 +166,6 @@ public class MultiSourceController {
         return ResultUtils.success(multiSourceService.getStationByBox(top, right, bottom, left));
     }
 
-    @RequestMapping(value = "/getStationList", method = RequestMethod.GET)
-    public JsonResult getStationList() {
-        return ResultUtils.success(multiSourceService.getStationList());
-    }
 
     @RequestMapping(value = "/getWaterLevelByStationAndTime/{type}/{station}/{startTime}/{endTime}", method = RequestMethod.GET)
     public JsonResult getWaterLevelByStationAndTime(@PathVariable String type, @PathVariable String station, @PathVariable String startTime, @PathVariable String endTime) {

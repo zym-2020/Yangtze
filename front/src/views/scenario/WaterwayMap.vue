@@ -72,7 +72,7 @@ import XYZ from "ol/source/XYZ";
 import { prefix } from "@/prefix";
 import { defaults as defaultControls } from "ol/control";
 import { Point, Polygon } from "ol/geom";
-import { getWidth, getTopLeft } from "ol/extent";
+import { getWidth } from "ol/extent";
 import { get } from "ol/proj";
 import {
   getBuoyByBox,
@@ -80,7 +80,7 @@ import {
   queryBoxShip,
   getAnchorInfoByBox,
   getParkInfoByBox,
-  getBridgeInfo,
+  getAllBridgeInfo,
   getMeteorology,
   getStationByBox,
 } from "@/api/request";
@@ -653,7 +653,7 @@ export default defineComponent({
     };
 
     const updateBridge = async () => {
-      const data = await getBridgeInfo();
+      const data = await getAllBridgeInfo();
 
       if (data != null && (data as any).code === 0) {
         const features: Feature[] = [];
@@ -820,7 +820,7 @@ export default defineComponent({
     };
 
     const showInfo = (
-      info: Buoy | Ship | Anchor | Park | Meteorology | Station
+      info: Buoy | Ship | Anchor | Park | Meteorology | Station | Bridge
     ) => {
       if ("mmsi" in info) {
         shipInfo.value = info;
@@ -835,7 +835,8 @@ export default defineComponent({
         parkInfo.value = info;
         parkOverlay.setPosition([info.zbjd, info.zbwd]);
       } else if ("polygon" in info) {
-        bridgeInfo.value = info as any as Bridge;
+        console.log(info);
+        bridgeInfo.value = info;
         (bridgeWindow.value as any).popupClick();
       } else if ("effective" in info) {
         meteorologyInfo.value = info;

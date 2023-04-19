@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="njnu.edu.back.dao.staticdb.StationMapper">
-    <select id="getStationByBox" resultType="java.util.Map">
-        select * from stations where lon &gt; #{left} and lon &lt; #{right} and lat &gt; #{bottom} and lat &lt; #{top}
-    </select>
-
+<mapper namespace="njnu.edu.back.dao.staticdb.BridgeMapper">
     <select id="pageQuery" resultType="java.util.HashMap">
-        select * from stations
+        select * from bridges
         <if test="keyword != 'all'">
-            where name like #{keyword}
+            where qlmc like #{keyword} or qlsx like #{keyword}
         </if>
         limit #{size} offset #{start}
     </select>
 
     <select id="count" resultType="java.lang.Integer">
-        select count(*) from stations
+        select count(*) from bridges
         <if test="keyword != 'all'">
-            where name like #{keyword}
+            where qlmc like #{keyword} or qlsx like #{keyword}
         </if>
+    </select>
+
+    <select id="getAllBridgeInfo" resultType="java.util.HashMap">
+        select * from bridges
     </select>
 </mapper>

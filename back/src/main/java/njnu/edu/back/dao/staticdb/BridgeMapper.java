@@ -10,14 +10,14 @@ import java.util.Map;
  * Created with IntelliJ IDEA.
  *
  * @Author: Yiming
- * @Date: 2022/12/04/18:42
+ * @Date: 2023/04/19/20:00
  * @Description:
  */
 @Repository
-public interface StationMapper {
-    List<Map<String, Object>> getStationByBox(@Param("top") double top, @Param("right") double right, @Param("bottom") double bottom, @Param("left") double left);
-
+public interface BridgeMapper {
     List<Map<String, Object>> pageQuery(@Param("size") int size, @Param("start") int start, @Param("keyword") String keyword);
 
     int count(@Param("keyword") String keyword);
+
+    List<Map<String, Object>> getAllBridgeInfo();
 }

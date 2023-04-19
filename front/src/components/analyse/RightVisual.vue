@@ -1,10 +1,10 @@
 <template>
   <div class="right-visual">
     <div ref="container" class="container"></div>
-    <el-dialog v-model="chartVisual" width="900px" id="chart">
+    <el-dialog v-model="chartVisual" width="900px" id="chart" title="可视化结果">
       <chart-visual :chartVisualInfo="chartVisualInfo"></chart-visual>
     </el-dialog>
-    <el-dialog
+    <el-dialog 
       v-model="dialogVisible"
       :width="300"
       :title="visualType == 'geoJsonLine' ? '断面名称：' : '区域名称：'"
@@ -14,7 +14,7 @@
         <div class="btn">
           <el-button type="primary" plain size="small" @click="clickHandle"
             >确定</el-button
-          >
+          > 
         </div>
       </div>
     </el-dialog>
