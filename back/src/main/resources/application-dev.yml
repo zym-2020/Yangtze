@@ -79,8 +79,8 @@ mapAddress:
 
 resourcePath:
   E:/yangtze/resource/
-meteorologyAddress:
-  E:/codes/PycharmProjects/connect_sqlite/meteorology.json
+predictPath:
+  E:/yangtze/resource/tide_pre/pretic/encapsulation.py
 
 
 pgpath:

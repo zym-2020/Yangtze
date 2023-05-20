@@ -7,7 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
 import njnu.edu.back.pojo.support.Point;
+import org.apache.logging.log4j.LogManager;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -29,10 +32,11 @@ import java.util.Scanner;
 @Slf4j
 public class AnalyseUtil {
 
-    static String pythonDir = "D:\\zhuomian\\水科院\\python\\";
+    static String pythonDir = "D:/zhuomian/水科院/python/";
 //    static String pythonDir = "/home/zym/python/";
     static String pythonStr = "python";
 //    static String pythonStr = "python3";
+
 
     public static Process saveSectionValue(String tempPath, String rasterPath, JSONArray jsonArray, String resultPath) throws IOException {
         BufferedWriter out = null;
@@ -216,6 +220,24 @@ public class AnalyseUtil {
             e.printStackTrace();
             throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
         }
+    }
+
+    public static Process executePrediction(String tempPath, String path_wl, String path_q, String path_t, String output, String modelPath) throws IOException {
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(tempPath));
+        bufferedWriter.write(4 + "\n");
+        bufferedWriter.write(path_wl + "\n");
+        bufferedWriter.write(path_q + "\n");
+        bufferedWriter.write(path_t + "\n");
+        bufferedWriter.write(output + "\n");
+        bufferedWriter.flush();
+        bufferedWriter.close();
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        List<String> commands = new ArrayList<>();
+        commands.add(pythonStr);
+        commands.add(modelPath);
+        commands.add(tempPath);
+        processBuilder.command(commands);
+        return processBuilder.start();
     }
 
     public static void copyFile(String filePath, String destination) {

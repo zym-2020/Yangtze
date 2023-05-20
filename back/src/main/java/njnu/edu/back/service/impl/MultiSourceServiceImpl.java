@@ -36,9 +36,6 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class MultiSourceServiceImpl implements MultiSourceService {
 
-    @Value("${meteorologyAddress}")
-    String meteorologyAddress;
-
     @Value("${waterLevelAddress}")
     String waterLevelAddress;
 
@@ -263,7 +260,7 @@ public class MultiSourceServiceImpl implements MultiSourceService {
                             try {
                                 InternetUtil.downloadMeteorologyPng(url, pngPath);
                             } catch (Exception e) {
-                                
+
                             }
                         }
                         result.add(temp.getJSONObject(j));
