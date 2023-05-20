@@ -78,7 +78,7 @@ export default defineComponent({
           document.onmouseup = null;
         };
       };
-      console.log(2);
+
       const bottomResize: HTMLElement = document.querySelector(
         ".bottom-resize"
       ) as HTMLElement;

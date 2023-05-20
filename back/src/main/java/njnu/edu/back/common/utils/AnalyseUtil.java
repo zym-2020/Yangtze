@@ -222,13 +222,12 @@ public class AnalyseUtil {
         }
     }
 
-    public static Process executePrediction(String tempPath, String path_wl, String path_q, String path_t, String output, String modelPath) throws IOException {
+    public static Process executePrediction(String tempPath, List<String> parameters, String modelPath) throws IOException {
         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(tempPath));
-        bufferedWriter.write(4 + "\n");
-        bufferedWriter.write(path_wl + "\n");
-        bufferedWriter.write(path_q + "\n");
-        bufferedWriter.write(path_t + "\n");
-        bufferedWriter.write(output + "\n");
+        bufferedWriter.write(parameters.size() + "\n");
+        for (String parameter : parameters) {
+            bufferedWriter.write(parameter + "\n");
+        }
         bufferedWriter.flush();
         bufferedWriter.close();
         ProcessBuilder processBuilder = new ProcessBuilder();

@@ -79,8 +79,8 @@ mapAddress:
 
 resourcePath:
   E:/yangtze/resource/
-predictPath:
-  E:/yangtze/resource/tide_pre/pretic/encapsulation.py
+modelPath:
+  E:/yangtze/resource/models/
 
 
 pgpath:

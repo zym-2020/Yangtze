@@ -6,7 +6,7 @@
         select id, file_name as "fileName", address, visual_type as "visualType", visual_id as "visualId" from analytic_dataset where project_id = #{projectId} order by create_time
     </select>
 
-    <select id="addDraw" resultType="java.lang.String">
+    <select id="addDataSet" resultType="java.lang.String">
         <if test="Id == ''">
             insert into analytic_dataset values (default, #{fileName}, #{address}, now(), #{email}, #{visualType}, #{visualId}, #{projectId}) returning id::text
         </if>

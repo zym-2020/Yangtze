@@ -17,7 +17,7 @@ import java.util.Map;
 public interface AnalyticDataSetMapper {
     List<Map<String, Object>> getAnalyticData(@Param("projectId") String projectId);
 
-    String addDraw(@Param("Id") String id, @Param("fileName") String fileName, @Param("address") String address, @Param("email") String email, @Param("visualType") String visualType, @Param("visualId") String visualId, @Param("projectId") String projectId);
+    String addDataSet(@Param("Id") String id, @Param("fileName") String fileName, @Param("address") String address, @Param("email") String email, @Param("visualType") String visualType, @Param("visualId") String visualId, @Param("projectId") String projectId);
 
     void delAnalyticData(@Param("id") String id);
 
@@ -26,5 +26,6 @@ public interface AnalyticDataSetMapper {
     Map<String, Object> getInfoById(@Param("id") String id);
 
     void rename(@Param("id") String id, @Param("name") String name);
+
 
 }

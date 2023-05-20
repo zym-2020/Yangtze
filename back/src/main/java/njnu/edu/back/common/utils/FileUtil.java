@@ -3,12 +3,11 @@ package njnu.edu.back.common.utils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import njnu.edu.back.common.exception.MyException;
 import njnu.edu.back.common.result.ResultEnum;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,6 +16,7 @@ import java.io.FileReader;
  * @Date: 2023/02/22/16:15
  * @Description:
  */
+@Slf4j
 public class FileUtil {
     public static JSONObject readJson(String path) {
         File file = new File(path);
@@ -107,6 +107,22 @@ public class FileUtil {
                 e.printStackTrace();
                 throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
             }
+        }
+    }
+
+    public static void saveFile(String content, String filePath) {
+        try {
+            File file = new File(filePath);
+            if (file.exists()) {
+                file.delete();
+            }
+            file.createNewFile();
+            Writer write = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+            write.write(content);
+            write.flush();
+            write.close();
+        } catch (Exception e) {
+            log.error(e.getMessage());
         }
     }
 

@@ -260,7 +260,7 @@ public class ProjectServiceImpl implements ProjectService {
             } else {
                 newAddress = address;
             }
-            analyticDataSetMapper.addDraw("", fileName, newAddress, email, visualType, visualId, projectId);
+            analyticDataSetMapper.addDataSet("", fileName, newAddress, email, visualType, visualId, projectId);
         }
     }
 

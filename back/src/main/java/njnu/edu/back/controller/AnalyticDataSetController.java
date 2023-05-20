@@ -8,6 +8,7 @@ import njnu.edu.back.common.result.ResultUtils;
 import njnu.edu.back.service.AnalyticDataSetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -134,6 +135,29 @@ public class AnalyticDataSetController {
     }
 
     @AuthCheck
+    @RequestMapping(value = "/uploadParameter/{projectId}", method = RequestMethod.POST)
+    public JsonResult uploadParameter(@RequestParam MultipartFile file, @PathVariable String projectId, @JwtTokenParser("email") String email) {
+        return ResultUtils.success(analyticDataSetService.uploadParameter(file, projectId, email));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/generateConfig", method = RequestMethod.POST)
+    public JsonResult generateConfig(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
+        return ResultUtils.success(analyticDataSetService.generateConfig(jsonObject, email));
+    }
+
+    @AuthCheck
+    @RequestMapping(value = "/predict", method = RequestMethod.POST)
+    public JsonResult predict(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
+        String projectId = jsonObject.getString("projectId");
+        String config = jsonObject.getString("config");
+        analyticDataSetService.predict(projectId, config, email);
+        return ResultUtils.success();
+    }
+
+
+
+    @AuthCheck
     @RequestMapping(value = "/rename", method = RequestMethod.PATCH)
     public JsonResult rename(@RequestBody JSONObject jsonObject) {
         analyticDataSetService.rename(jsonObject.getString("id"), jsonObject.getString("name"));
@@ -145,6 +169,7 @@ public class AnalyticDataSetController {
     public JsonResult getUrl(@PathVariable String id, @JwtTokenParser("id") String userId) {
         return ResultUtils.success(analyticDataSetService.getUrl(id, userId));
     }
+
 
     @CrossOrigin
     @RequestMapping(value = "/downloadAnalyticData/{userId}/{id}", method = RequestMethod.GET)
