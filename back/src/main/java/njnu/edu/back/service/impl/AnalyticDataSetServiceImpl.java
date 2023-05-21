@@ -12,6 +12,7 @@ import njnu.edu.back.dao.main.AnalyticDataSetMapper;
 import njnu.edu.back.dao.main.AnalyticParameterMapper;
 import njnu.edu.back.dao.main.FileMapper;
 import njnu.edu.back.dao.main.VisualFileMapper;
+import njnu.edu.back.pojo.ModelConfig;
 import njnu.edu.back.pojo.VisualFile;
 import njnu.edu.back.pojo.support.TileBox;
 import njnu.edu.back.service.AnalyticDataSetService;
@@ -400,6 +401,19 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
         m.put("fileName", fileName);
         m.put("visualId", content);
         return m;
+    }
+
+    @Override
+    public JSONObject getAllModels() {
+        String modelInfoPath = modelPath + "ModelInfo.json";
+        JSONObject jsonObject = FileUtil.readJson(modelInfoPath);
+        return jsonObject;
+    }
+
+    @Override
+    public ModelConfig getModelConfig(String id) {
+        String modelConfigPath = modelPath + id + ".xml";
+        return XmlUtil.fromXml(new File(modelConfigPath), ModelConfig.class);
     }
 
     @Override

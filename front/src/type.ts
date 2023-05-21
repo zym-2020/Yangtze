@@ -281,3 +281,23 @@ export type AuditFile = {
   visualId: string;
   name: string;
 };
+
+export type ModelInfo = {
+  id: string;
+  name: string;
+  description: string;
+};
+
+export type ModelConfig = {
+  id: string;
+  name: string;
+  description: string;
+  parameters: {
+    parameterList: {
+      optional: boolean;
+      name: string;
+      description: string | null;
+      type: string;
+    }[];
+  };
+};

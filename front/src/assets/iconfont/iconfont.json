@@ -6,6 +6,90 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "5387799",
+      "name": "水位传感器_o",
+      "font_class": "prediction",
+      "unicode": "eb5a",
+      "unicode_decimal": 60250
+    },
+    {
+      "icon_id": "35090269",
+      "name": "全屏-copy",
+      "font_class": "quanping-copy",
+      "unicode": "ee4d",
+      "unicode_decimal": 61005
+    },
+    {
+      "icon_id": "4777232",
+      "name": "全屏",
+      "font_class": "quanping",
+      "unicode": "ec13",
+      "unicode_decimal": 60435
+    },
+    {
+      "icon_id": "15196949",
+      "name": "23.input",
+      "font_class": "23input",
+      "unicode": "e628",
+      "unicode_decimal": 58920
+    },
+    {
+      "icon_id": "12225043",
+      "name": "必选",
+      "font_class": "bixuan",
+      "unicode": "e60f",
+      "unicode_decimal": 58895
+    },
+    {
+      "icon_id": "219343",
+      "name": "code",
+      "font_class": "code1",
+      "unicode": "e647",
+      "unicode_decimal": 58951
+    },
+    {
+      "icon_id": "34971186",
+      "name": "Run TestCafe Script-45-copy",
+      "font_class": "code-script-yellow-copy",
+      "unicode": "ee4b",
+      "unicode_decimal": 61003
+    },
+    {
+      "icon_id": "34971199",
+      "name": "Run TestCafe Script-45-copy",
+      "font_class": "code-script-white",
+      "unicode": "ee4c",
+      "unicode_decimal": 61004
+    },
+    {
+      "icon_id": "22273655",
+      "name": "parameter",
+      "font_class": "parameter",
+      "unicode": "e6ee",
+      "unicode_decimal": 59118
+    },
+    {
+      "icon_id": "587088",
+      "name": "script",
+      "font_class": "script",
+      "unicode": "e7e9",
+      "unicode_decimal": 59369
+    },
+    {
+      "icon_id": "13302927",
+      "name": "actionscript",
+      "font_class": "actionscript",
+      "unicode": "e627",
+      "unicode_decimal": 58919
+    },
+    {
+      "icon_id": "4766848",
+      "name": "folder-add",
+      "font_class": "folder-add",
+      "unicode": "e7d1",
+      "unicode_decimal": 59345
+    },
+    {
       "icon_id": "1526605",
       "name": "reload",
       "font_class": "reload",

@@ -1,6 +1,7 @@
 package njnu.edu.back.service;
 
 import com.alibaba.fastjson.JSONObject;
+import njnu.edu.back.pojo.ModelConfig;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,6 +48,10 @@ public interface AnalyticDataSetService {
     Map<String, Object> addFlushContour(String projectId, String benchmarkId, String referId, String email, String fileName);
 
     Map<String, Object> addSlope(String projectId, String demId, String email, String fileName);
+
+    JSONObject getAllModels();
+
+    ModelConfig getModelConfig(String id);
 
     Map<String, String> uploadParameter(MultipartFile file, String projectId, String email);
 

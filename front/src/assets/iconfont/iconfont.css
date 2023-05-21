@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 2910523 */
-  src: url('iconfont.woff2?t=1668681641729') format('woff2'),
-       url('iconfont.woff?t=1668681641729') format('woff'),
-       url('iconfont.ttf?t=1668681641729') format('truetype');
+  src: url('iconfont.woff2?t=1684590999021') format('woff2'),
+       url('iconfont.woff?t=1684590999021') format('woff'),
+       url('iconfont.ttf?t=1684590999021') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,54 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-prediction:before {
+  content: "\eb5a";
+}
+
+.icon-quanping-copy:before {
+  content: "\ee4d";
+}
+
+.icon-quanping:before {
+  content: "\ec13";
+}
+
+.icon-23input:before {
+  content: "\e628";
+}
+
+.icon-bixuan:before {
+  content: "\e60f";
+}
+
+.icon-code1:before {
+  content: "\e647";
+}
+
+.icon-code-script-yellow-copy:before {
+  content: "\ee4b";
+}
+
+.icon-code-script-white:before {
+  content: "\ee4c";
+}
+
+.icon-parameter:before {
+  content: "\e6ee";
+}
+
+.icon-script:before {
+  content: "\e7e9";
+}
+
+.icon-actionscript:before {
+  content: "\e627";
+}
+
+.icon-folder-add:before {
+  content: "\e7d1";
 }
 
 .icon-reload:before {

@@ -30,6 +30,16 @@
           <use xlink:href="#icon-shujuyanjiu"></use></svg
         >河床分析</el-button
       >
+      <el-divider direction="vertical" />
+      <el-button
+        type="primary"
+        text
+        @click="dialogPrediction = true"
+        :disabled="flag"
+        ><svg style="width: 16px; margin-right: 10px">
+          <use xlink:href="#icon-prediction"></use></svg
+        >水位预报</el-button
+      >
     </div>
 
     <div class="map-tool">
@@ -85,6 +95,10 @@
       <analyse-dialog @analyse="analyse" v-if="dialogAnalyse" />
     </el-dialog>
 
+    <el-dialog v-model="dialogPrediction" width="700px" title="水位预报">
+      <water-level-prediction v-if="dialogPrediction" />
+    </el-dialog>
+
     <el-dialog
       v-model="dialogBasemap"
       width="500px"
@@ -129,6 +143,7 @@ import TextDraw from "./TextDraw.vue";
 import { MoreFilled } from "@element-plus/icons-vue";
 import { updatePublicState } from "@/api/request";
 import CreateProject from "@/components/analyse/CreateProject.vue";
+import WaterLevelPrediction from "@/components/analyse/WaterLevelPrediction.vue";
 export default defineComponent({
   components: {
     AddDataDialog,
@@ -136,6 +151,7 @@ export default defineComponent({
     BasemapDialog,
     TextDraw,
     CreateProject,
+    WaterLevelPrediction,
   },
   emits: [
     "returnFileList",
@@ -148,6 +164,7 @@ export default defineComponent({
     const createFlag = ref(false);
     const dialogAddData = ref(false);
     const dialogAnalyse = ref(false);
+    const dialogPrediction = ref(false);
     const dialogBasemap = ref(false);
     const dialogTextDraw = ref(false);
     const state = ref(0);
@@ -284,6 +301,7 @@ export default defineComponent({
       sectionClick,
       regionClick,
       dialogAnalyse,
+      dialogPrediction,
       analyse,
       dialogBasemap,
       changeBasemap,

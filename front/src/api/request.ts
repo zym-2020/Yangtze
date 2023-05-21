@@ -204,6 +204,14 @@ export async function getUrl(id: string) {
   return await get(`/analyticDataSet/getUrl/${id}`);
 }
 
+export async function getAllModels() {
+  return await get(`/analyticDataSet/getAllModels`);
+}
+
+export async function getModelConfig(id: string) {
+  return await get(`/analyticDataSet/getModelConfig/${id}`);
+}
+
 //========================analyticParameter相关接口=================================
 export async function findByType(type: string) {
   return await get(`/analyse/findByType/${type}`);

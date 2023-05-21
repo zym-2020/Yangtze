@@ -135,6 +135,17 @@ public class AnalyticDataSetController {
     }
 
     @AuthCheck
+    @RequestMapping(value = "/getAllModels", method = RequestMethod.GET)
+    public JsonResult getAllModels() {
+        return ResultUtils.success(analyticDataSetService.getAllModels());
+    }
+
+    @RequestMapping(value = "/getModelConfig/{id}", method = RequestMethod.GET)
+    public JsonResult getModelConfig(@PathVariable String id) {
+        return ResultUtils.success(analyticDataSetService.getModelConfig(id));
+    }
+
+    @AuthCheck
     @RequestMapping(value = "/uploadParameter/{projectId}", method = RequestMethod.POST)
     public JsonResult uploadParameter(@RequestParam MultipartFile file, @PathVariable String projectId, @JwtTokenParser("email") String email) {
         return ResultUtils.success(analyticDataSetService.uploadParameter(file, projectId, email));
