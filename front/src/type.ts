@@ -301,3 +301,15 @@ export type ModelConfig = {
     }[];
   };
 };
+
+export type GenerateConfigJsonData = {
+  projectId: string;
+  config: {
+    model: string;
+    parameters: {
+      parameter: string;
+      key: string;
+      value: string;
+    }[];
+  };
+};

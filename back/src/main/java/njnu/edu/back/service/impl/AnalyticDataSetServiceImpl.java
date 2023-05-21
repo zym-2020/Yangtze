@@ -456,21 +456,18 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
         }
         parameters.add(basePath + email + "/project/" + projectId + "/" + config + ".txt");
         String tempFile = tempAddress + UUID.randomUUID() + ".txt";
-        redisService.set(config, 0, 60l);
-        new Thread() {
-            @Override
-            @SneakyThrows
-            public void run() {
-                Process process = AnalyseUtil.executePrediction(tempFile, parameters, modelRunFile);
-                int code = process.waitFor();
-                if(code == 0) {
-                    analyticDataSetMapper.addDataSet("", "result.txt", config + ".txt", email, "prediction", "", projectId);
-                    redisService.set(config, 1, 60l);
-                } else {
-                    redisService.set(config, -1, 60l);
-                }
+
+        try {
+            Process process = AnalyseUtil.executePrediction(tempFile, parameters, modelRunFile);
+            int code = process.waitFor();
+            if(code == 0) {
+                analyticDataSetMapper.addDataSet("", "result.txt", config + ".txt", email, "prediction", "", projectId);
+            } else {
+                throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
             }
-        }.start();
+        } catch (Exception e) {
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
     }
 
     @Override

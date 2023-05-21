@@ -2,18 +2,13 @@ import { get, post, del, patch } from "./axios";
 import {
   RegisterJsonData,
   LoginJsonData,
-  AddFileJsonData,
-  RenameJsonData,
-  UnPackJsonData,
-  UpdateParentIdAndLevelJsonData,
-  CompressFileJsonData,
-  GetNoUploadJsonData,
   AddRecordJsonData,
   DeleteFilesOrFolders,
 } from "./type/userType";
 
+import { GenerateConfigJsonData } from "@/type";
+
 import axios from "axios";
-import { GetEstimatedTotalSize } from "element-plus";
 
 //========================User相关接口=================================
 export async function login(jsonData: LoginJsonData) {
@@ -210,6 +205,14 @@ export async function getAllModels() {
 
 export async function getModelConfig(id: string) {
   return await get(`/analyticDataSet/getModelConfig/${id}`);
+}
+
+export async function generateConfig(jsonData: GenerateConfigJsonData) {
+  return await post(`/analyticDataSet/generateConfig`, jsonData);
+}
+
+export async function predict(jsonDta: { projectId: string; config: string }) {
+  return await post(`/analyticDataSet/predict`, jsonDta);
 }
 
 //========================analyticParameter相关接口=================================

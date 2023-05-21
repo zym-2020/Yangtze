@@ -96,7 +96,10 @@
     </el-dialog>
 
     <el-dialog v-model="dialogPrediction" width="700px" title="水位预报">
-      <water-level-prediction v-if="dialogPrediction" />
+      <water-level-prediction
+        v-if="dialogPrediction"
+        @computeConfigHandle="computeConfigHandle"
+      />
     </el-dialog>
 
     <el-dialog
@@ -244,6 +247,10 @@ export default defineComponent({
       dialogAnalyse.value = false;
     };
 
+    const computeConfigHandle = () => {
+      dialogPrediction.value = false;
+    };
+
     const changeBasemap = (val: string) => {
       if (state.value != 0) {
         notice("warning", "警告", "切换底图前请先关闭断面/区域的绘制");
@@ -303,6 +310,7 @@ export default defineComponent({
       dialogAnalyse,
       dialogPrediction,
       analyse,
+      computeConfigHandle,
       dialogBasemap,
       changeBasemap,
       textDrawClick,

@@ -25,12 +25,16 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
-import { getAllModels } from "@/api/request";
+import { getAllModels, generateConfig, predict } from "@/api/request";
 import { ModelInfo } from "@/type";
 import ParamSetting from "./ParamSetting.vue";
+import { ElLoading } from "element-plus";
+import router from "@/router";
+import { notice } from "@/utils/notice";
 export default defineComponent({
   components: { ParamSetting },
-  setup() {
+  emits: ["computeConfigHandle"],
+  setup(_, context) {
     const skeletonFlag = ref(true);
     const modelList = ref<ModelInfo[]>([]);
     const currentModelId = ref("");
@@ -40,7 +44,39 @@ export default defineComponent({
       else currentModelId.value = id;
     };
 
-    const paramSettingCall = () => {};
+    const paramSettingCall = async (
+      val: { parameter: string; key: string; value: string }[]
+    ) => {
+      context.emit("computeConfigHandle");
+      const jsonData = {
+        projectId: router.currentRoute.value.params.id as string,
+        config: {
+          model: currentModelId.value,
+          parameters: val,
+        },
+      };
+      const loading = ElLoading.service({
+        lock: true,
+        text: "Loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+      const res = await generateConfig(jsonData);
+      if ((res as any).code === 0) {
+        const result = await predict({
+          projectId: router.currentRoute.value.params.id as string,
+          config: res.data,
+        });
+        if ((result as any).code === 0) {
+          notice("success", "成功", "水位预报计算完成");
+        } else {
+          notice("error", "失败", "计算失败");
+        }
+      } else {
+        notice("error", "失败", "计算失败");
+      }
+
+      loading.close();
+    };
 
     onMounted(async () => {
       const res = await getAllModels();
