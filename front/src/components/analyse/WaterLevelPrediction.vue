@@ -33,7 +33,7 @@ import router from "@/router";
 import { notice } from "@/utils/notice";
 export default defineComponent({
   components: { ParamSetting },
-  emits: ["computeConfigHandle"],
+  emits: ["predictionHandle"],
   setup(_, context) {
     const skeletonFlag = ref(true);
     const modelList = ref<ModelInfo[]>([]);
@@ -47,7 +47,6 @@ export default defineComponent({
     const paramSettingCall = async (
       val: { parameter: string; key: string; value: string }[]
     ) => {
-      context.emit("computeConfigHandle");
       const jsonData = {
         projectId: router.currentRoute.value.params.id as string,
         config: {
@@ -68,6 +67,7 @@ export default defineComponent({
         });
         if ((result as any).code === 0) {
           notice("success", "成功", "水位预报计算完成");
+          context.emit("predictionHandle", result.data);
         } else {
           notice("error", "失败", "计算失败");
         }

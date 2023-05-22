@@ -6,6 +6,7 @@
       @analyse="analyse"
       @changeBasemap="changeBasemap"
       @createGeoJson="drawHandle"
+      @predictionHandle="predictionHandle"
     ></top-tool>
     <div class="body">
       <div class="left" ref="left">
@@ -168,6 +169,10 @@ export default defineComponent({
       rightMap.value.addMapLayer(param);
     };
 
+    const predictionHandle = (val: { id: string; fileName: string }) => {
+      dataManage.value.addPrediction(val);
+    };
+
     const analyse = async (val: { type: string; value: any }) => {
       await dataManage.value.addAnalyse(val);
     };
@@ -204,6 +209,7 @@ export default defineComponent({
       hideLayer,
       operateDraw,
       drawHandle,
+      predictionHandle,
       analyse,
       skeletonFlag,
       layerList,

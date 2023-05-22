@@ -98,7 +98,7 @@
     <el-dialog v-model="dialogPrediction" width="700px" title="水位预报">
       <water-level-prediction
         v-if="dialogPrediction"
-        @computeConfigHandle="computeConfigHandle"
+        @predictionHandle="predictionHandle"
       />
     </el-dialog>
 
@@ -162,6 +162,7 @@ export default defineComponent({
     "analyse",
     "changeBasemap",
     "createGeoJson",
+    "predictionHandle",
   ],
   setup(_, context) {
     const createFlag = ref(false);
@@ -247,8 +248,9 @@ export default defineComponent({
       dialogAnalyse.value = false;
     };
 
-    const computeConfigHandle = () => {
+    const predictionHandle = (val: { id: string; fileName: string }) => {
       dialogPrediction.value = false;
+      context.emit("predictionHandle", val);
     };
 
     const changeBasemap = (val: string) => {
@@ -310,7 +312,7 @@ export default defineComponent({
       dialogAnalyse,
       dialogPrediction,
       analyse,
-      computeConfigHandle,
+      predictionHandle,
       dialogBasemap,
       changeBasemap,
       textDrawClick,

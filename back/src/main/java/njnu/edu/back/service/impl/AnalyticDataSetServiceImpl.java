@@ -27,6 +27,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -445,7 +447,7 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
     }
 
     @Override
-    public void predict(String projectId, String config, String email) {
+    public Map<String, String> predict(String projectId, String config, String email) {
         String configPath = basePath + email + "/project/" + projectId + "/" + config + ".json";
         JSONObject jsonObject = FileUtil.readJson(configPath);
         String modelRunFile = modelPath + jsonObject.getString("model") + "/encapsulation.py";
@@ -459,9 +461,17 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
 
         try {
             Process process = AnalyseUtil.executePrediction(tempFile, parameters, modelRunFile);
+            ProcessUtil.readProcessOutput(process.getInputStream(), System.out);
             int code = process.waitFor();
+
             if(code == 0) {
-                analyticDataSetMapper.addDataSet("", "result.txt", config + ".txt", email, "prediction", "", projectId);
+                DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmm");
+                String fileName = dateFormat.format(new Date()) + "_prediction.txt";
+                String id = analyticDataSetMapper.addDataSet("", fileName, config + ".txt", email, "prediction", "", projectId);
+                Map<String, String> map = new HashMap<>();
+                map.put("id", id);
+                map.put("fileName", fileName);
+                return map;
             } else {
                 throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
             }

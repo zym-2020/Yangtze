@@ -163,8 +163,7 @@ public class AnalyticDataSetController {
     public JsonResult predict(@RequestBody JSONObject jsonObject, @JwtTokenParser("email") String email) {
         String projectId = jsonObject.getString("projectId");
         String config = jsonObject.getString("config");
-        analyticDataSetService.predict(projectId, config, email);
-        return ResultUtils.success();
+        return ResultUtils.success(analyticDataSetService.predict(projectId, config, email));
     }
 
 

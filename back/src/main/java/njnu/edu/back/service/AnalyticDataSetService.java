@@ -57,7 +57,7 @@ public interface AnalyticDataSetService {
 
     String generateConfig(JSONObject jsonObject, String email);
 
-    void predict(String projectId, String config, String email);
+    Map<String, String> predict(String projectId, String config, String email);
 
     void rename(String id, String name);
 

@@ -470,6 +470,37 @@ export default defineComponent({
       }
     };
 
+    const addPrediction = (param: { id: string; fileName: string }) => {
+      if (
+        treeData.value.length != 0 &&
+        treeData.value[treeData.value.length - 1].id === ""
+      ) {
+        treeData.value[treeData.value.length - 1].children.push({
+          id: param.id,
+          label: param.fileName,
+          flag: false,
+          children: [],
+          visualType: "prediction",
+          visualId: "",
+        });
+      } else {
+        treeData.value.push({
+          id: "",
+          label: "分析结果集",
+          flag: true,
+          children: [],
+        });
+        treeData.value[treeData.value.length - 1].children.push({
+          id: param.id,
+          label: param.fileName,
+          flag: false,
+          children: [],
+          visualType: "prediction",
+          visualId: "",
+        });
+      }
+    };
+
     const checkStateHandle = async (key: string, text: string) => {
       const data = await checkState(key);
       if (data != null && (data as any).code === 0) {
@@ -738,6 +769,7 @@ export default defineComponent({
       isLayerVisual,
       addDrawData,
       addAnalyse,
+      addPrediction,
       renameAble,
       downloadAble,
       isDelete,
