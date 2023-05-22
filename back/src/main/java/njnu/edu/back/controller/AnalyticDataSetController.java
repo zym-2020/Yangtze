@@ -166,6 +166,12 @@ public class AnalyticDataSetController {
         return ResultUtils.success(analyticDataSetService.predict(projectId, config, email));
     }
 
+    @AuthCheck
+    @RequestMapping(value = "/getParameterConfig/{id}", method = RequestMethod.GET)
+    public JsonResult getParameterConfig(@PathVariable String id) {
+        return ResultUtils.success(analyticDataSetService.getParameterConfig(id));
+    }
+
 
 
     @AuthCheck

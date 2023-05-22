@@ -47,6 +47,8 @@ public interface VisualService {
 
     JSONObject getSuspension(String visualId);
 
+    List<Double> getPrediction(String id);
+
     JSONObject getGeoJson(String fileId);
 
     JSONObject getAnalyticGeoJson(String fileId);

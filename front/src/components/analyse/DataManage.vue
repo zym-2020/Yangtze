@@ -56,6 +56,12 @@
           <span>可视化</span>
         </li>
         <li
+          :class="predictionSourceAble ? 'menu-item' : 'menu-item disabled'"
+          @click="operateLayer('prediction', predictionSourceAble)"
+        >
+          <span>预报模型</span>
+        </li>
+        <li
           :class="renameAble ? 'menu-item' : 'menu-item disabled'"
           @click="operateLayer('rename', renameAble)"
         >
@@ -83,6 +89,7 @@
         >
       </div>
     </el-dialog>
+    
   </div>
 </template>
 
@@ -122,6 +129,7 @@ import {
   computeVolume,
   rename,
   getUrl,
+  getParameterConfig,
 } from "@/api/request";
 import { decrypt } from "@/utils/auth";
 import { useStore } from "@/store";
@@ -532,7 +540,11 @@ export default defineComponent({
 
     const operateLayer = async (keyword: string, flag: boolean) => {
       if (flag) {
-        if (keyword != "rename" && keyword != "download") {
+        if (
+          keyword != "rename" &&
+          keyword != "download" &&
+          keyword !== "prediction"
+        ) {
           context.emit("operateLayer", {
             content: {
               id: selectedData.value?.id,
@@ -592,6 +604,11 @@ export default defineComponent({
               "/" +
               decrypt(data.data, store.state.user.id);
           }
+        } else if (keyword === "prediction") {
+          const res = await getParameterConfig(
+            selectedData.value?.id as string
+          );
+          console.log(res);
         }
       }
     };
@@ -646,6 +663,11 @@ export default defineComponent({
       } else {
         return false;
       }
+    });
+
+    const predictionSourceAble = computed(() => {
+      if (selectedData.value?.visualType === "prediction") return true;
+      else return false;
     });
 
     const downloadAble = computed(() => {
@@ -771,6 +793,7 @@ export default defineComponent({
       addAnalyse,
       addPrediction,
       renameAble,
+      predictionSourceAble,
       downloadAble,
       isDelete,
       dialogRename,

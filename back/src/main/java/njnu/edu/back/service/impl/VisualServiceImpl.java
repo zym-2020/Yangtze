@@ -300,6 +300,32 @@ public class VisualServiceImpl implements VisualService {
     }
 
     @Override
+    public List<Double> getPrediction(String id) {
+        Map<String, Object> map = analyticDataSetMapper.getInfoById(id);
+        String projectId = map.get("projectId").toString();
+        String email = map.get("creator").toString();
+        String fileName = map.get("address").toString();
+        String path = basePath + email + "/project/" + projectId + "/" + fileName;
+        File file = new File(path);
+        if (!file.exists()) {
+            throw new MyException(ResultEnum.NO_OBJECT);
+        }
+
+        List<Double> res = new ArrayList<>();
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(path));
+            int number = Integer.parseInt(reader.readLine());
+            for (int i = 0; i < number; i++) {
+                res.add(Double.parseDouble(reader.readLine()));
+            }
+            reader.close();
+        } catch (Exception e) {
+            throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
+        }
+        return res;
+    }
+
+    @Override
     public JSONObject getGeoJson(String fileId) {
         String path = visualAddress + "geoJson/" + fileId + ".json";
         return FileUtil.readJson(path);

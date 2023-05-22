@@ -215,6 +215,10 @@ export async function predict(jsonDta: { projectId: string; config: string }) {
   return await post(`/analyticDataSet/predict`, jsonDta);
 }
 
+export async function getParameterConfig(id: string) {
+  return await get(`/analyticDataSet/getParameterConfig/${id}`);
+}
+
 //========================analyticParameter相关接口=================================
 export async function findByType(type: string) {
   return await get(`/analyse/findByType/${type}`);
@@ -417,6 +421,10 @@ export async function getSandContent(id: string) {
 
 export async function getSuspension(id: string) {
   return await get(`/visual/getSuspension/${id}`);
+}
+
+export async function getPrediction(id: string) {
+  return await get(`/visual/getPrediction/${id}`);
 }
 
 export async function getSalinity(id: string) {

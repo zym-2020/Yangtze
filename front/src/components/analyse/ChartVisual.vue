@@ -32,6 +32,10 @@
       :visualId="chartInfo.visualId"
       v-if="chartInfo.visualType === 'suspension'"
     />
+    <prediction-visual
+      :id="chartInfo.id"
+      v-if="chartInfo.visualType === 'prediction'"
+    />
   </div>
 </template>
 
@@ -45,6 +49,7 @@ import RateAndDirection from "@/components/visual/RateAndDirection.vue";
 import Salinity from "@/components/visual/Salinity.vue";
 import SandContent from "@/components/visual/SandContent.vue";
 import Suspension from "@/components/visual/Suspension.vue";
+import PredictionVisual from "@/components/visual/PredictionVisual.vue";
 
 export default defineComponent({
   components: {
@@ -56,7 +61,7 @@ export default defineComponent({
     Salinity,
     SandContent,
     Suspension,
-
+    PredictionVisual,
   },
   props: {
     chartVisualInfo: {

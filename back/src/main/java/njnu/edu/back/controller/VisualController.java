@@ -166,6 +166,17 @@ public class VisualController {
     }
 
     /**
+    * @Description:水位预报结果可视化
+    * @Author: Yiming
+    * @Date: 2023/5/22
+    */
+    @RequestMapping(value = "/getPrediction/{id}", method = RequestMethod.GET)
+    public JsonResult getPrediction(@PathVariable String id) {
+        return ResultUtils.success(visualService.getPrediction(id));
+    }
+
+
+    /**
     * @Description:geoJson数据
     * @Author: Yiming
     * @Date: 2022/10/14

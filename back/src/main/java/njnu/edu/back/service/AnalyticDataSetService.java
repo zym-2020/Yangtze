@@ -59,6 +59,8 @@ public interface AnalyticDataSetService {
 
     Map<String, String> predict(String projectId, String config, String email);
 
+    JSONObject getParameterConfig(String id);
+
     void rename(String id, String name);
 
     String getUrl(String id, String userId);

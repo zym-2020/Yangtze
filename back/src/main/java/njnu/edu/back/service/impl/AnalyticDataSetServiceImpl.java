@@ -466,7 +466,7 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
 
             if(code == 0) {
                 DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmm");
-                String fileName = dateFormat.format(new Date()) + "_prediction.txt";
+                String fileName = dateFormat.format(new Date()) + "_prediction";
                 String id = analyticDataSetMapper.addDataSet("", fileName, config + ".txt", email, "prediction", "", projectId);
                 Map<String, String> map = new HashMap<>();
                 map.put("id", id);
@@ -478,6 +478,17 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
         } catch (Exception e) {
             throw new MyException(ResultEnum.DEFAULT_EXCEPTION);
         }
+    }
+
+    @Override
+    public JSONObject getParameterConfig(String id) {
+        Map<String, Object> result = analyticDataSetMapper.getInfoById(id);
+        String projectId = (String) result.get("projectId");
+        String email = (String) result.get("creator");
+        String fileName = result.get("address").toString();
+        fileName = fileName.substring(0, fileName.lastIndexOf(".")) + ".json";
+        JSONObject jsonObject = FileUtil.readJson(basePath + email + "/project/" + projectId + "/" + fileName);
+        return jsonObject;
     }
 
     @Override
