@@ -182,5 +182,18 @@ public class MultiSourceController {
         return ResultUtils.success(multiSourceService.pageList(type, page, size, keyword));
     }
 
+    /**
+    * @Description:station相关
+    * @Author: Yiming
+    * @Date: 2023/6/4
+    */
+    @RequestMapping(value = "/getAllStation", method = RequestMethod.GET)
+    public JsonResult getAllStation() {
+        return ResultUtils.success(multiSourceService.getAllStation());
+    }
 
+    @RequestMapping(value = "/getPrediction/{stationName}", method = RequestMethod.GET)
+    public JsonResult getPrediction(@PathVariable String stationName) throws Exception {
+        return ResultUtils.success(multiSourceService.getPrediction(stationName));
+    }
 }

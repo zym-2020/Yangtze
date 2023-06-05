@@ -20,4 +20,6 @@ public interface StationMapper {
     List<Map<String, Object>> pageQuery(@Param("size") int size, @Param("start") int start, @Param("keyword") String keyword);
 
     int count(@Param("keyword") String keyword);
+
+    List<Map<String, Object>> getAllStation();
 }

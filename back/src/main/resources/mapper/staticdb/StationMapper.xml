@@ -19,4 +19,8 @@
             where name like #{keyword}
         </if>
     </select>
+
+    <select id="getAllStation" resultType="java.util.HashMap">
+        select * from stations
+    </select>
 </mapper>

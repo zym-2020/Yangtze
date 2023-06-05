@@ -530,4 +530,15 @@ public class MultiSourceServiceImpl implements MultiSourceService {
         }
         return map;
     }
+
+    @Override
+    public List<Map<String, Object>> getAllStation() {
+        return stationMapper.getAllStation();
+    }
+
+    @Override
+    public JSONObject getPrediction(String stationName) throws Exception {
+        String url = waterLevelAddress + "/prediction/getPrediction/" + stationName;
+        return InternetUtil.httpHandle(url, new LinkedMultiValueMap<>(), JSONObject.class, "get");
+    }
 }

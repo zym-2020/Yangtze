@@ -48,4 +48,8 @@ public interface MultiSourceService {
     JSONArray getWaterLevelByStationAndTime(String type, String station, String startTime, String endTime);
 
     Map<String, Object> pageList(String type, int page, int size, String keyword);
+
+    List<Map<String, Object>> getAllStation();
+
+    JSONObject getPrediction(String stationName) throws Exception;
 }
