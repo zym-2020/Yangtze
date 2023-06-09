@@ -58,7 +58,7 @@ spring:
 #mybatis:
 #  mapper-locations: classpath:mapper/*.xml
 
-
+# 记得全局搜索，修改pythonStr，在TimedTask类、AnalyseUtil类有
 pythondir:
   D:/zhuomian/水科院/python/
 

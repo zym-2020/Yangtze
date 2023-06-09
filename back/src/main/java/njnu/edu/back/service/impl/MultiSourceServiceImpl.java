@@ -538,7 +538,7 @@ public class MultiSourceServiceImpl implements MultiSourceService {
 
     @Override
     public JSONObject getPrediction(String stationName) throws Exception {
-        String url = waterLevelAddress + "/prediction/getPrediction/" + stationName;
-        return InternetUtil.httpHandle(url, new LinkedMultiValueMap<>(), JSONObject.class, "get");
+        String result = resourcePath + "prediction/" + stationName + "/result.json";
+        return FileUtil.readJson(result);
     }
 }
