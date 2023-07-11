@@ -66,4 +66,6 @@ public interface AnalyticDataSetService {
     String getUrl(String id, String userId);
 
     void downloadAnalyticData(String userId, String id, HttpServletResponse response);
+
+    void a();
 }

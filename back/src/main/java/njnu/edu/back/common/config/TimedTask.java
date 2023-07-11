@@ -46,7 +46,6 @@ public class TimedTask {
                 c.add("/c");
                 c.add(pythonStr + " " + model + " " + timeParam + " " + output);
                 new ProcessBuilder().command(c).start();
-                log.info("执行executePrediction");
             }
         }
     }

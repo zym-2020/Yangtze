@@ -18,13 +18,13 @@ spring:
       password: 123
       driver-class-name: org.postgresql.Driver
     osm:
-      jdbc-url: jdbc:sqlite:/home/zym/osm/2020-10-planet-14.mbtiles
+      jdbc-url: jdbc:sqlite:C:/nhri/osm/2020-10-planet-14.mbtiles
       driver-class-name: org.sqlite.JDBC
     staticdb:
-      jdbc-url: jdbc:sqlite:/home/zym/multiSource/static_database.db
+      jdbc-url: jdbc:sqlite:C:/nhri/static_database.db
       driver-class-name: org.sqlite.JDBC
     ship:
-      jdbc-url: jdbc:sqlite:/home/zym/multiSource/ais.db
+      jdbc-url: jdbc:sqlite:C:/nhri/ais.db
       driver-class-name: org.sqlite.JDBC
     #配置druid连接池
     druid:
@@ -66,19 +66,44 @@ spring:
 
 
 pythondir:
-  /home/zym/python/
+  C:/nhri/pythonDir/
 
 
 pictureAddress:
-  /home/zym/yangtze/other/picture/
+  C:/yangtze/other/picture/
 visualAddress:
-  /home/zym/yangtze/other/visual/
+  C:/yangtze/other/visual/
 tempAddress:
-  /home/zym/yangtze/other/temp/
+  C:/yangtze/other/temp/
 basePath:
-  /home/zym/yangtze/user/
+  C:/yangtze/user/
 analyseAddress:
-  /home/zym/yangtze/other/analyse/
+  C:/yangtze/other/analyse/
 mapAddress:
-  /home/zym/yangtze/other/map/
+  C:/yangtze/other/map/
 
+
+resourcePath:
+  C:/yangtze/resource/
+modelPath:
+  C:/yangtze/resource/models/
+
+
+pgpath:
+  C:/application/PostgreSQL/13/bin/
+
+
+#水情服务地址
+waterLevelAddress:
+  http://172.21.212.116:9999
+
+#气象预警地址
+meteorologyUrl:
+  https://weather.cma.cn/api/map/alarm
+meteorologyPngUrl:
+  http://data.cma.cn/dataGis/static/ultra/img/gis/disasterWarning/
+#AIS船舶地址
+AISUrl:
+  http://www.cjienc.cn/rest/es/queryBoxShip?left={0}&bottom={1}&right={2}&top={3}
+AISListUrl:
+  http://www.cjienc.cn//rest/es/query/{0}/{1}?lx=acb&name={2}

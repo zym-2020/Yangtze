@@ -22,4 +22,6 @@ public interface StationMapper {
     int count(@Param("keyword") String keyword);
 
     List<Map<String, Object>> getAllStation();
+
+    List<Map<String, Object>> getPredictionStation();
 }

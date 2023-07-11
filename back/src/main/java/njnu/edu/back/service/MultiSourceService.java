@@ -52,4 +52,6 @@ public interface MultiSourceService {
     List<Map<String, Object>> getAllStation();
 
     JSONObject getPrediction(String stationName) throws Exception;
+
+    List<Map<String, Object>> getPredictionStation();
 }

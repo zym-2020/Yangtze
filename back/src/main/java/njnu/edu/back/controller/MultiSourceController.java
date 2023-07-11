@@ -196,4 +196,9 @@ public class MultiSourceController {
     public JsonResult getPrediction(@PathVariable String stationName) throws Exception {
         return ResultUtils.success(multiSourceService.getPrediction(stationName));
     }
+
+    @RequestMapping(value = "/getPredictionStation", method = RequestMethod.GET)
+    public JsonResult getPredictionStation() {
+        return ResultUtils.success(multiSourceService.getPredictionStation());
+    }
 }

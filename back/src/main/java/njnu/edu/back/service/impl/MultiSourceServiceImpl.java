@@ -541,4 +541,9 @@ public class MultiSourceServiceImpl implements MultiSourceService {
         String result = resourcePath + "prediction/" + stationName + "/result.json";
         return FileUtil.readJson(result);
     }
+
+    @Override
+    public List<Map<String, Object>> getPredictionStation() {
+        return stationMapper.getPredictionStation();
+    }
 }

@@ -23,4 +23,8 @@
     <select id="getAllStation" resultType="java.util.HashMap">
         select * from stations
     </select>
+
+    <select id="getPredictionStation" resultType="java.util.HashMap">
+        select * from stations where prediction = 1
+    </select>
 </mapper>
