@@ -3,6 +3,7 @@ package njnu.edu.back.common.config;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import njnu.edu.back.common.utils.FileUtil;
+import njnu.edu.back.common.utils.ProcessUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -31,7 +32,7 @@ public class TimedTask {
     static String pythonStr = "python";
 
     @Scheduled(cron = "0 40 * * * ?")
-    public void executePrediction() throws IOException {
+    public void executePrediction() throws IOException, InterruptedException {
         String stationNameJson = resourcePath + "station_name.json";
         String predictionPath = resourcePath + "prediction/";
         Map<String, List<JSONObject>> map = FileUtil.getPredictionStationList(stationNameJson);
@@ -45,7 +46,11 @@ public class TimedTask {
                 c.add("cmd");
                 c.add("/c");
                 c.add(pythonStr + " " + model + " " + timeParam + " " + output);
-                new ProcessBuilder().command(c).start();
+                Process process = new ProcessBuilder().command(c).start();
+                ProcessUtil.readProcessOutput(process.getInputStream(), System.out);
+                int code = process.waitFor();
+                process.destroy();
+
             }
         }
     }

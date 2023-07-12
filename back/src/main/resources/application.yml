@@ -2,7 +2,7 @@ spring:
   application:
     name: Yangtze
   profiles:
-    active: dev
+    active: prod
   servlet:
     multipart:
       enabled: true

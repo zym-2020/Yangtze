@@ -151,6 +151,17 @@ export const asyncRouters: Array<RouteRecordRaw> = [
           key: "Waterway",
         },
       },
+      {
+        path: "prediction",
+        name: "Prediction",
+        component: () => import("@/views/scenario/Prediction.vue"),
+        meta: {
+          role: ["member", "admin"],
+          keepAlive: true,
+          key: "Waterway",
+          title: "水文预报",
+        },
+      },
     ],
   },
   {

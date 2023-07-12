@@ -183,7 +183,9 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
             @SneakyThrows
             public void run() {
                 Process process = AnalyseUtil.saveSectionValue(tempPath, demPath, jsonArray, resultPath);
+                ProcessUtil.readProcessOutput(process.getInputStream(), System.out);
                 int code = process.waitFor();
+                process.destroy();
                 if(code == 0) {
                     analyticDataSetMapper.addDataSet(result, fileName, resultUUID + ".txt", email, "section", "", projectId);
                     redisService.set(result, 1, 60l);
@@ -217,7 +219,9 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
             @SneakyThrows
             public void run() {
                 Process process = AnalyseUtil.savaSectionContrast(tempPath, rasterPathList, jsonArray, resultPath);
+                ProcessUtil.readProcessOutput(process.getInputStream(), System.out);
                 int code = process.waitFor();
+                process.destroy();
                 if(code == 0) {
                     analyticDataSetMapper.addDataSet(result, fileName, resultUUID + ".txt", email, "sectionContrast", "", projectId);
                     redisService.set(result, 1, 60l);
@@ -250,7 +254,9 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
             @SneakyThrows
             public void run() {
                 Process process = AnalyseUtil.sectionFlush(tempPath, benchmarkPath, referPath, analyseAddress + address, jsonArray, resultPath);
+                ProcessUtil.readProcessOutput(process.getInputStream(), System.out);
                 int code = process.waitFor();
+                process.destroy();
                 if(code == 0) {
                     analyticDataSetMapper.addDataSet(result, fileName, resultUUID + ".txt", email, "sectionFlush", "", projectId);
                     redisService.set(result, 1, 60l);
@@ -281,7 +287,9 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
             @SneakyThrows
             public void run() {
                 Process process = AnalyseUtil.rasterCrop(tempPath, analyseAddress + address, pngPath, tifPath, coordinatePath, jsonArray);
+                ProcessUtil.readProcessOutput(process.getInputStream(), System.out);
                 int code = process.waitFor();
+                process.destroy();
                 if(code == 0) {
                     String content = getPngContent("png/" + resultUUID + ".png", coordinatePath);
                     Map<String, Object> map = visualFileMapper.addVisualFile(new VisualFile(null, resultUUID + ".png", "png", content, ""));
@@ -317,7 +325,9 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
             @SneakyThrows
             public void run() {
                 Process process = AnalyseUtil.computeVolume(tempPath, deep, demPath, resultPath, visualPath, jsonArray, volumePath, coordinatePath);
+                ProcessUtil.readProcessOutput(process.getInputStream(), System.out);
                 int code = process.waitFor();
+                process.destroy();
                 if(code == 0) {
                     String content = getPngContent("volume/" + visualId + ".png", coordinatePath);
                     JSONObject json = JSON.parseObject(content);
@@ -462,8 +472,9 @@ public class AnalyticDataSetServiceImpl implements AnalyticDataSetService {
         try {
             Process process = AnalyseUtil.executePrediction(tempFile, parameters, modelRunFile);
             ProcessUtil.readProcessOutput(process.getInputStream(), System.out);
-            int code = process.waitFor();
 
+            int code = process.waitFor();
+            process.destroy();
             if(code == 0) {
                 DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmm");
                 String fileName = dateFormat.format(new Date()) + "_prediction";

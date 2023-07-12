@@ -70,23 +70,23 @@ pythondir:
 
 
 pictureAddress:
-  C:/yangtze/other/picture/
+  C:/nhri/yangtze/other/picture/
 visualAddress:
-  C:/yangtze/other/visual/
+  C:/nhri/yangtze/other/visual/
 tempAddress:
-  C:/yangtze/other/temp/
+  C:/nhri/yangtze/other/temp/
 basePath:
-  C:/yangtze/user/
+  C:/nhri/yangtze/user/
 analyseAddress:
-  C:/yangtze/other/analyse/
+  C:/nhri/yangtze/other/analyse/
 mapAddress:
-  C:/yangtze/other/map/
+  C:/nhri/yangtze/other/map/
 
 
 resourcePath:
-  C:/yangtze/resource/
+  C:/nhri/yangtze/resource/
 modelPath:
-  C:/yangtze/resource/models/
+  C:/nhri/yangtze/resource/models/
 
 
 pgpath:
