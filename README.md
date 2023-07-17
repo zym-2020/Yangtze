@@ -17,6 +17,9 @@ numpy *1.24.3*
 opencv *4.5.1*
 pandas *2.0.1*
 statsmodels *0.14.0*
+requests *2.28.1*
+matplotlib *3.4.2*
+scipy *1.10.1*
 
 
 # 项目所用技术栈
