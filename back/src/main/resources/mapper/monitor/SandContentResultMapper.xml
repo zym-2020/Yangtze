@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="njnu.edu.back.dao.monitor.SandContentResultMapper">
+    <select id="getAllResult" resultType="java.util.HashMap">
+        select time, name, type, deep, value0, value2, value4, value6, value8, value10, ave_value as "aveValue" from sand_content_result
+    </select>
+
+    <select id="getAllResultByName" resultType="java.util.HashMap">
+        select time, name, type, deep, value0, value2, value4, value6, value8, value10, ave_value as "aveValue" from sand_content_result
+        where name = #{name}
+    </select>
+
+
+    <select id="getAllResultByTimeAndType" resultType="java.util.HashMap">
+        select time, name, type, deep, value0, value2, value4, value6, value8, value10, ave_value as "aveValue" from sand_content_result
+        where type = #{type} and time &gt;= #{startTime} and time &lt;= #{endTime}
+        order by time asc
+    </select>
+
+    <select id="getAllResultByNameAndTime" resultType="java.util.HashMap">
+        select time, name, type, deep, value0, value2, value4, value6, value8, value10, ave_value as "aveValue" from sand_content_result
+        where name = #{name} and &gt;= #{startTime} and time &lt;= #{endTime}
+        order by time asc
+    </select>
+</mapper>

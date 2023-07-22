@@ -1,2 +1,2 @@
 // export const prefix = 'http://localhost:8002/'
-export const prefix = 'http://172.21.213.244:8002/'
+export const prefix = 'http://39.101.65.98:8002/'

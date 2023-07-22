@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="njnu.edu.back.dao.monitor.VelocityDirectionResultMapper">
+    <select id="getAllResult" resultType="java.util.HashMap">
+        select * from v_d_result
+    </select>
+
+    <select id="getAllResultByTypeAndNameAndTime" resultType="java.util.HashMap">
+        select * from v_d_result where type = #{type} and name = #{name} and time &gt;= #{startTime} and time &lt;= #{endTime} order by time asc
+    </select>
+
+    <select id="getDistanceByName" resultType="java.util.HashMap">
+        select distance from v_d_result where name = #{name} group by distance
+    </select>
+
+    <select id="getAllResultByTypeAndNameAndDistanceAndTime" resultType="java.util.HashMap">
+        select * from v_d_result where type = #{type} and name = #{name} and distance = #{distance} and time &gt;= #{startTime} and time &lt;= #{endTime} order by time asc
+    </select>
+</mapper>

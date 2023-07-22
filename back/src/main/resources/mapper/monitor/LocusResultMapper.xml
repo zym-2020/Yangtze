@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="njnu.edu.back.dao.monitor.LocusResultMapper">
+    <select id="getAllLocus" resultType="java.util.HashMap">
+        select time, name, location_x as "locationX", location_y as "locationY", ave_v as "aveV" from locus_result
+    </select>
+
+    <select id="getAllLocusByName" resultType="java.util.HashMap">
+        select time, name, location_x as "locationX", location_y as "locationY", ave_v as "aveV" from locus_result where name = #{name}
+    </select>
+
+    <select id="getAllLocusByTime" resultType="java.util.HashMap">
+        select time, name, location_x as "locationX", location_y as "locationY", ave_v as "aveV" from locus_result
+        where time &gt;= #{startTime} and time &lt;= #{endTime}
+        order by time asc
+    </select>
+
+    <select id="getAllLocusByNameAndTime" resultType="java.util.HashMap">
+        select time, name, location_x as "locationX", location_y as "locationY", ave_v as "aveV" from locus_result
+        where name = #{name} and time &gt;= #{startTime} and time &lt;= #{endTime}
+        order by time asc
+    </select>
+</mapper>
